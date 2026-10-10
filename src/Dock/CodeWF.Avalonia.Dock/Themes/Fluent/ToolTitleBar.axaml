@@ -73,7 +73,7 @@
 
             <ControlTheme x:Key="CodeWFToolTitleBarButtonTheme"
                           TargetType="Button"
-                          BasedOn="{StaticResource {x:Type Button}}">
+>
         <Setter Property="Margin" Value="{DynamicResource CodeWFToolTitleBarButtonMargin}" />
         <Setter Property="Padding" Value="{DynamicResource CodeWFToolTitleBarButtonPadding}" />
         <Setter Property="Background" Value="Transparent" />

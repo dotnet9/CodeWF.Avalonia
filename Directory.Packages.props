@@ -24,14 +24,14 @@
 
     <!-- 主题生态 -->
     <PackageVersion Include="Semi.Avalonia" Version="$(SemiAvaloniaVersion)" />
-    <PackageVersion Include="Semi.Avalonia.DataGrid" Version="$(SemiAvaloniaVersion)" />
+    
+    <PackageVersion Include="Dock.Avalonia.Themes.Fluent" Version="$(DockVersion)" />
     <PackageVersion Include="TreeDataGrid.Avalonia" Version="12.0.0" />
     <PackageVersion Include="Irihi.Ursa" Version="2.2.0" />
     <PackageVersion Include="Irihi.Ursa.Themes.Semi" Version="2.2.0" />
 
     <!-- Dock -->
     <PackageVersion Include="Dock.Avalonia" Version="$(DockVersion)" />
-    <PackageVersion Include="Dock.Avalonia.Themes.Fluent" Version="$(DockVersion)" />
     <PackageVersion Include="Dock.Model.ReactiveUI" Version="$(DockVersion)" />
 
     <!-- Markdown 能力栈 -->

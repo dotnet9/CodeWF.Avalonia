@@ -2,6 +2,18 @@
     x:Class="CodeWF.Avalonia.DataGrid.Themes.DataGridSemiTheme"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StyleInclude Source="avares://Semi.Avalonia.DataGrid/DataGridSemiTheme.axaml" />
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceInclude x:Key="Default" Source="Semi/Light.axaml" />
+                <ResourceInclude x:Key="Light" Source="Semi/Light.axaml" />
+                <ResourceInclude x:Key="Dark" Source="Semi/Dark.axaml" />
+            </ResourceDictionary.ThemeDictionaries>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="Semi/_index.axaml" />
+                <ResourceInclude Source="Semi/Shared.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
     <StyleInclude Source="Index.axaml" />
 </Styles>

@@ -17,7 +17,6 @@
     <PackageReference Include="ReactiveUI.Avalonia" />
     <PackageReference Include="Xaml.Behaviors" />
     <PackageReference Include="Dock.Avalonia" />
-    <PackageReference Include="Dock.Avalonia.Themes.Fluent" />
     <PackageReference Include="Dock.Model.ReactiveUI" />
     <PackageReference Include="Avalonia.Controls.DataGrid" />
     <PackageReference Include="TreeDataGrid.Avalonia" />

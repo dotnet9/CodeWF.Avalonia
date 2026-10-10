@@ -11,7 +11,6 @@
   <ItemGroup>
     <PackageReference Include="Avalonia.Controls.DataGrid" />
     <PackageReference Include="Semi.Avalonia" />
-    <PackageReference Include="Semi.Avalonia.DataGrid" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
   </ItemGroup>
 
