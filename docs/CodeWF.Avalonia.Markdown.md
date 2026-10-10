@@ -1,0 +1,46 @@
+# CodeWF.Avalonia.Markdown / CodeWF.Avalonia.Markdown.Lite
+
+Markdown 渲染与编辑全家桶，按依赖重量分两包：
+
+- **Lite**：Markdig 解析 + Avalonia 渲染引擎，只渲染常规元素（标题/段落/列表/引用/表格/链接/代码块单色/图片替代文本/公式原文），内置 18 套排版主题。
+- **完整包**：在 Lite 之上叠加图片（GIF/SVG/预览）、数学公式、Mermaid 图表、TextMate 代码高亮、PNG/PDF/Word/公众号 HTML 导出、源码编辑器与单栏所见即所得编辑。
+
+## 安装
+
+```bash
+# 只要渲染
+dotnet add package CodeWF.Avalonia.Markdown.Lite
+# 要编辑器/导出/图表等完整能力
+dotnet add package CodeWF.Avalonia.Markdown
+```
+
+## 渲染控件
+
+```xml
+<markdown:MarkdownViewer Markdown="{Binding Content}" />
+```
+
+完整包另有 `MarkdownEditor`（源码编辑）、`MarkdownLiveEditor`（单栏实时编辑/所见即所得）与图片预览窗口（缩放/旋转/另存）。
+
+## 排版主题
+
+主题按"排版风格 + 明暗变体"组织，通过注册表选择：
+
+```csharp
+MarkdownTypographyThemeRegistry.Register(...);   // 注册自定义主题
+```
+
+XAML 中经 `MarkdownThemes`（Lite）或 `MarkdownFullThemes`（完整包）入口引入主题资源字典。
+
+## 多语言
+
+控件内置 UI 文案（图片预览等）跟随国际化资源，资源键常量集中在 `MarkdownL` 类；语言 JSON 随包分发到 `I18n/CodeWF.Markdown/`，应用侧用国际化插件加载该目录即可。
+
+## 导出
+
+完整包提供 `MarkdownDocumentExporter` 与公众号 HTML 复制（`MarkdownHtmlClipboard`）、PNG 渲染（`MarkdownPngRenderer`）等扩展。
+
+## 注意事项
+
+- 仅 net10.0；完整包依赖 AvaloniaEdit、SkiaSharp、Svg.Skia、Mermaider、TextMateSharp 等较重组件，按需选择。
+- 渲染管线可通过 `IMarkdownRenderContext` / 渲染器管道扩展自定义块级与行内元素。
