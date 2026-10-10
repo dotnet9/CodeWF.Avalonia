@@ -1,6 +1,14 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Controls/CodeWF.Avalonia.Controls/CodeWF.Avalonia.Controls.csproj" />
+    <Project Path="src/DataGrid/CodeWF.Avalonia.DataGrid/CodeWF.Avalonia.DataGrid.csproj" />
+    <Project Path="src/TreeDataGrid/CodeWF.Avalonia.TreeDataGrid/CodeWF.Avalonia.TreeDataGrid.csproj" />
+    <Project Path="src/Dock/CodeWF.Avalonia.Dock/CodeWF.Avalonia.Dock.csproj" />
+    <Project Path="src/Markdown/CodeWF.Avalonia.Markdown.Lite/CodeWF.Avalonia.Markdown.Lite.csproj" />
+    <Project Path="src/Markdown/CodeWF.Avalonia.Markdown/CodeWF.Avalonia.Markdown.csproj" />
+    <Project Path="src/Log/CodeWF.Avalonia.Log/CodeWF.Avalonia.Log.csproj" />
+    <Project Path="src/Lang/CodeWF.Avalonia.Lang/CodeWF.Avalonia.Lang.csproj" />
+    <Project Path="src/Lang/CodeWF.Avalonia.Lang.Generator/CodeWF.Avalonia.Lang.Generator.csproj" />
   </Folder>
   <Folder Name="/Solution Files/">
     <File Path=".gitignore" />
@@ -10,5 +18,6 @@
     <File Path="LICENSE" />
     <File Path="pack.bat" />
     <File Path="README.md" />
+    <File Path="NuGet.config" />
   </Folder>
 </Solution>

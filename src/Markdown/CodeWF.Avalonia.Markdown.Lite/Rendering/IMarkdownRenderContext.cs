@@ -1,0 +1,123 @@
+using System;
+using Avalonia;
+using global::Avalonia.Controls;
+using global::Avalonia.Data;
+using global::Avalonia.Media;
+using global::Avalonia.Styling;
+using CodeWF.Avalonia.Markdown.Controls;
+using CodeWF.Avalonia.Markdown.Shared.Rendering;
+using Markdig.Syntax;
+namespace CodeWF.Avalonia.Markdown.Rendering;
+
+/// <summary>
+/// 块级渲染器与宿主 MarkdownViewer 之间的服务契约：主题属性绑定、样式类
+/// 与共享控件构造。渲染器不直接依赖 Viewer 实例，能力包按此契约接入。
+/// </summary>
+public interface IMarkdownRenderContext
+{
+    double ParagraphLineHeight { get; }
+
+    double ParagraphFontSize { get; }
+
+    /// <summary>当前渲染的 Markdown 源文本（TOC 等需要整篇重解析的块使用）。</summary>
+    string? MarkdownText { get; }
+
+    /// <summary>相对图片路径的解析基路径。</summary>
+    string? ImageBasePath { get; }
+
+    double UnorderedListMarkerWidth { get; }
+
+    double OrderedListMarkerMinWidth { get; }
+
+    double OrderedListMarkerCharacterWidth { get; }
+
+    double OrderedListMarkerExtraWidth { get; }
+
+    Thickness ListFirstParagraphMargin { get; }
+
+    Thickness ListNestedParagraphMargin { get; }
+
+    /// <summary>递归转换嵌套块（引用、列表、表格单元格内容）。</summary>
+    Control? ConvertBlock(Block block, string? sourceMarkdown);
+
+    SelectableTextBlock CreateParagraph(ParagraphBlock paragraph, bool stripTaskPrefix, Thickness? marginOverride);
+
+    /// <summary>内联树 → Avalonia 内联集合（链接、行内代码、公式、图片等）。</summary>
+    System.Collections.Generic.IEnumerable<global::Avalonia.Controls.Documents.Inline> ConvertInlines(
+        Markdig.Syntax.Inlines.ContainerInline? container,
+        bool stripTaskPrefix);
+
+    /// <summary>为文本块提取链接区间并挂接手型光标与点击打开交互。</summary>
+    void AttachLinkInteraction(
+        SelectableTextBlock textBlock,
+        Markdig.Syntax.Inlines.ContainerInline? container,
+        bool stripTaskPrefix);
+
+    IDisposable BindTheme<T>(
+        AvaloniaObject target,
+        AvaloniaProperty<T> targetProperty,
+        StyledProperty<T> sourceProperty);
+
+    /// <summary>默认块装饰可使用 Style 优先级，让宿主按语义类名覆盖局部排版。</summary>
+    IDisposable BindTheme<T>(AvaloniaObject target, AvaloniaProperty<T> targetProperty,
+        StyledProperty<T> sourceProperty, BindingPriority priority) => BindTheme(target, targetProperty, sourceProperty);
+
+    SelectableTextBlock CreateSelectableText(params string[] classes);
+
+    void AddMarkdownClass(Control control, params string[] classes);
+
+    /// <summary>
+    /// 数学视图工厂（CodeWF.Avalonia.Markdown.Math 包注册）；为 null 或返回 null 时
+    /// 由调用方降级为原文渲染。
+    /// </summary>
+    MarkdownMathViewFactory? MathViewFactory { get; }
+
+    Control? CreateMathView(string latex, double fontSize, MarkdownMathLineStyle lineStyle);
+
+    /// <summary>
+    /// 图片控件工厂（CodeWF.Avalonia.Markdown.Images 包注册）；为 null 或返回 null 时
+    /// 由调用方降级为替代文本渲染。
+    /// </summary>
+    MarkdownImageControlFactory? ImageControlFactory { get; }
+
+    Control? CreateImageControl(string source, string altText);
+
+    Control CreateFallbackText(string text, string className);
+
+    /// <summary>
+    /// 任务列表勾选框是否可交互（点击回写 Markdown）。
+    /// 宿主未提供回写能力时应返回 false，保持只读展示。
+    /// </summary>
+    bool TaskMarkersInteractive { get; }
+
+    /// <summary>
+    /// 将任务勾选框接入回写：宿主记录源码偏移并在点击时抛出写回事件。
+    /// </summary>
+    void AttachTaskMarkerInteraction(CheckBox checkBox, int sourceMarkerOffset);
+
+    // ---- 代码块渲染所需 ----
+
+    /// <summary>
+    /// 代码高亮能力（CodeWF.Avalonia.Markdown.Highlighting 包注册）；为 null 时
+    /// 由 Core 降级为单色等宽渲染。
+    /// </summary>
+    MarkdownCodeHighlighter? CodeHighlighter { get; }
+
+    bool CodeBlockIsDark { get; }
+
+    FontFamily CodeFontFamily { get; }
+
+    double CodeBlockFontSize { get; }
+
+    double CodeBlockLineHeight { get; }
+
+    bool HasSelection { get; }
+
+    /// <summary>复制按钮点击：先触发宿主 CopyClick 事件，再写入剪贴板。</summary>
+    void CopyCodeToClipboard(string code);
+
+    Task CopySelectionAsync();
+
+    /// <summary>宿主扩展点：允许替换/增强代码块工具条，sender 为宿主 Viewer。</summary>
+    void RaiseCodeBlockToolRender(StackPanel header, StackPanel content, CodeBlock codeBlock);
+}

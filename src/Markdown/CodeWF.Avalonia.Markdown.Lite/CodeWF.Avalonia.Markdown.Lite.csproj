@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <Description>Markdown 渲染基础包：基于 Avalonia 与 Markdig 的解析渲染引擎，只渲染常规元素（标题/段落/列表/引用/表格/链接/代码块单色/图片替代文本/公式原文），并内置 18 套排版主题。Markdown rendering engine with built-in typography themes, no heavy capability dependencies.</Description>
+    <PackageTags>avalonia;markdown;viewer;codewf</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Markdig" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Controls\CodeWF.Avalonia.Controls\CodeWF.Avalonia.Controls.csproj" />
+    <ProjectReference Include="..\..\Lang\CodeWF.Avalonia.Lang\CodeWF.Avalonia.Lang.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="I18n\Language.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Language.tt</DependentUpon>
+    </Compile>
+    <None Update="I18n\Language.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Language.cs</LastGenOutput>
+    </None>
+    <None Remove="I18n\*.json" />
+    <Content Include="I18n\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>I18n\CodeWF.Markdown\%(Filename)%(Extension)</TargetPath>
+      <Pack>true</Pack>
+      <PackagePath>contentFiles\any\any\I18n\CodeWF.Markdown\%(Filename)%(Extension)</PackagePath>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+    </Content>
+  </ItemGroup>
+
+</Project>
