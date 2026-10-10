@@ -13,6 +13,9 @@
   <Folder Name="/demo/">
     <Project Path="demo/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CodeWF.Avalonia.Controls.Tests/CodeWF.Avalonia.Controls.Tests.csproj" />
+  </Folder>
   <Folder Name="/Solution Files/">
     <File Path=".gitignore" />
     <File Path="UpdateLog.md" />

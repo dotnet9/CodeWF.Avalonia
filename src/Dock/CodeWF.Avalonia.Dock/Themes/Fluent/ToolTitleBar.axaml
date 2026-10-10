@@ -73,7 +73,7 @@
 
             <ControlTheme x:Key="CodeWFToolTitleBarButtonTheme"
                           TargetType="Button"
-                          BasedOn="{DynamicResource {x:Type Button}}">
+                          BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Margin" Value="{DynamicResource CodeWFToolTitleBarButtonMargin}" />
         <Setter Property="Padding" Value="{DynamicResource CodeWFToolTitleBarButtonPadding}" />
         <Setter Property="Background" Value="Transparent" />
@@ -92,7 +92,7 @@
 
             <ControlTheme x:Key="CodeWFToolChromeControlTheme"
                           TargetType="ToolChromeControl"
-                          BasedOn="{DynamicResource {x:Type ToolChromeControl}}">
+                          BasedOn="{StaticResource {x:Type ToolChromeControl}}">
         <Setter Property="ToolFlyout" Value="{x:Null}" />
         <Setter Property="CloseButtonTheme" Value="{StaticResource CodeWFToolTitleBarButtonTheme}" />
         <Setter Property="PinButtonTheme" Value="{StaticResource CodeWFToolTitleBarButtonTheme}" />
