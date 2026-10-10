@@ -9,7 +9,7 @@
     <FluentTheme />
     <semi:SemiTheme Locale="zh-CN" />
     <codewf:ACSemiTheme />
-    <codewf:DataGridSemiTheme />
+    <!-- 已知问题：Avalonia 12.1.4 下 Semi DataGrid 主题 parse 期 StaticResource 解析失败，演示页暂用默认 DataGrid 皮肤，详见 UpdateLog 待治理 -->
     <codewf:TreeDataGridSemiTheme />
     <codewf:DockSemiTheme />
   </Application.Styles>
