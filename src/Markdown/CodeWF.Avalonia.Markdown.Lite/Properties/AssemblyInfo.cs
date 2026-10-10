@@ -5,4 +5,5 @@ using System.Runtime.CompilerServices;
 [assembly: XmlnsDefinition("https://codewf.com", "CodeWF.Avalonia.Markdown")]
 [assembly: XmlnsDefinition("https://codewf.com", "CodeWF.Avalonia.Markdown.Controls")]
 [assembly: XmlnsDefinition("https://codewf.com", "CodeWF.Avalonia.Markdown.Rendering")]
+[assembly: XmlnsDefinition("https://codewf.com", "CodeWF.Avalonia.Markdown.Themes")]
 [assembly: InternalsVisibleTo("CodeWF.Avalonia.Content.Tests")]
