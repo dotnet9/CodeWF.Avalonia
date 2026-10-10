@@ -10,6 +10,9 @@
     <Project Path="src/Lang/CodeWF.Avalonia.Lang/CodeWF.Avalonia.Lang.csproj" />
     <Project Path="src/Lang/CodeWF.Avalonia.Lang.Generator/CodeWF.Avalonia.Lang.Generator.csproj" />
   </Folder>
+  <Folder Name="/demo/">
+    <Project Path="demo/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo.csproj" />
+  </Folder>
   <Folder Name="/Solution Files/">
     <File Path=".gitignore" />
     <File Path="UpdateLog.md" />

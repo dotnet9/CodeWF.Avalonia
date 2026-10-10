@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
+    <PackageReference Include="Semi.Avalonia" />
+    <PackageReference Include="Prism.DryIoc.Avalonia" />
+    <PackageReference Include="ReactiveUI.Avalonia" />
+    <PackageReference Include="Xaml.Behaviors" />
+    <PackageReference Include="Dock.Avalonia" />
+    <PackageReference Include="Dock.Avalonia.Themes.Fluent" />
+    <PackageReference Include="Dock.Model.ReactiveUI" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" />
+    <PackageReference Include="TreeDataGrid.Avalonia" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" />
+    <PackageReference Include="AvaloniaEdit.TextMate" />
+    <PackageReference Include="Markdig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Controls\CodeWF.Avalonia.Controls\CodeWF.Avalonia.Controls.csproj" />
+    <ProjectReference Include="..\..\src\DataGrid\CodeWF.Avalonia.DataGrid\CodeWF.Avalonia.DataGrid.csproj" />
+    <ProjectReference Include="..\..\src\TreeDataGrid\CodeWF.Avalonia.TreeDataGrid\CodeWF.Avalonia.TreeDataGrid.csproj" />
+    <ProjectReference Include="..\..\src\Dock\CodeWF.Avalonia.Dock\CodeWF.Avalonia.Dock.csproj" />
+    <ProjectReference Include="..\..\src\Markdown\CodeWF.Avalonia.Markdown\CodeWF.Avalonia.Markdown.csproj" />
+    <ProjectReference Include="..\..\src\Markdown\CodeWF.Avalonia.Markdown.Lite\CodeWF.Avalonia.Markdown.Lite.csproj" />
+    <ProjectReference Include="..\..\src\Log\CodeWF.Avalonia.Log\CodeWF.Avalonia.Log.csproj" />
+    <ProjectReference Include="..\..\src\Lang\CodeWF.Avalonia.Lang\CodeWF.Avalonia.Lang.csproj" />
+  </ItemGroup>
+
+</Project>
