@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write # 创建 GitHub Release
+  id-token: write # NuGet 可信发布：用 OIDC 令牌换取一次性发布凭据
 
 jobs:
   publish:
@@ -70,19 +71,19 @@ jobs:
 
           Get-ChildItem artifacts/packages | ForEach-Object { Write-Host $_.Name }
 
+      - name: NuGet login (Trusted Publishing)
+        uses: nuget/login@v1
+        id: login
+        with:
+          user: dotnet9
+
       - name: Push to nuget.org
         shell: pwsh
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:NUGET_API_KEY)) {
-            throw "未配置 org 级 secret：NUGET_API_KEY"
-          }
-
           # 主包：失败即中止
           Get-ChildItem artifacts/packages -Filter *.nupkg | ForEach-Object {
             dotnet nuget push $_.FullName `
-              --api-key $env:NUGET_API_KEY `
+              --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" `
               --source https://api.nuget.org/v3/index.json `
               --skip-duplicate
             if ($LASTEXITCODE -ne 0) { throw "push failed: $($_.Name)" }
@@ -91,7 +92,7 @@ jobs:
           # 符号包：不含 pdb 的 snupkg 会被 nuget.org 拒绝，仅告警不中止
           Get-ChildItem artifacts/packages -Filter *.snupkg | ForEach-Object {
             dotnet nuget push $_.FullName `
-              --api-key $env:NUGET_API_KEY `
+              --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" `
               --source https://api.nuget.org/v3/index.json `
               --skip-duplicate
             if ($LASTEXITCODE -ne 0) { Write-Host "warning: symbol package push failed: $($_.Name)" }
