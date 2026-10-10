@@ -1,0 +1,69 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Styles.Resources>
+        <SolidColorBrush x:Key="DataGridColumnHeaderForeground">#262626</SolidColorBrush>
+        <SolidColorBrush x:Key="DataGridColumnHeaderBackground">#FAFAFA</SolidColorBrush>
+        <SolidColorBrush x:Key="DataGridColumnHeaderPointeroverBackground">#F3F7FC</SolidColorBrush>
+        <SolidColorBrush x:Key="DataGridColumnHeaderPressedBackground">#E8F3FF</SolidColorBrush>
+        <SolidColorBrush x:Key="DataGridColumnHeaderSeparatorBrush">#D9E3EF</SolidColorBrush>
+        <Thickness x:Key="DataGridColumnHeaderPadding">10,0,0,0</Thickness>
+        <x:Double x:Key="DataGridColumnHeaderMinHeight">28</x:Double>
+        <SolidColorBrush x:Key="DataGridRowBorderBrush">#F0F0F0</SolidColorBrush>
+        <SolidColorBrush x:Key="DataGridRowSelectedBorderBrush">#D9E3EF</SolidColorBrush>
+        <SolidColorBrush x:Key="DataGridRowPointerOverBackground">#FAFAFA</SolidColorBrush>
+        <SolidColorBrush x:Key="DataGridRowSelectedBackground">#D6E4FF</SolidColorBrush>
+        <Thickness x:Key="DataGridRowBorderThickness">0,0,0,1</Thickness>
+    </Styles.Resources>
+
+    <Style Selector="DataGridColumnHeader">
+        <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource DataGridColumnHeaderForeground}" />
+        <Setter Property="MinHeight" Value="{DynamicResource DataGridColumnHeaderMinHeight}" />
+        <Setter Property="Padding" Value="{DynamicResource DataGridColumnHeaderPadding}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="DataGridColumnHeader:pointerover">
+        <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderPointeroverBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource DataGridColumnHeaderForeground}" />
+    </Style>
+    <Style Selector="DataGridColumnHeader:pressed">
+        <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderPressedBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource DataGridColumnHeaderForeground}" />
+    </Style>
+    <Style Selector="DataGridColumnHeader /template/ ContentPresenter">
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource DataGridColumnHeaderForeground}" />
+    </Style>
+    <Style Selector="DataGridColumnHeader /template/ TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource DataGridColumnHeaderForeground}" />
+    </Style>
+    <Style Selector="DataGridColumnHeader /template/ Border.HeaderBackground">
+        <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderBackground}" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+    </Style>
+    <Style Selector="DataGridColumnHeader:pointerover /template/ Border.HeaderBackground">
+        <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderPointeroverBackground}" />
+    </Style>
+    <Style Selector="DataGridColumnHeader:pressed /template/ Border.HeaderBackground">
+        <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderPressedBackground}" />
+    </Style>
+    <Style Selector="DataGridColumnHeader /template/ Rectangle.VerticalSeparator">
+        <Setter Property="Fill" Value="{DynamicResource DataGridColumnHeaderSeparatorBrush}" />
+        <Setter Property="Opacity" Value="0.25" />
+    </Style>
+    <Style Selector="DataGridRow">
+        <Setter Property="BorderBrush" Value="{DynamicResource DataGridRowBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource DataGridRowBorderThickness}" />
+    </Style>
+    <Style Selector="DataGridRow:pointerover /template/ Border#BackgroundBorder">
+        <Setter Property="Background" Value="{DynamicResource DataGridRowPointerOverBackground}" />
+    </Style>
+    <Style Selector="DataGridRow:selected">
+        <Setter Property="BorderBrush" Value="{DynamicResource DataGridRowSelectedBorderBrush}" />
+    </Style>
+    <Style Selector="DataGridRow:selected /template/ Border#BackgroundBorder">
+        <Setter Property="Background" Value="{DynamicResource DataGridRowSelectedBackground}" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+    </Style>
+</Styles>
