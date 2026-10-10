@@ -334,7 +334,15 @@ public static class TreeDataGridExtension
 
     private static void ClearPrivateField(object target, string fieldName)
     {
-        SetPrivateField(target, fieldName, null);
+        // 上游不同版本字段可能漂移（如社区分支的 FlatTreeDataGridSource 没有 _comparison），
+        // 取消排序是尽力而为的清空动作，字段缺失时直接跳过。
+        try
+        {
+            SetPrivateField(target, fieldName, null);
+        }
+        catch (MissingFieldException)
+        {
+        }
     }
 
     [UnconditionalSuppressMessage(
