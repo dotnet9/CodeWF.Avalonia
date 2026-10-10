@@ -2,6 +2,10 @@
 
 ## 未发布
 
+## 12.1.4.1 (2026-10-10)
+
+- 🎨[界面]-更换全新设计的官方 logo（居中字母 A · 界面构成），SVG/PNG/ICO 三格式随包更新。
+
 ## 12.1.4.0 (2026-10-10)
 
 - 🚀[发布]-首个正式版：9 个包面向 Avalonia 12.1.4，覆盖 Controls、DataGrid、TreeDataGrid、Dock、Markdown、Log、Lang 产品线。
