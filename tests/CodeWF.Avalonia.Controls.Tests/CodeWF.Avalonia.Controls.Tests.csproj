@@ -20,6 +20,7 @@
     <PackageReference Include="Dock.Avalonia.Themes.Fluent" />
     <PackageReference Include="Dock.Model.ReactiveUI" />
     <PackageReference Include="ReactiveUI" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
     <PackageReference Include="coverlet.collector">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -36,6 +37,7 @@
     <ProjectReference Include="..\..\src\Controls\CodeWF.Avalonia.Controls\CodeWF.Avalonia.Controls.csproj" />
     <ProjectReference Include="..\..\src\DataGrid\CodeWF.Avalonia.DataGrid\CodeWF.Avalonia.DataGrid.csproj" />
     <ProjectReference Include="..\..\src\Dock\CodeWF.Avalonia.Dock\CodeWF.Avalonia.Dock.csproj" />
+    <ProjectReference Include="..\..\src\Log\CodeWF.Avalonia.Log\CodeWF.Avalonia.Log.csproj" />
   </ItemGroup>
 
 </Project>

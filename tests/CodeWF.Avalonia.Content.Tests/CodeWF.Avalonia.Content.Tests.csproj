@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Headless" />
+    <PackageReference Include="Avalonia.Skia" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Markdown\CodeWF.Avalonia.Markdown.Lite\CodeWF.Avalonia.Markdown.Lite.csproj" />
+    <ProjectReference Include="..\..\src\Markdown\CodeWF.Avalonia.Markdown\CodeWF.Avalonia.Markdown.csproj" />
+    <ProjectReference Include="..\..\src\Lang\CodeWF.Avalonia.Lang\CodeWF.Avalonia.Lang.csproj" />
+    <ProjectReference Include="..\..\src\Lang\CodeWF.Avalonia.Lang.Generator\CodeWF.Avalonia.Lang.Generator.csproj" />
+    <ProjectReference Include="..\..\src\Log\CodeWF.Avalonia.Log\CodeWF.Avalonia.Log.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\embedded.json" />
+  </ItemGroup>
+
+</Project>

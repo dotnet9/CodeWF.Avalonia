@@ -18,4 +18,4 @@ using global::Avalonia.Metadata;
 [assembly: XmlnsDefinition("https://codewf.com", "CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg")]
 [assembly: XmlnsDefinition("https://codewf.com", "CodeWF.Avalonia.Markdown.Editor.Services")]
 
-[assembly: InternalsVisibleTo("CodeWF.Avalonia.Markdown.Tests")]
+[assembly: InternalsVisibleTo("CodeWF.Avalonia.Content.Tests")]

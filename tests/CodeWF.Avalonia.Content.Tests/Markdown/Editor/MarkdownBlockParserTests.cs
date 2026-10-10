@@ -1,0 +1,180 @@
+using CodeWF.Avalonia.Markdown;
+using CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
+
+using Xunit;
+
+namespace CodeWF.Avalonia.Content.Tests.Markdown.Editor;
+
+/// <summary>
+/// 所见即所得视图的解析 / 回写往返测试：<c>markdown → 块模型 → markdown</c> 必须保持语义稳定，
+/// 且块类型识别正确（标题级别、任务勾选、表格、代码、引用、列表）。
+/// </summary>
+public sealed class MarkdownBlockParserTests
+{
+    [Fact]
+    public void Parse_MultilineQuoteRemovesPhysicalMarkers()
+    {
+        var model = Assert.Single(MarkdownBlockParser.Parse("> **one**\n> [two](#anchor)"));
+        Assert.Equal("**one**\n[two](#anchor)", model.Text);
+    }
+
+    [Theory]
+    [InlineData("  \r\n\r\n")]
+    [InlineData("\n\n")]
+    public void Parse_WhitespaceDocumentRoundTripsExactly(string markdown)
+        => Assert.Equal(markdown, MarkdownBlockParser.Write(MarkdownBlockParser.Parse(markdown)));
+
+    [Theory]
+    [InlineData("1. a\n2. b\n3. c", 1)]
+    [InlineData("0. a\n1. b\n2. c", 0)]
+    [InlineData("7. a\n8. b\n9. c", 7)]
+    public void Parse_OrderedList_PreservesEveryNumberAndSource(string markdown, int start)
+    {
+        var blocks = MarkdownBlockParser.Parse(markdown);
+        Assert.Equal(new[] { start, start + 1, start + 2 }, blocks.Select(block => block.OrderedNumber));
+        Assert.Equal(markdown, MarkdownBlockParser.Write(blocks));
+    }
+
+    [Theory]
+    [InlineData("> **粗** 和 [链接](https://x)", "https://x")]
+    [InlineData("> 微信公众号排版工具。**[Dotnet9](#jump_8)**", "#jump_8")]
+    public void Parse_Quote_PreservesInlineStyles(string markdown, string url)
+    {
+        var quote = Assert.Single(MarkdownBlockParser.Parse(markdown));
+        Assert.Equal(MarkdownBlockKind.Quote, quote.Kind);
+        var runs = MarkdownTextRunParser.Parse(quote.Text);
+        Assert.Contains(runs, run => run.Bold);
+        Assert.Contains(runs, run => run.LinkUrl == url);
+        Assert.DoesNotContain(runs, run => run.Text.Contains("**", StringComparison.Ordinal));
+    }
+
+    [Theory]
+    [InlineData("# Title\r\n\r\nparagraph\r\n")]
+    [InlineData("1. a\n2. b\n3. c")]
+    [InlineData("> outer\n>\n> > **inner**\n")]
+    [InlineData("![image](assets/a.png \"title\")\n\n$x^2$\n\n$$\nx^2\n$$")]
+    [InlineData("<!-- comment -->\n\n~~strike~~ and \\*literal\\*\n")]
+    [InlineData("- parent\n  - child\n\n    continuation\n")]
+    public void ParseThenWrite_PreservesUntouchedSource(string markdown) =>
+        Assert.Equal(markdown, MarkdownBlockParser.Write(MarkdownBlockParser.Parse(markdown)));
+
+    [Fact]
+    public void EditingOneBlock_PreservesOtherSource()
+    {
+        const string markdown = "# Title\r\n\r\noriginal\r\n\r\n![alt](a.png \"title\")\r\n";
+        var blocks = MarkdownBlockParser.Parse(markdown);
+        blocks[1].Text = "changed";
+        Assert.Equal(markdown.Replace("original", "changed", StringComparison.Ordinal), MarkdownBlockParser.Write(blocks));
+    }
+
+    [Theory]
+    [InlineData("# Title", 1)]
+    [InlineData("### Third", 3)]
+    [InlineData("###### Sixth", 6)]
+    public void Parse_Heading_KeepsLevel(string markdown, int expectedLevel)
+    {
+        var blocks = MarkdownBlockParser.Parse(markdown);
+
+        var heading = Assert.Single(blocks);
+        Assert.Equal(MarkdownBlockKind.Heading, heading.Kind);
+        Assert.Equal(expectedLevel, heading.HeadingLevel);
+    }
+
+    [Fact]
+    public void Parse_TaskList_KeepsCheckedState()
+    {
+        var blocks = MarkdownBlockParser.Parse("- [x] done\n- [ ] todo");
+
+        Assert.Equal(2, blocks.Count);
+        Assert.True(blocks[0].IsTask);
+        Assert.True(blocks[0].IsChecked);
+        Assert.Equal("done", blocks[0].Text);
+        Assert.False(blocks[1].IsChecked);
+        Assert.Equal("todo", blocks[1].Text);
+    }
+
+    [Fact]
+    public void Parse_Table_KeepsHeaderAndAlignment()
+    {
+        var blocks = MarkdownBlockParser.Parse("| a | b |\n| :--- | ---: |\n| 1 | 2 |");
+
+        var table = Assert.Single(blocks);
+        Assert.Equal(MarkdownBlockKind.Table, table.Kind);
+        Assert.True(table.HasHeader);
+        Assert.Equal(2, table.Cells.Count);
+        Assert.Equal("a", table.Cells[0][0]);
+        Assert.Equal("2", table.Cells[1][1]);
+        Assert.Equal(TableCellAlignment.Left, table.Alignments[0]);
+        Assert.Equal(TableCellAlignment.Right, table.Alignments[1]);
+    }
+
+    [Fact]
+    public void Parse_FencedCode_KeepsLanguageAndBody()
+    {
+        var blocks = MarkdownBlockParser.Parse("```csharp\nvar a = 1;\n```");
+
+        var code = Assert.Single(blocks);
+        Assert.Equal(MarkdownBlockKind.Code, code.Kind);
+        Assert.Equal("csharp", code.Language);
+        Assert.Equal("var a = 1;", code.Text);
+    }
+
+    [Fact]
+    public void Parse_Quote_KeepsKind()
+    {
+        var blocks = MarkdownBlockParser.Parse("> quoted");
+
+        var quote = Assert.Single(blocks);
+        Assert.Equal(MarkdownBlockKind.Quote, quote.Kind);
+        Assert.Equal("quoted", quote.Text);
+    }
+
+    [Theory]
+    [InlineData("# Title\n\npara")]
+    [InlineData("- [x] done\n- [ ] todo")]
+    [InlineData("> quoted\n\n- item")]
+    [InlineData("| a | b |\n| --- | --- |\n| 1 | 2 |")]
+    [InlineData("```js\nlet a = 1;\n```")]
+    [InlineData("**bold** and `code`")]
+    [InlineData("---")]
+    public void ParseThenWriteThenParse_IsStable(string markdown)
+    {
+        var first = MarkdownBlockParser.Parse(markdown);
+        var written = MarkdownBlockParser.Write(first);
+        var second = MarkdownBlockParser.Parse(written);
+
+        Assert.Equal(first.Count, second.Count);
+        for (var index = 0; index < first.Count; index++)
+        {
+            Assert.Equal(first[index].Kind, second[index].Kind);
+            Assert.Equal(first[index].HeadingLevel, second[index].HeadingLevel);
+            Assert.Equal(first[index].IsTask, second[index].IsTask);
+            Assert.Equal(first[index].IsChecked, second[index].IsChecked);
+            Assert.Equal(first[index].Text, second[index].Text);
+        }
+
+        // 二次回写应完全幂等。
+        Assert.Equal(written, MarkdownBlockParser.Write(second));
+    }
+
+    [Fact]
+    public void Parse_Empty_ReturnsSingleParagraph()
+    {
+        var blocks = MarkdownBlockParser.Parse(string.Empty);
+
+        Assert.Single(blocks);
+        Assert.Equal(MarkdownBlockKind.Paragraph, blocks[0].Kind);
+    }
+
+    [Fact]
+    public void Parse_RoundTripsInlineFormatting()
+    {
+        var blocks = MarkdownBlockParser.Parse("**bold** *italic* `code` [link](https://example.com)");
+
+        var paragraph = Assert.Single(blocks);
+        Assert.Contains("**bold**", paragraph.Text, StringComparison.Ordinal);
+        Assert.Contains("*italic*", paragraph.Text, StringComparison.Ordinal);
+        Assert.Contains("`code`", paragraph.Text, StringComparison.Ordinal);
+        Assert.Contains("(https://example.com)", paragraph.Text, StringComparison.Ordinal);
+    }
+}
