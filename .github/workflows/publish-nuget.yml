@@ -1,0 +1,104 @@
+name: publish-nuget
+
+# 推送 v* 格式 tag 时触发（例如 v12.1.4.0-preview.1），也支持在 Actions 页面手动触发。
+# 包版本号以 Directory.Build.props 的 <Version> 为准（发版前先升版本），
+# tag 只负责触发与命名 GitHub Release，不一致时仅告警不阻断。
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write # 创建 GitHub Release
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # SourceLink 与 EmbedUntrackedSources 需要完整历史
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Check tag matches package version
+        shell: pwsh
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          if (-not $env:TAG.StartsWith('v')) { Write-Host "手动触发，跳过 tag 校验。"; exit 0 }
+          $tagVersion = $env:TAG.TrimStart('v')
+          $props = Get-Content -LiteralPath Directory.Build.props -Raw -Encoding UTF8
+          if ($props -match '<Version>([^<]+)</Version>') {
+            $packageVersion = $Matches[1].Trim()
+            if ($tagVersion -ne $packageVersion) {
+              Write-Host "::warning::Tag ($tagVersion) 与 Directory.Build.props 的 Version ($packageVersion) 不一致，本次将以 $packageVersion 发布。"
+            }
+          } else {
+            Write-Host "::warning::未在 Directory.Build.props 中找到 <Version>，将使用项目默认版本。"
+          }
+
+      - name: Build
+        shell: pwsh
+        run: dotnet build CodeWF.Avalonia.slnx -c Release
+
+      - name: Pack
+        shell: pwsh
+        run: |
+          # 仅打包 9 个库项目（tests / demo 不参与）
+          $projects = @(
+            'src/Controls/CodeWF.Avalonia.Controls/CodeWF.Avalonia.Controls.csproj',
+            'src/DataGrid/CodeWF.Avalonia.DataGrid/CodeWF.Avalonia.DataGrid.csproj',
+            'src/TreeDataGrid/CodeWF.Avalonia.TreeDataGrid/CodeWF.Avalonia.TreeDataGrid.csproj',
+            'src/Dock/CodeWF.Avalonia.Dock/CodeWF.Avalonia.Dock.csproj',
+            'src/Markdown/CodeWF.Avalonia.Markdown/CodeWF.Avalonia.Markdown.csproj',
+            'src/Markdown/CodeWF.Avalonia.Markdown.Lite/CodeWF.Avalonia.Markdown.Lite.csproj',
+            'src/Log/CodeWF.Avalonia.Log/CodeWF.Avalonia.Log.csproj',
+            'src/Lang/CodeWF.Avalonia.Lang/CodeWF.Avalonia.Lang.csproj',
+            'src/Lang/CodeWF.Avalonia.Lang.Generator/CodeWF.Avalonia.Lang.Generator.csproj'
+          )
+
+          foreach ($project in $projects) {
+            dotnet pack $project -c Release --no-build -o artifacts/packages
+            if ($LASTEXITCODE -ne 0) { throw "pack failed: $project" }
+          }
+
+          Get-ChildItem artifacts/packages | ForEach-Object { Write-Host $_.Name }
+
+      - name: Push to nuget.org
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:NUGET_API_KEY)) {
+            throw "未配置 org 级 secret：NUGET_API_KEY"
+          }
+
+          # 主包：失败即中止
+          Get-ChildItem artifacts/packages -Filter *.nupkg | ForEach-Object {
+            dotnet nuget push $_.FullName `
+              --api-key $env:NUGET_API_KEY `
+              --source https://api.nuget.org/v3/index.json `
+              --skip-duplicate
+            if ($LASTEXITCODE -ne 0) { throw "push failed: $($_.Name)" }
+          }
+
+          # 符号包：不含 pdb 的 snupkg 会被 nuget.org 拒绝，仅告警不中止
+          Get-ChildItem artifacts/packages -Filter *.snupkg | ForEach-Object {
+            dotnet nuget push $_.FullName `
+              --api-key $env:NUGET_API_KEY `
+              --source https://api.nuget.org/v3/index.json `
+              --skip-duplicate
+            if ($LASTEXITCODE -ne 0) { Write-Host "warning: symbol package push failed: $($_.Name)" }
+          }
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true

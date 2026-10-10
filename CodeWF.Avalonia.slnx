@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Controls/CodeWF.Avalonia.Controls/CodeWF.Avalonia.Controls.csproj" />
+  </Folder>
+  <Folder Name="/Solution Files/">
+    <File Path=".gitignore" />
+    <File Path="UpdateLog.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="LICENSE" />
+    <File Path="pack.bat" />
+    <File Path="README.md" />
+  </Folder>
+</Solution>

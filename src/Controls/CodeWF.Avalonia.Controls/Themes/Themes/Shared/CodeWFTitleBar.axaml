@@ -1,0 +1,7 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StaticResource x:Key="CodeWFTitleBarMinHeight" ResourceKey="SemiHeightControlDefault" />
+    <Thickness x:Key="CodeWFTitleBarLeftContentMargin">8,0,10,0</Thickness>
+    <StaticResource x:Key="CodeWFTitleBarIconSize" ResourceKey="SemiWidthIconMedium" />
+    <StaticResource x:Key="CodeWFTitleBarDefaultContentSpacing" ResourceKey="SemiSpacingTight" />
+</ResourceDictionary>

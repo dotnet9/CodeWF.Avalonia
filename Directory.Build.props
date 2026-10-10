@@ -1,0 +1,49 @@
+<Project>
+  <PropertyGroup>
+    <!-- 版本：前三位跟随 Avalonia 版本（当前 12.1.4），第 4 位为我们自己的修订 -->
+    <Version>12.1.4.0-preview.1</Version>
+    <Authors>沙漠尽头的狼</Authors>
+    <Company>https://codewf.com</Company>
+    <Copyright>Copyright © https://codewf.com</Copyright>
+
+    <!-- 目标框架：全线 net10.0（源生成器等工具类项目自行覆写） -->
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latestMajor</LangVersion>
+    <Nullable>enable</Nullable>
+    <Deterministic>true</Deterministic>
+
+    <!-- 打包元数据（包项目共享；各 csproj 仅维护 Description 与依赖） -->
+    <IsPackable>false</IsPackable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>$(AssemblyName)</PackageId>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/dotnet9/CodeWF.Avalonia</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>avalonia;ui;controls;codewf</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/dotnet9/CodeWF.Avalonia</RepositoryUrl>
+    <ApplicationIcon>$(MSBuildThisFileDirectory)logo.ico</ApplicationIcon>
+
+    <!-- 源链接与符号 -->
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <DebugType>portable</DebugType>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IncludeSymbols>true</IncludeSymbols>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- 产物输出 -->
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts\</ArtifactsPath>
+    <PackageOutputPath>$(ArtifactsPath)packages\</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+    <!-- 包图标与包内 README：所有包共享仓库根资源 -->
+    <None Include="$(MSBuildThisFileDirectory)logo.png" Pack="true" PackagePath="" Link="logo.png" />
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>

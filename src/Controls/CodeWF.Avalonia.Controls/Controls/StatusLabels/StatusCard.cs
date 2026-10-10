@@ -1,0 +1,129 @@
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
+using Avalonia.Controls.Primitives;
+using CodeWF.Avalonia.Controls.Models;
+
+namespace CodeWF.Avalonia.Controls.Controls;
+
+[PseudoClasses(
+    ":debug",
+    ":info",
+    ":warn",
+    ":error",
+    ":fatal")]
+public class StatusCard : TemplatedControl
+{
+    public static readonly StyledProperty<string?> IconPathProperty =
+        AvaloniaProperty.Register<StatusCard, string?>(nameof(IconPath), string.Empty);
+
+    public static readonly StyledProperty<int> IconWidthProperty =
+        AvaloniaProperty.Register<StatusCard, int>(nameof(IconWidth), 32);
+
+    public static readonly StyledProperty<Thickness> IconMarginProperty =
+        AvaloniaProperty.Register<StatusCard, Thickness>(nameof(IconMargin), new Thickness(8, 12));
+
+    public static readonly StyledProperty<string?> TopTextProperty =
+        AvaloniaProperty.Register<StatusCard, string?>(nameof(TopText), nameof(TopText));
+
+    public static readonly StyledProperty<int> TopTextFontSizeProperty =
+        AvaloniaProperty.Register<StatusCard, int>(nameof(TopTextFontSize), 12);
+
+    public static readonly StyledProperty<Thickness> TopTextMarginProperty =
+        AvaloniaProperty.Register<StatusCard, Thickness>(nameof(TopTextMargin), new Thickness(8, 8, 8, 4));
+
+    public static readonly StyledProperty<string?> BottomTextProperty =
+        AvaloniaProperty.Register<StatusCard, string?>(nameof(BottomText), nameof(BottomText));
+
+    public static readonly StyledProperty<int> BottomTextFontSizeProperty =
+        AvaloniaProperty.Register<StatusCard, int>(nameof(BottomTextFontSize), 16);
+
+    public static readonly StyledProperty<Thickness> BottomTextMarginProperty =
+        AvaloniaProperty.Register<StatusCard, Thickness>(nameof(BottomTextMargin), new Thickness(8, 4, 8, 8));
+
+    public static readonly StyledProperty<StatusLabelKind?> KindProperty =
+        AvaloniaProperty.Register<StatusCard, StatusLabelKind?>(nameof(Kind), StatusLabelKind.Debug);
+
+    public StatusCard()
+    {
+        UpdateKindPseudoClasses();
+    }
+
+    public string? IconPath
+    {
+        get => GetValue(IconPathProperty);
+        set => SetValue(IconPathProperty, value);
+    }
+
+    public int IconWidth
+    {
+        get => GetValue(IconWidthProperty);
+        set => SetValue(IconWidthProperty, value);
+    }
+
+    public Thickness IconMargin
+    {
+        get => GetValue(IconMarginProperty);
+        set => SetValue(IconMarginProperty, value);
+    }
+
+    public string? TopText
+    {
+        get => GetValue(TopTextProperty);
+        set => SetValue(TopTextProperty, value);
+    }
+
+    public int TopTextFontSize
+    {
+        get => GetValue(TopTextFontSizeProperty);
+        set => SetValue(TopTextFontSizeProperty, value);
+    }
+
+    public Thickness TopTextMargin
+    {
+        get => GetValue(TopTextMarginProperty);
+        set => SetValue(TopTextMarginProperty, value);
+    }
+
+    public string? BottomText
+    {
+        get => GetValue(BottomTextProperty);
+        set => SetValue(BottomTextProperty, value);
+    }
+
+    public int BottomTextFontSize
+    {
+        get => GetValue(BottomTextFontSizeProperty);
+        set => SetValue(BottomTextFontSizeProperty, value);
+    }
+
+    public Thickness BottomTextMargin
+    {
+        get => GetValue(BottomTextMarginProperty);
+        set => SetValue(BottomTextMarginProperty, value);
+    }
+
+    public StatusLabelKind? Kind
+    {
+        get => GetValue(KindProperty);
+        set => SetValue(KindProperty, value);
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == KindProperty) UpdateKindPseudoClasses();
+    }
+
+    private void UpdateKindPseudoClasses()
+    {
+        var kind = Kind ?? StatusLabelKind.Debug;
+
+        PseudoClasses.Set(":debug", kind == StatusLabelKind.Debug);
+        PseudoClasses.Set(":info", kind == StatusLabelKind.Info);
+        PseudoClasses.Set(":warn", kind == StatusLabelKind.Warn);
+        PseudoClasses.Set(":error", kind == StatusLabelKind.Error);
+        PseudoClasses.Set(":fatal", kind == StatusLabelKind.Fatal);
+    }
+}

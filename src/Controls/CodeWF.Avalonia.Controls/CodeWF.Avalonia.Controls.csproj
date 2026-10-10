@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <Description>Avalonia 基础自定义控件库：控件 API、状态模型、绘制逻辑、标记扩展与转换器，内置 Semi 主题资源（引导、传输列表、状态徽标、标题栏等）。Core custom control library for Avalonia with built-in Semi theme resources.</Description>
+    <PackageTags>avalonia;ui;controls;themes;codewf</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Semi.Avalonia" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Themes\Assets\**" />
+    <AvaloniaResource Include="..\..\..\logo.ico" Link="Themes\Assets\logo.ico" />
+    <AvaloniaResource Include="..\..\..\logo.png" Link="Themes\Assets\logo.png" />
+  </ItemGroup>
+
+</Project>

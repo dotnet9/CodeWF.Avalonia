@@ -1,0 +1,11 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:codewf="https://codewf.com">
+    <codewf:TrapezoidShapedTabItemPaddingConverter x:Key="TrapezoidShapedTabItemPaddingConverter" />
+    <codewf:CornerRadiusInsetConverter x:Key="CornerRadiusInsetConverter" />
+    <codewf:StatusBadgeLeftTextBorderCornerRadiusConverter x:Key="StatusBadgeLeftTextBorderCornerRadiusConverter" />
+    <codewf:StatusCardKindForegroundConverter x:Key="StatusCardKindForegroundConverter" />
+    <codewf:StatusLabelKindBackgroundConverter x:Key="StatusLabelKindBackgroundConverter" />
+    <codewf:String2ImageConverter x:Key="String2ImageConverter" />
+    <codewf:WindowIconToImageConverter x:Key="WindowIconToImageConverter" />
+</ResourceDictionary>

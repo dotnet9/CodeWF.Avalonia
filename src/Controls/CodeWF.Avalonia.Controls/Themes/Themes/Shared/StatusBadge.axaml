@@ -1,0 +1,5 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StaticResource x:Key="StatusBadgeDefaultCornerRadius" ResourceKey="SemiBorderRadiusMedium" />
+    <Thickness x:Key="StatusBadgeDefaultPadding">4,1</Thickness>
+</ResourceDictionary>

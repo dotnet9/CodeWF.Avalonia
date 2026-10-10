@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    name: 构建与测试
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # SourceLink 与 EmbedUntrackedSources 需要完整历史
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: 还原
+        run: dotnet restore CodeWF.Avalonia.slnx
+
+      - name: 构建
+        run: dotnet build CodeWF.Avalonia.slnx -c Release --no-restore
+
+      - name: 测试
+        run: dotnet test CodeWF.Avalonia.slnx -c Release --no-build
+
+  aot-smoke:
+    name: AOT 冒烟（Demo 发布与运行）
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: AOT 发布 Demo
+        run: dotnet publish demo/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo.csproj -c Release -r win-x64 -p:PublishAot=true -o artifacts/aot-smoke
+
+      - name: 运行冒烟演示
+        run: artifacts\aot-smoke\CodeWF.Avalonia.Demo.exe --smoke

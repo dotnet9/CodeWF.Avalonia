@@ -1,0 +1,143 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:codewf="https://codewf.com">
+    <Design.PreviewWith>
+        <codewf:Transfer Width="800" Height="450" />
+    </Design.PreviewWith>
+
+    <ControlTheme x:Key="{x:Type codewf:Transfer}" TargetType="codewf:Transfer">
+        <ControlTheme.Resources>
+            <!-- 移动按钮资源 -->
+            <x:Double x:Key="TransferActionButtonSize">46</x:Double>
+            <ControlTheme x:Key="TransferActionButton" TargetType="Button">
+                <Setter Property="Width" Value="{StaticResource TransferActionButtonSize}" />
+                <Setter Property="Height" Value="{StaticResource TransferActionButtonSize}" />
+                <Setter Property="MinWidth" Value="{StaticResource TransferActionButtonSize}" />
+                <Setter Property="MinHeight" Value="{StaticResource TransferActionButtonSize}" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="CornerRadius" Value="{StaticResource SemiBorderRadiusFull}" />
+                <Setter Property="Foreground" Value="{DynamicResource SemiColorText2}" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                <Setter Property="Template">
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                            <ContentPresenter
+                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{DynamicResource SemiColorPrimaryLight}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource SemiColorPrimary}" />
+                    <Setter Property="Foreground" Value="{DynamicResource SemiColorPrimary}" />
+                </Style>
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{DynamicResource SemiColorPrimaryLightActive}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource SemiColorPrimaryActive}" />
+                    <Setter Property="Foreground" Value="{DynamicResource SemiColorPrimaryActive}" />
+                </Style>
+                <Style Selector="^:disabled">
+                    <Setter Property="Opacity" Value="0.45" />
+                </Style>
+            </ControlTheme>
+        </ControlTheme.Resources>
+        <Setter Property="Template">
+            <ControlTemplate TargetType="codewf:Transfer">
+                <Grid ColumnDefinitions="*,92,*" ColumnSpacing="18">
+                    <!-- 左侧列表 -->
+                    <Grid RowDefinitions="Auto,*" RowSpacing="10">
+                        <TextBlock
+                            FontSize="{DynamicResource SemiFontSizeHeader6}"
+                            FontWeight="{DynamicResource SemiFontWeightBold}"
+                            Foreground="{DynamicResource SemiColorText0}"
+                            Text="{TemplateBinding LeftHeader}" />
+                        <codewf:SearchListBox
+                            Name="PART_LeftSearchListBox"
+                            Grid.Row="1"
+                            ItemTemplate="{TemplateBinding ItemTemplate}"
+                            ItemsSource="{TemplateBinding LeftItemsSource}" />
+                    </Grid>
+
+                    <!-- 中间分隔线 -->
+                    <GridSplitter
+                        Grid.Column="1"
+                        Width="10"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Stretch"
+                        Background="Transparent">
+                        <GridSplitter.Template>
+                            <ControlTemplate TargetType="GridSplitter">
+                                <Grid Background="{TemplateBinding Background}">
+                                    <Border
+                                        Width="1"
+                                        HorizontalAlignment="Center"
+                                        Background="{DynamicResource SemiColorBorder}" />
+                                    <Border
+                                        Width="4"
+                                        Height="54"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Background="{DynamicResource SemiColorFill1}"
+                                        CornerRadius="{StaticResource SemiBorderRadiusFull}" />
+                                </Grid>
+                            </ControlTemplate>
+                        </GridSplitter.Template>
+                    </GridSplitter>
+
+                    <!-- 中间移动按钮 -->
+                    <StackPanel
+                        Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="34">
+                        <Button
+                            Name="PART_MoveLeftToRightButton"
+                            Theme="{StaticResource TransferActionButton}">
+                            <Image
+                                Width="{StaticResource TransferActionButtonSize}"
+                                Height="{StaticResource TransferActionButtonSize}"
+                                Source="avares://CodeWF.Avalonia.Controls.Themes/Assets/btn-arrow-r.png"
+                                Stretch="Fill" />
+                        </Button>
+                        <Button
+                            Name="PART_MoveRightToLeftButton"
+                            Theme="{StaticResource TransferActionButton}">
+                            <Image
+                                Width="{StaticResource TransferActionButtonSize}"
+                                Height="{StaticResource TransferActionButtonSize}"
+                                Source="avares://CodeWF.Avalonia.Controls.Themes/Assets/btn-arrow-l.png"
+                                Stretch="Fill" />
+                        </Button>
+                    </StackPanel>
+
+                    <!-- 右侧列表 -->
+                    <Grid Grid.Column="2" RowDefinitions="Auto,*" RowSpacing="10">
+                        <TextBlock
+                            FontSize="{DynamicResource SemiFontSizeHeader6}"
+                            FontWeight="{DynamicResource SemiFontWeightBold}"
+                            Foreground="{DynamicResource SemiColorText0}"
+                            Text="{TemplateBinding RightHeader}" />
+                        <codewf:SearchListBox
+                            Name="PART_RightSearchListBox"
+                            Grid.Row="1"
+                            ItemTemplate="{TemplateBinding ItemTemplate}"
+                            ItemsSource="{TemplateBinding RightItemsSource}" />
+                    </Grid>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>
