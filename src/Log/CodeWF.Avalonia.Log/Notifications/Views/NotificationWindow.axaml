@@ -1,0 +1,360 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:behaviors="using:CodeWF.Avalonia.Log.Notifications.Behaviors"
+        xmlns:viewModels="using:CodeWF.Avalonia.Log.Notifications.ViewModels"
+        x:Class="CodeWF.Avalonia.Log.Notifications.Views.NotificationWindow"
+        x:DataType="viewModels:NotificationWindowViewModel"
+        Width="{DynamicResource CodeWFLogDesktopNotificationWindowWidth}"
+        MinWidth="376"
+        MinHeight="{DynamicResource CodeWFLogDesktopNotificationWindowMinHeight}"
+        MaxHeight="{DynamicResource CodeWFLogDesktopNotificationWindowMaxHeight}"
+        SizeToContent="Height"
+        Title="{Binding ApplicationName}"
+        Opacity="{Binding WindowOpacity}"
+        Background="Transparent"
+        TransparencyLevelHint="Transparent"
+        WindowDecorations="None"
+        CanResize="False"
+        ShowActivated="False"
+        ShowInTaskbar="False"
+        Topmost="True"
+        UseLayoutRounding="True"
+        WindowStartupLocation="Manual">
+
+    <Interaction.Behaviors>
+        <behaviors:NotificationWindowInteractionBehavior />
+        <behaviors:NotificationWindowPlacementBehavior />
+    </Interaction.Behaviors>
+
+    <Window.Styles>
+        <Style Selector="Button.titleClose">
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Height" Value="16" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="{DynamicResource CodeWFLogDesktopNotificationCloseForeground}" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.titleClose:pointerover">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationClosePointerOverBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource CodeWFLogDesktopNotificationClosePointerOverForeground}" />
+        </Style>
+
+        <Style Selector="Button.navigation">
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationNavigationBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CodeWFLogDesktopNotificationNavigationBorderBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="{DynamicResource CodeWFLogDesktopNotificationNavigationForeground}" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.navigation:pointerover">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationNavigationPointerOverBackground}" />
+        </Style>
+        <Style Selector="Button.footerButton">
+            <Setter Property="Height" Value="32" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.openLogFolder">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationOpenLogFolderBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CodeWFLogDesktopNotificationOpenLogFolderBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource CodeWFLogDesktopNotificationOpenLogFolderForeground}" />
+        </Style>
+        <Style Selector="Button.openLogFolder:pointerover">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationOpenLogFolderPointerOverBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CodeWFLogDesktopNotificationOpenLogFolderPointerOverBorderBrush}" />
+        </Style>
+        <Style Selector="Button.openLogFolder:pressed">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationOpenLogFolderPressedBackground}" />
+        </Style>
+        <Style Selector="Button.confirm">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationConfirmBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CodeWFLogDesktopNotificationConfirmBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource CodeWFLogDesktopNotificationConfirmForeground}" />
+        </Style>
+        <Style Selector="Button.confirm:pointerover">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationConfirmPointerOverBackground}" />
+        </Style>
+        <Style Selector="Button.confirm:pressed">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationConfirmPressedBackground}" />
+        </Style>
+        <!-- Fluent 与 Semi 的按钮模板会覆盖交互态背景，在模板内容层同步资源值。 -->
+        <Style Selector="Button.openLogFolder /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationOpenLogFolderBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource CodeWFLogDesktopNotificationOpenLogFolderForeground}" />
+        </Style>
+        <Style Selector="Button.openLogFolder:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationOpenLogFolderPointerOverBackground}" />
+        </Style>
+        <Style Selector="Button.openLogFolder:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationOpenLogFolderPressedBackground}" />
+        </Style>
+        <Style Selector="Button.confirm /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationConfirmBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource CodeWFLogDesktopNotificationConfirmForeground}" />
+        </Style>
+        <Style Selector="Button.confirm:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationConfirmPointerOverBackground}" />
+        </Style>
+        <Style Selector="Button.confirm:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationConfirmPressedBackground}" />
+        </Style>
+
+        <Style Selector="Border.levelBackground.debug">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationDebugBackground}" />
+        </Style>
+        <Style Selector="Border.levelBackground.info">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationInfoBackground}" />
+        </Style>
+        <Style Selector="Border.levelBackground.warn">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationWarnBackground}" />
+        </Style>
+        <Style Selector="Border.levelBackground.error">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationErrorBackground}" />
+        </Style>
+        <Style Selector="Border.levelBackground.fatal">
+            <Setter Property="Background" Value="{DynamicResource CodeWFLogDesktopNotificationFatalBackground}" />
+        </Style>
+
+        <Style Selector="TextBlock.levelText.debug">
+            <Setter Property="Foreground" Value="{DynamicResource CodeWFLogDesktopNotificationDebugForeground}" />
+        </Style>
+        <Style Selector="TextBlock.levelText.info">
+            <Setter Property="Foreground" Value="{DynamicResource CodeWFLogDesktopNotificationInfoForeground}" />
+        </Style>
+        <Style Selector="TextBlock.levelText.warn">
+            <Setter Property="Foreground" Value="{DynamicResource CodeWFLogDesktopNotificationWarnForeground}" />
+        </Style>
+        <Style Selector="TextBlock.levelText.error">
+            <Setter Property="Foreground" Value="{DynamicResource CodeWFLogDesktopNotificationErrorForeground}" />
+        </Style>
+        <Style Selector="TextBlock.levelText.fatal">
+            <Setter Property="Foreground" Value="{DynamicResource CodeWFLogDesktopNotificationFatalForeground}" />
+        </Style>
+
+        <Style Selector="Image.levelIcon">
+            <Setter Property="Source" Value="avares://CodeWF.Avalonia.Log/Assets/Notifications/error.png" />
+        </Style>
+        <Style Selector="Image.levelIcon.fatal">
+            <Setter Property="Source" Value="avares://CodeWF.Avalonia.Log/Assets/Notifications/critical.png" />
+        </Style>
+    </Window.Styles>
+
+    <Border Margin="{DynamicResource CodeWFLogDesktopNotificationWindowMargin}"
+            MinHeight="{Binding MinimumCardHeight}"
+            MaxHeight="420"
+            Background="{DynamicResource CodeWFLogDesktopNotificationWindowBackground}"
+            BorderBrush="{DynamicResource CodeWFLogDesktopNotificationWindowBorderBrush}"
+            BorderThickness="{DynamicResource CodeWFLogDesktopNotificationWindowBorderThickness}"
+            CornerRadius="{DynamicResource CodeWFLogDesktopNotificationWindowCornerRadius}"
+            BoxShadow="{DynamicResource CodeWFLogDesktopNotificationWindowBoxShadow}"
+            ClipToBounds="True">
+        <Interaction.Behaviors>
+            <behaviors:NotificationAttentionBehavior PulseTarget="{Binding #LevelBadge}" />
+        </Interaction.Behaviors>
+
+        <Grid RowDefinitions="40,*,Auto">
+            <Border Grid.Row="0"
+                    Background="{DynamicResource CodeWFLogDesktopNotificationTitleBarBackground}"
+                    BorderBrush="{DynamicResource CodeWFLogDesktopNotificationTitleBarBorderBrush}"
+                    BorderThickness="{DynamicResource CodeWFLogDesktopNotificationTitleBarBorderThickness}"
+                    CornerRadius="{DynamicResource CodeWFLogDesktopNotificationTitleBarCornerRadius}"
+                    Padding="20 0">
+                <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                    <TextBlock VerticalAlignment="Center"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               LineHeight="20"
+                               Foreground="{DynamicResource CodeWFLogDesktopNotificationTitleForeground}"
+                               Text="{Binding ApplicationName}"
+                               TextTrimming="CharacterEllipsis" />
+
+                    <Grid Grid.Column="1"
+                          Margin="8 0 0 0"
+                          Height="16"
+                          VerticalAlignment="Center"
+                          ColumnDefinitions="24,73"
+                          IsVisible="{Binding IsNewLogVisible}">
+                        <Border Background="{DynamicResource CodeWFLogDesktopNotificationNewLogBackground}"
+                                CornerRadius="2 0 0 2">
+                            <Image Width="16" Height="16"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Source="avares://CodeWF.Avalonia.Log/Assets/Notifications/new-message.png" />
+                        </Border>
+                        <Border Grid.Column="1"
+                                Width="73"
+                                Height="16"
+                                Background="{DynamicResource CodeWFLogDesktopNotificationNewLogLabelBackground}"
+                                BorderBrush="{DynamicResource CodeWFLogDesktopNotificationNewLogLabelBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="0 2 2 0">
+                            <TextBlock HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Center"
+                                       FontSize="12"
+                                       LineHeight="14"
+                                       Foreground="{DynamicResource CodeWFLogDesktopNotificationNewLogForeground}"
+                                       Text="{Binding NewLogText}" />
+                        </Border>
+                    </Grid>
+
+                    <TextBlock Grid.Column="2"
+                               Margin="16 0 0 0"
+                               VerticalAlignment="Center"
+                               FontSize="12"
+                               LineHeight="12"
+                               Foreground="{DynamicResource CodeWFLogDesktopNotificationMutedForeground}"
+                               IsVisible="{Binding IsCountdownVisible}"
+                               Text="{Binding CountdownText}" />
+                    <Button Grid.Column="3"
+                            Margin="16 0 0 0"
+                            Classes="titleClose"
+                            Command="{Binding CloseCommand}">
+                        <Image Width="16" Height="16"
+                               Source="avares://CodeWF.Avalonia.Log/Assets/Notifications/close.png" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1">
+                <Border x:Name="LevelBackground"
+                        Classes="levelBackground error"
+                        Height="{DynamicResource CodeWFLogDesktopNotificationLevelSectionHeight}"
+                        VerticalAlignment="Top" />
+
+                <Grid Margin="20 12 20 12">
+                    <Grid IsVisible="{Binding IsDefaultContentVisible}">
+                        <StackPanel>
+                            <Border x:Name="LevelBadge"
+                                    Width="32"
+                                    Height="32"
+                                    HorizontalAlignment="Center"
+                                    Background="Transparent"
+                                    CornerRadius="16">
+                                <Interaction.Behaviors>
+                                    <behaviors:NotificationLevelVisualBehavior
+                                        BackgroundTarget="{Binding #LevelBackground}"
+                                        IconTarget="{Binding #LevelIcon}"
+                                        TextTarget="{Binding #LevelText}" />
+                                </Interaction.Behaviors>
+                                <Image x:Name="LevelIcon"
+                                       Classes="levelIcon error"
+                                       Width="32"
+                                       Height="32"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                            </Border>
+
+                            <TextBlock x:Name="LevelText"
+                                       Classes="levelText error"
+                                       Margin="0 4 0 0"
+                                       HorizontalAlignment="Center"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       LineHeight="20"
+                                       Text="{Binding LevelText}" />
+
+                            <ScrollViewer Margin="0 16 0 0"
+                                          MaxHeight="{DynamicResource CodeWFLogDesktopNotificationContentMaxHeight}"
+                                          HorizontalScrollBarVisibility="Disabled"
+                                          VerticalScrollBarVisibility="Auto">
+                                <SelectableTextBlock Text="{Binding LogContent}"
+                                                     TextWrapping="Wrap"
+                                                     FontSize="14"
+                                                     LineHeight="22"
+                                                     Foreground="{DynamicResource CodeWFLogDesktopNotificationContentForeground}" />
+                            </ScrollViewer>
+
+                            <TextBlock Margin="0 8 0 0"
+                                       HorizontalAlignment="Left"
+                                       FontSize="12"
+                                       LineHeight="12"
+                                       Foreground="{DynamicResource CodeWFLogDesktopNotificationMutedForeground}"
+                                       Text="{Binding RecordTimeText}" />
+
+                            <Grid Margin="0 12 0 0"
+                                  Height="28"
+                                  HorizontalAlignment="Left"
+                                  ColumnDefinitions="28,8,Auto,8,28"
+                                  IsVisible="{Binding IsNavigationVisible}">
+                                <Button Classes="navigation previous"
+                                        Command="{Binding PreviousCommand}"
+                                        IsHitTestVisible="{Binding CanPrevious}">
+                                    <Grid>
+                                        <Image Classes="navigationEnabled"
+                                               Width="28" Height="28"
+                                               IsVisible="{Binding CanPrevious}"
+                                               Source="avares://CodeWF.Avalonia.Log/Assets/Notifications/navigation-enabled-left.png" />
+                                        <Image Classes="navigationDisabled"
+                                               Width="28" Height="28"
+                                               IsVisible="{Binding IsPreviousDisabled}"
+                                               Source="avares://CodeWF.Avalonia.Log/Assets/Notifications/navigation-disabled.png" />
+                                    </Grid>
+                                </Button>
+                                <TextBlock Grid.Column="2"
+                                           MinWidth="24"
+                                           Height="12"
+                                           VerticalAlignment="Center"
+                                           FontSize="12"
+                                           LineHeight="12"
+                                           Foreground="{DynamicResource CodeWFLogDesktopNotificationMutedForeground}"
+                                           Text="{Binding CountText}"
+                                           TextAlignment="Center" />
+                                <Button Grid.Column="4"
+                                        Classes="navigation next"
+                                        Command="{Binding NextCommand}"
+                                        IsHitTestVisible="{Binding CanNext}">
+                                    <Grid>
+                                        <Image Classes="navigationEnabled"
+                                               Width="28" Height="28"
+                                               IsVisible="{Binding CanNext}"
+                                               Source="avares://CodeWF.Avalonia.Log/Assets/Notifications/navigation-enabled.png" />
+                                        <Image Classes="navigationDisabled"
+                                               Width="28" Height="28"
+                                               IsVisible="{Binding IsNextDisabled}"
+                                               Source="avares://CodeWF.Avalonia.Log/Assets/Notifications/navigation-disabled-right.png" />
+                                    </Grid>
+                                </Button>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+
+                    <ContentControl Content="{Binding SelectedLog}"
+                                    ContentTemplate="{Binding ContentTemplate}"
+                                    IsVisible="{Binding IsCustomContentVisible}" />
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="2"
+                  Margin="20 0 20 20"
+                  Height="32"
+                  ColumnDefinitions="120,16,184">
+                <Button Classes="footerButton openLogFolder"
+                        Width="120"
+                        Content="{Binding OpenLogFolderButtonText}"
+                        Command="{Binding OpenLogFolderCommand}" />
+                <Button Grid.Column="2"
+                        Classes="footerButton confirm"
+                        Width="184"
+                        Content="确定"
+                        Command="{Binding CloseCommand}" />
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
