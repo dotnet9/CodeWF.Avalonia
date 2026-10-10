@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- CodeWF.Avalonia · 居中字母 A：圆头笔画 + 横杠下方三枚方块（Controls/DataGrid/Dock 三条产品线） -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6C5CE7"/>
+      <stop offset="1" stop-color="#0A84E3"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- 居中字母 A（垂直跨 116–396，中心 256） -->
+  <g stroke="#FFFFFF" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M160 396 L256 116 L352 396"/>
+    <line x1="196" y1="300" x2="316" y2="300"/>
+  </g>
+
+  <!-- 计数空间内三枚产品线方块（水平居中 226/256/286） -->
+  <rect x="214" y="336" width="24" height="24" rx="6" fill="#FFFFFF" opacity="0.45"/>
+  <rect x="244" y="336" width="24" height="24" rx="6" fill="#FFFFFF" opacity="0.70"/>
+  <rect x="274" y="336" width="24" height="24" rx="6" fill="#FFFFFF" opacity="1.00"/>
+</svg>
