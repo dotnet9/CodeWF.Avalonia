@@ -1,0 +1,17 @@
+<Styles
+    x:Class="CodeWF.Avalonia.Dock.Themes.DockSemiTheme"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:fluent="clr-namespace:Dock.Avalonia.Themes.Fluent;assembly=Dock.Avalonia.Themes.Fluent">
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="Locales/en-us.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+    <fluent:DockFluentTheme />
+    <StyleInclude Source="Fluent/CodeWF.axaml" />
+    <StyleInclude Source="Fluent/ToolTitleBar.axaml" />
+    <StyleInclude Source="Fluent/DockPanelBorder.axaml" />
+</Styles>

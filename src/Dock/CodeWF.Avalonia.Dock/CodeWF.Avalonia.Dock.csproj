@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <Description>基于开源 Dock.Avalonia 的布局扩展控件与 Semi 风格主题：GridDock 布局适配、梯形页签与中英文本地化资源。Dock layout extensions with a Semi-styled theme on top of the open-source Dock.Avalonia.</Description>
+    <PackageTags>avalonia;dock;layout;semi;codewf</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dock.Avalonia" />
+    <PackageReference Include="Dock.Avalonia.Themes.Fluent" />
+    <PackageReference Include="Semi.Avalonia" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Themes\Assets\**" />
+  </ItemGroup>
+
+</Project>

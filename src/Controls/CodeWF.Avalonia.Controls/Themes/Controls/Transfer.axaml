@@ -109,7 +109,7 @@
                             <Image
                                 Width="{StaticResource TransferActionButtonSize}"
                                 Height="{StaticResource TransferActionButtonSize}"
-                                Source="avares://CodeWF.Avalonia.Controls.Themes/Assets/btn-arrow-r.png"
+                                Source="avares://CodeWF.Avalonia.Controls/Themes/Assets/btn-arrow-r.png"
                                 Stretch="Fill" />
                         </Button>
                         <Button
@@ -118,7 +118,7 @@
                             <Image
                                 Width="{StaticResource TransferActionButtonSize}"
                                 Height="{StaticResource TransferActionButtonSize}"
-                                Source="avares://CodeWF.Avalonia.Controls.Themes/Assets/btn-arrow-l.png"
+                                Source="avares://CodeWF.Avalonia.Controls/Themes/Assets/btn-arrow-l.png"
                                 Stretch="Fill" />
                         </Button>
                     </StackPanel>

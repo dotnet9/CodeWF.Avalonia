@@ -1,0 +1,49 @@
+<ResourceDictionary x:Class="CodeWF.Avalonia.Dock.Themes.Locales.zh_cn"
+                    xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- 拖放预览 -->
+    <x:String x:Key="DragPreviewControlDockString">停靠</x:String>
+    <x:String x:Key="DragPreviewControlFloatString">浮动</x:String>
+    <x:String x:Key="DragPreviewControlNoneString">无操作</x:String>
+
+    <!-- Document 标签右键菜单 -->
+    <x:String x:Key="DocumentTabStripItemFloatString">浮动</x:String>
+    <x:String x:Key="DocumentTabStripItemFloatAllString">全部浮动</x:String>
+    <x:String x:Key="DocumentTabStripItemCloseString">关闭</x:String>
+    <x:String x:Key="DocumentTabStripItemCloseOtherTabsString">关闭其他标签</x:String>
+    <x:String x:Key="DocumentTabStripItemCloseAllTabsString">关闭全部标签</x:String>
+    <x:String x:Key="DocumentTabStripItemCloseTabsLeftString">关闭左侧标签</x:String>
+    <x:String x:Key="DocumentTabStripItemCloseTabsRightString">关闭右侧标签</x:String>
+    <x:String x:Key="DocumentTabStripItemCloseTabsAboveString">关闭上方标签</x:String>
+    <x:String x:Key="DocumentTabStripItemCloseTabsBelowString">关闭下方标签</x:String>
+    <x:String x:Key="DocumentTabStripItemNewHorizontalDockString">新建水平文档组</x:String>
+    <x:String x:Key="DocumentTabStripItemNewVerticalDockString">新建垂直文档组</x:String>
+    <x:String x:Key="DocumentTabStripItemTabLayoutString">标签位置</x:String>
+    <x:String x:Key="DocumentTabStripItemTabLayoutLeftString">置于左侧</x:String>
+    <x:String x:Key="DocumentTabStripItemTabLayoutTopString">置于顶部</x:String>
+    <x:String x:Key="DocumentTabStripItemTabLayoutRightString">置于右侧</x:String>
+    <x:String x:Key="DocumentTabStripItemLayoutModeString">文档布局</x:String>
+    <x:String x:Key="DocumentTabStripItemLayoutModeTabbedString">标签页</x:String>
+    <x:String x:Key="DocumentTabStripItemLayoutModeMdiString">多文档窗口（MDI）</x:String>
+
+    <!-- 自动隐藏 Tool 右键菜单 -->
+    <x:String x:Key="ToolPinItemControlFloatString">浮动</x:String>
+    <x:String x:Key="ToolPinItemControlShowString">显示</x:String>
+    <x:String x:Key="ToolPinItemControlDockAsDocumentString">作为文档标签停靠</x:String>
+    <x:String x:Key="ToolPinItemControlCloseString">关闭</x:String>
+
+    <!-- Tool 标题栏右键菜单 -->
+    <x:String x:Key="ToolChromeControlFloatString">浮动</x:String>
+    <x:String x:Key="ToolChromeControlDockString">固定</x:String>
+    <x:String x:Key="ToolChromeControlAutoHideString">自动隐藏</x:String>
+    <x:String x:Key="ToolChromeControlDockAsDocumentString">作为文档标签停靠</x:String>
+    <x:String x:Key="ToolChromeControlCloseString">关闭</x:String>
+
+    <!-- Tool 标签右键菜单 -->
+    <x:String x:Key="ToolTabStripItemFloatString">浮动</x:String>
+    <x:String x:Key="ToolTabStripItemFloatAllString">全部浮动</x:String>
+    <x:String x:Key="ToolTabStripItemDockString">固定</x:String>
+    <x:String x:Key="ToolTabStripItemAutoHideString">自动隐藏</x:String>
+    <x:String x:Key="ToolTabStripItemDockAsDocumentString">作为文档标签停靠</x:String>
+    <x:String x:Key="ToolTabStripItemCloseString">关闭</x:String>
+</ResourceDictionary>

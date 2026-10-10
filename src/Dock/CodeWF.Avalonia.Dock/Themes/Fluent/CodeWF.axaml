@@ -1,0 +1,247 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:semi="https://irihi.tech/semi">
+    <!-- Dock's ContentPresenters otherwise keep their default left alignment.
+         Stretch the layout children so GridDock's star column receives the full
+         RootDock width, including space released by hidden side Tools. -->
+    <Style Selector="ItemsControl.ProportionalStackPanel > ContentPresenter">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector="ItemsControl.GridDock > ContentPresenter">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+    </Style>
+    <Styles.Resources>
+        <ResourceDictionary>
+            <!-- Shared workspace surface tokens used by both Document and Tool chrome. -->
+            <StaticResource x:Key="CodeWFDockWorkbenchBrush" ResourceKey="SemiColorFill0" />
+            <StaticResource x:Key="CodeWFDockPanelBackgroundBrush" ResourceKey="SemiColorBackground0" />
+            <StaticResource x:Key="CodeWFDockHeaderBackgroundBrush" ResourceKey="SemiColorBackground0" />
+            <StaticResource x:Key="CodeWFDockHeaderPointerOverBackgroundBrush" ResourceKey="SemiColorFill0" />
+            <StaticResource x:Key="CodeWFDockPanelBorderBrush" ResourceKey="SemiColorBorder" />
+            <StaticResource x:Key="CodeWFDockHeaderDividerBrush" ResourceKey="SemiColorBorder" />
+            <StaticResource x:Key="CodeWFDockActiveIndicatorBrush" ResourceKey="SemiColorPrimary" />
+            <StaticResource x:Key="CodeWFDockHeaderForegroundBrush" ResourceKey="SemiColorText0" />
+            <StaticResource x:Key="CodeWFDockHeaderSecondaryForegroundBrush" ResourceKey="SemiColorText2" />
+            <StaticResource x:Key="CodeWFDockInactiveBorderBrush" ResourceKey="CodeWFDockPanelBorderBrush" />
+            <StaticResource x:Key="CodeWFDockActiveBorderBrush" ResourceKey="CodeWFDockPanelBorderBrush" />
+            <StaticResource x:Key="CodeWFDockSplitterBrush" ResourceKey="CodeWFDockWorkbenchBrush" />
+            <StaticResource x:Key="CodeWFDockSplitterPointerOverBrush" ResourceKey="SemiColorFill2" />
+            <CornerRadius x:Key="CodeWFDockPanelCornerRadius">8</CornerRadius>
+            <CornerRadius x:Key="CodeWFDockPanelHeaderCornerRadius">7 7 0 0</CornerRadius>
+            <CornerRadius x:Key="CodeWFDockPanelContentCornerRadius">0 0 7 7</CornerRadius>
+            <Thickness x:Key="CodeWFDockPanelBorderThickness">1</Thickness>
+            <StaticResource x:Key="CodeWFDockDocumentPanelBorderThickness" ResourceKey="CodeWFDockPanelBorderThickness" />
+            <Thickness x:Key="CodeWFDockHeaderDividerThickness">0 0 0 1</Thickness>
+            <x:Double x:Key="CodeWFDockHeaderHeight">28</x:Double>
+            <Thickness x:Key="CodeWFDockHeaderPadding">6 0</Thickness>
+            <!-- The separator is rendered inside the tab strip; Tool and Document share one layout height. -->
+            <StaticResource x:Key="CodeWFDockDocumentTabStripHeight"
+                            ResourceKey="CodeWFDockHeaderHeight" />
+            <x:Double x:Key="CodeWFDockDocumentTabItemMinWidth">132</x:Double>
+            <CornerRadius x:Key="CodeWFDockDocumentTabItemCornerRadius">6 6 0 0</CornerRadius>
+            <Thickness x:Key="CodeWFDockDocumentTabItemMargin">2 0 0 0</Thickness>
+            <StaticResource x:Key="CodeWFDockDocumentTabSelectedBackgroundBrush"
+                            ResourceKey="CodeWFDockPanelBackgroundBrush" />
+            <FontFamily x:Key="CodeWFDocumentEmptyContentFontFamily">Noto Sans SC</FontFamily>
+
+            <!-- Tool tabs are a bottom switcher and intentionally do not share Document tab surfaces. -->
+            <StaticResource x:Key="CodeWFToolTabStripBackgroundBrush"
+                            ResourceKey="CodeWFDockHeaderPointerOverBackgroundBrush" />
+            <StaticResource x:Key="CodeWFToolTabPointerOverBackgroundBrush"
+                            ResourceKey="SemiColorFill1" />
+            <StaticResource x:Key="CodeWFToolTabSelectedBackgroundBrush"
+                            ResourceKey="CodeWFDockPanelBackgroundBrush" />
+            <StaticResource x:Key="CodeWFToolTabSelectedForegroundBrush"
+                            ResourceKey="CodeWFDockHeaderForegroundBrush" />
+            <StaticResource x:Key="CodeWFToolTabBorderBrush"
+                            ResourceKey="CodeWFDockPanelBorderBrush" />
+
+            <!-- Keep Tool tabs distinct from their content while Document tabs use dedicated tokens below. -->
+            <StaticResource x:Key="DockTabBackgroundBrush" ResourceKey="CodeWFDockHeaderPointerOverBackgroundBrush" />
+            <StaticResource x:Key="DockTabHoverBackgroundBrush" ResourceKey="SemiColorFill1" />
+            <StaticResource x:Key="DockTabActiveBackgroundBrush" ResourceKey="CodeWFDockHeaderBackgroundBrush" />
+            <StaticResource x:Key="DockTabActiveIndicatorBrush" ResourceKey="CodeWFDockActiveIndicatorBrush" />
+            <StaticResource x:Key="DockTabForegroundBrush" ResourceKey="CodeWFDockHeaderSecondaryForegroundBrush" />
+            <StaticResource x:Key="DockTabSelectedForegroundBrush" ResourceKey="CodeWFDockHeaderForegroundBrush" />
+            <StaticResource x:Key="DockTabActiveForegroundBrush" ResourceKey="CodeWFDockHeaderForegroundBrush" />
+            <StaticResource x:Key="DockTabCloseHoverBackgroundBrush" ResourceKey="CodeWFDockHeaderPointerOverBackgroundBrush" />
+            <StaticResource x:Key="DockDocumentTabStripBackgroundBrush" ResourceKey="CodeWFDockPanelBackgroundBrush" />
+            <StaticResource x:Key="DockDocumentTabSelectedForegroundBrush" ResourceKey="CodeWFDockHeaderForegroundBrush" />
+            <StaticResource x:Key="DockDocumentTabPointerOverForegroundBrush" ResourceKey="CodeWFDockHeaderForegroundBrush" />
+            <StaticResource x:Key="DockDocumentTabCloseSelectedForegroundBrush" ResourceKey="CodeWFDockHeaderSecondaryForegroundBrush" />
+            <StaticResource x:Key="DockDocumentTabClosePointerOverForegroundBrush" ResourceKey="CodeWFDockHeaderForegroundBrush" />
+            <x:Double x:Key="DockFontSizeNormal">13</x:Double>
+            <StaticResource x:Key="DockToolTabItemMinHeight" ResourceKey="CodeWFDockHeaderHeight" />
+            <Thickness x:Key="DockToolTabItemPadding">8 0</Thickness>
+            <Thickness x:Key="DockToolTabItemSelectedPadding">8 0</Thickness>
+            <StaticResource x:Key="DockDocumentTabStripMinHeight" ResourceKey="CodeWFDockDocumentTabStripHeight" />
+            <StaticResource x:Key="DockDocumentTabItemMinHeight" ResourceKey="CodeWFDockDocumentTabStripHeight" />
+            <x:Double x:Key="DockDocumentTabStripSeparatorSize">1</x:Double>
+            <StaticResource x:Key="DockDocumentTabItemPadding" ResourceKey="CodeWFDockHeaderPadding" />
+            <StaticResource x:Key="CodeWFToolPinButtonForegroundBrush" ResourceKey="SemiColorPrimary" />
+            <StaticResource x:Key="CodeWFToolPinButtonActiveForegroundBrush" ResourceKey="SemiColorPrimaryActive" />
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="DockChromeButtonForegroundBrush" Color="#263648" />
+                    <SolidColorBrush x:Key="DockToolChromeIconBrush" Color="#263648" />
+                    <SolidColorBrush x:Key="DockCodeWFToolChromeButtonPointerOverBackgroundBrush" Color="#E7EEF8" />
+                    <SolidColorBrush x:Key="DockCodeWFToolChromeButtonPressedBackgroundBrush" Color="#D7E4F3" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="DockChromeButtonForegroundBrush" Color="#263648" />
+                    <SolidColorBrush x:Key="DockToolChromeIconBrush" Color="#263648" />
+                    <SolidColorBrush x:Key="DockCodeWFToolChromeButtonPointerOverBackgroundBrush" Color="#E7EEF8" />
+                    <SolidColorBrush x:Key="DockCodeWFToolChromeButtonPressedBackgroundBrush" Color="#D7E4F3" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="DockChromeButtonForegroundBrush" Color="#E5E7EB" />
+                    <SolidColorBrush x:Key="DockToolChromeIconBrush" Color="#E5E7EB" />
+                    <SolidColorBrush x:Key="DockCodeWFToolChromeButtonPointerOverBackgroundBrush" Color="#334155" />
+                    <SolidColorBrush x:Key="DockCodeWFToolChromeButtonPressedBackgroundBrush" Color="#475569" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="{x:Static semi:SemiTheme.Aquatic}">
+                    <SolidColorBrush x:Key="DockChromeButtonForegroundBrush" Color="#0F3E4A" />
+                    <SolidColorBrush x:Key="DockToolChromeIconBrush" Color="#0F3E4A" />
+                    <SolidColorBrush x:Key="DockCodeWFToolChromeButtonPointerOverBackgroundBrush" Color="#DDF7FC" />
+                    <SolidColorBrush x:Key="DockCodeWFToolChromeButtonPressedBackgroundBrush" Color="#C3EEF7" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="{x:Static semi:SemiTheme.Desert}">
+                    <SolidColorBrush x:Key="DockChromeButtonForegroundBrush" Color="#4A3214" />
+                    <SolidColorBrush x:Key="DockToolChromeIconBrush" Color="#4A3214" />
+                    <SolidColorBrush x:Key="DockCodeWFToolChromeButtonPointerOverBackgroundBrush" Color="#F7E8D2" />
+                    <SolidColorBrush x:Key="DockCodeWFToolChromeButtonPressedBackgroundBrush" Color="#EFD7B5" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="{x:Static semi:SemiTheme.Dusk}">
+                    <SolidColorBrush x:Key="DockChromeButtonForegroundBrush" Color="#4B2634" />
+                    <SolidColorBrush x:Key="DockToolChromeIconBrush" Color="#4B2634" />
+                    <SolidColorBrush x:Key="DockCodeWFToolChromeButtonPointerOverBackgroundBrush" Color="#F7E2E7" />
+                    <SolidColorBrush x:Key="DockCodeWFToolChromeButtonPressedBackgroundBrush" Color="#EDCDD8" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="{x:Static semi:SemiTheme.NightSky}">
+                    <SolidColorBrush x:Key="DockChromeButtonForegroundBrush" Color="#F8FAFC" />
+                    <SolidColorBrush x:Key="DockToolChromeIconBrush" Color="#F8FAFC" />
+                    <SolidColorBrush x:Key="DockCodeWFToolChromeButtonPointerOverBackgroundBrush" Color="#1E293B" />
+                    <SolidColorBrush x:Key="DockCodeWFToolChromeButtonPressedBackgroundBrush" Color="#334155" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <Style Selector="ToolChromeControl /template/ TextBlock#PART_Title">
+        <Setter Property="Foreground" Value="{DynamicResource DockChromeButtonForegroundBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToolChromeControl:active /template/ TextBlock#PART_Title">
+        <Setter Property="Foreground" Value="{DynamicResource DockChromeButtonForegroundBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToolChromeControl:disabled /template/ TextBlock#PART_Title">
+        <Setter Property="Foreground" Value="{DynamicResource DockChromeButtonForegroundBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+
+    <Style Selector="ToolChromeControl /template/ Button#PART_ToolMenuButton">
+        <Setter Property="Foreground" Value="{DynamicResource DockChromeButtonForegroundBrush}" />
+        <Setter Property="Opacity" Value="1" />
+        <Setter Property="MinWidth" Value="24" />
+        <Setter Property="MinHeight" Value="24" />
+    </Style>
+    <Style Selector="ToolChromeControl /template/ Button#PART_ToolPinButton">
+        <Setter Property="Foreground" Value="{DynamicResource DockChromeButtonForegroundBrush}" />
+        <Setter Property="Opacity" Value="1" />
+        <Setter Property="MinWidth" Value="24" />
+        <Setter Property="MinHeight" Value="24" />
+    </Style>
+    <Style Selector="ToolChromeControl /template/ Button#PART_ToolCloseButton">
+        <Setter Property="Foreground" Value="{DynamicResource DockChromeButtonForegroundBrush}" />
+        <Setter Property="Opacity" Value="1" />
+        <Setter Property="MinWidth" Value="24" />
+        <Setter Property="MinHeight" Value="24" />
+    </Style>
+    <Style Selector="ToolChromeControl:active /template/ Button#PART_ToolCloseButton">
+        <Setter Property="Foreground" Value="{DynamicResource DockChromeButtonForegroundBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToolChromeControl:disabled /template/ Button#PART_ToolCloseButton">
+        <Setter Property="Foreground" Value="{DynamicResource DockChromeButtonForegroundBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+
+    <Style Selector="ToolChromeControl /template/ Button#PART_ToolMenuButton:pointerover">
+        <Setter Property="Background" Value="{DynamicResource DockCodeWFToolChromeButtonPointerOverBackgroundBrush}" />
+    </Style>
+    <Style Selector="ToolChromeControl /template/ Button#PART_ToolPinButton:pointerover">
+        <Setter Property="Background" Value="{DynamicResource DockCodeWFToolChromeButtonPointerOverBackgroundBrush}" />
+    </Style>
+    <Style Selector="ToolChromeControl /template/ Button#PART_ToolCloseButton:pointerover">
+        <Setter Property="Background" Value="{DynamicResource DockCodeWFToolChromeButtonPointerOverBackgroundBrush}" />
+    </Style>
+
+    <Style Selector="ToolChromeControl /template/ Button#PART_ToolMenuButton:pressed">
+        <Setter Property="Background" Value="{DynamicResource DockCodeWFToolChromeButtonPressedBackgroundBrush}" />
+    </Style>
+    <Style Selector="ToolChromeControl /template/ Button#PART_ToolPinButton:pressed">
+        <Setter Property="Background" Value="{DynamicResource DockCodeWFToolChromeButtonPressedBackgroundBrush}" />
+    </Style>
+    <Style Selector="ToolChromeControl /template/ Button#PART_ToolCloseButton:pressed">
+        <Setter Property="Background" Value="{DynamicResource DockCodeWFToolChromeButtonPressedBackgroundBrush}" />
+    </Style>
+
+    <Style Selector="ToolChromeControl /template/ Path#PART_ToolMenuPath">
+        <Setter Property="Fill" Value="{DynamicResource DockToolChromeIconBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToolChromeControl /template/ Path#PART_ToolPinPath">
+        <Setter Property="Fill" Value="{DynamicResource DockToolChromeIconBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToolChromeControl /template/ Path#PART_ToolClosePath">
+        <Setter Property="Fill" Value="{DynamicResource DockToolChromeIconBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToolChromeControl:active /template/ Path#PART_ToolClosePath">
+        <Setter Property="Fill" Value="{DynamicResource DockToolChromeIconBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToolChromeControl:disabled /template/ Path#PART_ToolClosePath">
+        <Setter Property="Fill" Value="{DynamicResource DockToolChromeIconBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+
+    <Style Selector="ToolChromeControl /template/ PathIcon#PART_ToolMenuPath">
+        <Setter Property="Foreground" Value="{DynamicResource DockToolChromeIconBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToolChromeControl /template/ PathIcon#PART_ToolPinPath">
+        <Setter Property="Foreground" Value="{DynamicResource DockToolChromeIconBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToolChromeControl /template/ PathIcon#PART_ToolClosePath">
+        <Setter Property="Foreground" Value="{DynamicResource DockToolChromeIconBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToolChromeControl:active /template/ PathIcon#PART_ToolClosePath">
+        <Setter Property="Foreground" Value="{DynamicResource DockToolChromeIconBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToolChromeControl:disabled /template/ PathIcon#PART_ToolClosePath">
+        <Setter Property="Foreground" Value="{DynamicResource DockToolChromeIconBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToolChromeControl /template/ Button#PART_ToolCloseButton PathIcon">
+        <Setter Property="Foreground" Value="{DynamicResource DockToolChromeIconBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToolChromeControl /template/ Button#PART_ToolCloseButton Path">
+        <Setter Property="Fill" Value="{DynamicResource DockToolChromeIconBrush}" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <!-- RootDock's deferred content must stretch so a GridDock star column can consume the window. -->
+    <Style Selector="RootDockControl /template/ DeferredContentControl#PART_MainContent">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+    </Style>
+</Styles>

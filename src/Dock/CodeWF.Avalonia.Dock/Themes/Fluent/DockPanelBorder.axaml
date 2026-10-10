@@ -1,0 +1,194 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:codewfConverters="using:CodeWF.Avalonia.Dock.Converters"
+        xmlns:controls="using:Dock.Avalonia.Controls"
+        xmlns:proportional="using:Dock.Controls.ProportionalStackPanel"
+        xmlns:converters="using:Dock.Avalonia.Converters"
+        xmlns:themeConverters="using:CodeWF.Avalonia.Dock.Themes.Converters"
+        xmlns:core="using:Dock.Model.Core"
+        xmlns:dockControls="using:Dock.Model.Controls"
+        x:DataType="dockControls:IDocumentDock"
+        x:CompileBindings="True">
+    <Styles.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="CodeWFDocumentCloseTemplate"
+                          DataType="core:IDockable">
+                <Button Command="{Binding Owner.Factory, Converter={x:Static codewfConverters:DockFactoryCommandConverter.CloseDockable}}"
+                        CommandParameter="{Binding}"
+                        Theme="{Binding $parent[DocumentTabStrip].CloseButtonTheme}"
+                        ToolTip.Tip="关闭文档；可从工程树重新打开">
+                    <Button.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <MultiBinding Converter="{x:Static converters:DockCapabilityConverters.CanCloseMultiConverter}">
+                                <Binding />
+                                <Binding Path="CanClose" />
+                                <Binding Path="DockCapabilityOverrides.CanClose" />
+                                <Binding Path="((core:IDock)Owner).DockCapabilityPolicy.CanClose" />
+                            </MultiBinding>
+                            <MultiBinding Converter="{x:Static converters:CanRemoveDockableConverter.Instance}">
+                                <Binding Path="((core:IDock)Owner).CanCloseLastDockable" FallbackValue="{x:True}" />
+                                <Binding Path="((core:IDock)Owner).VisibleDockables.Count" FallbackValue="0" />
+                            </MultiBinding>
+                            <MultiBinding Converter="{x:Static converters:DocumentCloseButtonVisibilityConverter.Instance}">
+                                <Binding Path="((dockControls:IDocumentDock)Owner).CloseButtonShowMode" FallbackValue="Always" />
+                                <Binding Path="$parent[DocumentTabStripItem].IsSelected" />
+                            </MultiBinding>
+                        </MultiBinding>
+                    </Button.IsVisible>
+                    <Path Width="9"
+                          Height="9"
+                          Stretch="Uniform"
+                          UseLayoutRounding="False"
+                          Data="{DynamicResource DockIconCloseGeometry}"
+                          Fill="{Binding $parent[DocumentTabStripItem].Foreground}" />
+                </Button>
+            </DataTemplate>
+
+            <DataTemplate x:Key="CodeWFDocumentHeaderTemplate"
+                          DataType="core:IDockable">
+                <TextBlock Text="{Binding Title}"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"
+                           Padding="4 0" />
+            </DataTemplate>
+
+            <DataTemplate x:Key="CodeWFDocumentEmptyContentTemplate"
+                          x:DataType="x:Object">
+              <StackPanel HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                <Image Width="256"
+                       Height="256"
+                       Source="avares://CodeWF.Avalonia.Dock/Themes/Assets/empty-background.png"
+                       Stretch="Uniform"
+                       RenderOptions.BitmapInterpolationMode="HighQuality" />
+                <TextBlock Text="{Binding ., Converter={x:Static themeConverters:EmptyContentItemConverter.First}}"
+                           FontFamily="{DynamicResource CodeWFDocumentEmptyContentFontFamily}"
+                           FontSize="16"
+                           FontWeight="Normal"
+                           LetterSpacing="0"
+                           Foreground="#262626"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Margin="0 -30 0 8"/>
+                <TextBlock Text="{Binding ., Converter={x:Static themeConverters:EmptyContentItemConverter.Second}}"
+                           FontFamily="{DynamicResource CodeWFDocumentEmptyContentFontFamily}"
+                           FontSize="12"
+                           FontWeight="Normal"
+                           LetterSpacing="0"
+                           Foreground="#8C8C8C"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center" />
+              </StackPanel>
+            </DataTemplate>
+
+            <ControlTheme x:Key="CodeWFDocumentCloseButtonTheme"
+                          TargetType="Button"
+                          BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Width" Value="22" />
+                <Setter Property="Height" Value="22" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="CornerRadius" Value="3" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{DynamicResource CodeWFDockHeaderPointerOverBackgroundBrush}" />
+                </Style>
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{DynamicResource CodeWFToolTitleBarButtonPressedBackgroundBrush}" />
+                </Style>
+            </ControlTheme>
+
+            <ControlTheme x:Key="{x:Type DocumentDockControl}"
+                          TargetType="DocumentDockControl">
+                <Setter Property="(AutomationProperties.AutomationId)" Value="{Binding Id}" />
+                <Setter Property="(AutomationProperties.Name)" Value="{Binding Title}" />
+                <Setter Property="(DockProperties.IsDragEnabled)" Value="{Binding CanDrag}" />
+                <Setter Property="(DockProperties.IsDropEnabled)" Value="{Binding CanDrop}" />
+                <Setter Property="(DockProperties.DockGroup)" Value="{Binding DockGroup}" />
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <DockableControl TrackingMode="Visible">
+                            <Border Name="PART_DocumentPanelBorder"
+                                    Classes.Active="{Binding IsActive}"
+                                    Background="{DynamicResource CodeWFDockPanelBackgroundBrush}"
+                                    BorderBrush="{DynamicResource CodeWFDockInactiveBorderBrush}"
+                                    BorderThickness="{DynamicResource CodeWFDockDocumentPanelBorderThickness}"
+                                    CornerRadius="{DynamicResource CodeWFDockPanelCornerRadius}"
+                                    ClipToBounds="True">
+                                <Panel>
+                                    <DocumentControl IsActive="{Binding IsActive}"
+                                                     IsVisible="{Binding LayoutMode, Converter={x:Static converters:DocumentLayoutModeMatchConverter.Instance}, ConverterParameter=Tabbed}" />
+                                    <controls:MdiDocumentControl IsActive="{Binding IsActive}"
+                                                                  IsVisible="{Binding LayoutMode, Converter={x:Static converters:DocumentLayoutModeMatchConverter.Instance}, ConverterParameter=Mdi}" />
+                                </Panel>
+                            </Border>
+                        </DockableControl>
+                    </ControlTemplate>
+                </Setter>
+                <Style Selector="^ /template/ Border#PART_DocumentPanelBorder">
+                    <Setter Property="Transitions">
+                        <Transitions>
+                            <BrushTransition Property="BorderBrush" Duration="0:0:0.16" />
+                        </Transitions>
+                    </Setter>
+                </Style>
+                <Style Selector="^ /template/ Border#PART_DocumentPanelBorder.Active">
+                    <Setter Property="BorderBrush" Value="{DynamicResource CodeWFDockActiveBorderBrush}" />
+                </Style>
+            </ControlTheme>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <Style Selector="DocumentControl">
+        <Setter Property="CloseTemplate" Value="{StaticResource CodeWFDocumentCloseTemplate}" />
+        <Setter Property="CloseButtonTheme" Value="{StaticResource CodeWFDocumentCloseButtonTheme}" />
+        <Setter Property="EmptyContentTemplate" Value="{StaticResource CodeWFDocumentEmptyContentTemplate}" />
+        <Setter Property="HeaderTemplate" Value="{StaticResource CodeWFDocumentHeaderTemplate}" />
+    </Style>
+
+    <Style Selector="MdiDocumentControl">
+        <Setter Property="CloseTemplate" Value="{StaticResource CodeWFDocumentCloseTemplate}" />
+        <Setter Property="CloseButtonTheme" Value="{StaticResource CodeWFDocumentCloseButtonTheme}" />
+        <Setter Property="EmptyContentTemplate" Value="{StaticResource CodeWFDocumentEmptyContentTemplate}" />
+        <Setter Property="HeaderTemplate" Value="{StaticResource CodeWFDocumentHeaderTemplate}" />
+    </Style>
+
+    <!--
+        Dock 12.1 can let a horizontal DocumentTabStrip take the full available DockPanel height.
+        Pinning the horizontal strip to the shared header height keeps the content presenter measurable.
+    -->
+    <Style Selector="DocumentTabStrip[Orientation=Horizontal]">
+        <Setter Property="Height" Value="{DynamicResource CodeWFDockDocumentTabStripHeight}" />
+        <Setter Property="MinHeight" Value="{DynamicResource CodeWFDockDocumentTabStripHeight}" />
+        <Setter Property="MaxHeight" Value="{DynamicResource CodeWFDockDocumentTabStripHeight}" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+
+    <Style Selector="DocumentTabStrip[Orientation=Horizontal] DocumentTabStripItem">
+        <Setter Property="Height" Value="{DynamicResource CodeWFDockDocumentTabStripHeight}" />
+        <Setter Property="MinHeight" Value="{DynamicResource CodeWFDockDocumentTabStripHeight}" />
+        <Setter Property="MaxHeight" Value="{DynamicResource CodeWFDockDocumentTabStripHeight}" />
+        <Setter Property="MinWidth" Value="{DynamicResource CodeWFDockDocumentTabItemMinWidth}" />
+        <Setter Property="Margin" Value="{DynamicResource CodeWFDockDocumentTabItemMargin}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource CodeWFDockDocumentTabItemCornerRadius}" />
+    </Style>
+
+    <Style Selector="DocumentTabStrip[Orientation=Horizontal] DocumentTabStripItem:selected">
+        <Setter Property="Background" Value="{DynamicResource CodeWFDockDocumentTabSelectedBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource CodeWFDockHeaderForegroundBrush}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style Selector="proportional|ProportionalStackPanelSplitter">
+        <Setter Property="Background" Value="{DynamicResource CodeWFDockSplitterBrush}" />
+    </Style>
+
+    <Style Selector="proportional|ProportionalStackPanelSplitter:pointerover">
+        <Setter Property="Background" Value="{DynamicResource CodeWFDockSplitterPointerOverBrush}" />
+    </Style>
+</Styles>
