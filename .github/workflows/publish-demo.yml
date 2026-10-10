@@ -1,0 +1,52 @@
+name: publish-demo
+
+# 推送 v* 标签（或手动触发）发布 CodeWF.Avalonia 演示应用的便携包并挂到 GitHub Release。
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: 发布 ${{ matrix.rid }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: win-x64
+            os: windows-latest
+          - rid: linux-x64
+            os: ubuntu-latest
+          - rid: osx-arm64
+            os: macos-14
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: 发布演示应用（SelfContained）
+        run: dotnet publish demo/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo.csproj -c Release -r ${{ matrix.rid }} --self-contained true -o artifacts/demo-publish
+
+      - name: 打包产物
+        shell: bash
+        run: |
+          cd artifacts/demo-publish
+          if [[ "${{ matrix.rid }}" == win-x64 ]]; then
+            7z a ../CodeWF.Avalonia.Demo-${{ matrix.rid }}.zip . > /dev/null
+          else
+            tar -czf ../CodeWF.Avalonia.Demo-${{ matrix.rid }}.tar.gz .
+          fi
+
+      - name: 上传到 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/CodeWF.Avalonia.Demo-*
