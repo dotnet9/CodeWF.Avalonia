@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <Description>Avalonia 插件化多语言方案：I18n 标记扩展、运行时切换文化、父文化回退，内置 Json/Xml/Resx 三种资源加载器，附强类型 Key 源生成器。Plugin-based i18n solution for Avalonia with built-in Json/Xml/Resx resource loaders.</Description>
+    <PackageTags>avalonia;i18n;localization;lang;codewf</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

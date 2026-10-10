@@ -1,0 +1,66 @@
+﻿using System.Collections.Generic;
+
+namespace CodeWF.Avalonia.Lang;
+
+/// <summary>
+/// 描述一种已加载的本地化语言及其资源字典。
+/// </summary>
+public class LocalizationLanguage
+{
+    /// <summary>
+    /// 面向界面展示的语言名称。
+    /// </summary>
+    public string Language { get; set; } = null!;
+
+    /// <summary>
+    /// 对该语言的补充说明。
+    /// </summary>
+    public string Description { get; set; } = null!;
+
+    /// <summary>
+    /// 标准文化名称，例如 zh-CN、en-US。
+    /// </summary>
+    public string CultureName { get; set; } = null!;
+
+    /// <summary>
+    /// 语言资源表，Key 为完整资源路径，Value 为翻译文本。
+    /// </summary>
+    public Dictionary<string, string> Languages { get; } = new();
+
+    /// <summary>
+    /// 供下拉框或列表直接展示的主标题。
+    /// </summary>
+    public string DisplayName => string.IsNullOrWhiteSpace(Language) ? CultureName : Language;
+
+    /// <summary>
+    /// 供界面展示的文化标识。
+    /// </summary>
+    public string DisplayTag => CultureName;
+
+    /// <summary>
+    /// 供界面展示的补充说明。
+    /// </summary>
+    public string DetailText => string.IsNullOrWhiteSpace(Description) ? DisplayName : Description;
+
+    internal LocalizationLanguage Snapshot()
+    {
+        var snapshot = new LocalizationLanguage
+        {
+            Language = Language,
+            Description = Description,
+            CultureName = CultureName
+        };
+
+        foreach (var (key, value) in Languages)
+        {
+            snapshot.Languages[key] = value;
+        }
+
+        return snapshot;
+    }
+
+    /// <inheritdoc />
+    public override string ToString() => string.IsNullOrWhiteSpace(CultureName)
+        ? DisplayName
+        : $"{DisplayName} ({CultureName})";
+}
