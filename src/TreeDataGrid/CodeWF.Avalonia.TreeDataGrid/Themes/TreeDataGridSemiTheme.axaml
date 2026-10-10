@@ -1,0 +1,7 @@
+<Styles
+    x:Class="CodeWF.Avalonia.TreeDataGrid.Themes.TreeDataGridSemiTheme"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Semi 官方 TreeDataGrid 样式的本地 vendor 副本（MIT），指向本程序集资源 -->
+    <StyleInclude Source="avares://CodeWF.Avalonia.TreeDataGrid/Themes/Semi/Index.axaml" />
+</Styles>

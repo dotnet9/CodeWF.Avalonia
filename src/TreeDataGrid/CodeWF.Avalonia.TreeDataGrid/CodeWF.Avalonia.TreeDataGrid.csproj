@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <Description>社区版 TreeDataGrid.Avalonia 的增强扩展：三态排序（升/降/取消）、Ctrl+A 全选与智能 ToolTip，内置 Semi 主题（本地 vendor 副本，不依赖商业版 TreeDataGrid）。Enhancements for the community TreeDataGrid.Avalonia control with a vendored Semi theme.</Description>
+    <PackageTags>avalonia;treedatagrid;semi;codewf</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TreeDataGrid.Avalonia" />
+    <PackageReference Include="Semi.Avalonia" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

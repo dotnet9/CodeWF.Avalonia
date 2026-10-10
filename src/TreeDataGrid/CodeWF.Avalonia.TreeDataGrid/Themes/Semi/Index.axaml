@@ -1,0 +1,15 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--  Add Resources Here  -->
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceInclude x:Key="Default" Source="avares://CodeWF.Avalonia.TreeDataGrid/Themes/Semi/Light.axaml" />
+                <ResourceInclude x:Key="Dark" Source="avares://CodeWF.Avalonia.TreeDataGrid/Themes/Semi/Dark.axaml" />
+            </ResourceDictionary.ThemeDictionaries>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://CodeWF.Avalonia.TreeDataGrid/Themes/Semi/TreeDataGrid.axaml" />
+                <ResourceInclude Source="avares://CodeWF.Avalonia.TreeDataGrid/Themes/Semi/Shared.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+</Styles>
