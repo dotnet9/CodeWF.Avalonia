@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:markdown="https://codewf.com"
+        xmlns:codewf="https://codewf.com"
         xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
         x:Class="CodeWF.Avalonia.Demo.Views.MainWindow"
         x:DataType="vm:MainViewModel"
@@ -18,6 +19,20 @@
           <DataGridTextColumn Header="城市" Binding="{Binding City}" Width="*" />
         </DataGrid.Columns>
       </DataGrid>
+    </TabItem>
+    <TabItem Header="属性面板">
+      <Grid ColumnDefinitions="2*,*">
+        <codewf:PropertyGrid Grid.Column="0"
+                             Items="{Binding PropertyPanel.Items}"
+                             ValueCommittedCommand="{Binding PropertyPanel.ValueCommittedCommand}"
+                             BrowseRequestedCommand="{Binding PropertyPanel.BrowseRequestedCommand}" />
+        <Border Grid.Column="1" BorderBrush="#40808080" BorderThickness="1,0,0,0">
+          <DockPanel Margin="8">
+            <TextBlock DockPanel.Dock="Top" Text="值变更日志" FontWeight="Bold" Margin="0,8,0,4" />
+            <ListBox ItemsSource="{Binding PropertyPanel.ChangeLog}" />
+          </DockPanel>
+        </Border>
+      </Grid>
     </TabItem>
     <TabItem Header="日志">
       <StackPanel Margin="12" Spacing="8">

@@ -1,0 +1,39 @@
+<linker>
+  <assembly fullname="CodeWF.Avalonia.Demo" preserve="all" />
+  <assembly fullname="CodeWF.Avalonia.Controls" preserve="all" />
+  <assembly fullname="CodeWF.Avalonia.DataGrid" preserve="all" />
+  <assembly fullname="CodeWF.Avalonia.TreeDataGrid" preserve="all" />
+  <assembly fullname="CodeWF.Avalonia.Dock" preserve="all" />
+  <assembly fullname="CodeWF.Avalonia.Markdown" preserve="all" />
+  <assembly fullname="CodeWF.Avalonia.Markdown.Lite" preserve="all" />
+  <assembly fullname="CodeWF.Avalonia.Lang" preserve="all" />
+
+  <assembly fullname="Prism" preserve="all" />
+  <assembly fullname="Prism.Avalonia" preserve="all" />
+  <assembly fullname="Prism.DryIoc.Avalonia" preserve="all" />
+  <assembly fullname="DryIoc" preserve="all" />
+  <assembly fullname="ReactiveUI" preserve="all" />
+  <assembly fullname="ReactiveUI.Avalonia" preserve="all" />
+  <assembly fullname="Splat" preserve="all" />
+
+  <assembly fullname="Avalonia" preserve="all" />
+  <assembly fullname="Avalonia.Base" preserve="all" />
+  <assembly fullname="Avalonia.Controls" preserve="all" />
+  <assembly fullname="Avalonia.Desktop" preserve="all" />
+  <assembly fullname="Avalonia.Markup" preserve="all" />
+  <assembly fullname="Avalonia.Markup.Xaml" preserve="all" />
+  <assembly fullname="Avalonia.Markup.Xaml.Loader" preserve="all" />
+  <assembly fullname="Avalonia.Themes.Fluent" preserve="all" />
+  <assembly fullname="Semi.Avalonia" preserve="all" />
+  <assembly fullname="Avalonia.Controls.DataGrid" preserve="all" />
+  <assembly fullname="Avalonia.Controls.ColorPicker" preserve="all" />
+  <assembly fullname="Avalonia.AvaloniaEdit" preserve="all" />
+  <assembly fullname="AvaloniaEdit" preserve="all" />
+  <assembly fullname="AvaloniaEdit.TextMate" preserve="all" />
+  <assembly fullname="TextMateSharp" preserve="all" />
+  <assembly fullname="Dock.Avalonia" preserve="all" />
+  <assembly fullname="Dock.Model" preserve="all" />
+  <assembly fullname="Dock.Model.ReactiveUI" preserve="all" />
+  <assembly fullname="Markdig" preserve="all" />
+  <assembly fullname="Xaml.Behaviors.Interactivity" preserve="all" />
+</linker>

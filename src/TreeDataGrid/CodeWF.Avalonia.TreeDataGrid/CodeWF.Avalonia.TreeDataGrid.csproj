@@ -4,13 +4,16 @@
     <IsPackable>true</IsPackable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <Description>社区版 TreeDataGrid.Avalonia 的增强扩展：三态排序（升/降/取消）、Ctrl+A 全选与智能 ToolTip，内置 Semi 主题（本地 vendor 副本，不依赖商业版 TreeDataGrid）。Enhancements for the community TreeDataGrid.Avalonia control with a vendored Semi theme.</Description>
+    <Description>社区版 TreeDataGrid.Avalonia 的增强扩展：三态排序（升/降/取消）、Ctrl+A 全选与智能 ToolTip，内置 Semi 主题（本地 vendor 副本，不依赖商业版 TreeDataGrid）；另含通用属性面板控件 PropertyGrid（对标 Visual Studio 属性窗口：分类/字母双视图、无限层级、搜索、描述面板、多类型编辑器）。Enhancements for the community TreeDataGrid.Avalonia control with a vendored Semi theme, plus a generic PropertyGrid control.</Description>
     <PackageTags>avalonia;treedatagrid;semi;codewf</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="TreeDataGrid.Avalonia" />
+    <PackageReference Include="CodeWF.Avalonia.Lang" />
+    <PackageReference Include="CodeWF.Avalonia.Lang" />
     <PackageReference Include="Semi.Avalonia" />
+    <PackageReference Include="Avalonia.Controls.ColorPicker" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
   </ItemGroup>
 

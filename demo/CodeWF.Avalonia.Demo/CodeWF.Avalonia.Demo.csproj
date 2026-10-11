@@ -2,10 +2,28 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <!-- 双 TFM：win-* RID 走 net10.0-windows（NativeAOT 完整元数据），其余 RID 走 net10.0（单文件裁剪） -->
+    <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <RuntimeIdentifiers>win-x64;win-x86;linux-x64;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0-windows'))">
+    <WindowsSupportedOSPlatformVersion>6.1</WindowsSupportedOSPlatformVersion>
+    <IsTrimmable>true</IsTrimmable>
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- AOT/裁剪保留清单：Prism/DryIoc 等反射重度程序集整树保留 -->
+    <TrimmerRootDescriptor Include="Properties\Trimming\TrimmerRoots.xml" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia" />

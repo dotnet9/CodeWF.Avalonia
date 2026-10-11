@@ -1,0 +1,179 @@
+name: release
+
+# 推送 v* 标签发布 CodeWF.Avalonia 演示应用全平台 AOT 包（6 个 RID）：
+# 全平台 NativeAOT（完整反射元数据保全 Prism/DryIoc），产物为 zip + sha256。
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号（不含 v），例如 12.1.4.1'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: 发布 ${{ matrix.rid }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: win-x64
+            os: windows-latest
+          - rid: win-x86
+            os: windows-latest
+          - rid: linux-x64
+            os: ubuntu-latest
+          - rid: linux-arm64
+            os: ubuntu-24.04-arm
+          - rid: osx-x64
+            os: macos-14
+          - rid: osx-arm64
+            os: macos-14
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+          dotnet-quality: preview
+
+      - name: 计算版本号
+        id: version
+        shell: pwsh
+        run: |
+          if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
+            $version = '${{ inputs.version }}'.TrimStart('v', 'V')
+          } else {
+            $version = '${{ github.ref_name }}'.TrimStart('v', 'V')
+          }
+          "APP_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host "版本：$version"
+
+      - name: 安装 NativeAOT 依赖 (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
+
+      # 与 publish.bat 相同的 PublishProfile（目标框架由 Profile 声明：win-* 为 net10.0-windows，
+      # 其余为 net10.0）；全平台追加 NativeAOT 参数（IlcGenerateCompleteTypeMetadata 保全 Prism/DryIoc）。
+      # 不传 -f：全局 TargetFramework 会传播到单 TFM 引用库，触发 NETSDK1005。
+      - name: 发布（PublishProfile + NativeAOT）
+        shell: pwsh
+        run: |
+          $rid = '${{ matrix.rid }}'
+          # NativeAOT 的 ILC 在 preview SDK 上并行编译可能崩溃，单线程更稳
+          $ilcArgs = @(
+            '-p:PublishAot=true',
+            '-p:PublishTrimmed=true',
+            '-p:PublishSingleFile=false',
+            '-p:IlcGenerateCompleteTypeMetadata=true',
+            '-p:IlcTrimMetadata=false',
+            '-p:IlcSingleThreaded=true'
+          )
+          # macOS 保留符号（ld_classic 不支持压缩调试段）
+          if ($rid.StartsWith('osx-', [StringComparison]::OrdinalIgnoreCase)) { $ilcArgs += '-p:StripSymbols=false' }
+          dotnet publish demo/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo.csproj -c Release -r $rid $ilcArgs /p:PublishProfile=FolderProfile__$rid
+          if ($LASTEXITCODE -ne 0) { throw "publish failed for $rid" }
+
+      - name: 打包 zip + sha256
+        shell: pwsh
+        run: pwsh scripts/package_demo_artifacts.ps1 -RuntimeIdentifier '${{ matrix.rid }}' -Version $env:APP_VERSION
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: CodeWF.Avalonia.Demo-${{ matrix.rid }}
+          path: artifacts/release/*
+          if-no-files-found: error
+
+  release:
+    name: 创建 GitHub Release
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 下载构建产物
+        uses: actions/download-artifact@v4
+        with:
+          pattern: CodeWF.Avalonia.Demo-*
+          path: artifacts/release
+          merge-multiple: true
+
+      - name: 计算版本号
+        id: version
+        shell: pwsh
+        run: |
+          if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
+            $version = '${{ inputs.version }}'.TrimStart('v', 'V')
+            $tagName = "v$version"
+          } else {
+            # 沿用被推送的原始标签，避免额外创建新标签。
+            $tagName = '${{ github.ref_name }}'
+            $version = $tagName.TrimStart('v', 'V')
+          }
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "tag_name=$tagName" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: 准备发布说明
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          TAG_NAME: ${{ steps.version.outputs.tag_name }}
+        run: |
+          # 优先使用附注 tag 的说明，否则退回 UpdateLog 中对应版本的段落
+          $bodyPath = "artifacts/release-body.md"
+          New-Item -ItemType Directory -Path (Split-Path -Parent $bodyPath) -Force | Out-Null
+          git fetch --quiet --tags origin 2>$null
+          $tagMessage = git tag -l "$env:TAG_NAME" --format='%(contents)'
+          if (-not [string]::IsNullOrWhiteSpace($tagMessage)) {
+            $tagMessage | Set-Content -LiteralPath $bodyPath -Encoding utf8
+            Write-Host "使用附注 tag 说明作为发布说明。"
+          }
+          else {
+            $updateLog = "UpdateLog.md"
+            $body = New-Object System.Collections.Generic.List[string]
+            if (Test-Path -LiteralPath $updateLog -PathType Leaf) {
+              $lines = Get-Content -LiteralPath $updateLog -Encoding UTF8
+              $capture = $false
+              foreach ($line in $lines) {
+                if ($line -match '^#+\s.*v?' + [regex]::Escape($env:VERSION) + '\b') {
+                  $capture = $true
+                  $body.Add($line)
+                  continue
+                }
+                if ($capture -and $line -match '^#+\s') { break }
+                if ($capture) { $body.Add($line) }
+              }
+            }
+            if ($body.Count -gt 0) {
+              $body | Set-Content -LiteralPath $bodyPath -Encoding utf8
+              Write-Host "使用 UpdateLog 段落作为发布说明。"
+            }
+            else {
+              "CodeWF.Avalonia v$env:VERSION" | Set-Content -LiteralPath $bodyPath -Encoding utf8
+              Write-Host "未找到版本说明，将只使用自动生成的变更列表。"
+            }
+          }
+
+      - name: 创建 GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag_name }}
+          name: CodeWF.Avalonia v${{ steps.version.outputs.version }}
+          body_path: artifacts/release-body.md
+          generate_release_notes: true
+          files: |
+            artifacts/release/*.zip
+            artifacts/release/*.sha256

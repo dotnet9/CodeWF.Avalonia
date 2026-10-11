@@ -1,0 +1,26 @@
+{
+  "language": "en-US",
+  "description": "CodeWF.Avalonia.TreeDataGrid PropertyGrid English resources.",
+  "cultureName": "en-US",
+  "Localization": {
+    "CodeWF_Avalonia_TreeDataGrid": {
+      "PropertyGrid": {
+        "SearchPlaceholder": "Search properties",
+        "ClearSearch": "Clear",
+        "CategorizedView": "Categorized view",
+        "AlphabeticalView": "Sort alphabetically",
+        "MoreOptions": "More options",
+        "ExpandAll": "Expand all",
+        "CollapseAll": "Collapse all",
+        "ShowDescriptionPane": "Show description pane",
+        "ResetAllChanges": "Reset all changes",
+        "DescriptionPlaceholder": "Select a property to see its description.",
+        "ResetToDefaultValue": "Reset to default value",
+        "ToggleChildren": "Expand/collapse children",
+        "SelectPlaceholder": "Select",
+        "AllGroupsCollapsed": "All groups are collapsed",
+        "NoMatches": "No matching properties"
+      }
+    }
+  }
+}

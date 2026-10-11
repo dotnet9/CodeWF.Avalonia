@@ -1,0 +1,26 @@
+{
+  "language": "zh-CN",
+  "description": "CodeWF.Avalonia.TreeDataGrid PropertyGrid simplified Chinese resources.",
+  "cultureName": "zh-CN",
+  "Localization": {
+    "CodeWF_Avalonia_TreeDataGrid": {
+      "PropertyGrid": {
+        "SearchPlaceholder": "搜索属性",
+        "ClearSearch": "清除",
+        "CategorizedView": "分类视图",
+        "AlphabeticalView": "按字母顺序排序",
+        "MoreOptions": "更多选项",
+        "ExpandAll": "全部展开",
+        "CollapseAll": "全部折叠",
+        "ShowDescriptionPane": "显示描述面板",
+        "ResetAllChanges": "重置全部修改",
+        "DescriptionPlaceholder": "选择属性以查看说明。",
+        "ResetToDefaultValue": "重置为默认值",
+        "ToggleChildren": "展开/折叠子项",
+        "SelectPlaceholder": "请选择",
+        "AllGroupsCollapsed": "所有分组已折叠",
+        "NoMatches": "无匹配属性"
+      }
+    }
+  }
+}

@@ -37,6 +37,8 @@ public class MainViewModel : ReactiveObject
 
     public string LogFolder { get; } = Path.Combine(Path.GetTempPath(), "CodeWFAvaloniaDemo", "logs");
 
+    public PropertyPanelDemoViewModel PropertyPanel { get; } = new();
+
     public ReactiveCommand<RxVoid, RxVoid> WriteLogsCommand { get; }
 
     public MainViewModel()
