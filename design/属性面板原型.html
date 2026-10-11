@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>属性面板原型 · PropertyGrid</title>
+<style>
+  :root[data-theme="dark"] {
+    --bg: #1f1f1f;
+    --bg-toolbar: #232323;
+    --bg-group: #282829;
+    --bg-desc: #1a1a1b;
+    --bg-editor: #2a2a2b;
+    --bg-editor-hover: #303032;
+    --bg-hover: rgba(255,255,255,.045);
+    --text: #d4d4d4;
+    --text-strong: #f0f0f0;
+    --text-sec: #9a9a9a;
+    --border: #333336;
+    --border-soft: #2b2b2e;
+    --accent: #0f6fdf;
+    --accent-text: #ffffff;
+    --accent-soft: rgba(15,111,223,.16);
+    --mark: #6b5308;
+    --menu-bg: #2b2b2d;
+    --shadow: 0 6px 20px rgba(0,0,0,.45);
+  }
+  :root[data-theme="light"] {
+    --bg: #ffffff;
+    --bg-toolbar: #f7f8fa;
+    --bg-group: #f2f3f5;
+    --bg-desc: #fafafb;
+    --bg-editor: #ffffff;
+    --bg-editor-hover: #f4f5f7;
+    --bg-hover: #f4f6f8;
+    --text: #1d2129;
+    --text-strong: #0f1114;
+    --text-sec: #6b7075;
+    --border: #e2e4e8;
+    --border-soft: #edeef1;
+    --accent: #1667d9;
+    --accent-text: #ffffff;
+    --accent-soft: rgba(22,103,217,.10);
+    --mark: #ffe9a8;
+    --menu-bg: #ffffff;
+    --shadow: 0 6px 20px rgba(30,35,45,.14);
+  }
+
+  :root { --row-h: 26px; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+    font-size: 12px;
+    color: var(--text);
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  #app { display: flex; flex-direction: column; height: 100vh; }
+
+  /* ---------- 工具条 ---------- */
+  .toolbar {
+    display: flex; align-items: center; gap: 4px;
+    height: 36px; padding: 0 8px;
+    background: var(--bg-toolbar);
+    border-bottom: 1px solid var(--border);
+    position: relative; z-index: 30; flex: none;
+  }
+  .tbtn {
+    width: 28px; height: 26px; border: none; border-radius: 4px;
+    background: transparent; color: var(--text-sec);
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .tbtn:hover { background: var(--bg-hover); color: var(--text-strong); }
+  .tbtn.active { background: var(--accent-soft); color: var(--accent); }
+  .tbtn svg { width: 16px; height: 16px; }
+
+  .searchbox {
+    display: flex; align-items: center; gap: 6px;
+    margin-left: 8px; width: 210px; height: 24px;
+    padding: 0 8px; border-radius: 4px;
+    border: 1px solid var(--border); background: var(--bg-editor);
+    color: var(--text-sec);
+  }
+  .searchbox:focus-within { border-color: var(--accent); }
+  .searchbox svg { width: 13px; height: 13px; flex: none; }
+  .searchbox input {
+    flex: 1; border: none; outline: none; background: transparent;
+    color: var(--text); font-size: 12px; min-width: 0;
+  }
+  .searchbox input::placeholder { color: var(--text-sec); }
+  .search-clear { border:none; background:none; color:var(--text-sec); cursor:pointer; display:none; font-size:13px; line-height:1; padding:2px; }
+  .searchbox.has-text .search-clear { display:block; }
+
+  .spacer { flex: 1; }
+
+  /* ---------- 主体 ---------- */
+  .grid-wrap { flex: 1; position: relative; display: flex; min-height: 0; }
+  .grid { flex: 1; position: relative; overflow: auto; }
+  .rows { min-width: 100%; width: max-content; }
+
+  .row { position: relative; display: grid; grid-template-columns: var(--name-w, 148px) 1fr; align-items: stretch; }
+  .row:hover .cell { background: var(--bg-hover); }
+
+  .cell { min-height: var(--row-h); height: 100%; display: flex; align-items: center; }
+  .cell.name {
+    position: relative;
+    padding-right: 8px;
+    border-right: 1px solid var(--border-soft);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    user-select: none;
+  }
+  .row.selected .cell { background: var(--accent-soft); }
+  .row.selected .cell.name { background: var(--accent); color: var(--accent-text); }
+  .name.modified { font-weight: 700; color: var(--text-strong); }
+  .row.selected .name.modified { color: var(--accent-text); }
+
+  mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1px; }
+
+  /* 层级参考线 */
+  .guide { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border-soft); pointer-events: none; }
+
+  /* 折叠箭头（分组行 / 可展开属性行共用） */
+  .chev, .tw {
+    width: 14px; flex: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--text-sec); transition: transform .12s;
+  }
+  .tw { cursor: pointer; height: 100%; }
+  .tw:hover { color: var(--text-strong); }
+  .collapsed .chev, .row.collapsed .tw { transform: rotate(-90deg); }
+  .nm { overflow: hidden; text-overflow: ellipsis; }
+
+  /* ---------- 编辑器 ---------- */
+  .cell.value { padding: 0 4px 0 6px; gap: 4px; position: relative; overflow: hidden; }
+
+  .ed {
+    width: 100%; height: calc(var(--row-h) - 4px); border: 1px solid transparent; border-radius: 3px;
+    background: transparent; color: var(--text); font: inherit; outline: none;
+    padding: 0 5px; min-width: 0;
+  }
+  .row:hover .ed { border-color: var(--border); background: var(--bg-editor); }
+  .ed:focus { border-color: var(--accent); background: var(--bg-editor); }
+  .ed::placeholder { color: var(--text-sec); }
+
+  textarea.ed { height: calc(100% - 6px); min-height: 40px; padding: 4px 5px; resize: none; line-height: 1.5; }
+
+  .ed.readonly { border-color: transparent !important; background: transparent !important; color: var(--text-sec); cursor: default; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cv-sum { flex: 1; color: var(--text-sec); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* 数字 */
+  .num-wrap { display: flex; align-items: center; gap: 4px; width: 100%; }
+  .num-wrap .ed { flex: 1; text-align: left; }
+  .unit { color: var(--text-sec); flex: none; }
+  .spin { display: flex; flex-direction: column; flex: none; }
+  .spin button {
+    width: 15px; height: 11px; border: none; background: transparent; color: var(--text-sec);
+    cursor: pointer; font-size: 8px; line-height: 1; border-radius: 2px;
+  }
+  .row:hover .spin button { background: var(--bg-editor); }
+  .spin button:hover { background: var(--bg-hover) !important; color: var(--text-strong); }
+
+  /* 布尔 */
+  .cb { appearance: none; width: 14px; height: 14px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg-editor); cursor: pointer; position: relative; flex: none; }
+  .cb:checked { background: var(--accent); border-color: var(--accent); }
+  .cb:checked::after { content: ""; position: absolute; left: 4px; top: 1px; width: 3px; height: 7px; border: solid #fff; border-width: 0 1.5px 1.5px 0; transform: rotate(42deg); }
+
+  /* 下拉 */
+  .combo { display: flex; align-items: center; width: 100%; height: calc(var(--row-h) - 4px); padding: 0 4px 0 5px; border: 1px solid transparent; border-radius: 3px; cursor: pointer; gap: 4px; }
+  .row:hover .combo { border-color: var(--border); background: var(--bg-editor); }
+  .combo.open { border-color: var(--accent); background: var(--bg-editor); }
+  .combo .cv { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .combo .arr { color: var(--text-sec); font-size: 9px; flex: none; }
+  .combo-menu {
+    position: absolute; top: calc(var(--row-h) + 2px); left: 4px; right: 4px; z-index: 40;
+    background: var(--menu-bg); border: 1px solid var(--border); border-radius: 4px;
+    box-shadow: var(--shadow); padding: 3px; max-height: 180px; overflow: auto;
+  }
+  .combo-item { display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 3px; cursor: pointer; white-space: nowrap; }
+  .combo-item:hover { background: var(--bg-hover); }
+  .combo-item.sel { color: var(--accent); }
+  .combo-item .tick { width: 12px; flex: none; }
+
+  /* 单选组（分段按钮） */
+  .seg { display: flex; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; height: calc(var(--row-h) - 6px); }
+  .seg button { border: none; background: transparent; color: var(--text-sec); padding: 0 9px; cursor: pointer; font: inherit; border-right: 1px solid var(--border); }
+  .seg button:last-child { border-right: none; }
+  .seg button:hover { background: var(--bg-hover); color: var(--text-strong); }
+  .seg button.on { background: var(--accent); color: var(--accent-text); }
+
+  /* 滑条 */
+  .pct { display: flex; align-items: center; gap: 6px; width: 100%; }
+  input[type=range] { flex: 1; accent-color: var(--accent); height: 14px; }
+  .pct-val { width: 34px; text-align: right; color: var(--text-sec); flex: none; }
+
+  /* 颜色 */
+  .color-ed { display: flex; align-items: center; gap: 6px; width: 100%; height: calc(var(--row-h) - 4px); }
+  .swatch { width: 16px; height: 16px; border-radius: 3px; border: 1px solid var(--border); padding: 0; cursor: pointer; background: none; flex: none; }
+  .swatch::-webkit-color-swatch-wrapper { padding: 1px; }
+  .swatch::-webkit-color-swatch { border: none; border-radius: 2px; }
+  .hex { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+  /* 路径 & 按钮 */
+  .path-wrap { display: flex; gap: 4px; width: 100%; }
+  .path-wrap .ed { flex: 1; }
+  .mini-btn {
+    flex: none; height: calc(var(--row-h) - 4px); min-width: 22px; padding: 0 6px;
+    border: 1px solid var(--border); border-radius: 3px; background: var(--bg-editor);
+    color: var(--text-sec); cursor: pointer; font: inherit;
+  }
+  .mini-btn:hover { background: var(--bg-editor-hover); color: var(--text-strong); border-color: var(--accent); }
+  .full-btn { width: 100%; height: calc(var(--row-h) - 4px); text-align: left; padding: 0 6px; }
+  .full-btn .dots { letter-spacing: 2px; }
+
+  /* 集合 */
+  .coll { display: flex; align-items: center; width: 100%; height: calc(var(--row-h) - 4px); padding: 0 5px; border: 1px solid transparent; border-radius: 3px; cursor: pointer; gap: 6px; }
+  .row:hover .coll { border-color: var(--border); background: var(--bg-editor); }
+  .coll .cnt { color: var(--text-sec); flex: 1; }
+  .coll .more { color: var(--text-sec); letter-spacing: 2px; }
+
+  /* 空状态 */
+  .empty { padding: 32px 0; text-align: center; color: var(--text-sec); }
+
+  /* 列分隔拖拽区 */
+  .divider-hit { position: absolute; top: 0; bottom: 0; width: 7px; margin-left: -3px; cursor: col-resize; z-index: 10; }
+  body.col-drag { cursor: col-resize; user-select: none; }
+
+  /* 行间分隔线：顶格延伸到面板最左缘，拖拽调整单行高度 */
+  .row-line { position: absolute; left: 0; right: 0; bottom: -3px; height: 7px; cursor: row-resize; z-index: 6; }
+  .row-line::after { content: ""; position: absolute; left: 0; right: 0; top: 3px; height: 1px; background: var(--border-soft); }
+  .row-line:hover::after, .row-line.active::after { background: var(--accent); }
+  body.row-drag { cursor: row-resize; user-select: none; }
+
+  /* ---------- 描述面板 ---------- */
+  .desc {
+    flex: none; min-height: 64px; padding: 8px 12px;
+    border-top: 1px solid var(--border); background: var(--bg-desc);
+  }
+  .desc-name { font-weight: 700; color: var(--text-strong); margin-bottom: 3px; }
+  .desc-text { color: var(--text-sec); line-height: 1.55; max-width: 640px; }
+
+  /* ---------- 菜单 ---------- */
+  .menu {
+    position: absolute; z-index: 60; min-width: 190px;
+    background: var(--menu-bg); border: 1px solid var(--border); border-radius: 6px;
+    box-shadow: var(--shadow); padding: 4px;
+  }
+  .mi { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 4px; cursor: pointer; white-space: nowrap; }
+  .mi:hover { background: var(--bg-hover); }
+  .mi.disabled { opacity: .4; pointer-events: none; }
+  .mi .tick { width: 14px; flex: none; }
+  .mi-sep { height: 1px; background: var(--border); margin: 4px 6px; }
+
+  /* toast */
+  .toast {
+    position: fixed; right: 16px; bottom: 84px; z-index: 99;
+    background: var(--menu-bg); border: 1px solid var(--border); color: var(--text);
+    box-shadow: var(--shadow); border-radius: 6px; padding: 8px 12px;
+    opacity: 0; transition: opacity .18s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; border: 2px solid transparent; background-clip: content-box; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-sec); background-clip: content-box; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- 工具条 -->
+  <div class="toolbar">
+    <button class="tbtn active" id="btnCat" title="分类视图">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+        <rect x="1.5" y="2" width="3" height="3" rx=".5"/><path d="M6.5 3.5h8"/>
+        <rect x="1.5" y="6.5" width="3" height="3" rx=".5"/><path d="M6.5 8h8"/>
+        <rect x="1.5" y="11" width="3" height="3" rx=".5"/><path d="M6.5 12.5h8"/>
+      </svg>
+    </button>
+    <button class="tbtn" id="btnAlpha" title="按字母顺序排序">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+        <text x="1" y="7.5" font-size="7.5" fill="currentColor" stroke="none" font-family="Segoe UI, sans-serif" font-weight="600">A</text>
+        <text x="1" y="15" font-size="7.5" fill="currentColor" stroke="none" font-family="Segoe UI, sans-serif" font-weight="600">Z</text>
+        <path d="M12.5 3v9.5m0 0l-2.5-2.7m2.5 2.7l2.5-2.7"/>
+      </svg>
+    </button>
+    <div class="searchbox" id="searchBox">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+        <circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/>
+      </svg>
+      <input id="search" placeholder="搜索属性" autocomplete="off" spellcheck="false">
+      <button class="search-clear" id="searchClear" title="清除">✕</button>
+    </div>
+    <div class="spacer"></div>
+    <button class="tbtn" id="btnTheme" title="切换浅色/深色主题">
+      <svg id="iconMoon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+        <path d="M13.5 9.5A6 6 0 116.5 2.5a5 5 0 007 7z"/>
+      </svg>
+      <svg id="iconSun" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" style="display:none">
+        <circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6L13 13M13 3l-1.4 1.4M4.4 11.6L3 13"/>
+      </svg>
+    </button>
+    <button class="tbtn" id="btnMore" title="更多选项">
+      <svg viewBox="0 0 16 16" fill="currentColor">
+        <circle cx="3" cy="8" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="13" cy="8" r="1.4"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- 属性表格 -->
+  <div class="grid-wrap">
+    <div class="grid" id="grid">
+      <div class="rows" id="rows"></div>
+      <div class="divider-hit" id="dividerHit" style="left:148px"></div>
+    </div>
+  </div>
+
+  <!-- 描述面板 -->
+  <div class="desc" id="descPane">
+    <div class="desc-name" id="descName">选择属性</div>
+    <div class="desc-text" id="descText">在上方选择一个属性以查看说明。</div>
+  </div>
+
+  <!-- 更多菜单 -->
+  <div class="menu" id="moreMenu" style="display:none; top:34px; right:8px;">
+    <div class="mi" id="miExpand"><span class="tick"></span>全部展开</div>
+    <div class="mi" id="miCollapse"><span class="tick"></span>全部折叠</div>
+    <div class="mi-sep"></div>
+    <div class="mi" id="miDesc"><span class="tick" id="descTick">✓</span>显示描述面板</div>
+    <div class="mi-sep"></div>
+    <div class="mi" id="miResetAll"><span class="tick"></span>重置全部修改</div>
+  </div>
+
+  <!-- 行右键菜单 -->
+  <div class="menu" id="ctxMenu" style="display:none; min-width:170px;">
+    <div class="mi" id="miReset"><span class="tick"></span>重置为默认值</div>
+    <div class="mi" id="miExpandNode"><span class="tick"></span>展开/折叠子项</div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+"use strict";
+
+/* ================================================================
+ * 数据模型 —— 无限层级树
+ * 节点: { id, kind: "group"|"prop", name, children?: Node[] }
+ * prop 额外: type/value/def/desc 以及编辑器参数（options/min/max/...）
+ *   - prop 带 children 即为"可展开属性"（VS 的 ExpandableObject 语义），
+ *     值列显示 summary（可由 summaryFn 根据子项动态计算）
+ *   - visibleWhen(node) 动态可见性（依赖其他属性的值）
+ * value !== def 时名称加粗；可展开属性的加粗看整棵子树
+ * ================================================================ */
+const P = (id, name, type, value, def, desc, extra) =>
+  Object.assign({ id, kind: "prop", name, type, value, def, desc }, extra || {});
+
+const TREE = [
+  { id: "g1", kind: "group", name: "外观", children: [
+    P("p01", "名称", "text", "阀门-01", "", "节点的显示名称，同时显示在画布与搜索结果中。"),
+    P("p02", "可见", "boolean", true, true, "关闭后节点在画布中隐藏，但仍参与计算与导出。"),
+    P("p03", "填充颜色", "color", "#3B82F6", "#3B82F6", "节点主体的填充颜色，支持 #RRGGBB 与 #AARRGGBB 格式。"),
+    P("p04", "不透明度", "percent", 72, 100, "节点整体不透明度，拖动滑块实时预览，松开后提交。"),
+    { id: "p05", kind: "prop", name: "字体", type: "summary", summary: "", desc: "文本的全局字体设置。", children: [
+      P("p05a", "字体族", "combo", "微软雅黑", "微软雅黑", "渲染文本使用的字体族。", { options: ["微软雅黑", "宋体", "Consolas", "Arial"] }),
+      P("p05b", "字号", "number", 12, 12, "文本的字号大小。", { min: 8, max: 72, step: 1, unit: "px" }),
+      P("p05c", "粗细", "combo", "常规", "常规", "字体的粗细样式。", { options: ["细体", "常规", "粗体"] }),
+      P("p05d", "斜体", "boolean", false, false, "是否以斜体渲染文本。"),
+    ] },
+  ] },
+  { id: "g2", kind: "group", name: "布局", children: [
+    { id: "p06", kind: "prop", name: "位置", type: "summary", summary: "", desc: "节点在画布中的位置。", children: [
+      P("p06a", "X", "number", 120, 0, "节点在画布中的横坐标。", { min: -9999, max: 9999, step: 1, unit: "px" }),
+      P("p06b", "Y", "number", 86, 0, "节点在画布中的纵坐标。", { min: -9999, max: 9999, step: 1, unit: "px" }),
+    ] },
+    { id: "p07", kind: "prop", name: "尺寸", type: "summary", summary: "", desc: "节点尺寸与约束。", children: [
+      P("p07a", "宽", "number", 160, 160, "节点宽度。", { min: 40, max: 960, step: 2, unit: "px" }),
+      P("p07b", "高", "number", 48, 48, "节点高度。", { min: 24, max: 720, step: 2, unit: "px" }),
+      P("p07c", "保持比例", "boolean", false, false, "调整时锁定宽高比。"),
+    ] },
+    P("p08", "旋转", "number", 0, 0, "绕旋转中心的旋转角度，逆时针为正。", { min: -360, max: 360, step: 5, unit: "°" }),
+    { id: "p09", kind: "prop", name: "旋转中心", type: "summary", summary: "", desc: "旋转锚点，取值为中心的百分比坐标。", children: [
+      P("p09a", "中心 X", "percent", 50, 50, "旋转中心的横坐标（占宽度百分比）。"),
+      P("p09b", "中心 Y", "percent", 50, 50, "旋转中心的纵坐标（占高度百分比）。"),
+    ] },
+  ] },
+  { id: "g3", kind: "group", name: "行为", children: [
+    P("p10", "参与计算", "combo", "仅预览", "参与计算", "该节点是否参与仿真计算与结果导出。", { options: ["参与计算", "仅预览", "不参与"] }),
+    P("p11", "触发方式", "radio", "自动", "手动", "节点开始执行的触发方式：手动点击、随流程自动或按定时计划。", { options: ["手动", "自动", "定时"] }),
+    P("p12", "优先级", "combo", "中", "中", "同一调度周期内的执行先后顺序。", { options: ["高", "中", "低"] }),
+    { id: "p13", kind: "prop", name: "重试策略", type: "summary", summary: "", desc: "执行失败后的自动重试策略。", children: [
+      P("p13a", "最大重试次数", "number", 3, 3, "失败后最大的自动重试次数。", { min: 0, max: 99, step: 1, unit: "次" }),
+      P("p13b", "重试间隔", "number", 500, 500, "两次重试之间的等待时间。", { min: 0, max: 60000, step: 100, unit: "ms" }),
+      { id: "p13c", kind: "prop", name: "指数退避", type: "boolean", value: true, def: false, desc: "重试间隔按系数逐次放大，避免雪崩。", children: [
+        P("p13ca", "退避系数", "number", 1.6, 1.5, "每次重试间隔的放大倍数（仅指数退避时可用）。", { min: 1, max: 5, step: 0.1,
+          visibleWhen: () => ALL["p13c"].value === true }),
+      ] },
+    ] },
+    P("p14", "便签", "multiline", "定期检查入口压力是否满足工况要求。", "", "仅用于标注说明，不参与计算，随模型一并保存。"),
+  ] },
+  { id: "g4", kind: "group", name: "文件", children: [
+    P("p15", "完整路径", "readonly", "D:\\models\\plant-v2\\pump_station.sfc", null, "模型文件的绝对路径（只读）。"),
+    P("p16", "编码", "combo", "Unicode (UTF-8)", "Unicode (UTF-8)", "文档的字符编码。", { options: ["Unicode (UTF-8)", "Unicode (UTF-16 LE)", "GB2312", "ASCII"] }),
+    P("p17", "输出目录", "path", "D:\\exports\\plant-v2", "D:\\exports\\plant-v2", "仿真结果的输出目录。"),
+    P("p18", "样式表", "pathfull", "", "", "节点在报告中使用的样式表文件，留空使用默认样式。"),
+    { id: "p19", kind: "prop", name: "端口列表", type: "collection", value: "", desc: "节点的端口集合，展开查看各端口配置。", children: [
+      { id: "p19a", kind: "prop", name: "进口 #1", type: "summary", summary: "", desc: "端口 0 的配置。", children: [
+        P("p19aa", "编号", "text", "IN-01", "IN-01", "端口的唯一编号。"),
+        P("p19ab", "类型", "combo", "进水", "进水", "端口的介质方向。", { options: ["进水", "出水", "排污"] }),
+        P("p19ac", "直径", "number", 200, 200, "端口公称直径。", { min: 50, max: 2000, step: 10, unit: "mm" }),
+      ] },
+      { id: "p19b", kind: "prop", name: "出口 #1", type: "summary", summary: "", desc: "端口 1 的配置。", children: [
+        P("p19ba", "编号", "text", "OUT-01", "OUT-01", "端口的唯一编号。"),
+        P("p19bb", "类型", "combo", "出水", "出水", "端口的介质方向。", { options: ["进水", "出水", "排污"] }),
+        P("p19bc", "直径", "number", 150, 150, "端口公称直径。", { min: 50, max: 2000, step: 10, unit: "mm" }),
+      ] },
+      { id: "p19c", kind: "prop", name: "排污口", type: "summary", summary: "", desc: "端口 2 的配置。", children: [
+        P("p19ca", "编号", "text", "DW-01", "DW-01", "端口的唯一编号。"),
+        P("p19cb", "类型", "combo", "排污", "排污", "端口的介质方向。", { options: ["进水", "出水", "排污"] }),
+        P("p19cc", "直径", "number", 80, 80, "端口公称直径。", { min: 50, max: 2000, step: 10, unit: "mm" }),
+      ] },
+    ] },
+  ] },
+];
+
+/* 建立索引与父子引用 */
+const ALL = {};
+(function walkBuild(nodes, parent) {
+  for (const n of nodes) {
+    n.parent = parent;
+    ALL[n.id] = n;
+    if (n.children) walkBuild(n.children, n);
+  }
+})(TREE, null);
+
+/* 可展开属性的动态摘要：由子项实时计算 */
+function childOf(id) { return ALL[id]; }
+ALL["p05"].summaryFn = () => {
+  const c = ALL["p05"];
+  return `${childOf("p05a").value}, ${childOf("p05b").value}px, ${childOf("p05c").value}${childOf("p05d").value ? " 斜体" : ""}`;
+};
+ALL["p06"].summaryFn = () => `${childOf("p06a").value}, ${childOf("p06b").value}`;
+ALL["p07"].summaryFn = () => `${childOf("p07a").value} × ${childOf("p07b").value}`;
+ALL["p09"].summaryFn = () => `${childOf("p09a").value}%, ${childOf("p09b").value}%`;
+ALL["p13"].summaryFn = () => `${childOf("p13a").value} 次 / ${childOf("p13b").value}ms`;
+ALL["p19"].summaryFn = () => `${ALL["p19"].children.length} 项`;
+ALL["p19a"].summaryFn = () => `DN${childOf("p19ac").value} · ${childOf("p19ab").value}`;
+ALL["p19b"].summaryFn = () => `DN${childOf("p19bc").value} · ${childOf("p19bb").value}`;
+ALL["p19c"].summaryFn = () => `DN${childOf("p19cc").value} · ${childOf("p19cb").value}`;
+// 初始化静态摘要
+for (const n of Object.values(ALL)) if (n.summaryFn && n.type === "summary") n.summary = n.summaryFn();
+ALL["p19"].value = "3 项";
+
+const state = {
+  mode: "categorized",        // categorized | alphabetical
+  theme: "dark",
+  query: "",
+  selectedId: "p01",
+  collapsed: new Set(),       // 可折叠节点 id（分组 + 可展开属性）
+  descVisible: true,
+  nameW: 148,
+  rowHs: new Map(),           // 单行高度覆盖：节点 id → px（拖行间横线设置）
+};
+
+/* ---------------- 工具 ---------------- */
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const isModified = (n) => n.kind === "prop" && n.def !== undefined && n.def !== null && String(n.value) !== String(n.def);
+function modifiedDeep(n) {
+  if (isModified(n)) return true;
+  return (n.children || []).some(modifiedDeep);
+}
+const matchQuery = (n) => !state.query ||
+  n.name.toLowerCase().includes(state.query) ||
+  (n.desc || "").toLowerCase().includes(state.query);
+const hl = (s) => { // 搜索命中高亮
+  if (!state.query) return esc(s);
+  const i = s.toLowerCase().indexOf(state.query);
+  if (i < 0) return esc(s);
+  return esc(s.slice(0,i)) + "<mark>" + esc(s.slice(i, i+state.query.length)) + "</mark>" + esc(s.slice(i+state.query.length));
+};
+const indentX = (depth) => 8 + depth * 16;
+
+let toastTimer = null;
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 1600);
+}
+function setPropValue(p, v) {
+  p.value = v;
+  // 真实控件在此触发 Preview/Commit 事件（GraphKit 侧换算为可撤销命令）
+  // 沿祖先链刷新：加粗状态 + 动态摘要
+  let node = p;
+  while (node) {
+    if (node.summaryFn) node.summary = node.summaryFn(); // 摘要回写模型，重渲染后不丢失
+    const row = document.querySelector('[data-row="' + node.id + '"]');
+    if (row) {
+      const nm = row.querySelector(".name");
+      if (nm && node.kind === "prop") nm.classList.toggle("modified", modifiedDeep(node));
+      const sum = row.querySelector("[data-sum]");
+      if (sum && node.summaryFn) sum.textContent = node.summary;
+    }
+    node = node.parent;
+  }
+}
+function resetSubtree(n) {
+  if (n.kind !== "prop") return;
+  n.value = n.def !== null ? n.def : n.value;
+  (n.children || []).forEach(resetSubtree);
+}
+function toggleNode(id) {
+  state.collapsed.has(id) ? state.collapsed.delete(id) : state.collapsed.add(id);
+  render();
+}
+function closeMenus() {
+  $("moreMenu").style.display = "none";
+  $("ctxMenu").style.display = "none";
+  document.querySelectorAll(".combo-menu").forEach(m => m.remove());
+  document.querySelectorAll(".combo.open").forEach(c => c.classList.remove("open"));
+}
+
+/* ---------------- 编辑器构建 ---------------- */
+function edText(p) {
+  const el = document.createElement("input");
+  el.className = "ed"; el.value = p.value ?? ""; el.spellcheck = false;
+  el.title = p.value || "";
+  el.addEventListener("keydown", e => { if (e.key === "Enter") el.blur(); if (e.key === "Escape") { el.value = p.value; el.blur(); } });
+  el.addEventListener("change", () => setPropValue(p, el.value));
+  return el;
+}
+function edMultiline(p) {
+  const el = document.createElement("textarea");
+  el.className = "ed"; el.value = p.value ?? ""; el.spellcheck = false;
+  el.addEventListener("keydown", e => { if (e.key === "Escape") { el.value = p.value; el.blur(); } });
+  el.addEventListener("change", () => setPropValue(p, el.value));
+  return el;
+}
+function edReadonly(p) {
+  const el = document.createElement("div");
+  el.className = "ed readonly"; el.textContent = p.value ?? ""; el.title = p.value || "";
+  return el;
+}
+function edSummary(p) {
+  const el = document.createElement("div");
+  el.className = "cv-sum"; el.dataset.sum = "1";
+  el.textContent = p.summary || ""; el.title = p.summary || "";
+  return el;
+}
+function edNumber(p) {
+  const wrap = document.createElement("div"); wrap.className = "num-wrap";
+  const el = document.createElement("input");
+  el.className = "ed"; el.type = "text"; el.value = p.value; el.spellcheck = false;
+  const clamp = v => Math.min(p.max, Math.max(p.min, Math.round(v * 1000) / 1000));
+  const commit = () => {
+    const n = parseFloat(el.value);
+    if (isNaN(n)) { el.value = p.value; return; }
+    const v = clamp(n); el.value = v; setPropValue(p, v);
+  };
+  el.addEventListener("keydown", e => {
+    if (e.key === "Enter") { commit(); el.blur(); }
+    if (e.key === "Escape") { el.value = p.value; el.blur(); }
+    if (e.key === "ArrowUp") { el.value = clamp((parseFloat(el.value)||0) + p.step); commit(); e.preventDefault(); }
+    if (e.key === "ArrowDown") { el.value = clamp((parseFloat(el.value)||0) - p.step); commit(); e.preventDefault(); }
+  });
+  el.addEventListener("blur", commit);
+  wrap.appendChild(el);
+  if (p.unit) { const u = document.createElement("span"); u.className = "unit"; u.textContent = p.unit; wrap.appendChild(u); }
+  const spin = document.createElement("div"); spin.className = "spin";
+  const up = document.createElement("button"); up.textContent = "▲"; up.title = "增加";
+  const dn = document.createElement("button"); dn.textContent = "▼"; dn.title = "减少";
+  up.addEventListener("click", () => { el.value = clamp((parseFloat(el.value)||0) + p.step); commit(); });
+  dn.addEventListener("click", () => { el.value = clamp((parseFloat(el.value)||0) - p.step); commit(); });
+  spin.append(up, dn); wrap.appendChild(spin);
+  return wrap;
+}
+function edBoolean(p) {
+  const el = document.createElement("input");
+  el.className = "cb"; el.type = "checkbox"; el.checked = !!p.value;
+  el.addEventListener("change", () => {
+    setPropValue(p, el.checked);
+    if ((p.children || []).length || Object.values(ALL).some(n => n.visibleWhen)) render(); // 动态可见性依赖
+  });
+  return el;
+}
+function edCombo(p, cell) {
+  const el = document.createElement("div"); el.className = "combo";
+  el.innerHTML = '<span class="cv"></span><span class="arr">▼</span>';
+  const cv = el.querySelector(".cv");
+  const paint = () => { cv.textContent = p.value; };
+  paint();
+  el.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const wasOpen = el.classList.contains("open");
+    closeMenus();
+    if (wasOpen) return;
+    el.classList.add("open");
+    const menu = document.createElement("div"); menu.className = "combo-menu";
+    p.options.forEach(op => {
+      const it = document.createElement("div");
+      it.className = "combo-item" + (op === p.value ? " sel" : "");
+      it.innerHTML = '<span class="tick">' + (op === p.value ? "✓" : "") + '</span>' + esc(op);
+      it.addEventListener("click", () => { setPropValue(p, op); paint(); closeMenus(); });
+      menu.appendChild(it);
+    });
+    cell.appendChild(menu);
+  });
+  return el;
+}
+function edRadio(p) {
+  const seg = document.createElement("div"); seg.className = "seg";
+  p.options.forEach(op => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = op;
+    if (op === p.value) b.classList.add("on");
+    b.addEventListener("click", () => {
+      seg.querySelectorAll("button").forEach(x => x.classList.remove("on"));
+      b.classList.add("on");
+      setPropValue(p, op);
+    });
+    seg.appendChild(b);
+  });
+  return seg;
+}
+function edPercent(p) {
+  const wrap = document.createElement("div"); wrap.className = "pct";
+  const r = document.createElement("input");
+  r.type = "range"; r.min = 0; r.max = 100; r.step = 1; r.value = p.value;
+  const lbl = document.createElement("span"); lbl.className = "pct-val"; lbl.textContent = p.value + "%";
+  r.addEventListener("input", () => { lbl.textContent = r.value + "%"; });           // 预览
+  r.addEventListener("change", () => setPropValue(p, parseInt(r.value, 10)));        // 提交
+  wrap.append(r, lbl);
+  return wrap;
+}
+function edColor(p) {
+  const wrap = document.createElement("div"); wrap.className = "color-ed";
+  const sw = document.createElement("input"); sw.className = "swatch"; sw.type = "color"; sw.value = (p.value || "#000000").slice(0,7);
+  const hex = document.createElement("span"); hex.className = "hex"; hex.textContent = p.value;
+  sw.addEventListener("input", () => { hex.textContent = sw.value; });                // 预览
+  sw.addEventListener("change", () => setPropValue(p, sw.value));                     // 提交
+  wrap.append(sw, hex);
+  return wrap;
+}
+function edPath(p) {
+  const wrap = document.createElement("div"); wrap.className = "path-wrap";
+  const el = document.createElement("input");
+  el.className = "ed"; el.value = p.value ?? ""; el.placeholder = "(未设置)"; el.spellcheck = false;
+  el.addEventListener("keydown", e => { if (e.key === "Enter") el.blur(); if (e.key === "Escape") { el.value = p.value; el.blur(); } });
+  el.addEventListener("change", () => setPropValue(p, el.value));
+  const btn = document.createElement("button"); btn.className = "mini-btn"; btn.textContent = "…"; btn.title = "浏览…";
+  btn.addEventListener("click", () => toast("原型：此处打开文件/目录选择对话框"));
+  wrap.append(el, btn);
+  return wrap;
+}
+function edPathFull(p) {
+  const btn = document.createElement("button");
+  btn.className = "mini-btn full-btn";
+  btn.innerHTML = '<span class="dots">…</span>';
+  btn.title = "浏览…";
+  btn.addEventListener("click", () => toast("原型：此处打开文件选择对话框"));
+  return btn;
+}
+function edCollection(p) {
+  const el = document.createElement("div"); el.className = "coll";
+  el.innerHTML = '<span class="cnt">' + esc(p.summaryFn ? p.summaryFn() : (p.value || "")) + '</span><span class="more">…</span>';
+  el.addEventListener("click", () => toast("原型：此处打开集合编辑器"));
+  return el;
+}
+
+function buildEditor(p, cell) {
+  switch (p.type) {
+    case "text":      return edText(p);
+    case "multiline": return edMultiline(p);
+    case "readonly":  return edReadonly(p);
+    case "summary":   return edSummary(p);
+    case "number":    return edNumber(p);
+    case "boolean":   return edBoolean(p);
+    case "combo":     return edCombo(p, cell);
+    case "radio":     return edRadio(p);
+    case "percent":   return edPercent(p);
+    case "color":     return edColor(p);
+    case "path":      return edPath(p);
+    case "pathfull":  return edPathFull(p);
+    case "collection":return edCollection(p);
+    default:          return edText(p);
+  }
+}
+
+/* ---------------- 渲染 ---------------- */
+let FLAT = false; // 字母模式：整表平铺，无分组无层级
+
+function makeNameCell(n, depth) {
+  const c = document.createElement("div");
+  c.className = "cell name";
+  c.style.paddingLeft = indentX(depth) + "px";
+  for (let i = 0; i < depth; i++) { // 层级参考线
+    const g = document.createElement("div");
+    g.className = "guide";
+    g.style.left = (indentX(i) + 6) + "px";
+    c.appendChild(g);
+  }
+  if (!FLAT && n.kind === "prop" && n.children && n.children.length) {
+    const tw = document.createElement("span");
+    tw.className = "tw"; tw.textContent = "▾"; tw.title = "展开/折叠";
+    tw.addEventListener("click", (e) => { e.stopPropagation(); toggleNode(n.id); });
+    c.appendChild(tw);
+  }
+  const nm = document.createElement("span");
+  nm.className = "nm";
+  nm.innerHTML = hl(n.name);
+  c.appendChild(nm);
+  if (n.kind === "prop" && modifiedDeep(n)) c.classList.add("modified");
+  return c;
+}
+function makeValueCell(p) {
+  const c = document.createElement("div");
+  c.className = "cell value";
+  c.appendChild(buildEditor(p, c));
+  return c;
+}
+function makePropRow(p, depth) {
+  p._depth = depth; // 供重置后重建行使用
+  const hasKids = (p.children || []).length > 0;
+  const row = document.createElement("div");
+  row.className = "row" + (hasKids && state.collapsed.has(p.id) && !state.query ? " collapsed" : "") +
+                  (p.id === state.selectedId ? " selected" : "");
+  row.dataset.row = p.id;
+  row.appendChild(makeNameCell(p, depth));
+  row.appendChild(makeValueCell(p));
+  row.addEventListener("click", () => selectProp(p));
+  if (hasKids && !FLAT) {
+    row.querySelector(".name").addEventListener("dblclick", (e) => { e.stopPropagation(); toggleNode(p.id); });
+  }
+  row.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    selectProp(p);
+    showCtxMenu(e, p);
+  });
+  applyStoredRowHeight(row, p);
+  attachRowLine(row, p);
+  return row;
+}
+function makeGroupRow(n, depth) {
+  const row = document.createElement("div");
+  row.className = "row group-row" + (state.collapsed.has(n.id) && !state.query ? " collapsed" : "");
+  row.dataset.group = n.id;
+  row.style.gridTemplateColumns = "1fr";
+  const c = document.createElement("div");
+  c.className = "cell";
+  c.style.paddingLeft = (2 + depth * 16) + "px";
+  for (let i = 0; i < depth; i++) {
+    const g = document.createElement("div");
+    g.className = "guide";
+    g.style.left = (indentX(i) + 6) + "px";
+    c.appendChild(g);
+  }
+  c.insertAdjacentHTML("beforeend", '<span class="chev">▾</span><span>' + hl(n.name) + '</span>');
+  row.appendChild(c);
+  row.addEventListener("click", () => { if (!state.query) toggleNode(n.id); });
+  applyStoredRowHeight(row, n);
+  attachRowLine(row, n);
+  return row;
+}
+
+/* 过滤：搜索时保留命中节点及其祖先链；命中节点子树全展 */
+function filterTree(nodes) {
+  const out = [];
+  for (const n of nodes) {
+    if (n.kind === "group") {
+      const kids = filterTree(n.children || []);
+      if (kids.length) out.push(Object.assign({}, n, { children: kids }));
+    } else if (n.children && n.children.length) {
+      if (matchQuery(n)) { out.push(n); continue; }
+      const kids = filterTree(n.children);
+      if (kids.length) out.push(Object.assign({}, n, { children: kids }));
+    } else if (matchQuery(n)) {
+      out.push(n);
+    }
+  }
+  return out;
+}
+
+function renderNodes(nodes, depth, host, flat) {
+  for (const n of nodes) {
+    if (n.kind === "group") {
+      if (flat) continue; // 平铺模式不渲染分组
+      const collapsed = !state.query && state.collapsed.has(n.id);
+      host.appendChild(makeGroupRow(n, depth));
+      if (!collapsed) renderNodes(n.children, depth + 1, host, flat);
+    } else {
+      if (n.visibleWhen && !n.visibleWhen()) continue;   // 动态可见性
+      host.appendChild(makePropRow(n, depth));
+      if (!flat && (n.children || []).length) {
+        const collapsed = !state.query && state.collapsed.has(n.id);
+        if (!collapsed) renderNodes(n.children, depth + 1, host, flat);
+      }
+    }
+  }
+}
+
+/* 字母模式：拆掉分组、摊平所有层级，全部属性按名称统一排序（VS 语义） */
+function flattenAlpha(nodes, out) {
+  for (const n of nodes) {
+    if (n.kind === "group") flattenAlpha(n.children || [], out);
+    else {
+      out.push(n);
+      if (n.children && n.children.length) flattenAlpha(n.children, out);
+    }
+  }
+  return out;
+}
+
+function render() {
+  const host = $("rows");
+  host.innerHTML = "";
+  FLAT = state.mode === "alphabetical";
+  const tree = state.query ? filterTree(TREE) : TREE;
+
+  if (!FLAT) {
+    renderNodes(tree, 0, host, false);
+  } else {
+    const flat = flattenAlpha(tree, []);
+    flat.sort((a, b) => a.name.localeCompare(b.name, "zh-Hans-CN"));
+    renderNodes(flat, 0, host, true);
+  }
+
+  if (!host.querySelector(".row")) {
+    host.innerHTML = '<div class="empty">' +
+      (state.query ? "无匹配属性" : "所有分组已折叠") + "</div>";
+  }
+}
+
+function selectProp(p) {
+  state.selectedId = p.id;
+  document.querySelectorAll(".row.selected").forEach(r => r.classList.remove("selected"));
+  const row = document.querySelector('[data-row="' + p.id + '"]');
+  if (row) row.classList.add("selected");
+  $("descName").textContent = p.name;
+  $("descText").textContent = p.desc || "（无说明）";
+}
+
+function showCtxMenu(e, p) {
+  const menu = $("ctxMenu");
+  const item = $("miReset");
+  item.classList.toggle("disabled", !modifiedDeep(p));
+  const ex = $("miExpandNode");
+  ex.style.display = (p.children && p.children.length) ? "" : "none";
+  menu.style.display = "block";
+  const gw = $("grid").getBoundingClientRect();
+  let x = e.clientX - gw.left + 2, y = e.clientY - gw.top + 2;
+  x = Math.min(x, gw.width - 180); y = Math.min(y, gw.height - 70);
+  menu.style.left = x + "px"; menu.style.top = y + "px";
+  menu.style.position = "absolute";
+  $("grid").appendChild(menu);
+  item.onclick = () => {
+    resetSubtree(p);
+    render(); closeMenus();
+    toast("已重置：" + p.name + (p.children && p.children.length ? "（含子项）" : ""));
+  };
+  ex.onclick = () => { toggleNode(p.id); closeMenus(); };
+}
+
+/* ---------------- 工具条事件 ---------------- */
+function setMode(m) {
+  state.mode = m;
+  $("btnCat").classList.toggle("active", m === "categorized");
+  $("btnAlpha").classList.toggle("active", m === "alphabetical");
+  render();
+}
+$("btnCat").addEventListener("click", () => setMode("categorized"));
+$("btnAlpha").addEventListener("click", () => setMode("alphabetical"));
+
+const searchEl = $("search");
+searchEl.addEventListener("input", () => {
+  state.query = searchEl.value.trim().toLowerCase();
+  $("searchBox").classList.toggle("has-text", !!searchEl.value);
+  render();
+});
+$("searchClear").addEventListener("click", () => {
+  searchEl.value = ""; state.query = "";
+  $("searchBox").classList.remove("has-text");
+  render(); searchEl.focus();
+});
+
+$("btnTheme").addEventListener("click", () => {
+  state.theme = state.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = state.theme;
+  $("iconMoon").style.display = state.theme === "dark" ? "" : "none";
+  $("iconSun").style.display  = state.theme === "light" ? "" : "none";
+});
+
+$("btnMore").addEventListener("click", (e) => {
+  e.stopPropagation();
+  const m = $("moreMenu");
+  const visible = m.style.display !== "none";
+  closeMenus();
+  m.style.display = visible ? "none" : "block";
+  $("descTick").textContent = state.descVisible ? "✓" : "";
+});
+$("miExpand").addEventListener("click", () => { state.collapsed.clear(); render(); closeMenus(); });
+$("miCollapse").addEventListener("click", () => {
+  Object.values(ALL).forEach(n => {
+    if (n.kind === "group" || (n.children && n.children.length)) state.collapsed.add(n.id);
+  });
+  render(); closeMenus();
+});
+$("miDesc").addEventListener("click", () => {
+  state.descVisible = !state.descVisible;
+  $("descPane").style.display = state.descVisible ? "" : "none";
+  $("descTick").textContent = state.descVisible ? "✓" : "";
+  closeMenus();
+});
+$("miResetAll").addEventListener("click", () => {
+  Object.values(ALL).forEach(resetSubtree);
+  render(); closeMenus();
+  toast("已重置全部修改");
+});
+
+document.addEventListener("mousedown", (e) => {
+  if (!e.target.closest(".menu") && !e.target.closest("#btnMore") && !e.target.closest(".combo")) closeMenus();
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenus(); });
+
+/* ---------------- 列宽拖拽 / 单行高度调整 ---------------- */
+(function () {
+  const hit = $("dividerHit"), grid = $("grid");
+  const applyLayout = () => {
+    grid.style.setProperty("--name-w", state.nameW + "px");
+    hit.style.left = state.nameW + "px";
+  };
+  applyLayout();
+
+  // 列宽：左右拖动名称列分隔线
+  let colDragging = false;
+  hit.addEventListener("mousedown", (e) => { colDragging = true; document.body.classList.add("col-drag"); e.preventDefault(); });
+  window.addEventListener("mousemove", (e) => {
+    if (!colDragging) return;
+    const x = e.clientX - grid.getBoundingClientRect().left;
+    state.nameW = Math.min(340, Math.max(90, x));
+    applyLayout();
+  });
+  window.addEventListener("mouseup", () => { colDragging = false; document.body.classList.remove("col-drag"); });
+})();
+
+/* 行间横线：拖拽只调整该行高度；双击恢复默认 */
+function applyStoredRowHeight(row, n) {
+  const h = state.rowHs.get(n.id);
+  if (h) row.style.height = h + "px";
+}
+function attachRowLine(row, n) {
+  const line = document.createElement("div");
+  line.className = "row-line";
+  line.title = "拖拽调整本行高度，双击恢复默认";
+  line.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    const startY = e.clientY;
+    const startH = row.getBoundingClientRect().height;
+    line.classList.add("active");
+    document.body.classList.add("row-drag");
+    const move = (ev) => {
+      const h = Math.min(200, Math.max(20, Math.round(startH + ev.clientY - startY)));
+      state.rowHs.set(n.id, h);
+      row.style.height = h + "px";
+    };
+    const up = () => {
+      line.classList.remove("active");
+      document.body.classList.remove("row-drag");
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseup", up);
+    };
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", up);
+  });
+  line.addEventListener("dblclick", () => {
+    state.rowHs.delete(n.id);
+    row.style.height = "";
+  });
+  row.appendChild(line);
+}
+
+/* ---------------- 启动 ---------------- */
+render();
+selectProp(ALL["p01"]);
+</script>
+</body>
+</html>
