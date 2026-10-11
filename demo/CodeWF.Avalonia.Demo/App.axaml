@@ -12,5 +12,7 @@
     <codewf:DataGridSemiTheme />
     <codewf:TreeDataGridSemiTheme />
     <codewf:DockSemiTheme />
+    <codewf:CodeWFLogTheme />
+    <codewf:MarkdownFullThemes />
   </Application.Styles>
 </prism:PrismApplication>

@@ -1,0 +1,170 @@
+{
+  "language": "English",
+  "description": "CodeWF.Avalonia Demo English resources.",
+  "cultureName": "en-US",
+  "Demo": {
+    "Shell": {
+      "Palette": "Palette",
+      "Dark": "Dark",
+      "Light": "Light",
+      "Properties": "Props",
+      "Log": "Log",
+      "Navigation": "Navigation",
+      "WriteLogs": "Write sample logs"
+    },
+    "Group": {
+      "Home": "Home",
+      "Markdown": "Markdown",
+      "Data": "Data",
+      "Controls": "Controls",
+      "Layout": "Layout",
+      "Infrastructure": "Infrastructure",
+      "Views": "Views"
+    },
+    "Item": {
+      "Welcome": "Welcome",
+      "MarkdownViewer": "MarkdownViewer",
+      "MarkdownLite": "Markdown Lite",
+      "MarkdownEditor": "Editor",
+      "MarkdownLiveEditor": "Live Editor",
+      "MarkdownExport": "Export",
+      "DataGrid": "DataGrid",
+      "PropertyGrid": "PropertyGrid",
+      "CodeWFWindow": "CodeWFWindow",
+      "SearchListBox": "SearchListBox",
+      "Transfer": "Transfer",
+      "Status": "Status Components",
+      "Guide": "Guide",
+      "AppGuide": "App Guide",
+      "WindowedStackPanel": "WindowedStackPanel",
+      "ColumnDisplayEditor": "ColumnDisplayEditor",
+      "MarkupExtension": "Markup Extensions",
+      "Log": "Log",
+      "Lang": "Lang",
+      "Dock": "Dock",
+      "TrapezoidTab": "Trapezoid Tabs"
+    },
+    "Segment": {
+      "Demo": "Demo",
+      "Xaml": "XAML",
+      "CSharp": "C#"
+    },
+    "Palette": {
+      "Default": "Default",
+      "Aquatic": "Aquatic",
+      "Desert": "Desert",
+      "Dusk": "Dusk",
+      "NightSky": "NightSky",
+      "HighContrast": "High Contrast"
+    },
+    "Page": {
+      "Welcome": {
+        "Title": "Welcome to CodeWF.Avalonia",
+        "Desc": "Control library showcase: pick a demo from the left tree, switch Demo / XAML / C# segments in each document header, drive the demo from the property panel, and watch live logs at the bottom."
+      },
+      "MarkdownViewer": {
+        "Title": "MarkdownViewer",
+        "Desc": "Full rendering pipeline: 18 typography themes, incremental rendering, block virtualization and task write-back; switch themes from the property panel."
+      },
+      "MarkdownLite": {
+        "Title": "Markdown Lite",
+        "Desc": "The Lite package ships only the rendering pipeline and 18 themes; images degrade to alt text, formulas stay raw and code blocks render in a single color."
+      },
+      "MarkdownEditor": {
+        "Title": "Markdown Editor",
+        "Desc": "MarkdownEditorView: AvaloniaEdit-based source editing with TextMate highlighting and ~40 editing actions; tune font size, line numbers and auto-pairing from the property panel."
+      },
+      "MarkdownLiveEditor": {
+        "Title": "Live Editor",
+        "Desc": "MarkdownLiveEditorView: single-column WYSIWYG block editing; documents are modeled as blocks and render as you type."
+      },
+      "MarkdownExport": {
+        "Title": "Markdown Export",
+        "Desc": "MarkdownDocumentExporter exports PNG / PDF / Word / HTML; MarkdownHtmlClipboard copies rich text for WeChat / Zhihu / Juejin."
+      },
+      "DataGrid": {
+        "Title": "DataGrid Enhancement",
+        "Desc": "DataGridEnhancement.UseDefaults enables three-state sorting, natural sorting and smart tooltips in one shot; the native grid below is the baseline."
+      },
+      "PropertyGrid": {
+        "Title": "PropertyGrid",
+        "Desc": "Four-level property tree: categorized/alphabetical views, search filtering, bold modifications, dynamic summaries and visibility; the right panel is this very control."
+      },
+      "CodeWFWindow": {
+        "Title": "CodeWFWindow",
+        "Desc": "Borderless window: DWM rounded corners, custom title bar, button toggles and content extending into the title bar; open real windows with different configs below."
+      },
+      "SearchListBox": {
+        "Title": "SearchListBox",
+        "Desc": "Searchable list: 400ms debounced filtering, multi-selection, count bar and double-tap events; live metrics show on the property panel."
+      },
+      "Transfer": {
+        "Title": "Transfer",
+        "Desc": "Two-column shuttle: move items via buttons or double-tap, each side with its own search box; items move directly on the source collections."
+      },
+      "Status": {
+        "Title": "Status Components",
+        "Desc": "StatusBadge / StatusCard: five semantic states (Debug/Info/Warn/Error/Fatal) with light/dark palettes driven by Kind pseudo-classes."
+      },
+      "Guide": {
+        "Title": "Guide",
+        "Desc": "Spotlight guidance: 13 placement modes, keyboard navigation, missing-target behavior and custom mask color; click Start Guide to try it."
+      },
+      "AppGuide": {
+        "Title": "App Guide",
+        "Desc": "Guides the whole showcase region by region (Ribbon / nav tree / documents / property panel / log panel); cross-control-tree targets are resolved in code."
+      },
+      "WindowedStackPanel": {
+        "Title": "WindowedStackPanel",
+        "Desc": "Windowed virtualizing stack panel: generate 5000 blocks and only viewport-adjacent blocks are realized; watch live metrics while scrolling."
+      },
+      "ColumnDisplayEditor": {
+        "Title": "ColumnDisplayEditor",
+        "Desc": "Column display editor: drag-handle reordering plus visibility checkboxes, moving directly on the source collection with live auditing."
+      },
+      "MarkupExtension": {
+        "Title": "Markup Extensions",
+        "Desc": "If / Switch markup extensions: conditional and multi-branch value selection in XAML, mixing bindings and constants."
+      },
+      "Log": {
+        "Title": "Log",
+        "Desc": "LogView + Logger: live event feed, level filtering, copy / clear / open-log-folder context menu; the bottom panel hosts another instance."
+      },
+      "Lang": {
+        "Title": "Lang",
+        "Desc": "I18nManager: JSON backend folder scanning, embedded resource appending and instant culture switching for all I18n bindings."
+      },
+      "Dock": {
+        "Title": "Dock Workspace",
+        "Desc": "Dock.Avalonia layout engine + CodeWF DockSemiTheme: drag docking, floating and maximization; document content rendered by MarkdownViewer."
+      },
+      "TrapezoidTab": {
+        "Title": "Trapezoid Tabs",
+        "Desc": "TrapezoidShapedTabControl / TabStrip themes: trapezoid paths adapt to first/middle/last tabs automatically; the showcase document tabs use this theme."
+      }
+    },
+    "Welcome": {
+      "FeaturesTitle": "Modules covered by this showcase",
+      "FeaturesMarkdown": "· Markdown: rendering (18 themes / virtualization / incremental), Lite, source editor, live editor, export and social copy",
+      "FeaturesData": "· Data: DataGrid enhancement (three-state / natural sorting / smart tooltips), PropertyGrid panel",
+      "FeaturesControls": "· Controls: CodeWFWindow, SearchListBox, Transfer, status components, Guide, column display editor",
+      "FeaturesInfra": "· Infrastructure & views: logging, localization, If/Switch markup, Dock workspace, trapezoid tabs, virtualizing panel",
+      "UsageTitle": "How to use",
+      "UsageRibbon": "· The seven ribbon tabs mirror the seven groups; double-click a tab to collapse / expand the command area",
+      "UsageShowMeCode": "· Each demo document header offers Demo / XAML / C# segments, one visible at a time",
+      "UsageProperties": "· The right PropertyGrid is the library control itself: edits apply to the demo immediately",
+      "UsageLog": "· The bottom log panel streams Logger events live and supports copy, clear and open-log-folder"
+    },
+    "Lang": {
+      "LiveSamplesTitle": "Live samples (switch with culture)",
+      "SampleGreeting": "Hello, CodeWF.Avalonia!",
+      "SampleFarewell": "Goodbye, see you next time.",
+      "SampleFormat": "This is a localized sample: 2 UI languages available.",
+      "StateTitle": "Runtime state"
+    },
+    "Markup": {
+      "IfTitle": "If: conditional value",
+      "SwitchTitle": "Switch: multi-branch value"
+    }
+  }
+}

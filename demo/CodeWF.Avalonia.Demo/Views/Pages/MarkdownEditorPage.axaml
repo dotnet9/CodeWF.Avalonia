@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:codewf="https://codewf.com"
+             x:Class="CodeWF.Avalonia.Demo.Views.Pages.MarkdownEditorPage"
+             x:CompileBindings="False">
+  <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="12,10">
+
+    <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+      <TextBlock Text="MarkdownEditorView：AvaloniaEdit 承载的源码编辑器，内置语法着色（TextMate）与约 40 项编辑动作（标题 / 列表 / 表格 / 代码块 / 数学块等）。下方为常用动作按钮，完整动作集见 MarkdownEditorAction 枚举。"
+                 TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
+    </Border>
+
+    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
+      <Button Content="加粗" Click="OnBold" />
+      <Button Content="斜体" Click="OnItalic" />
+      <Button Content="行内代码" Click="OnInlineCode" />
+      <Button Content="标题 2" Click="OnHeading" />
+      <Button Content="表格" Click="OnTable" />
+      <Button Content="任务列表" Click="OnTaskList" />
+      <Button Content="代码块" Click="OnCodeFence" />
+      <Button Content="引用" Click="OnQuote" />
+    </StackPanel>
+
+    <Border Grid.Row="2" x:Name="EditorHost" Margin="0,8,0,0"
+            BorderThickness="1" CornerRadius="6"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
+            ClipToBounds="True" />
+
+    <TextBlock Grid.Row="3" x:Name="StatusText" Margin="0,8,0,0" FontSize="11" Opacity="0.7" />
+  </Grid>
+</UserControl>

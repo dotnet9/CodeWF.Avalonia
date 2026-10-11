@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:codewf="https://codewf.com"
+             x:Class="CodeWF.Avalonia.Demo.Views.Pages.WindowedStackPanelPage"
+             x:CompileBindings="False">
+  <Grid RowDefinitions="Auto,*,Auto" Margin="12,10">
+
+    <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <Button Content="生成 5000 块" Click="OnGenerate" />
+        <Button Content="清空" Click="OnClear" />
+        <TextBlock Text="窗口化虚拟化堆叠面板：只实现视口附近的块（Overscan 个视口缓冲），可视化树规模与长列表解耦。滚动时观察下方实时指标。"
+                   TextWrapping="Wrap" Opacity="0.75" FontSize="12" VerticalAlignment="Center" />
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="1" Margin="0,8,0,0" BorderThickness="1" CornerRadius="6"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+      <ScrollViewer>
+        <codewf:WindowedStackPanel x:Name="BlocksPanel" Spacing="8" Margin="8" />
+      </ScrollViewer>
+    </Border>
+
+    <Border Grid.Row="2" Margin="0,8,0,0" Padding="8,6" CornerRadius="6"
+            BorderThickness="1" BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+      <TextBlock x:Name="MetricsText" FontSize="11" Opacity="0.75" />
+    </Border>
+  </Grid>
+</UserControl>

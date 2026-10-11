@@ -1,0 +1,38 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:codewf="https://codewf.com"
+             x:Class="CodeWF.Avalonia.Demo.Views.Pages.StatusComponentsPage"
+             x:CompileBindings="False">
+  <ScrollViewer>
+    <StackPanel Margin="12,10" Spacing="12" MaxWidth="900">
+
+      <Border Padding="10" CornerRadius="6" BorderThickness="1"
+              BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+        <TextBlock Text="StatusBadge / StatusCard：内置五档语义状态（Debug / Info / Warn / Error / Fatal）与浅深换肤；徽标为左签 + 右值，卡片为图标 + 两行文案。下方最后一组卡片由右侧属性面板驱动。"
+                   TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
+      </Border>
+
+      <TextBlock Text="StatusBadge" FontWeight="Bold" />
+      <WrapPanel>
+        <codewf:StatusBadge LeftText="Debug" RightText="调试" Margin="0,0,8,8" />
+        <codewf:StatusBadge LeftText="Info" RightText="信息" Margin="0,0,8,8" />
+        <codewf:StatusBadge LeftText="Warn" RightText="警告" Margin="0,0,8,8" />
+        <codewf:StatusBadge LeftText="Error" RightText="错误" Margin="0,0,8,8" />
+        <codewf:StatusBadge LeftText="Fatal" RightText="严重" Margin="0,0,8,8" />
+      </WrapPanel>
+
+      <TextBlock Text="StatusCard" FontWeight="Bold" />
+      <WrapPanel>
+        <codewf:StatusCard Kind="Debug" TopText="DEBUG" BottomText="断点调试进行中" Margin="0,0,8,8" />
+        <codewf:StatusCard Kind="Info" TopText="INFO" BottomText="服务已就绪" Margin="0,0,8,8" />
+        <codewf:StatusCard Kind="Warn" TopText="WARN" BottomText="磁盘空间不足 10%" Margin="0,0,8,8" />
+        <codewf:StatusCard Kind="Error" TopText="ERROR" BottomText="下游服务超时" Margin="0,0,8,8" />
+        <codewf:StatusCard Kind="Fatal" TopText="FATAL" BottomText="数据库连接失败" Margin="0,0,8,8" />
+      </WrapPanel>
+
+      <TextBlock Text="属性面板驱动" FontWeight="Bold" />
+      <codewf:StatusCard x:Name="DrivenCard" Kind="Info"
+                         TopText="DRIVEN" BottomText="在右侧属性面板切换状态与图标宽度" />
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

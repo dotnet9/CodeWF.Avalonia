@@ -6,19 +6,55 @@ using System.Windows.Input;
 namespace CodeWF.Avalonia.Demo.ViewModels;
 
 /// <summary>
-/// PropertyGrid 演示：构建四级属性树（分组/可展开子树/动态摘要/动态可见性），记录值提交日志。
+/// PropertyGrid 演示：构建四级属性树（分组/可展开子树/动态摘要/动态可见性），记录值提交日志；
+/// 同时持有本页嵌入 PropertyGrid 的界面状态（视图模式 / 工具栏 / 描述面板 / 搜索 / 列宽）。
 /// </summary>
 public class PropertyPanelDemoViewModel : ReactiveObject
 {
     private PropertyItem? _retryStrategy;
     private PropertyItem? _backoff;
     private PropertyItem? _backoffFactor;
+    private PropertyGridViewMode _viewMode = PropertyGridViewMode.Categorized;
+    private bool _showToolBar = true;
+    private bool _showDescriptionPane = true;
+    private string? _searchText;
+    private double _nameColumnWidth = 148d;
 
     public ObservableCollection<PropertyItem> Items { get; } = new();
 
     public ObservableCollection<string> ChangeLog { get; } = new();
 
     public ObservableCollection<string> BrowseLog { get; } = new();
+
+    public PropertyGridViewMode ViewMode
+    {
+        get => _viewMode;
+        set => this.RaiseAndSetIfChanged(ref _viewMode, value);
+    }
+
+    public bool ShowToolBar
+    {
+        get => _showToolBar;
+        set => this.RaiseAndSetIfChanged(ref _showToolBar, value);
+    }
+
+    public bool ShowDescriptionPane
+    {
+        get => _showDescriptionPane;
+        set => this.RaiseAndSetIfChanged(ref _showDescriptionPane, value);
+    }
+
+    public string? SearchText
+    {
+        get => _searchText;
+        set => this.RaiseAndSetIfChanged(ref _searchText, value);
+    }
+
+    public double NameColumnWidth
+    {
+        get => _nameColumnWidth;
+        set => this.RaiseAndSetIfChanged(ref _nameColumnWidth, value);
+    }
 
     public ICommand ValueCommittedCommand { get; }
 

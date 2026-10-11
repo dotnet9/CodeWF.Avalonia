@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:codewf="https://codewf.com"
+             x:Class="CodeWF.Avalonia.Demo.Views.Pages.CodeWFWindowPage"
+             x:CompileBindings="False">
+  <ScrollViewer>
+    <StackPanel Margin="12,10" Spacing="12">
+
+      <Border Padding="10" CornerRadius="6" BorderThickness="1"
+              BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+        <TextBlock Text="CodeWFWindow：无边框窗口（DWM 圆角 / 自定义标题栏 / 标题栏按钮开关 / 内容钻入标题栏）。下方为可嵌入的 CodeWFTitleBar 配置样例，按钮打开不同配置的真实窗口。"
+                   TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
+      </Border>
+
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <Button Content="打开：默认配置" Click="OnOpenDefault" />
+        <Button Content="打开：精简按钮 + 自定义标题栏内容" Click="OnOpenCustom" />
+        <Button Content="打开：内容钻入标题栏" Click="OnOpenExtends" />
+      </StackPanel>
+
+      <WrapPanel>
+        <Border Width="380" Margin="0,0,12,12" Padding="12" CornerRadius="8"
+                BorderThickness="1" BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+          <StackPanel Spacing="8">
+            <TextBlock Text="样例 1：默认标题栏" FontSize="12" Opacity="0.7" />
+            <Border BorderThickness="1" CornerRadius="6"
+                    BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+              <codewf:CodeWFTitleBar Title="无边界 · 自定义标题栏" Height="36" />
+            </Border>
+            <TextBlock Text="TitleBarHeight=36，默认最小化 / 还原 / 关闭按钮。" FontSize="11" Opacity="0.6" />
+          </StackPanel>
+        </Border>
+
+        <Border Width="380" Margin="0,0,12,12" Padding="12" CornerRadius="8"
+                BorderThickness="1" BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+          <StackPanel Spacing="8">
+            <TextBlock Text="样例 2：自定义左 / 右内容" FontSize="12" Opacity="0.7" />
+            <Border BorderThickness="1" CornerRadius="6"
+                    BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+              <codewf:CodeWFTitleBar Title="文档：设计说明" Height="36">
+                <codewf:CodeWFTitleBar.LeftContent>
+                  <TextBlock Text="◆" Foreground="DodgerBlue" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </codewf:CodeWFTitleBar.LeftContent>
+                <codewf:CodeWFTitleBar.RightContent>
+                  <TextBox Width="140" Height="24" Watermark="搜索…" VerticalAlignment="Center" Margin="0,0,10,0" />
+                </codewf:CodeWFTitleBar.RightContent>
+              </codewf:CodeWFTitleBar>
+            </Border>
+            <TextBlock Text="LeftContent / RightContent 槽位可放任意内容。" FontSize="11" Opacity="0.6" />
+          </StackPanel>
+        </Border>
+
+        <Border Width="380" Padding="12" CornerRadius="8"
+                BorderThickness="1" BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+          <StackPanel Spacing="8">
+            <TextBlock Text="样例 3：居中内容" FontSize="12" Opacity="0.7" />
+            <Border BorderThickness="1" CornerRadius="6"
+                    BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+              <codewf:CodeWFTitleBar Title="（左）" Height="36">
+                <codewf:CodeWFTitleBar.CenterContent>
+                  <TextBlock Text="居中标题 · CenterContent" Opacity="0.8" VerticalAlignment="Center" FontSize="12" />
+                </codewf:CodeWFTitleBar.CenterContent>
+              </codewf:CodeWFTitleBar>
+            </Border>
+            <TextBlock Text="CenterContent 与标题并存时自行规划布局。" FontSize="11" Opacity="0.6" />
+          </StackPanel>
+        </Border>
+      </WrapPanel>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

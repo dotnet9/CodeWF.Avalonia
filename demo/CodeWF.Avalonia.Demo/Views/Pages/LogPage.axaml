@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:codewf="https://codewf.com"
+             x:Class="CodeWF.Avalonia.Demo.Views.Pages.LogPage"
+             x:CompileBindings="False">
+  <Grid RowDefinitions="Auto,Auto,*" Margin="12,10">
+
+    <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+      <TextBlock Text="LogView + Logger：控件订阅 Logger 的 UI 事件流（LogEventFeed）实时展示；支持级别过滤、最大条数、时间戳格式与右键菜单（复制 / 清空 / 打开日志目录）。演示台底部的日志面板也是本控件的实例。"
+                 TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
+    </Border>
+
+    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
+      <Button Content="Trace" Click="OnWriteTrace" />
+      <Button Content="Debug" Click="OnWriteDebug" />
+      <Button Content="Info" Click="OnWriteInfo" />
+      <Button Content="Warning" Click="OnWriteWarning" />
+      <Button Content="Error" Click="OnWriteError" />
+      <Button Content="Critical" Click="OnWriteCritical" />
+      <Button Content="批量写入（压测事件流）" Click="OnWriteBurst" />
+    </StackPanel>
+
+    <codewf:LogView Grid.Row="2" x:Name="LogViewControl" Margin="0,8,0,0" MaxDisplayCount="2000" />
+  </Grid>
+</UserControl>

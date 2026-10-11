@@ -1,0 +1,170 @@
+{
+  "language": "简体中文",
+  "description": "CodeWF.Avalonia Demo 简体中文资源。",
+  "cultureName": "zh-CN",
+  "Demo": {
+    "Shell": {
+      "Palette": "色板",
+      "Dark": "深色",
+      "Light": "浅色",
+      "Properties": "属性",
+      "Log": "日志",
+      "Navigation": "导航",
+      "WriteLogs": "写入三类日志"
+    },
+    "Group": {
+      "Home": "首页",
+      "Markdown": "Markdown",
+      "Data": "数据",
+      "Controls": "控件",
+      "Layout": "布局",
+      "Infrastructure": "基础设施",
+      "Views": "视图"
+    },
+    "Item": {
+      "Welcome": "欢迎",
+      "MarkdownViewer": "MarkdownViewer",
+      "MarkdownLite": "Markdown Lite",
+      "MarkdownEditor": "编辑器",
+      "MarkdownLiveEditor": "实时编辑",
+      "MarkdownExport": "导出",
+      "DataGrid": "DataGrid",
+      "PropertyGrid": "PropertyGrid",
+      "CodeWFWindow": "CodeWFWindow",
+      "SearchListBox": "SearchListBox",
+      "Transfer": "Transfer",
+      "Status": "状态组件",
+      "Guide": "Guide",
+      "AppGuide": "应用引导",
+      "WindowedStackPanel": "WindowedStackPanel",
+      "ColumnDisplayEditor": "ColumnDisplayEditor",
+      "MarkupExtension": "Markup 扩展",
+      "Log": "Log",
+      "Lang": "Lang",
+      "Dock": "Dock",
+      "TrapezoidTab": "梯形页签"
+    },
+    "Segment": {
+      "Demo": "演示",
+      "Xaml": "XAML",
+      "CSharp": "C#"
+    },
+    "Palette": {
+      "Default": "默认",
+      "Aquatic": "水生",
+      "Desert": "沙漠",
+      "Dusk": "黄昏",
+      "NightSky": "夜空",
+      "HighContrast": "高对比"
+    },
+    "Page": {
+      "Welcome": {
+        "Title": "欢迎使用 CodeWF.Avalonia",
+        "Desc": "控件库演示台：左侧导航选择演示，文档头部可切换 演示 / XAML / C# 源码，右侧属性面板实时驱动当前演示，底部为实时日志。"
+      },
+      "MarkdownViewer": {
+        "Title": "MarkdownViewer",
+        "Desc": "完整渲染管线：18 套排版主题、增量渲染、块级虚拟化、任务勾选回写；右侧属性面板可切换主题与虚拟化参数。"
+      },
+      "MarkdownLite": {
+        "Title": "Markdown Lite",
+        "Desc": "Lite 包只含渲染管线与 18 套排版主题；图片退化为替代文本、公式保留原文、代码块单色，依赖更小。"
+      },
+      "MarkdownEditor": {
+        "Title": "Markdown 编辑器",
+        "Desc": "MarkdownEditorView：AvaloniaEdit 承载源码编辑，TextMate 语法着色与约 40 项编辑动作；属性面板可调字号、行号与自动配对。"
+      },
+      "MarkdownLiveEditor": {
+        "Title": "实时编辑",
+        "Desc": "MarkdownLiveEditorView：单栏所见即所得块编辑，文档按块建模，编辑即渲染。"
+      },
+      "MarkdownExport": {
+        "Title": "Markdown 导出",
+        "Desc": "MarkdownDocumentExporter 导出 PNG / PDF / Word / HTML；MarkdownHtmlClipboard 支持公众号（微信 / 知乎 / 掘金）富文本复制。"
+      },
+      "DataGrid": {
+        "Title": "DataGrid 增强",
+        "Desc": "DataGridEnhancement.UseDefaults 一键启用三态排序、自然排序与智能 ToolTip；下方原生网格为对照。"
+      },
+      "PropertyGrid": {
+        "Title": "PropertyGrid",
+        "Desc": "四级属性树演示：分类/字母视图、搜索过滤、修改加粗、动态摘要与可见性；右侧面板即本控件的自我演示。"
+      },
+      "CodeWFWindow": {
+        "Title": "CodeWFWindow",
+        "Desc": "无边框窗口：DWM 圆角、自定义标题栏与按钮开关、内容钻入标题栏；下方嵌入样例，按钮打开不同配置的真实窗口。"
+      },
+      "SearchListBox": {
+        "Title": "SearchListBox",
+        "Desc": "可搜索列表：400ms 防抖过滤、多选、计数条与双击事件；右侧属性面板展示实时指标。"
+      },
+      "Transfer": {
+        "Title": "Transfer 穿梭框",
+        "Desc": "双列穿梭：按钮 / 双击移动条目，两侧内嵌独立搜索框；控件直接在源集合上完成移动。"
+      },
+      "Status": {
+        "Title": "状态组件",
+        "Desc": "StatusBadge / StatusCard：五档语义状态（Debug/Info/Warn/Error/Fatal）与浅深换肤，卡片配色随 Kind 伪类自动切换。"
+      },
+      "Guide": {
+        "Title": "Guide 新手引导",
+        "Desc": "聚光遮罩引导：13 方位气泡、键盘导航、缺省目标行为与自定义遮罩色；点击“开始引导”体验。"
+      },
+      "AppGuide": {
+        "Title": "应用引导",
+        "Desc": "对整个演示台逐区域引导（Ribbon / 导航树 / 文档区 / 属性面板 / 日志面板），目标跨控件树在代码中解析。"
+      },
+      "WindowedStackPanel": {
+        "Title": "WindowedStackPanel",
+        "Desc": "窗口化虚拟化堆叠面板：生成 5000 块后仅实现视口附近的块，滚动时观察实时指标与可视化树规模。"
+      },
+      "ColumnDisplayEditor": {
+        "Title": "ColumnDisplayEditor",
+        "Desc": "列显示配置编辑器：拖拽手柄排序 + 勾选可见性，直接在源集合上 Move，变更即时审计。"
+      },
+      "MarkupExtension": {
+        "Title": "Markup 扩展",
+        "Desc": "If / Switch 标记扩展：XAML 内条件取值与多分支取值，条件与分支支持绑定与常量混合。"
+      },
+      "Log": {
+        "Title": "Log 日志",
+        "Desc": "LogView + Logger：实时事件流、级别过滤、右键复制 / 清空 / 打开日志目录；底部面板是另一个实例。"
+      },
+      "Lang": {
+        "Title": "Lang 国际化",
+        "Desc": "I18nManager：Json 后端目录扫描、内嵌资源追加、运行时文化切换即时刷新全部 I18n 绑定。"
+      },
+      "Dock": {
+        "Title": "Dock 工作区",
+        "Desc": "Dock.Avalonia 布局引擎 + CodeWF DockSemiTheme：可拖拽停靠、浮动、最大化，文档内容以 MarkdownViewer 呈现。"
+      },
+      "TrapezoidTab": {
+        "Title": "梯形页签",
+        "Desc": "TrapezoidShapedTabControl / TabStrip 主题：梯形路径自动适配首 / 中 / 末页签，演示台文档页签即该主题。"
+      }
+    },
+    "Welcome": {
+      "FeaturesTitle": "本演示台覆盖的模块",
+      "FeaturesMarkdown": "· Markdown：渲染（18 主题 / 虚拟化 / 增量）、Lite、源码编辑器、实时编辑、导出与公众号复制",
+      "FeaturesData": "· 数据：DataGrid 增强（三态 / 自然排序 / 智能 ToolTip）、PropertyGrid 属性面板",
+      "FeaturesControls": "· 控件：CodeWFWindow、SearchListBox、Transfer、状态组件、Guide 引导、列配置编辑器",
+      "FeaturesInfra": "· 基础设施与视图：日志、国际化、If/Switch 标记扩展、Dock 工作区、梯形页签、虚拟化面板",
+      "UsageTitle": "使用方式",
+      "UsageRibbon": "· 顶部 Ribbon 七个页签对应七个分组；双击页签可折叠 / 展开命令区",
+      "UsageShowMeCode": "· 每个演示文档头部提供 演示 / XAML / C# 三段切换，同一时刻只显示一段",
+      "UsageProperties": "· 右侧 PropertyGrid 即本库控件：修改属性立即作用于左侧演示内容",
+      "UsageLog": "· 底部日志面板实时显示 Logger 事件流，可复制、清空、打开日志目录"
+    },
+    "Lang": {
+      "LiveSamplesTitle": "实时文案样例（随文化切换）",
+      "SampleGreeting": "你好，CodeWF.Avalonia！",
+      "SampleFarewell": "再见，期待下次相遇。",
+      "SampleFormat": "这是多语言文案样例：当前共 2 种界面语言。",
+      "StateTitle": "运行状态"
+    },
+    "Markup": {
+      "IfTitle": "If：条件取值",
+      "SwitchTitle": "Switch：多分支取值"
+    }
+  }
+}

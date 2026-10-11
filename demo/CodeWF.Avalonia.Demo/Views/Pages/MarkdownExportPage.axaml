@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:codewf="https://codewf.com"
+             x:Class="CodeWF.Avalonia.Demo.Views.Pages.MarkdownExportPage"
+             x:CompileBindings="False">
+  <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="12,10">
+
+    <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+      <TextBlock Text="MarkdownDocumentExporter：把 Markdown 导出为 PNG / PDF / Word / HTML；MarkdownHtmlClipboard 提供公众号（微信 / 知乎 / 掘金）富文本复制。导出排版主题可在右侧属性面板选择。"
+                 TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
+    </Border>
+
+    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
+      <Button Content="导出 PNG" Click="OnExportPng" />
+      <Button Content="导出 PDF" Click="OnExportPdf" />
+      <Button Content="导出 Word" Click="OnExportWord" />
+      <Button Content="导出 HTML" Click="OnExportHtml" />
+      <Button Content="复制公众号 HTML" Click="OnCopyWechat" />
+    </StackPanel>
+
+    <TextBox Grid.Row="2" x:Name="SourceBox" Margin="0,8,0,0"
+             AcceptsReturn="True" TextWrapping="Wrap"
+             Text="{x:Static pages:MarkdownExportPage.SampleMarkdown}"
+             FontFamily="Consolas, Microsoft YaHei UI" FontSize="13" />
+
+    <TextBlock Grid.Row="3" x:Name="StatusText" Margin="0,8,0,0" FontSize="11" Opacity="0.75" />
+  </Grid>
+</UserControl>

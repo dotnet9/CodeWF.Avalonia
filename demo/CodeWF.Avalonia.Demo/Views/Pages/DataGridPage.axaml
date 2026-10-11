@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:codewf="https://codewf.com"
+             xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels.Pages"
+             x:Class="CodeWF.Avalonia.Demo.Views.Pages.DataGridPage"
+             x:DataType="vm:DataGridPageViewModel"
+             x:CompileBindings="True">
+  <Grid RowDefinitions="Auto,Auto,*,Auto,*" Margin="12,10">
+
+    <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+      <TextBlock Text="上：DataGridEnhancement.UseDefaults=True（三态排序 升→降→取消 / 自然排序 item2&lt;item10 / 智能 ToolTip 仅对截断单元格生效）。下：原生 DataGrid 对照。两份相同数据，自行对比表头点击与悬停行为。"
+                 TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
+    </Border>
+
+    <TextBlock Grid.Row="1" Text="增强版（UseDefaults）" FontWeight="SemiBold" Margin="0,10,0,4" />
+
+    <DataGrid Grid.Row="2" x:Name="EnhancedGrid"
+              codewf:DataGridEnhancement.UseDefaults="True"
+              ItemsSource="{Binding Rows}"
+              AutoGenerateColumns="False" CanUserSortColumns="True"
+              IsReadOnly="True" HeadersVisibility="Column"
+              GridLinesVisibility="Horizontal" BorderThickness="1">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="名称" Binding="{Binding Name}" Width="140" />
+        <DataGridTextColumn Header="年龄" Binding="{Binding Age}" Width="90" />
+        <DataGridTextColumn Header="城市" Binding="{Binding City}" Width="140" />
+        <DataGridTextColumn Header="备注（悬停体验智能 ToolTip）" Binding="{Binding Comment}" Width="*" />
+      </DataGrid.Columns>
+    </DataGrid>
+
+    <TextBlock Grid.Row="3" Text="原生对照" FontWeight="SemiBold" Margin="0,10,0,4" />
+
+    <DataGrid Grid.Row="4"
+              ItemsSource="{Binding Rows}"
+              AutoGenerateColumns="False" CanUserSortColumns="True"
+              IsReadOnly="True" HeadersVisibility="Column"
+              GridLinesVisibility="Horizontal" BorderThickness="1">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="名称" Binding="{Binding Name}" Width="140" />
+        <DataGridTextColumn Header="年龄" Binding="{Binding Age}" Width="90" />
+        <DataGridTextColumn Header="城市" Binding="{Binding City}" Width="140" />
+        <DataGridTextColumn Header="备注" Binding="{Binding Comment}" Width="*" />
+      </DataGrid.Columns>
+    </DataGrid>
+  </Grid>
+</UserControl>

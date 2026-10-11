@@ -1,50 +1,150 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:markdown="https://codewf.com"
         xmlns:codewf="https://codewf.com"
         xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
+        xmlns:views="using:CodeWF.Avalonia.Demo.Views"
         x:Class="CodeWF.Avalonia.Demo.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         x:CompileBindings="True"
-        Title="CodeWF.Avalonia 演示" Width="1080" Height="720">
-  <TabControl>
-    <TabItem Header="Markdown">
-      <markdown:MarkdownViewer Markdown="{Binding MarkdownSample}" />
-    </TabItem>
-    <TabItem Header="DataGrid">
-      <DataGrid ItemsSource="{Binding People}" AutoGenerateColumns="False" CanUserSortColumns="True" Height="400">
-        <DataGrid.Columns>
-          <DataGridTextColumn Header="姓名" Binding="{Binding Name}" Width="160" />
-          <DataGridTextColumn Header="年龄" Binding="{Binding Age}" Width="100" />
-          <DataGridTextColumn Header="城市" Binding="{Binding City}" Width="*" />
-        </DataGrid.Columns>
-      </DataGrid>
-    </TabItem>
-    <TabItem Header="属性面板">
-      <Grid ColumnDefinitions="2*,*">
-        <codewf:PropertyGrid Grid.Column="0"
-                             Items="{Binding PropertyPanel.Items}"
-                             ValueCommittedCommand="{Binding PropertyPanel.ValueCommittedCommand}"
-                             BrowseRequestedCommand="{Binding PropertyPanel.BrowseRequestedCommand}" />
-        <Border Grid.Column="1" BorderBrush="#40808080" BorderThickness="1,0,0,0">
-          <DockPanel Margin="8">
-            <TextBlock DockPanel.Dock="Top" Text="值变更日志" FontWeight="Bold" Margin="0,8,0,4" />
-            <ListBox ItemsSource="{Binding PropertyPanel.ChangeLog}" />
-          </DockPanel>
+        Title="CodeWF.Avalonia Demo"
+        Width="1440" Height="860"
+        MinWidth="1120" MinHeight="640">
+
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <!--  Ribbon：7 页签，双击页签折叠/展开命令区；右侧为外观与语言栏  -->
+    <Grid Grid.Row="0" x:Name="RibbonRoot" ColumnDefinitions="*,Auto">
+      <Grid Grid.Column="0" RowDefinitions="Auto,Auto">
+        <TabStrip Grid.Row="0" x:Name="RibbonTabStrip"
+                  Theme="{StaticResource TrapezoidShapedTabStrip}"
+                  ItemsSource="{Binding Groups}"
+                  SelectedItem="{Binding SelectedGroup}"
+                  DoubleTapped="OnRibbonTabStripDoubleTapped">
+          <TabStrip.ItemTemplate>
+            <DataTemplate x:DataType="vm:DemoGroupViewModel">
+              <TextBlock Text="{Binding Title}" Margin="16,4" FontWeight="SemiBold" />
+            </DataTemplate>
+          </TabStrip.ItemTemplate>
+        </TabStrip>
+
+        <!--  命令区：当前页签下的演示命令按钮  -->
+        <Border Grid.Row="1" IsVisible="{Binding RibbonExpanded}"
+                ClipToBounds="True" Padding="12,8"
+                BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
+                BorderThickness="0,1,0,1">
+          <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding SelectedGroup.Items}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:DemoItemViewModel">
+                  <Button Content="{Binding Title}"
+                          Margin="0,0,8,8" MinWidth="96"
+                          Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenItemCommand}"
+                          CommandParameter="{Binding}" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
         </Border>
       </Grid>
-    </TabItem>
-    <TabItem Header="日志">
-      <StackPanel Margin="12" Spacing="8">
-        <Button Content="写入三类日志" Command="{Binding WriteLogsCommand}" />
-        <TextBlock Text="{Binding LogFolder}" Opacity="0.7" />
+
+      <!--  外观与语言  -->
+      <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8" Margin="8,0,12,0">
+        <TextBlock Text="{codewf:I18n Demo.Shell.Palette}" VerticalAlignment="Center" />
+        <ComboBox MinWidth="88" ItemsSource="{Binding Palettes}" SelectedItem="{Binding SelectedPalette}" />
+        <ToggleSwitch IsChecked="{Binding IsDarkMode}"
+                      OnContent="{codewf:I18n Demo.Shell.Dark}"
+                      OffContent="{codewf:I18n Demo.Shell.Light}" />
+        <ComboBox MinWidth="88" ItemsSource="{Binding Cultures}" SelectedItem="{Binding SelectedCulture}" />
+        <ToggleButton IsChecked="{Binding PropertiesPanelVisible}" Content="{codewf:I18n Demo.Shell.Properties}" />
+        <ToggleButton IsChecked="{Binding LogPanelVisible}" Content="{codewf:I18n Demo.Shell.Log}" />
       </StackPanel>
-    </TabItem>
-    <TabItem Header="关于">
-      <StackPanel Margin="12" Spacing="6">
-        <TextBlock Text="CodeWF.Avalonia Demo" FontSize="20" FontWeight="Bold" />
-        <TextBlock Text="Prism.DryIoc + Semi.Avalonia + ReactiveUI" />
-      </StackPanel>
-    </TabItem>
-  </TabControl>
+    </Grid>
+
+    <!--  中央三栏：导航树 / 文档区 / 属性面板  -->
+    <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto">
+
+      <!--  左：导航树（Ribbon 分组镜像）  -->
+      <Border Grid.Column="0" Width="232"
+              BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}" BorderThickness="0,0,1,0">
+        <Grid RowDefinitions="Auto,*">
+          <Border Grid.Row="0" Padding="12,8">
+            <TextBlock Text="{codewf:I18n Demo.Shell.Navigation}" FontWeight="Bold" Opacity="0.8" />
+          </Border>
+          <TreeView Grid.Row="1" x:Name="NavTree"
+                    ItemsSource="{Binding Groups}"
+                    SelectionChanged="OnNavTreeSelectionChanged">
+            <TreeView.ItemTemplate>
+              <HierarchicalDataTemplate x:DataType="vm:DemoGroupViewModel" ItemsSource="{Binding Items}">
+                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                <HierarchicalDataTemplate.ItemTemplate>
+                  <DataTemplate x:DataType="vm:DemoItemViewModel">
+                    <TextBlock Text="{Binding Title}" Margin="18,0,0,0" TextTrimming="CharacterEllipsis" />
+                  </DataTemplate>
+                </HierarchicalDataTemplate.ItemTemplate>
+              </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+          </TreeView>
+        </Grid>
+      </Border>
+
+      <!--  中：文档区（所有演示以 Document 承载，无弹窗场景）  -->
+      <TabControl Grid.Column="1" x:Name="DocumentTabs"
+                  Theme="{StaticResource TrapezoidShapedTabControl}"
+                  ItemsSource="{Binding Documents}"
+                  SelectedItem="{Binding ActiveDocument}"
+                  Padding="0">
+        <TabControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:DemoDocumentViewModel">
+            <Panel MinWidth="120">
+              <TextBlock Text="{Binding Title}" Margin="14,0,28,0" VerticalAlignment="Center"
+                         TextTrimming="CharacterEllipsis" />
+              <Button HorizontalAlignment="Right" VerticalAlignment="Center"
+                      Width="18" Height="18" Padding="0" FontSize="10"
+                      Content="✕"
+                      Command="{Binding $parent[TabControl].((vm:MainViewModel)DataContext).CloseDocumentCommand}"
+                      CommandParameter="{Binding}" />
+            </Panel>
+          </DataTemplate>
+        </TabControl.ItemTemplate>
+        <TabControl.ContentTemplate>
+          <DataTemplate x:DataType="vm:DemoDocumentViewModel">
+            <views:DemoDocumentView />
+          </DataTemplate>
+        </TabControl.ContentTemplate>
+      </TabControl>
+
+      <!--  右：PropertyGrid（右侧面板即本控件的自我演示）  -->
+      <Border Grid.Column="2" x:Name="PropertyPanelHost" Width="336"
+              IsVisible="{Binding PropertiesPanelVisible}"
+              BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}" BorderThickness="1,0,0,0">
+        <codewf:PropertyGrid Items="{Binding ActivePropertyItems}"
+                             ValueCommittedCommand="{Binding ActiveValueCommittedCommand}"
+                             BrowseRequestedCommand="{Binding ActiveBrowseRequestedCommand}" />
+      </Border>
+    </Grid>
+
+    <!--  底：日志面板（LogView 实时流 + 写日志按钮）  -->
+    <Border Grid.Row="2" x:Name="LogPanelHost" IsVisible="{Binding LogPanelVisible}"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}" BorderThickness="0,1,0,0">
+      <Grid RowDefinitions="Auto,*">
+        <DockPanel Grid.Row="0" Margin="12,6">
+          <ToggleButton DockPanel.Dock="Right" IsChecked="{Binding LogPanelVisible}" Content="✕" />
+          <Button DockPanel.Dock="Right" Margin="0,0,8,0"
+                  Content="{codewf:I18n Demo.Shell.WriteLogs}"
+                  Command="{Binding WriteLogsCommand}" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="{codewf:I18n Demo.Shell.Log}" FontWeight="Bold" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding LogFolder}" Opacity="0.6" VerticalAlignment="Center"
+                       FontSize="11" TextTrimming="CharacterEllipsis" />
+          </StackPanel>
+        </DockPanel>
+        <codewf:LogView Grid.Row="1" Source="{Binding LogSource}" MaxDisplayCount="500" />
+      </Grid>
+    </Border>
+  </Grid>
 </Window>

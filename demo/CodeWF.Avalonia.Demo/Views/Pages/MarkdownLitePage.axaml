@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:codewf="https://codewf.com"
+             xmlns:pages="using:CodeWF.Avalonia.Demo.Views.Pages"
+             x:Class="CodeWF.Avalonia.Demo.Views.Pages.MarkdownLitePage"
+             x:CompileBindings="False">
+  <Grid RowDefinitions="Auto,*" Margin="12,10">
+
+    <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+      <StackPanel Spacing="6">
+        <TextBlock Text="Markdown Lite" FontWeight="Bold" />
+        <TextBlock Text="CodeWF.Avalonia.Markdown.Lite：Markdig 解析 + 自研渲染管线，只渲染常规元素——标题 / 段落 / 列表 / 引用 / 表格 / 链接 / 代码块（单色）/ 图片替代文本 / 公式原文，内置同款 18 套排版主题，体积与依赖更小。"
+                   TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
+      </StackPanel>
+    </Border>
+
+    <codewf:MarkdownViewer Grid.Row="1" x:Name="Viewer" Margin="0,10,0,0"
+                           TypographyTheme="Basic"
+                           Markdown="{x:Static pages:MarkdownLitePage.SampleMarkdown}" />
+  </Grid>
+</UserControl>

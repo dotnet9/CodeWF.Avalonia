@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:codewf="https://codewf.com"
+             xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels.Pages"
+             x:Class="CodeWF.Avalonia.Demo.Views.Pages.ColumnDisplayEditorPage"
+             x:DataType="vm:ColumnDisplayEditorPageViewModel"
+             x:CompileBindings="True">
+  <Grid ColumnDefinitions="*,280" Margin="12,10">
+
+    <Grid Grid.Column="0" RowDefinitions="Auto,*">
+      <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1" Margin="0,0,0,8"
+              BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Content="重置默认配置" Command="{Binding ResetCommand}" />
+          <TextBlock Text="拖拽行首手柄排序；勾选控制列可见性。编辑器直接在源集合上 Move，业务侧无需二次同步。"
+                     TextWrapping="Wrap" Opacity="0.75" FontSize="12" VerticalAlignment="Center" />
+        </StackPanel>
+      </Border>
+
+      <Border Grid.Row="1" BorderThickness="1" CornerRadius="6" Padding="8"
+              BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+        <codewf:ColumnDisplayEditor ItemsSource="{Binding Columns}" />
+      </Border>
+    </Grid>
+
+    <Border Grid.Column="1" Margin="12,0,0,0"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
+            BorderThickness="1,0,0,0" Padding="12,0,0,0">
+      <Grid RowDefinitions="Auto,*">
+        <TextBlock Grid.Row="0" Text="变更审计" FontWeight="Bold" Margin="0,0,0,6" />
+        <ListBox Grid.Row="1" ItemsSource="{Binding ChangeLog}" FontSize="11" />
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

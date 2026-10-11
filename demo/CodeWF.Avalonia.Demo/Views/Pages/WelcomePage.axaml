@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:codewf="https://codewf.com"
+             x:Class="CodeWF.Avalonia.Demo.Views.Pages.WelcomePage"
+             x:CompileBindings="False">
+  <ScrollViewer>
+    <StackPanel MaxWidth="860" Margin="24,20" Spacing="14">
+
+      <TextBlock Text="{codewf:I18n Demo.Page.Welcome.Title}" FontSize="26" FontWeight="Bold" />
+      <TextBlock Text="{codewf:I18n Demo.Page.Welcome.Desc}" TextWrapping="Wrap" Opacity="0.8" />
+
+      <Border CornerRadius="8" Padding="16" BorderThickness="1"
+              BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+        <StackPanel Spacing="8">
+          <TextBlock Text="{codewf:I18n Demo.Welcome.FeaturesTitle}" FontWeight="Bold" />
+          <TextBlock Text="{codewf:I18n Demo.Welcome.FeaturesMarkdown}" TextWrapping="Wrap" />
+          <TextBlock Text="{codewf:I18n Demo.Welcome.FeaturesData}" TextWrapping="Wrap" />
+          <TextBlock Text="{codewf:I18n Demo.Welcome.FeaturesControls}" TextWrapping="Wrap" />
+          <TextBlock Text="{codewf:I18n Demo.Welcome.FeaturesInfra}" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+
+      <Border CornerRadius="8" Padding="16" BorderThickness="1"
+              BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+        <StackPanel Spacing="8">
+          <TextBlock Text="{codewf:I18n Demo.Welcome.UsageTitle}" FontWeight="Bold" />
+          <TextBlock Text="{codewf:I18n Demo.Welcome.UsageRibbon}" TextWrapping="Wrap" />
+          <TextBlock Text="{codewf:I18n Demo.Welcome.UsageShowMeCode}" TextWrapping="Wrap" />
+          <TextBlock Text="{codewf:I18n Demo.Welcome.UsageProperties}" TextWrapping="Wrap" />
+          <TextBlock Text="{codewf:I18n Demo.Welcome.UsageLog}" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+
+      <TextBlock Text="https://github.com/dotnet9/CodeWF.Avalonia" Opacity="0.6" />
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

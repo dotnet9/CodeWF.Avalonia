@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:codewf="https://codewf.com"
+             x:Class="CodeWF.Avalonia.Demo.Views.Pages.AppGuidePage"
+             x:CompileBindings="False">
+  <Panel>
+    <StackPanel Margin="12,10" Spacing="12" MaxWidth="760" HorizontalAlignment="Left">
+
+      <Border Padding="10" CornerRadius="6" BorderThickness="1"
+              BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+        <TextBlock Text="应用引导：对整个演示台做逐区域引导——Ribbon 页签、导航树、文档区、属性面板、日志面板。目标控件位于主窗口（跨控件树解析），因此步骤在代码中构建。"
+                   TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
+      </Border>
+
+      <Button Content="开始演示台引导" Click="OnStartGuide" HorizontalAlignment="Left" />
+
+      <TextBlock Text="引导区域" FontWeight="Bold" />
+      <TextBlock Text="① Ribbon 命令区（双击页签可折叠）&#x0a;② 左侧导航树（单击打开演示文档）&#x0a;③ 中央文档区（ShowMeCode 三段切换）&#x0a;④ 右侧 PropertyGrid（驱动当前演示）&#x0a;⑤ 底部日志面板（实时事件流）"
+                 TextWrapping="Wrap" Opacity="0.8" LineHeight="22" />
+    </StackPanel>
+
+    <codewf:Guide x:Name="AppGuide" IsArrowVisible="True" />
+  </Panel>
+</UserControl>

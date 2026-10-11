@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:codewf="https://codewf.com"
+             x:Class="CodeWF.Avalonia.Demo.Views.Pages.GuidePage"
+             x:CompileBindings="False">
+  <Panel>
+    <Grid RowDefinitions="Auto,*" Margin="12,10">
+
+      <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
+              BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Content="开始引导（13 方位演示）" Click="OnStartGuide" />
+          <TextBlock Text="遮罩聚光目标控件，支持 13 个方位（Center / Top×3 / Bottom×3 / Left×3 / Right×3）、键盘导航（Enter 下一 / Esc 关闭）、缺省目标行为。"
+                     TextWrapping="Wrap" Opacity="0.75" FontSize="12" VerticalAlignment="Center" />
+        </StackPanel>
+      </Border>
+
+      <UniformGrid Grid.Row="1" Rows="3" Columns="3" Margin="24">
+        <Button x:Name="TargetCenter" Content="Center" Height="64" Margin="8" />
+        <Button x:Name="TargetTopLeft" Content="TopLeft" Height="64" Margin="8" />
+        <Button x:Name="TargetTopRight" Content="TopRight" Height="64" Margin="8" />
+        <Button x:Name="TargetLeft" Content="Left" Height="64" Margin="8" />
+        <Button x:Name="TargetTop" Content="Top" Height="64" Margin="8" />
+        <Button x:Name="TargetRight" Content="Right" Height="64" Margin="8" />
+        <Button x:Name="TargetBottomLeft" Content="BottomLeft" Height="64" Margin="8" />
+        <Button x:Name="TargetBottom" Content="Bottom" Height="64" Margin="8" />
+        <Button x:Name="TargetBottomRight" Content="BottomRight" Height="64" Margin="8" />
+      </UniformGrid>
+    </Grid>
+
+    <!--  引导步骤：目标用元素名绑定；步骤切换 / 完成事件在代码中记录  -->
+    <codewf:Guide x:Name="Guide" IsArrowVisible="True" Completed="OnGuideCompleted">
+      <codewf:GuideStep Title="步骤 1 · Center"
+                        Description="IsPointAtCenter=True 或缺省目标时聚光屏幕中心。"
+                        Target="{Binding #TargetCenter}"
+                        Placement="Center" IsPointAtCenter="True" />
+      <codewf:GuideStep Title="步骤 2 · TopLeft"
+                        Description="气泡出现在目标的左上方。"
+                        Target="{Binding #TargetTopLeft}"
+                        Placement="TopLeft" />
+      <codewf:GuideStep Title="步骤 3 · TopRight"
+                        Description="气泡出现在目标的右上方。"
+                        Target="{Binding #TargetTopRight}"
+                        Placement="TopRight" />
+      <codewf:GuideStep Title="步骤 4 · Right"
+                        Description="气泡出现在目标的正右侧。"
+                        Target="{Binding #TargetRight}"
+                        Placement="Right" />
+      <codewf:GuideStep Title="步骤 5 · Bottom"
+                        Description="气泡出现在目标的正下方。"
+                        Target="{Binding #TargetBottom}"
+                        Placement="Bottom" />
+      <codewf:GuideStep Title="步骤 6 · LeftBottom"
+                        Description="气泡出现在目标的左下方，本步骤使用 Primary 样式。"
+                        Target="{Binding #TargetBottomLeft}"
+                        Placement="LeftBottom" StyleType="Primary" />
+      <codewf:GuideStep Title="步骤 7 · 自定义主题色遮罩"
+                        Description="本步骤使用半透明红色遮罩演示 MaskColor 自定义。"
+                        Target="{Binding #TargetTop}"
+                        Placement="Top" MaskColor="#66B3261E" />
+      <codewf:GuideStep Title="步骤 8 · 完成"
+                        Description="最后一步：按 Enter 或点击“完成”结束引导。"
+                        Target="{Binding #TargetBottomRight}"
+                        Placement="BottomRight" />
+    </codewf:Guide>
+  </Panel>
+</UserControl>

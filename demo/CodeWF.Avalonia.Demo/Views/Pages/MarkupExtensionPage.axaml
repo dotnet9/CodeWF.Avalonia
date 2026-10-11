@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:codewf="https://codewf.com"
+             xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels.Pages"
+             x:Class="CodeWF.Avalonia.Demo.Views.Pages.MarkupExtensionPage"
+             x:DataType="vm:MarkupExtensionPageViewModel"
+             x:CompileBindings="True">
+  <StackPanel Margin="12,10" Spacing="14" MaxWidth="760" HorizontalAlignment="Left">
+
+    <Border Padding="10" CornerRadius="6" BorderThickness="1"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+      <TextBlock Text="If / Switch 标记扩展：在 XAML 里直接做条件取值与多分支取值，条件与分支支持绑定与常量混合，省去为纯展示逻辑写转换器。切换下方开关与状态，观察文本即时变化。"
+                 TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
+    </Border>
+
+    <Border Padding="14" CornerRadius="6" BorderThickness="1"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+      <StackPanel Spacing="10">
+        <TextBlock Text="{codewf:I18n Demo.Markup.IfTitle}" FontWeight="Bold" />
+        <ToggleSwitch IsChecked="{Binding IsBusy}"
+                      OnContent="IsBusy = true"
+                      OffContent="IsBusy = false" />
+        <TextBlock FontSize="15">
+          <TextBlock.Text>
+            <codewf:If Condition="{Binding IsBusy}" True="任务执行中，请稍候…" False="系统空闲" />
+          </TextBlock.Text>
+        </TextBlock>
+      </StackPanel>
+    </Border>
+
+    <Border Padding="14" CornerRadius="6" BorderThickness="1"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+      <StackPanel Spacing="10">
+        <TextBlock Text="{codewf:I18n Demo.Markup.SwitchTitle}" FontWeight="Bold" />
+        <ComboBox MinWidth="160" ItemsSource="{Binding StateOptions}" SelectedItem="{Binding State}" />
+        <TextBlock FontSize="15">
+          <TextBlock.Text>
+            <codewf:Switch Value="{Binding State}" Default="未知状态">
+              <codewf:SwitchCase When="运行中" Then="● 服务运行中" />
+              <codewf:SwitchCase When="已暂停" Then="‖ 服务已暂停" />
+              <codewf:SwitchCase When="维护中" Then="🛠 维护窗口开启" />
+            </codewf:Switch>
+          </TextBlock.Text>
+        </TextBlock>
+      </StackPanel>
+    </Border>
+  </StackPanel>
+</UserControl>
