@@ -26,6 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- 标题栏 / 任务栏图标：复用仓库根目录的 logo -->
+    <AvaloniaResource Include="..\..\logo.ico" Link="Assets\logo.ico" />
+    <AvaloniaResource Include="..\..\logo.png" Link="Assets\logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Lang Json 后端按输出目录 I18n\ 递归扫描 *.json，Demo 语言资源随包拷贝 -->
     <Content Include="I18n\**\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
@@ -33,7 +39,6 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Desktop" />
-    <PackageReference Include="Avalonia.Themes.Fluent" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
     <PackageReference Include="Semi.Avalonia" />
     <PackageReference Include="Prism.DryIoc.Avalonia" />

@@ -9,13 +9,14 @@
                      x:DataType="vm:MainViewModel"
                      x:CompileBindings="True"
                      Title="CodeWF.Avalonia Demo"
+                     Icon="/Assets/logo.ico"
                      Width="1440" Height="860"
                      MinWidth="1120" MinHeight="640">
 
   <!--  外壳：CodeWFWindow 无边框窗口，标题栏即自我演示  -->
   <Window.DataTemplates>
-    <!--  Dock 12.1 鍐呭鎵胯浇锛歍ool / Document 鐨勬鏂囩敱绫诲瀷鍖归厤鐨?DataTemplate 鍛堢幇
-          锛圛Dockable.Context 鍙湇鍔″畾浣嶅櫒涓庡懡浠ゆ爮锛夛紝杩欓噷鎶婅鍥惧疄渚嬫ˉ鎺ュ埌鍐呭瀹夸富銆? -->
+    <!--  Dock 12.1 内容承载：Tool / Document 的正文由类型匹配的 DataTemplate 呈现
+          （IDockable.Context 只服务定位器与命令栏），这里把视图实例桥接到内容宿主。 -->
     <DataTemplate DataType="dockmodel:Tool" x:DataType="dockmodel:Tool">
       <ContentControl Content="{Binding Context}" />
     </DataTemplate>
@@ -25,7 +26,8 @@
   </Window.DataTemplates>
   <codewf:CodeWFWindow.LeftContent>
     <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-      <TextBlock Text="◆ CodeWF.Avalonia" FontWeight="Bold" VerticalAlignment="Center" />
+      <Image Source="/Assets/logo.png" Width="18" Height="18" VerticalAlignment="Center" />
+      <TextBlock Text="CodeWF.Avalonia" FontWeight="Bold" VerticalAlignment="Center" />
       <TextBlock x:Name="VersionText" Text="Demo" Opacity="0.7" FontSize="11" VerticalAlignment="Center" />
     </StackPanel>
   </codewf:CodeWFWindow.LeftContent>
@@ -44,8 +46,8 @@
   <!--  12.x Dock 内容承载：Tool/Document 的 Context 按类型匹配模板（挂在 DockControl 上确保解析命中）  -->
   <Grid RowDefinitions="Auto,Auto,*,Auto">
 
-    <!--  Ribbon 页签行：快捷工具栏 + 7 页签 + 图钉（双击页签同样折叠命令区）  -->
-    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto">
+    <!--  Ribbon 页签行：快捷工具栏 + 7 页签（双击页签折叠/展开命令区，不另设图钉按钮）  -->
+    <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
       <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="6,0,2,0">
         <Button Classes="qk-btn" Content="💾" Margin="0,0,2,0"
                 ToolTip.Tip="{codewf:I18n Demo.Shell.QuickSave}"
@@ -72,10 +74,6 @@
           </DataTemplate>
         </TabStrip.ItemTemplate>
       </TabStrip>
-
-      <ToggleButton Grid.Column="2" Classes="qk-btn" Content="📌" Margin="2,0,8,0"
-                    IsChecked="{Binding RibbonExpanded}"
-                    ToolTip.Tip="{codewf:I18n Demo.Shell.PinRibbon}" />
     </Grid>
 
     <!--  Ribbon 命令区：当前页签的演示命令（图标 + 名称），底部组名  -->
