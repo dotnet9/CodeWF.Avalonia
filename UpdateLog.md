@@ -1,7 +1,8 @@
 # 更新日志
 
-## 未发布
+## 12.1.4.3 (2026-10-12)
 
+- 🐛[修复]-高对比色板（Aquatic/Desert/Dusk/NightSky）深色底配深色字看不清：Semi 的这四个变体只提供语义令牌（Window/WindowText/GrayText/Hotlight/Highlight），数字令牌会回落到 Light；本库此前四者共用一份 Light 字典，现改为每变体一份并对齐 Semi 高对比取值（Controls 与 Dock 两处同步），同时把控件主题里跨 Style 指向 Semi 令牌的引用自足化。
 - 🐛[修复]-构建流水线在全新检出下必然失败：根目录 `NuGet.config` 写死了本地包源 `artifacts/packages`（该目录被忽略、CI 上不存在），NuGet 对不存在的本地源报 NU1301 直接中断；现只注册 nuget.org，本机要用本地打包产物时在命令行追加包源。
 - 🐛[修复]-`CodeWF.Avalonia.TreeDataGrid` 对同仓 `CodeWF.Avalonia.Lang` 用的是 `PackageReference`，CI 会去 nuget.org 找本仓尚未发布的版本号（NU1102）；改为 `ProjectReference`，打包后的依赖声明不变。
 - 🎨[界面]-Dock 主题去掉 Fluent 依赖：DockSemiTheme 改以 Dock.Avalonia.Themes.Simple 为基座，配色令牌按 6 套变体（Default/Light/Dark + Semi 四套色板）字面量化，彻底绕开启动早期跨文件 StaticResource 解析失败的问题；不再需要 Avalonia.Themes.Fluent / Dock.Avalonia.Themes.Fluent。
