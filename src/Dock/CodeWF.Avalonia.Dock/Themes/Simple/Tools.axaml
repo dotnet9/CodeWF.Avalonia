@@ -1,0 +1,339 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:core="using:Dock.Model.Core"
+        xmlns:controls="using:Dock.Model.Controls"
+        xmlns:codewfConverters="using:CodeWF.Avalonia.Dock.Converters"
+        xmlns:converters="using:Dock.Avalonia.Converters"
+        x:DataType="controls:IToolDock"
+        x:CompileBindings="True">
+    <Styles.Resources>
+        <ResourceDictionary>
+            <!-- 宽度/高度等几何量写成字面量：避免 12.1.4 启动早期跨文件 StaticResource 解析失败 -->
+            <Thickness x:Key="CodeWFToolTitleBarContentMargin">6 0 2 0</Thickness>
+            <Thickness x:Key="CodeWFToolTitleBarButtonMargin">0</Thickness>
+            <Thickness x:Key="CodeWFToolTitleBarButtonPadding">0</Thickness>
+            <x:Double x:Key="CodeWFToolTitleBarButtonSize">22</x:Double>
+            <x:Double x:Key="CodeWFToolTitleBarIconSize">16</x:Double>
+
+            <DataTemplate x:Key="CodeWFToolTitleBarContentTemplate" DataType="core:IDockable">
+                <Panel />
+            </DataTemplate>
+
+            <DataTemplate x:Key="CodeWFToolTitleTabHeaderTemplate" DataType="core:IDockable">
+                <TextBlock x:Name="PART_Title"
+                           Text="{Binding Title}"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"
+                           TextAlignment="Left" />
+            </DataTemplate>
+
+            <ControlTheme x:Key="{x:Type ToolDockControl}"
+                          TargetType="ToolDockControl">
+                <Setter Property="(AutomationProperties.AutomationId)" Value="{Binding Id}" />
+                <Setter Property="(AutomationProperties.Name)" Value="{Binding Title}" />
+                <Setter Property="(DockProperties.IsDragEnabled)" Value="{Binding CanDrag}" />
+                <Setter Property="(DockProperties.IsDropEnabled)" Value="{Binding CanDrop}" />
+                <Setter Property="(DockProperties.DockGroup)" Value="{Binding DockGroup}" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="MinWidth" Value="{Binding MinWidth}" />
+                <Setter Property="MaxWidth" Value="{Binding MaxWidth}" />
+                <Setter Property="MinHeight" Value="{Binding MinHeight}" />
+                <Setter Property="MaxHeight" Value="{Binding MaxHeight}" />
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <DockableControl Name="PART_DockableControl"
+                                         TrackingMode="Visible"
+                                         Background="{TemplateBinding Background}"
+                                         DockProperties.IsDropArea="True"
+                                         DockProperties.IsDockTarget="True">
+                            <Border Background="Transparent"
+                                    IsVisible="{Binding !!OpenedDockablesCount}">
+                                <ToolChromeControl IsActive="{Binding IsActive}">
+                                    <ToolControl HeaderTemplate="{DynamicResource CodeWFToolTitleTabHeaderTemplate}" />
+                                </ToolChromeControl>
+                            </Border>
+                        </DockableControl>
+                    </ControlTemplate>
+                </Setter>
+            </ControlTheme>
+
+            <ControlTheme x:Key="CodeWFToolTitleBarButtonTheme"
+                          TargetType="Button">
+                <Setter Property="Margin" Value="{DynamicResource CodeWFToolTitleBarButtonMargin}" />
+                <Setter Property="Padding" Value="{DynamicResource CodeWFToolTitleBarButtonPadding}" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Width" Value="{DynamicResource CodeWFToolTitleBarButtonSize}" />
+                <Setter Property="Height" Value="{DynamicResource CodeWFToolTitleBarButtonSize}" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{DynamicResource CodeWFDockHeaderPointerOverBackgroundBrush}" />
+                </Style>
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{DynamicResource CodeWFToolTitleBarButtonPressedBackgroundBrush}" />
+                </Style>
+            </ControlTheme>
+
+            <ControlTheme x:Key="CodeWFToolChromeControlTheme"
+                          TargetType="ToolChromeControl">
+                <Setter Property="ToolFlyout" Value="{x:Null}" />
+                <Setter Property="CloseButtonTheme" Value="{StaticResource CodeWFToolTitleBarButtonTheme}" />
+                <Setter Property="PinButtonTheme" Value="{StaticResource CodeWFToolTitleBarButtonTheme}" />
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border x:Name="PART_ToolPanelBorder"
+                                Background="{DynamicResource CodeWFDockPanelBackgroundBrush}"
+                                BorderBrush="{DynamicResource CodeWFDockInactiveBorderBrush}"
+                                BorderThickness="{DynamicResource CodeWFDockPanelBorderThickness}"
+                                CornerRadius="{DynamicResource CodeWFDockPanelCornerRadius}"
+                                ClipToBounds="True">
+                            <Grid RowDefinitions="Auto,*">
+                                <Border x:Name="PART_ContentBorder"
+                                        Grid.Row="1"
+                                        Background="{DynamicResource CodeWFDockPanelBackgroundBrush}"
+                                        CornerRadius="0 0 7 7"
+                                        ClipToBounds="True">
+                                    <ContentPresenter x:Name="PART_ContentPresenter"
+                                                      Content="{TemplateBinding Content}"
+                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                      Padding="{TemplateBinding Padding}"
+                                                      HorizontalAlignment="Stretch"
+                                                      VerticalAlignment="Stretch"
+                                                      HorizontalContentAlignment="Stretch"
+                                                      VerticalContentAlignment="Stretch" />
+                                </Border>
+                                <Border x:Name="PART_Border"
+                                        Background="{DynamicResource CodeWFDockHeaderBackgroundBrush}"
+                                        BorderBrush="{DynamicResource CodeWFDockHeaderDividerBrush}"
+                                        CornerRadius="7 7 0 0"
+                                        Padding="6 0"
+                                        VerticalAlignment="Top"
+                                        Grid.Row="{Binding GripMode, Converter={x:Static GripModeConverters.GridRowAutoHideConverter}}">
+                                    <Border.Transitions>
+                                        <Transitions>
+                                            <BrushTransition Property="Background" Duration="0:0:0.16" />
+                                        </Transitions>
+                                    </Border.Transitions>
+                                    <Grid x:Name="PART_Grip"
+                                          ColumnDefinitions="Auto,*,Auto"
+                                          Height="28">
+                                        <Grid.Transitions>
+                                            <Transitions>
+                                                <BrushTransition Property="Background" Duration="0:0:0.16" />
+                                            </Transitions>
+                                        </Grid.Transitions>
+                                        <ContentControl x:Name="PART_TitlePresenter"
+                                                        Grid.Column="0"
+                                                        Content="{Binding ActiveDockable}"
+                                                        ContentTemplate="{DynamicResource CodeWFToolTitleTabHeaderTemplate}"
+                                                        Margin="10 0 0 0" />
+                                        <ContentControl x:Name="PART_TitleBarContent"
+                                                        Grid.Column="1"
+                                                        Content="{Binding ActiveDockable}"
+                                                        ContentTemplate="{DynamicResource CodeWFToolTitleBarContentTemplate}"
+                                                        Margin="{DynamicResource CodeWFToolTitleBarContentMargin}" />
+                                        <StackPanel Grid.Column="2"
+                                                    Orientation="Horizontal"
+                                                    Margin="0 0 10 0">
+                                            <Button x:Name="PART_PinButton"
+                                                    Command="{Binding Owner.Factory, Converter={x:Static codewfConverters:DockFactoryCommandConverter.PinDockable}}"
+                                                    CommandParameter="{Binding ActiveDockable}"
+                                                    Theme="{TemplateBinding PinButtonTheme}">
+                                                <Button.IsVisible>
+                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                        <MultiBinding Converter="{x:Static converters:DockCapabilityConverters.CanPinMultiConverter}">
+                                                            <Binding Path="ActiveDockable" />
+                                                            <Binding Path="ActiveDockable.CanPin" />
+                                                            <Binding Path="ActiveDockable.DockCapabilityOverrides.CanPin" />
+                                                            <Binding Path="(core:IDock).DockCapabilityPolicy.CanPin" />
+                                                        </MultiBinding>
+                                                        <TemplateBinding Property="IsFloating" Converter="{x:Static BoolConverters.Not}" />
+                                                    </MultiBinding>
+                                                </Button.IsVisible>
+                                                <Viewbox Width="16" Height="16">
+                                                    <Image x:Name="PART_PinIcon"
+                                                           Source="avares://CodeWF.Avalonia.Dock/Themes/Assets/dock-ding.png"
+                                                           Stretch="Uniform" />
+                                                </Viewbox>
+                                            </Button>
+                                            <Button x:Name="PART_CloseButton"
+                                                    Command="{Binding Owner.Factory, Converter={x:Static codewfConverters:DockFactoryCommandConverter.CloseDockable}}"
+                                                    CommandParameter="{Binding ActiveDockable}"
+                                                    Theme="{TemplateBinding CloseButtonTheme}"
+                                                    ToolTip.Tip="关闭工具窗口；可在“设置”中重新显示">
+                                                <Button.IsVisible>
+                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                        <MultiBinding Converter="{x:Static converters:DockCapabilityConverters.CanCloseMultiConverter}">
+                                                            <Binding Path="ActiveDockable" />
+                                                            <Binding Path="ActiveDockable.CanClose" />
+                                                            <Binding Path="ActiveDockable.DockCapabilityOverrides.CanClose" />
+                                                            <Binding Path="(core:IDock).DockCapabilityPolicy.CanClose" />
+                                                        </MultiBinding>
+                                                        <MultiBinding Converter="{x:Static converters:CanRemoveDockableConverter.Instance}">
+                                                            <Binding Path="(core:IDock).CanCloseLastDockable" FallbackValue="{x:True}" />
+                                                            <Binding Path="(core:IDock).OpenedDockablesCount" FallbackValue="0" />
+                                                        </MultiBinding>
+                                                    </MultiBinding>
+                                                </Button.IsVisible>
+                                                <Viewbox Width="16" Height="16">
+                                                    <Image x:Name="PART_CloseIcon"
+                                                           Source="avares://CodeWF.Avalonia.Dock/Themes/Assets/dock-close.png"
+                                                           Stretch="Uniform" />
+                                                </Viewbox>
+                                            </Button>
+                                        </StackPanel>
+                                        <Border x:Name="PART_HeaderDivider"
+                                                Grid.ColumnSpan="3"
+                                                Background="{DynamicResource CodeWFDockHeaderDividerBrush}"
+                                                Height="1"
+                                                HorizontalAlignment="Stretch"
+                                                VerticalAlignment="Bottom"
+                                                Margin="10 0 10 0"
+                                                IsHitTestVisible="False" />
+                                    </Grid>
+                                </Border>
+                                <Panel x:Name="PART_Panel"
+                                       Background="{DynamicResource CodeWFDockHeaderDividerBrush}"
+                                       Height="1"
+                                       VerticalAlignment="Top"
+                                       Grid.Row="{Binding GripMode, Converter={x:Static GripModeConverters.GridRowAutoHideConverter}}" />
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+
+                <Style Selector="^/template/ Border#PART_ToolPanelBorder">
+                    <Setter Property="BorderBrush" Value="{DynamicResource CodeWFDockInactiveBorderBrush}" />
+                    <Setter Property="Transitions">
+                        <Transitions>
+                            <BrushTransition Property="BorderBrush" Duration="0:0:0.16" />
+                        </Transitions>
+                    </Setter>
+                </Style>
+                <Style Selector="^:active /template/ Border#PART_ToolPanelBorder">
+                    <Setter Property="BorderBrush" Value="{DynamicResource CodeWFDockActiveBorderBrush}" />
+                </Style>
+
+                <Style Selector="^/template/ Border#PART_Border">
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="IsVisible"
+                            Value="{Binding GripMode, Converter={x:Static GripModeConverters.IsVisibleVisibleConverter}}" />
+                </Style>
+                <Style Selector="^:active /template/ Border#PART_Border">
+                    <Setter Property="Background" Value="{DynamicResource CodeWFDockHeaderBackgroundBrush}" />
+                </Style>
+                <Style Selector="^:pointerover /template/ Border#PART_Border">
+                    <Setter Property="IsVisible"
+                            Value="{Binding GripMode, Converter={x:Static GripModeConverters.IsVisibleAutoHideOrVisibleConverter}}" />
+                </Style>
+                <Style Selector="^:floating /template/ Border#PART_Border">
+                    <Setter Property="BorderThickness" Value="0" />
+                </Style>
+
+                <Style Selector="^/template/ Panel#PART_Panel">
+                    <Setter Property="IsVisible"
+                            Value="{Binding GripMode, Converter={x:Static GripModeConverters.IsVisibleAutoHideOrHiddenConverter}}" />
+                </Style>
+                <Style Selector="^:pointerover /template/ Panel#PART_Panel">
+                    <Setter Property="IsVisible"
+                            Value="{Binding GripMode, Converter={x:Static GripModeConverters.IsVisibleVisibleOrHiddenConverter}}" />
+                </Style>
+                <Style Selector="^:floating:pointerover /template/ Panel#PART_Panel">
+                    <Setter Property="Height" Value="0" />
+                    <Setter Property="IsVisible" Value="False" />
+                </Style>
+
+                <Style Selector="^/template/ Grid#PART_Grip">
+                    <Setter Property="Background" Value="{DynamicResource CodeWFDockHeaderBackgroundBrush}" />
+                    <Setter Property="(DockProperties.IsDragArea)" Value="True" />
+                </Style>
+                <Style Selector="^:active /template/ Grid#PART_Grip">
+                    <Setter Property="Background" Value="{DynamicResource CodeWFDockHeaderBackgroundBrush}" />
+                </Style>
+                <Style Selector="^:floating /template/ Grid#PART_Grip">
+                    <Setter Property="(DockProperties.IsDragArea)"
+                            Value="{Binding $parent[HostWindow].ToolChromeControlsWholeWindow, Mode=OneWay, Converter={x:Static BoolConverters.Not}}" />
+                </Style>
+
+                <Style Selector="^/template/ TextBlock#PART_Title">
+                    <Setter Property="Foreground" Value="{DynamicResource CodeWFDockHeaderForegroundBrush}" />
+                    <Setter Property="Opacity" Value="1" />
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="TextAlignment" Value="Left" />
+                    <Setter Property="FontSize" Value="14" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                    <Setter Property="Transitions">
+                        <Transitions>
+                            <BrushTransition Property="Foreground" Duration="0:0:0.16" />
+                        </Transitions>
+                    </Setter>
+                </Style>
+                <Style Selector="^:active /template/ TextBlock#PART_Title">
+                    <Setter Property="Foreground" Value="{DynamicResource CodeWFDockHeaderForegroundBrush}" />
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+                <Style Selector="^:disabled /template/ TextBlock#PART_Title">
+                    <Setter Property="Foreground" Value="{DynamicResource CodeWFDockHeaderForegroundBrush}" />
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+
+                <Style Selector="^/template/ ContentControl#PART_TitleBarContent">
+                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="HorizontalContentAlignment" Value="Right" />
+                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                </Style>
+
+                <Style Selector="^/template/ Image#PART_CloseIcon">
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+                <Style Selector="^:active /template/ Image#PART_CloseIcon">
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+                <Style Selector="^:disabled /template/ Image#PART_CloseIcon">
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+                <Style Selector="^/template/ Button#PART_CloseButton">
+                    <Setter Property="Foreground" Value="{DynamicResource CodeWFDockHeaderSecondaryForegroundBrush}" />
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+                <Style Selector="^:active /template/ Button#PART_CloseButton">
+                    <Setter Property="Foreground" Value="{DynamicResource CodeWFDockHeaderSecondaryForegroundBrush}" />
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+                <Style Selector="^:disabled /template/ Button#PART_CloseButton">
+                    <Setter Property="Foreground" Value="{DynamicResource CodeWFDockHeaderSecondaryForegroundBrush}" />
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+                <Style Selector="^/template/ Image#PART_PinIcon">
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+                <Style Selector="^:active /template/ Image#PART_PinIcon">
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+                <Style Selector="^:pinned /template/ Image#PART_PinIcon">
+                    <Setter Property="Opacity" Value="0.72" />
+                </Style>
+                <Style Selector="^:active:pinned /template/ Image#PART_PinIcon">
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+                <Style Selector="^/template/ Button#PART_PinButton">
+                    <Setter Property="Foreground" Value="{DynamicResource CodeWFToolPinButtonForegroundBrush}" />
+                    <Setter Property="Opacity" Value="1" />
+                    <Setter Property="(ToolTip.Tip)" Value="启用自动隐藏；窗口失去焦点后自动收起" />
+                </Style>
+                <Style Selector="^:pinned /template/ Button#PART_PinButton">
+                    <Setter Property="Foreground" Value="{DynamicResource CodeWFDockHeaderSecondaryForegroundBrush}" />
+                    <Setter Property="Opacity" Value="0.82" />
+                    <Setter Property="(ToolTip.Tip)" Value="固定工具窗口；失去焦点后保持展开" />
+                </Style>
+            </ControlTheme>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <Style Selector="ToolChromeControl">
+        <Setter Property="Theme" Value="{StaticResource CodeWFToolChromeControlTheme}" />
+    </Style>
+</Styles>

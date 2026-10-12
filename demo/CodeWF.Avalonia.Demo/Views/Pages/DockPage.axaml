@@ -2,13 +2,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:dock="using:Dock.Avalonia.Controls"
              xmlns:md="using:CodeWF.Avalonia.Markdown.Controls"
+             xmlns:dockmodel="using:Dock.Model.ReactiveUI.Controls"
              xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels.Pages"
              x:Class="CodeWF.Avalonia.Demo.Views.Pages.DockPage"
              x:DataType="vm:DockPageViewModel"
              x:CompileBindings="True">
 
   <UserControl.DataTemplates>
-    <!-- 12.x 内容承载：Document/Tool 的 Context 按类型匹配这里的模板 -->
+    <!-- 12.x 内容承载：Document/Tool 正文由类型匹配的 DataTemplate 呈现（Context 只服务定位器/命令栏），
+         这里把 Context 里的载荷再向内解析为 MarkdownViewer。 -->
+    <DataTemplate DataType="dockmodel:Document">
+      <ContentControl Content="{Binding Context}" />
+    </DataTemplate>
+    <DataTemplate DataType="dockmodel:Tool">
+      <ContentControl Content="{Binding Context}" />
+    </DataTemplate>
     <DataTemplate DataType="vm:MarkdownDocumentContext">
       <md:MarkdownViewer Markdown="{Binding Markdown}" Margin="8" />
     </DataTemplate>

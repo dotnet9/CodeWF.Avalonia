@@ -1,4 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <SolidColorBrush x:Key="TrapezoidShapedTabItemContentBackground" Color="Transparent" />
+    <!-- 制表栏/页签分隔线与标题栏底边框共用（Semi 边框色：SemiGrey9 @8%） -->
+    <SolidColorBrush x:Key="TabControlSeparatorBorderBrush">#141C1F23</SolidColorBrush>
 </ResourceDictionary>

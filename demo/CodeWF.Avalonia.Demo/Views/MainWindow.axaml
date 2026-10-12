@@ -1,146 +1,170 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:codewf="https://codewf.com"
-        xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
-        xmlns:views="using:CodeWF.Avalonia.Demo.Views"
-        x:Class="CodeWF.Avalonia.Demo.Views.MainWindow"
-        x:DataType="vm:MainViewModel"
-        x:CompileBindings="True"
-        Title="CodeWF.Avalonia Demo"
-        Width="1440" Height="860"
-        MinWidth="1120" MinHeight="640">
+<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:codewf="https://codewf.com"
+                     xmlns:dock="using:Dock.Avalonia.Controls"
+                     xmlns:dockmodel="using:Dock.Model.ReactiveUI.Controls"
+                     xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
+                     xmlns:views="using:CodeWF.Avalonia.Demo.Views"
+                     x:Class="CodeWF.Avalonia.Demo.Views.MainWindow"
+                     x:DataType="vm:MainViewModel"
+                     x:CompileBindings="True"
+                     Title="CodeWF.Avalonia Demo"
+                     Width="1440" Height="860"
+                     MinWidth="1120" MinHeight="640">
 
-  <Grid RowDefinitions="Auto,*,Auto">
+  <!--  外壳：CodeWFWindow 无边框窗口，标题栏即自我演示  -->
+  <Window.DataTemplates>
+    <!--  Dock 12.1 鍐呭鎵胯浇锛歍ool / Document 鐨勬鏂囩敱绫诲瀷鍖归厤鐨?DataTemplate 鍛堢幇
+          锛圛Dockable.Context 鍙湇鍔″畾浣嶅櫒涓庡懡浠ゆ爮锛夛紝杩欓噷鎶婅鍥惧疄渚嬫ˉ鎺ュ埌鍐呭瀹夸富銆? -->
+    <DataTemplate DataType="dockmodel:Tool" x:DataType="dockmodel:Tool">
+      <ContentControl Content="{Binding Context}" />
+    </DataTemplate>
+    <DataTemplate DataType="dockmodel:Document" x:DataType="dockmodel:Document">
+      <ContentControl Content="{Binding Context}" />
+    </DataTemplate>
+  </Window.DataTemplates>
+  <codewf:CodeWFWindow.LeftContent>
+    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+      <TextBlock Text="◆ CodeWF.Avalonia" FontWeight="Bold" VerticalAlignment="Center" />
+      <TextBlock x:Name="VersionText" Text="Demo" Opacity="0.7" FontSize="11" VerticalAlignment="Center" />
+    </StackPanel>
+  </codewf:CodeWFWindow.LeftContent>
+  <codewf:CodeWFWindow.RightContent>
+    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="0,0,8,0">
+      <TextBlock Text="{codewf:I18n Demo.Shell.Palette}" VerticalAlignment="Center" FontSize="11.5" />
+      <ComboBox MinWidth="88" Height="24" FontSize="11.5"
+                ItemsSource="{Binding Palettes}" SelectedItem="{Binding SelectedPalette}" />
+      <ToggleButton Classes="qk-btn" Content="◐" IsChecked="{Binding IsDarkMode}"
+                    ToolTip.Tip="{codewf:I18n Demo.Shell.Dark}" FontSize="13" />
+      <ComboBox MinWidth="88" Height="24" FontSize="11.5"
+                ItemsSource="{Binding Cultures}" SelectedItem="{Binding SelectedCulture}" />
+    </StackPanel>
+  </codewf:CodeWFWindow.RightContent>
 
-    <!--  Ribbon：7 页签，双击页签折叠/展开命令区；右侧为外观与语言栏  -->
-    <Grid Grid.Row="0" x:Name="RibbonRoot" ColumnDefinitions="*,Auto">
-      <Grid Grid.Column="0" RowDefinitions="Auto,Auto">
-        <TabStrip Grid.Row="0" x:Name="RibbonTabStrip"
-                  Theme="{StaticResource TrapezoidShapedTabStrip}"
-                  ItemsSource="{Binding Groups}"
-                  SelectedItem="{Binding SelectedGroup}"
-                  DoubleTapped="OnRibbonTabStripDoubleTapped">
-          <TabStrip.ItemTemplate>
-            <DataTemplate x:DataType="vm:DemoGroupViewModel">
-              <TextBlock Text="{Binding Title}" Margin="16,4" FontWeight="SemiBold" />
-            </DataTemplate>
-          </TabStrip.ItemTemplate>
-        </TabStrip>
+  <!--  12.x Dock 内容承载：Tool/Document 的 Context 按类型匹配模板（挂在 DockControl 上确保解析命中）  -->
+  <Grid RowDefinitions="Auto,Auto,*,Auto">
 
-        <!--  命令区：当前页签下的演示命令按钮  -->
-        <Border Grid.Row="1" IsVisible="{Binding RibbonExpanded}"
-                ClipToBounds="True" Padding="12,8"
-                BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
-                BorderThickness="0,1,0,1">
-          <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
-            <ItemsControl ItemsSource="{Binding SelectedGroup.Items}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <WrapPanel />
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-              <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="vm:DemoItemViewModel">
-                  <Button Content="{Binding Title}"
-                          Margin="0,0,8,8" MinWidth="96"
-                          Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenItemCommand}"
-                          CommandParameter="{Binding}" />
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </ScrollViewer>
-        </Border>
-      </Grid>
-
-      <!--  外观与语言  -->
-      <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8" Margin="8,0,12,0">
-        <TextBlock Text="{codewf:I18n Demo.Shell.Palette}" VerticalAlignment="Center" />
-        <ComboBox MinWidth="88" ItemsSource="{Binding Palettes}" SelectedItem="{Binding SelectedPalette}" />
-        <ToggleSwitch IsChecked="{Binding IsDarkMode}"
-                      OnContent="{codewf:I18n Demo.Shell.Dark}"
-                      OffContent="{codewf:I18n Demo.Shell.Light}" />
-        <ComboBox MinWidth="88" ItemsSource="{Binding Cultures}" SelectedItem="{Binding SelectedCulture}" />
-        <ToggleButton IsChecked="{Binding PropertiesPanelVisible}" Content="{codewf:I18n Demo.Shell.Properties}" />
-        <ToggleButton IsChecked="{Binding LogPanelVisible}" Content="{codewf:I18n Demo.Shell.Log}" />
+    <!--  Ribbon 页签行：快捷工具栏 + 7 页签 + 图钉（双击页签同样折叠命令区）  -->
+    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto">
+      <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="6,0,2,0">
+        <Button Classes="qk-btn" Content="💾" Margin="0,0,2,0"
+                ToolTip.Tip="{codewf:I18n Demo.Shell.QuickSave}"
+                Command="{Binding QuickSaveCommand}" />
+        <Button Classes="qk-btn" Content="↺" Margin="0,0,2,0"
+                ToolTip.Tip="{codewf:I18n Demo.Shell.Reset}"
+                Command="{Binding QuickResetCommand}" />
+        <Button Classes="qk-btn" Content="⚙"
+                ToolTip.Tip="{codewf:I18n Demo.Shell.QuickSettings}"
+                Command="{Binding QuickSettingsCommand}" />
       </StackPanel>
+
+      <TabStrip Grid.Column="1" x:Name="RibbonTabStrip"
+                Theme="{StaticResource TrapezoidShapedTabStrip}"
+                ItemsSource="{Binding Groups}"
+                SelectedItem="{Binding SelectedGroup}"
+                DoubleTapped="OnRibbonTabStripDoubleTapped">
+        <TabStrip.ItemTemplate>
+          <DataTemplate x:DataType="vm:DemoGroupViewModel">
+            <StackPanel Orientation="Horizontal" Spacing="6" Margin="14,4">
+              <TextBlock Text="{Binding Icon}" FontSize="13" VerticalAlignment="Center" />
+              <TextBlock Text="{Binding Title}" FontWeight="SemiBold" VerticalAlignment="Center" />
+            </StackPanel>
+          </DataTemplate>
+        </TabStrip.ItemTemplate>
+      </TabStrip>
+
+      <ToggleButton Grid.Column="2" Classes="qk-btn" Content="📌" Margin="2,0,8,0"
+                    IsChecked="{Binding RibbonExpanded}"
+                    ToolTip.Tip="{codewf:I18n Demo.Shell.PinRibbon}" />
     </Grid>
 
-    <!--  中央三栏：导航树 / 文档区 / 属性面板  -->
-    <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto">
+    <!--  Ribbon 命令区：当前页签的演示命令（图标 + 名称），底部组名  -->
+    <Border Grid.Row="1" IsVisible="{Binding RibbonExpanded}"
+            ClipToBounds="True" Padding="12,8,12,5"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
+            BorderThickness="0,1,0,1">
+      <StackPanel Spacing="4">
+        <ItemsControl ItemsSource="{Binding SelectedGroup.Items}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:DemoItemViewModel">
+              <Button Classes="rbn-cmd" Margin="0,0,8,6"
+                      Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenItemCommand}"
+                      CommandParameter="{Binding}">
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{Binding Icon}" FontSize="20" HorizontalAlignment="Center" />
+                  <TextBlock Text="{Binding Title}" FontSize="11" MaxWidth="84"
+                             HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <TextBlock Text="{Binding SelectedGroup.Title}" FontSize="10.5" Opacity="0.55" Margin="2,0,0,0" />
+      </StackPanel>
+    </Border>
 
-      <!--  左：导航树（Ribbon 分组镜像）  -->
-      <Border Grid.Column="0" Width="232"
-              BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}" BorderThickness="0,0,1,0">
-        <Grid RowDefinitions="Auto,*">
-          <Border Grid.Row="0" Padding="12,8">
-            <TextBlock Text="{codewf:I18n Demo.Shell.Navigation}" FontWeight="Bold" Opacity="0.8" />
-          </Border>
-          <TreeView Grid.Row="1" x:Name="NavTree"
-                    ItemsSource="{Binding Groups}"
-                    SelectionChanged="OnNavTreeSelectionChanged">
-            <TreeView.ItemTemplate>
-              <!-- Avalonia 12 移除了 HierarchicalDataTemplate（WPF 类型），层级用 TreeDataTemplate -->
-              <TreeDataTemplate x:DataType="vm:DemoGroupViewModel" ItemsSource="{Binding Items}">
-                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
-              </TreeDataTemplate>
-            </TreeView.ItemTemplate>
-          </TreeView>
-        </Grid>
-      </Border>
+    <!--  中央 Dock 工作区：导航树 / 文档区 / 属性 / 日志均为可停靠面板（Context 直接承载控件实例）  -->
+    <dock:DockControl Grid.Row="2" Layout="{Binding Layout}" />
 
-      <!--  中：文档区（所有演示以 Document 承载，无弹窗场景）  -->
-      <TabControl Grid.Column="1" x:Name="DocumentTabs"
-                  Theme="{StaticResource TrapezoidShapedTabControl}"
-                  ItemsSource="{Binding Documents}"
-                  SelectedItem="{Binding ActiveDocument}"
-                  Padding="0">
-        <TabControl.ItemTemplate>
-          <DataTemplate x:DataType="vm:DemoDocumentViewModel">
-            <Panel MinWidth="120">
-              <TextBlock Text="{Binding Title}" Margin="14,0,28,0" VerticalAlignment="Center"
-                         TextTrimming="CharacterEllipsis" />
-              <Button HorizontalAlignment="Right" VerticalAlignment="Center"
-                      Width="18" Height="18" Padding="0" FontSize="10"
-                      Content="✕"
-                      Command="{Binding $parent[TabControl].((vm:MainViewModel)DataContext).CloseDocumentCommand}"
-                      CommandParameter="{Binding}" />
-            </Panel>
-          </DataTemplate>
-        </TabControl.ItemTemplate>
-        <TabControl.ContentTemplate>
-          <DataTemplate x:DataType="vm:DemoDocumentViewModel">
-            <views:DemoDocumentView />
-          </DataTemplate>
-        </TabControl.ContentTemplate>
-      </TabControl>
-
-      <!--  右：PropertyGrid（右侧面板即本控件的自我演示）  -->
-      <Border Grid.Column="2" x:Name="PropertyPanelHost" Width="336"
-              IsVisible="{Binding PropertiesPanelVisible}"
-              BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}" BorderThickness="1,0,0,0">
-        <codewf:PropertyGrid Items="{Binding ActivePropertyItems}"
-                             ValueCommittedCommand="{Binding ActiveValueCommittedCommand}"
-                             BrowseRequestedCommand="{Binding ActiveBrowseRequestedCommand}" />
-      </Border>
-    </Grid>
-
-    <!--  底：日志面板（LogView 实时流 + 写日志按钮）  -->
-    <Border Grid.Row="2" x:Name="LogPanelHost" IsVisible="{Binding LogPanelVisible}"
-            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}" BorderThickness="0,1,0,0">
-      <Grid RowDefinitions="Auto,*">
-        <DockPanel Grid.Row="0" Margin="12,6">
-          <ToggleButton DockPanel.Dock="Right" IsChecked="{Binding LogPanelVisible}" Content="✕" />
-          <Button DockPanel.Dock="Right" Margin="0,0,8,0"
-                  Content="{codewf:I18n Demo.Shell.WriteLogs}"
-                  Command="{Binding WriteLogsCommand}" />
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock Text="{codewf:I18n Demo.Shell.Log}" FontWeight="Bold" VerticalAlignment="Center" />
-            <TextBlock Text="{Binding LogFolder}" Opacity="0.6" VerticalAlignment="Center"
-                       FontSize="11" TextTrimming="CharacterEllipsis" />
-          </StackPanel>
-        </DockPanel>
-        <codewf:LogView Grid.Row="1" Source="{Binding LogSource}" MaxDisplayCount="500" />
+    <!--  状态栏：运行状态 + 面板开关 + 版本信息  -->
+    <Border Grid.Row="3" Padding="10,3"
+            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
+            BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+          <TextBlock Text="●" FontSize="10" Foreground="#26a34a" VerticalAlignment="Center" />
+          <TextBlock Text="{codewf:I18n Demo.Shell.DemoShell}" FontWeight="SemiBold" FontSize="11.5"
+                     VerticalAlignment="Center" />
+        </StackPanel>
+        <TextBlock Grid.Column="1" Text="{Binding StatusText}" Margin="14,0,0,0"
+                   Opacity="0.7" FontSize="11.5" VerticalAlignment="Center" />
+        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+          <Button Classes="st-btn" Content="{codewf:I18n Demo.Shell.Navigation}"
+                  Command="{Binding TogglePanelCommand}" CommandParameter="nav" />
+          <Button Classes="st-btn" Content="{codewf:I18n Demo.Shell.Properties}"
+                  Command="{Binding TogglePanelCommand}" CommandParameter="props" />
+          <Button Classes="st-btn" Content="{codewf:I18n Demo.Shell.Log}"
+                  Command="{Binding TogglePanelCommand}" CommandParameter="log" />
+          <Button Classes="st-btn" Content="{codewf:I18n Demo.Shell.Reset}"
+                  Command="{Binding QuickResetCommand}" />
+          <Border Width="1" Height="14" Margin="8,0"
+                  Background="{DynamicResource TabControlSeparatorBorderBrush}" />
+          <TextBlock Text="net10.0 · Avalonia 12.1.4" Opacity="0.6" FontSize="11"
+                     VerticalAlignment="Center" />
+        </StackPanel>
       </Grid>
     </Border>
   </Grid>
-</Window>
+
+  <Window.Styles>
+    <Style Selector="Button.qk-btn,ToggleButton.qk-btn">
+      <Setter Property="Width" Value="28" />
+      <Setter Property="Height" Value="26" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.rbn-cmd">
+      <Setter Property="MinWidth" Value="84" />
+      <Setter Property="MinHeight" Value="64" />
+      <Setter Property="Padding" Value="8,8" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.st-btn">
+      <Setter Property="Padding" Value="8,2" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="MinHeight" Value="22" />
+      <Setter Property="CornerRadius" Value="3" />
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+  </Window.Styles>
+</codewf:CodeWFWindow>

@@ -1,3 +1,4 @@
+using ReactiveUI.Avalonia;
 using Avalonia;
 
 namespace CodeWF.Avalonia.Demo;
@@ -18,5 +19,6 @@ internal static class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
+            .UseReactiveUI(_ => { })
             .LogToTrace();
 }

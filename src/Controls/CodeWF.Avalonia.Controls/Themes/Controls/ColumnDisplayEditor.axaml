@@ -61,12 +61,12 @@
                                 </Style>
                                 <Style Selector="ListBoxItem.drop-before">
                                     <Setter Property="BorderBrush"
-                                            Value="{DynamicResource ColumnDisplayEditorDropPreviewBrush}" />
+                                            Value="{DynamicResource SemiColorPrimary}" />
                                     <Setter Property="BorderThickness" Value="0,2,0,0" />
                                 </Style>
                                 <Style Selector="ListBoxItem.drop-after">
                                     <Setter Property="BorderBrush"
-                                            Value="{DynamicResource ColumnDisplayEditorDropPreviewBrush}" />
+                                            Value="{DynamicResource SemiColorPrimary}" />
                                     <Setter Property="BorderThickness" Value="0,0,0,2" />
                                 </Style>
                             </ListBox.Styles>
@@ -83,7 +83,7 @@
                                             Background="Transparent"
                                             BorderThickness="0"
                                             Cursor="SizeAll"
-                                            Foreground="{DynamicResource ColumnDisplayEditorDragHandleForeground}">
+                                            Foreground="{DynamicResource SemiColorText2}">
                                             <PathIcon
                                                 Width="15"
                                                 Height="15"

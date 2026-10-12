@@ -1,8 +1,9 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StaticResource x:Key="CodeWFWindowBackground" ResourceKey="WindowDefaultBackground" />
-    <StaticResource x:Key="CodeWFWindowForeground" ResourceKey="WindowDefaultForeground" />
-    <StaticResource x:Key="CodeWFWindowTitleBarBackground" ResourceKey="TitleBarBackground" />
-    <StaticResource x:Key="CodeWFWindowTitleBarForeground" ResourceKey="CaptionButtonForeground" />
-    <StaticResource x:Key="CodeWFWindowTitleBarBorderBrush" ResourceKey="WindowBorderBrush" />
+    <!--  12.1.4 启动窗口期 Semi 包字典不可达，Semi 窗口色内联字面量（对齐 Semi Light 调色板取值）  -->
+    <SolidColorBrush x:Key="CodeWFWindowBackground">White</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFWindowForeground">#FF1C1F23</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFWindowTitleBarBackground">Transparent</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFWindowTitleBarForeground">#CC1C1F23</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFWindowTitleBarBorderBrush">#141C1F23</SolidColorBrush>
 </ResourceDictionary>

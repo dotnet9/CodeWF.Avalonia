@@ -1,8 +1,13 @@
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Styling;
 using CodeWF.Avalonia.Demo.Infrastructure;
 using CodeWF.Avalonia.Lang;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
+using Dock.Model.Controls;
+using Dock.Model.Core;
+using Dock.Model.ReactiveUI;
+using Dock.Model.ReactiveUI.Controls;
 using CodeWF.Toolkit.Logging;
 using ReactiveUI;
 using ReactiveUI.Primitives;
@@ -19,6 +24,8 @@ namespace CodeWF.Avalonia.Demo.ViewModels;
 public class MainViewModel : ReactiveObject
 {
     private DemoDocumentViewModel? _activeDocument;
+    private DemoItemViewModel? _selectedNavItem;
+    private string _statusText = string.Empty;
     private bool _ribbonExpanded = true;
     private bool _logPanelVisible = true;
     private bool _propertiesPanelVisible = true;
@@ -29,6 +36,12 @@ public class MainViewModel : ReactiveObject
     private PropertyItem? _paletteItem;
     private PropertyItem? _modeItem;
     private PropertyItem? _langItem;
+    private DemoDockFactory? _dockFactory;
+    private RootDock? _layout;
+    private Tool? _navTool;
+    private Tool? _propTool;
+    private Tool? _logTool;
+    private DocumentDock? _docDock;
 
     public MainViewModel()
     {
@@ -38,6 +51,10 @@ public class MainViewModel : ReactiveObject
         OpenItemCommand = ReactiveCommand.Create<DemoItemViewModel>(OpenItem);
         CloseDocumentCommand = ReactiveCommand.Create<DemoDocumentViewModel>(CloseDocument);
         ToggleRibbonCommand = ReactiveCommand.Create(() => { RibbonExpanded = !RibbonExpanded; });
+        TogglePanelCommand = ReactiveCommand.Create<string>(TogglePanel);
+        QuickSaveCommand = ReactiveCommand.Create(() => { Logger.Info("保存工作区布局（演示）"); });
+        QuickResetCommand = ReactiveCommand.Create(ResetLayout);
+        QuickSettingsCommand = ReactiveCommand.Create(() => { Logger.Info("打开设置（演示）"); });
         WriteLogsCommand = ReactiveCommand.Create(WriteSampleLogs);
 
         Palettes = new ObservableCollection<AppearanceOption>
@@ -60,6 +77,11 @@ public class MainViewModel : ReactiveObject
 
         GlobalProperties = BuildGlobalProperties();
 
+        I18nManager.Instance.CultureChanged += (_, _) => this.RaisePropertyChanged(nameof(StatusText));
+
+        // Dock 工作区（导航树 / 属性 / 日志为可停靠工具面板，文档区为 DocumentDock）。
+        BuildLayout();
+
         // 启动即打开欢迎文档，避免空文档区。
         OpenItem(Groups[0].Items[0]);
     }
@@ -69,6 +91,35 @@ public class MainViewModel : ReactiveObject
 
     /// <summary>已打开的演示文档。</summary>
     public ObservableCollection<DemoDocumentViewModel> Documents { get; }
+
+    /// <summary>Dock 工作区布局（DockControl 绑定目标；重置布局时整体重建）。</summary>
+    public RootDock? Layout => _layout;
+
+    /// <summary>导航树当前选中叶子（TwoWay；程序侧同步时经 OpenItem 打开文档）。</summary>
+    public DemoItemViewModel? SelectedNavItem
+    {
+        get => _selectedNavItem;
+        set
+        {
+            if (Equals(_selectedNavItem, value))
+            {
+                return;
+            }
+
+            this.RaiseAndSetIfChanged(ref _selectedNavItem, value);
+            if (value is not null)
+            {
+                OpenItem(value);
+            }
+        }
+    }
+
+    /// <summary>状态栏文本（打开/关闭文档、切换语言时刷新）。</summary>
+    public string StatusText
+    {
+        get => _statusText;
+        set => this.RaiseAndSetIfChanged(ref _statusText, value);
+    }
 
     /// <summary>Ribbon 当前页签（命令区随之切换；导航树点击时同步高亮）。</summary>
     public DemoGroupViewModel? SelectedGroup
@@ -116,6 +167,15 @@ public class MainViewModel : ReactiveObject
     public ReactiveCommand<DemoDocumentViewModel, RxVoid> CloseDocumentCommand { get; }
 
     public ReactiveCommand<RxVoid, RxVoid> ToggleRibbonCommand { get; }
+
+    /// <summary>面板显隐切换（参数 nav / props / log）。</summary>
+    public ReactiveCommand<string, RxVoid> TogglePanelCommand { get; }
+
+    public ReactiveCommand<RxVoid, RxVoid> QuickSaveCommand { get; }
+
+    public ReactiveCommand<RxVoid, RxVoid> QuickResetCommand { get; }
+
+    public ReactiveCommand<RxVoid, RxVoid> QuickSettingsCommand { get; }
 
     public ReactiveCommand<RxVoid, RxVoid> WriteLogsCommand { get; }
 
@@ -190,6 +250,7 @@ public class MainViewModel : ReactiveObject
 
             this.RaiseAndSetIfChanged(ref _selectedCulture, value);
             I18nManager.Instance.Culture = new CultureInfo(value.Name);
+            SyncToolTitles();
             Logger.Info("界面语言切换为 " + value.Name);
         }
     }
@@ -202,27 +263,259 @@ public class MainViewModel : ReactiveObject
         var existing = Documents.FirstOrDefault(d => d.TitleKey == item.TitleKey);
         if (existing is not null)
         {
-            ActiveDocument = existing;
+            ActivateDocument(existing);
             return;
         }
 
         var page = item.PageFactory();
         var document = new DemoDocumentViewModel(item, page);
+        var dockDocument = _dockFactory?.CreateDocument() ?? new Document();
+        dockDocument.Id = "Doc." + item.TitleKey;
+        dockDocument.Title = item.Title;
+        dockDocument.Context = new Views.DemoDocumentView { DataContext = document };
+        document.DockDocument = dockDocument;
+
         Documents.Add(document);
+        if (_docDock is not null)
+        {
+            _docDock.VisibleDockables ??= _dockFactory?.CreateList<IDockable>() ?? new AvaloniaList<IDockable>();
+            _docDock.VisibleDockables.Add(dockDocument);
+            _docDock.ActiveDockable = dockDocument;
+        }
+
         ActiveDocument = document;
         page.OnDocumentOpened();
         SelectedGroup = Groups.FirstOrDefault(g => g.Items.Contains(item));
+
+        // 同步导航树高亮（直接改字段，避免 TwoWay 回环再次触发 OpenItem）。
+        if (!Equals(_selectedNavItem, item))
+        {
+            _selectedNavItem = item;
+            this.RaisePropertyChanged(nameof(SelectedNavItem));
+        }
+
+        StatusText = I18nManager.Instance.GetResource(DemoKeys.ShellReady);
+        Logger.Info("打开文档：" + item.Title);
     }
 
     public void CloseDocument(DemoDocumentViewModel document)
     {
         ArgumentNullException.ThrowIfNull(document);
 
-        var index = Documents.IndexOf(document);
+        if (_dockFactory is not null && document.DockDocument is not null)
+        {
+            // 经工厂关闭：DemoDockFactory.CloseDockable 回调 SyncDocumentClosed 保持状态一致。
+            _dockFactory.CloseDockable(document.DockDocument);
+        }
+        else
+        {
+            SyncDocumentClosed(document);
+        }
+    }
+
+    /// <summary>激活已打开文档（Dock 页签点击 / 重复打开命令）。</summary>
+    private void ActivateDocument(DemoDocumentViewModel document)
+    {
+        if (_docDock is not null && document.DockDocument is not null)
+        {
+            _docDock.ActiveDockable = document.DockDocument;
+        }
+
+        ActiveDocument = document;
+        SelectedGroup = Groups.FirstOrDefault(g => g.Items.Any(i => i.TitleKey == document.TitleKey));
+    }
+
+    /// <summary>Dock 侧关闭（页签 ✕）后的状态同步入口，仅由 <see cref="DemoDockFactory"/> 回调。</summary>
+    private void SyncDocumentClosed(DemoDocumentViewModel document)
+    {
         Documents.Remove(document);
         if (ActiveDocument == document)
         {
-            ActiveDocument = index > 0 ? Documents[index - 1] : Documents.FirstOrDefault();
+            ActiveDocument = Documents.LastOrDefault();
+        }
+
+        StatusText = I18nManager.Instance.GetResource(DemoKeys.ShellReady);
+        Logger.Info("关闭文档：" + document.Title);
+    }
+
+    /// <summary>面板显隐切换：隐藏 = 移入 RootDock 隐藏集合，恢复 = 按 Id 取回。</summary>
+    public void TogglePanel(string panel)
+    {
+        if (_dockFactory is null)
+        {
+            return;
+        }
+
+        switch (panel)
+        {
+            case "nav":
+                ToggleTool(_navTool, I18nManager.Instance.GetResource(DemoKeys.ToolNavigation));
+                break;
+            case "props":
+                ToggleTool(_propTool, I18nManager.Instance.GetResource(DemoKeys.ToolProperties));
+                break;
+            case "log":
+                ToggleTool(_logTool, I18nManager.Instance.GetResource(DemoKeys.ToolLog));
+                break;
+        }
+    }
+
+    private void ToggleTool(Tool? tool, string title)
+    {
+        if (tool is null || _dockFactory is null || _layout is null)
+        {
+            return;
+        }
+
+        var hidden = _layout.HiddenDockables?.Contains(tool) == true;
+        if (hidden)
+        {
+            _dockFactory.RestoreDockable(tool.Id);
+            Logger.Info("显示面板：" + title);
+        }
+        else
+        {
+            _dockFactory.HideDockable(tool);
+            Logger.Info("隐藏面板：" + title);
+        }
+    }
+
+    /// <summary>重置工作区：整体重建 Dock 布局并回到欢迎文档。</summary>
+    public void ResetLayout()
+    {
+        Documents.Clear();
+        ActiveDocument = null;
+        _selectedNavItem = null;
+        BuildLayout();
+        OpenItem(Groups[0].Items[0]);
+        Logger.Info("重置工作区布局");
+    }
+
+    /// <summary>
+    /// 构建 Dock 工作区：左导航树 / 右属性面板 / 下日志为 ToolDock，
+    /// 中央为 DocumentDock（演示文档页签），比例容器组合后挂到 RootDock。
+    /// </summary>
+    private void BuildLayout()
+    {
+        _dockFactory = new DemoDockFactory(this);
+
+        // 12.x 内容承载：Context 直接放控件实例（Control 无需模板解析，面板/浮动均直接渲染）。
+        _navTool = new Tool
+        {
+            Id = "Tool.Nav",
+            Title = T(DemoKeys.ToolNavigation),
+            Context = new Views.Tools.NavToolView { DataContext = this },
+        };
+        _propTool = new Tool
+        {
+            Id = "Tool.Props",
+            Title = T(DemoKeys.ToolProperties),
+            Context = new Views.Tools.PropertyToolView { DataContext = this },
+        };
+        _logTool = new Tool
+        {
+            Id = "Tool.Log",
+            Title = T(DemoKeys.ToolLog),
+            Context = new Views.Tools.LogToolView { DataContext = this },
+        };
+        var navDock = new ToolDock
+        {
+            Id = "Dock.Nav",
+            ActiveDockable = _navTool,
+            VisibleDockables = _dockFactory.CreateList<IDockable>(_navTool),
+            Dock = DockMode.Left,
+            Proportion = 0.18,
+        };
+        var propDock = new ToolDock
+        {
+            Id = "Dock.Props",
+            ActiveDockable = _propTool,
+            VisibleDockables = _dockFactory.CreateList<IDockable>(_propTool),
+            Dock = DockMode.Right,
+            Proportion = 0.2,
+        };
+        var logDock = new ToolDock
+        {
+            Id = "Dock.Log",
+            ActiveDockable = _logTool,
+            VisibleDockables = _dockFactory.CreateList<IDockable>(_logTool),
+            Dock = DockMode.Bottom,
+            Proportion = 0.24,
+        };
+
+        _docDock = new DocumentDock
+        {
+            Id = "Dock.Docs",
+            VisibleDockables = _dockFactory.CreateList<IDockable>(),
+            CanCreateDocument = false,
+            Proportion = 0.76,
+            IsCollapsable = false,
+        };
+        _docDock.PropertyChanged += OnDocDockPropertyChanged;
+
+        var centerVertical = new ProportionalDock
+        {
+            Id = "Dock.Center",
+            Orientation = global::Dock.Model.Core.Orientation.Vertical,
+            VisibleDockables = _dockFactory.CreateList<IDockable>(
+                _docDock,
+                new ProportionalDockSplitter(),
+                logDock),
+            ActiveDockable = _docDock,
+        };
+        var mainHorizontal = new ProportionalDock
+        {
+            Id = "Dock.Main",
+            Orientation = global::Dock.Model.Core.Orientation.Horizontal,
+            VisibleDockables = _dockFactory.CreateList<IDockable>(
+                navDock,
+                new ProportionalDockSplitter(),
+                centerVertical,
+                new ProportionalDockSplitter(),
+                propDock),
+            ActiveDockable = centerVertical,
+        };
+
+        _layout = new RootDock
+        {
+            Id = "Root",
+            Title = "Root",
+            VisibleDockables = _dockFactory.CreateList<IDockable>(mainHorizontal),
+            ActiveDockable = mainHorizontal,
+            IsCollapsable = false,
+        };
+        _dockFactory.InitLayout(_layout);
+        this.RaisePropertyChanged(nameof(Layout));
+    }
+
+    private void OnDocDockPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(IDock.ActiveDockable) && _docDock is not null)
+        {
+            ActiveDocument = (_docDock.ActiveDockable as Document)?.Context as DemoDocumentViewModel;
+        }
+    }
+
+    private void SyncToolTitles()
+    {
+        if (_navTool is not null) _navTool.Title = T(DemoKeys.ToolNavigation);
+        if (_propTool is not null) _propTool.Title = T(DemoKeys.ToolProperties);
+        if (_logTool is not null) _logTool.Title = T(DemoKeys.ToolLog);
+    }
+
+    private string T(string key) => I18nManager.Instance.GetResource(key);
+
+    /// <summary>接管 Dock 侧文档关闭（页签 ✕），与 Documents/ActiveDocument 双向同步。</summary>
+    private sealed class DemoDockFactory(MainViewModel owner) : Factory
+    {
+        public override void CloseDockable(IDockable dockable)
+        {
+            base.CloseDockable(dockable);
+            if (dockable is Document { Context: Views.DemoDocumentView view }
+                && view.DataContext is DemoDocumentViewModel document)
+            {
+                owner.SyncDocumentClosed(document);
+            }
         }
     }
 

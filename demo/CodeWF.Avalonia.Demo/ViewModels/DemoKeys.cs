@@ -34,4 +34,53 @@ public static class DemoKeys
     public const string ItemLang = "Demo.Item.Lang";
     public const string ItemDock = "Demo.Item.Dock";
     public const string ItemTrapezoidTab = "Demo.Item.TrapezoidTab";
+
+    // 外壳
+    public const string ShellReady = "Demo.Shell.Ready";
+    public const string ToolNavigation = "Demo.Tool.Navigation";
+    public const string ToolProperties = "Demo.Tool.Properties";
+    public const string ToolLog = "Demo.Tool.Log";
+}
+
+/// <summary>演示目录图标（Ribbon 命令按钮 / 导航树节点），与设计原型保持一致。</summary>
+public static class DemoIcons
+{
+    private static readonly Dictionary<string, string> ItemMap = new()
+    {
+        [DemoKeys.ItemWelcome] = "🏠",
+        [DemoKeys.ItemMarkdownViewer] = "📄",
+        [DemoKeys.ItemMarkdownLite] = "🪶",
+        [DemoKeys.ItemMarkdownEditor] = "✍️",
+        [DemoKeys.ItemMarkdownLiveEditor] = "⚡",
+        [DemoKeys.ItemMarkdownExport] = "📤",
+        [DemoKeys.ItemDataGrid] = "📊",
+        [DemoKeys.ItemPropertyGrid] = "🧾",
+        [DemoKeys.ItemCodeWFWindow] = "🪟",
+        [DemoKeys.ItemSearchListBox] = "🔎",
+        [DemoKeys.ItemTransfer] = "🔀",
+        [DemoKeys.ItemStatus] = "🏷️",
+        [DemoKeys.ItemGuide] = "🧭",
+        [DemoKeys.ItemAppGuide] = "🧭",
+        [DemoKeys.ItemWindowedStackPanel] = "📋",
+        [DemoKeys.ItemColumnDisplayEditor] = "📐",
+        [DemoKeys.ItemMarkupExtension] = "🧱",
+        [DemoKeys.ItemLog] = "📜",
+        [DemoKeys.ItemLang] = "🌐",
+        [DemoKeys.ItemDock] = "🪟",
+        [DemoKeys.ItemTrapezoidTab] = "🔺",
+    };
+
+    public static string ResolveItem(string key) => ItemMap.GetValueOrDefault(key, "◆");
+
+    public static string ResolveGroup(string key) => key switch
+    {
+        DemoKeys.GroupHome => "🏠",
+        DemoKeys.GroupMarkdown => "📄",
+        DemoKeys.GroupData => "📊",
+        DemoKeys.GroupControls => "🧩",
+        DemoKeys.GroupLayout => "📐",
+        DemoKeys.GroupInfrastructure => "🧰",
+        DemoKeys.GroupViews => "👓",
+        _ => "◆",
+    };
 }

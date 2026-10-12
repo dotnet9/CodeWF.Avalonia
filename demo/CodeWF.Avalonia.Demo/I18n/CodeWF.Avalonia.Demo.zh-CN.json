@@ -10,7 +10,18 @@
       "Properties": "属性",
       "Log": "日志",
       "Navigation": "导航",
-      "WriteLogs": "写入三类日志"
+      "WriteLogs": "写入三类日志",
+      "Ready": "就绪",
+      "Reset": "重置",
+      "DemoShell": "演示台",
+      "QuickSave": "保存布局",
+      "QuickSettings": "设置",
+      "PinRibbon": "展开/折叠命令区"
+    },
+    "Tool": {
+      "Navigation": "导航树",
+      "Properties": "属性",
+      "Log": "日志"
     },
     "Group": {
       "Home": "首页",

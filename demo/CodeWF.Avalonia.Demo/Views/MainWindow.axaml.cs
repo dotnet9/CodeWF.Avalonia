@@ -1,10 +1,10 @@
-using Avalonia.Controls;
 using Avalonia.Interactivity;
+using CodeWF.Avalonia.Controls.Controls;
 using CodeWF.Avalonia.Demo.ViewModels;
 
 namespace CodeWF.Avalonia.Demo.Views;
 
-public partial class MainWindow : Window
+public partial class MainWindow : CodeWFWindow
 {
     private readonly MainViewModel _viewModel = new();
 
@@ -12,6 +12,12 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         DataContext = _viewModel;
+        var version = typeof(MainWindow).Assembly.GetName().Version;
+        if (version is not null)
+        {
+            VersionText.Text = "Demo · v" + version.ToString(3);
+        }
+
         Loaded += OnLoaded;
     }
 
@@ -29,15 +35,6 @@ public partial class MainWindow : Window
             {
                 Environment.Exit(1);
             }
-        }
-    }
-
-    /// <summary>导航树单击叶子即打开对应演示文档。</summary>
-    private void OnNavTreeSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        if (NavTree.SelectedItem is DemoItemViewModel item)
-        {
-            _viewModel.OpenItem(item);
         }
     }
 

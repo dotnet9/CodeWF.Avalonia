@@ -10,7 +10,18 @@
       "Properties": "Props",
       "Log": "Log",
       "Navigation": "Navigation",
-      "WriteLogs": "Write sample logs"
+      "WriteLogs": "Write sample logs",
+      "Ready": "Ready",
+      "Reset": "Reset",
+      "DemoShell": "Demo Shell",
+      "QuickSave": "Save layout",
+      "QuickSettings": "Settings",
+      "PinRibbon": "Expand / collapse commands"
+    },
+    "Tool": {
+      "Navigation": "Explorer",
+      "Properties": "Properties",
+      "Log": "Log"
     },
     "Group": {
       "Home": "Home",

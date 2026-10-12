@@ -15,9 +15,9 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Desktop" />
-    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Avalonia.Themes.Simple" />
     <PackageReference Include="Dock.Avalonia" />
-    <PackageReference Include="Dock.Avalonia.Themes.Fluent" />
+    <PackageReference Include="Dock.Avalonia.Themes.Simple" />
     <PackageReference Include="Dock.Model.ReactiveUI" />
     <PackageReference Include="ReactiveUI" />
     <PackageReference Include="Microsoft.Extensions.Logging" />

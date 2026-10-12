@@ -14,7 +14,7 @@ dotnet add package CodeWF.Avalonia.Dock
 <codewf:DockSemiTheme />
 ```
 
-主题内部复用 Dock.Avalonia.Themes.Fluent 的样式链路并叠加 Semi 风格资源键（`fluent:DockFluentTheme` 已包含在内，无需重复引入），同时提供 Fluent/浅色/深色变体样式（CodeWF、ToolTitleBar、DockPanelBorder）。
+主题以 Dock 官方的 Dock.Avalonia.Themes.Simple 为基座（不依赖 Fluent），叠加 Semi 风格配色令牌与皮肤覆盖：面板圆角/描边、文档页签（Simple/Documents.axaml）、工具标题栏（Simple/Tools.axaml）。配色按 6 套变体（Default、Light、Dark，以及 Semi 的 Aquatic、Desert、Dusk、NightSky）给出字面色值，因此启动早期不依赖 Semi 包字典，也不需要在应用里额外引入其它主题包。
 
 ## 主要能力
 
@@ -28,5 +28,6 @@ dotnet add package CodeWF.Avalonia.Dock
 
 ## 注意事项
 
-- 依赖 Dock.Avalonia 与 Dock.Avalonia.Themes.Fluent（12.1.0.x 线）。
+- 依赖 Dock.Avalonia 与 Dock.Avalonia.Themes.Simple（12.1.0.x 线），不使用 Fluent 主题。
+- 主题自带 `{x:Type Button}` / `{x:Type Window}` 基类主题（Semi.Avalonia 12.x 不再提供，旧版由 FluentTheme 提供），因此宿主无需再引入 FluentTheme。
 - 资源 URI 指向本程序集（avares://CodeWF.Avalonia.Dock/Themes/...），图片资源随包分发。

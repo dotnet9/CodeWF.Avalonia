@@ -24,6 +24,9 @@ public class DemoItemViewModel : ReactiveObject
 
     public string Title => I18nManager.Instance.GetResource(TitleKey);
 
+    /// <summary>目录图标（与设计原型一致）。</summary>
+    public string Icon => DemoIcons.ResolveItem(TitleKey);
+
     public override string ToString() => Title;
 }
 
@@ -44,6 +47,9 @@ public class DemoGroupViewModel : ReactiveObject
     public string TitleKey { get; }
 
     public string Title => I18nManager.Instance.GetResource(TitleKey);
+
+    /// <summary>分组图标（导航树组节点）。</summary>
+    public string Icon => DemoIcons.ResolveGroup(TitleKey);
 
     public ObservableCollection<DemoItemViewModel> Items { get; }
 

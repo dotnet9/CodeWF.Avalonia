@@ -2,8 +2,7 @@
     x:Class="CodeWF.Avalonia.Dock.Themes.DockSemiTheme"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:fluent="clr-namespace:Dock.Avalonia.Themes.Fluent;assembly=Dock.Avalonia.Themes.Fluent">
-    <FluentTheme />
+    xmlns:simple="clr-namespace:Dock.Avalonia.Themes.Simple;assembly=Dock.Avalonia.Themes.Simple">
     <Styles.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -11,8 +10,20 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Styles.Resources>
-    <fluent:DockFluentTheme />
-    <StyleInclude Source="Fluent/CodeWF.axaml" />
-    <StyleInclude Source="Fluent/ToolTitleBar.axaml" />
-    <StyleInclude Source="Fluent/DockPanelBorder.axaml" />
+
+    <!--
+        CodeWF.Avalonia.Dock 的 Semi 皮肤，基座是 Dock 官方的 Simple 主题（完全不依赖 Fluent）：
+          1. simple:DockSimpleTheme —— Dock 控件模板与几何（Simple 与 Fluent 共用同一批模板，仅换配色）；
+          2. Tokens                 —— 6 套变体的 Semi 配色令牌（字面色值，启动期不依赖 Semi 包字典）；
+          3. Simple/BaseThemes      —— 补上 Dock 模板 BasedOn 需要的 {x:Type Button}/{x:Type Window} 基类主题
+                                       （Semi.Avalonia 不再自带，旧版由 FluentTheme 提供）；
+          4. Simple/*               —— CodeWF 的皮肤覆盖：面板圆角、文档页签、工具标题栏。
+        注意：DockSimpleTheme 必须放在最前，后面的 StyleInclude 才能解析它提供的资源。
+    -->
+    <StyleInclude Source="Simple/BaseThemes.axaml" />
+    <simple:DockSimpleTheme />
+    <StyleInclude Source="Tokens/DockSurfaceTokens.axaml" />
+    <StyleInclude Source="Simple/CodeWF.axaml" />
+    <StyleInclude Source="Simple/Documents.axaml" />
+    <StyleInclude Source="Simple/Tools.axaml" />
 </Styles>

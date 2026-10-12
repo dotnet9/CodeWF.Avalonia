@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
+             x:Class="CodeWF.Avalonia.Demo.Views.Tools.NavToolView"
+             x:DataType="vm:MainViewModel"
+             x:CompileBindings="True">
+  <!--  左侧导航树工具面板内容（直接作为 Tool.Context 的控件实例）  -->
+  <TreeView ItemsSource="{Binding Groups}"
+            SelectedItem="{Binding SelectedNavItem}">
+    <TreeView.ItemTemplate>
+      <TreeDataTemplate x:DataType="vm:DemoGroupViewModel" ItemsSource="{Binding Items}">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <TextBlock Text="{Binding Icon}" />
+          <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+        </StackPanel>
+      </TreeDataTemplate>
+    </TreeView.ItemTemplate>
+  </TreeView>
+</UserControl>

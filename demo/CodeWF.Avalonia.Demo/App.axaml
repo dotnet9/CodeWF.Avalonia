@@ -6,7 +6,6 @@
                         x:Class="CodeWF.Avalonia.Demo.App"
                         RequestedThemeVariant="Default">
   <Application.Styles>
-    <FluentTheme />
     <semi:SemiTheme Locale="zh-CN" />
     <codewf:ACSemiTheme />
     <codewf:DataGridSemiTheme />

@@ -1,6 +1,7 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StaticResource x:Key="SearchListBoxCornerRadius" ResourceKey="SemiBorderRadiusMedium" />
-    <StaticResource x:Key="SearchListBoxCounterMargin" ResourceKey="SemiThicknessExtraTight" />
-    <StaticResource x:Key="SearchListBoxBorderThickness" ResourceKey="SemiBorderThicknessControl" />
+    <!--  12.1.4 延迟字典内 StaticResource 仅文件内解析，Semi token 一律内联字面量（对齐 Semi Tokens 取值）  -->
+    <CornerRadius x:Key="SearchListBoxCornerRadius">6</CornerRadius>
+    <Thickness x:Key="SearchListBoxCounterMargin">4</Thickness>
+    <Thickness x:Key="SearchListBoxBorderThickness">1</Thickness>
 </ResourceDictionary>

@@ -2,7 +2,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:codewfConverters="using:CodeWF.Avalonia.Dock.Converters"
         xmlns:controls="using:Dock.Avalonia.Controls"
-        xmlns:proportional="using:Dock.Controls.ProportionalStackPanel"
         xmlns:converters="using:Dock.Avalonia.Converters"
         xmlns:themeConverters="using:CodeWF.Avalonia.Dock.Themes.Converters"
         xmlns:core="using:Dock.Model.Core"
@@ -67,7 +66,7 @@
                            FontSize="16"
                            FontWeight="Normal"
                            LetterSpacing="0"
-                           Foreground="#262626"
+                           Foreground="{DynamicResource CodeWFDockHeaderForegroundBrush}"
                            TextAlignment="Center"
                            HorizontalAlignment="Center"
                            Margin="0 -30 0 8"/>
@@ -76,15 +75,14 @@
                            FontSize="12"
                            FontWeight="Normal"
                            LetterSpacing="0"
-                           Foreground="#8C8C8C"
+                           Foreground="{DynamicResource CodeWFDockHeaderSecondaryForegroundBrush}"
                            TextAlignment="Center"
                            HorizontalAlignment="Center" />
               </StackPanel>
             </DataTemplate>
 
             <ControlTheme x:Key="CodeWFDocumentCloseButtonTheme"
-                          TargetType="Button"
->
+                          TargetType="Button">
                 <Setter Property="Width" Value="22" />
                 <Setter Property="Height" Value="22" />
                 <Setter Property="Padding" Value="0" />
@@ -116,7 +114,7 @@
                                     Classes.Active="{Binding IsActive}"
                                     Background="{DynamicResource CodeWFDockPanelBackgroundBrush}"
                                     BorderBrush="{DynamicResource CodeWFDockInactiveBorderBrush}"
-                                    BorderThickness="{DynamicResource CodeWFDockDocumentPanelBorderThickness}"
+                                    BorderThickness="{DynamicResource CodeWFDockPanelBorderThickness}"
                                     CornerRadius="{DynamicResource CodeWFDockPanelCornerRadius}"
                                     ClipToBounds="True">
                                 <Panel>
@@ -158,23 +156,23 @@
     </Style>
 
     <!--
-        Dock 12.1 can let a horizontal DocumentTabStrip take the full available DockPanel height.
-        Pinning the horizontal strip to the shared header height keeps the content presenter measurable.
+        Dock 12.1 下水平 DocumentTabStrip 会吃掉整个 DockPanel 高度，
+        把表头高度钉死，内容呈现器才有可测量的空间。
     -->
     <Style Selector="DocumentTabStrip[Orientation=Horizontal]">
-        <Setter Property="Height" Value="{DynamicResource CodeWFDockDocumentTabStripHeight}" />
-        <Setter Property="MinHeight" Value="{DynamicResource CodeWFDockDocumentTabStripHeight}" />
-        <Setter Property="MaxHeight" Value="{DynamicResource CodeWFDockDocumentTabStripHeight}" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="MaxHeight" Value="28" />
         <Setter Property="VerticalAlignment" Value="Top" />
     </Style>
 
     <Style Selector="DocumentTabStrip[Orientation=Horizontal] DocumentTabStripItem">
-        <Setter Property="Height" Value="{DynamicResource CodeWFDockDocumentTabStripHeight}" />
-        <Setter Property="MinHeight" Value="{DynamicResource CodeWFDockDocumentTabStripHeight}" />
-        <Setter Property="MaxHeight" Value="{DynamicResource CodeWFDockDocumentTabStripHeight}" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="MaxHeight" Value="28" />
         <Setter Property="MinWidth" Value="{DynamicResource CodeWFDockDocumentTabItemMinWidth}" />
         <Setter Property="Margin" Value="{DynamicResource CodeWFDockDocumentTabItemMargin}" />
-        <Setter Property="CornerRadius" Value="{DynamicResource CodeWFDockDocumentTabItemCornerRadius}" />
+        <Setter Property="CornerRadius" Value="6 6 0 0" />
     </Style>
 
     <Style Selector="DocumentTabStrip[Orientation=Horizontal] DocumentTabStripItem:selected">
@@ -182,13 +180,5 @@
         <Setter Property="Foreground" Value="{DynamicResource CodeWFDockHeaderForegroundBrush}" />
         <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="BorderThickness" Value="0" />
-    </Style>
-
-    <Style Selector="proportional|ProportionalStackPanelSplitter">
-        <Setter Property="Background" Value="{DynamicResource CodeWFDockSplitterBrush}" />
-    </Style>
-
-    <Style Selector="proportional|ProportionalStackPanelSplitter:pointerover">
-        <Setter Property="Background" Value="{DynamicResource CodeWFDockSplitterPointerOverBrush}" />
     </Style>
 </Styles>

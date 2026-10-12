@@ -13,6 +13,7 @@
     <PackageVersion Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Themes.Simple" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Headless" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Headless.XUnit" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Controls.DataGrid" Version="12.1.2" />
@@ -26,7 +27,7 @@
     <!-- 主题生态 -->
     <PackageVersion Include="Semi.Avalonia" Version="$(SemiAvaloniaVersion)" />
     
-    <PackageVersion Include="Dock.Avalonia.Themes.Fluent" Version="$(DockVersion)" />
+    <PackageVersion Include="Dock.Avalonia.Themes.Simple" Version="$(DockVersion)" />
     <PackageVersion Include="CodeWF.Avalonia.Lang" Version="$(Version)" />
     <PackageVersion Include="TreeDataGrid.Avalonia" Version="12.0.0" />
     <PackageVersion Include="Irihi.Ursa" Version="2.2.0" />

@@ -29,6 +29,9 @@ public class DemoDocumentViewModel : ReactiveObject
 
     public DemoPageBase Page { get; }
 
+    /// <summary>承载本文档的 Dock Document 包装（用于 Dock 工作区页签），由 Shell 回填。</summary>
+    public global::Dock.Model.Core.IDockable? DockDocument { get; set; }
+
     public string TitleKey => Item.TitleKey;
 
     public string Title => I18nManager.Instance.GetResource(TitleKey);

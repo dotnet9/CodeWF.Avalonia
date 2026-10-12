@@ -1,0 +1,73 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:proportional="using:Dock.Controls.ProportionalStackPanel">
+    <!--
+        CodeWF Dock 皮肤层：几何常量 + 少量布局微调。
+        配色令牌全部集中在 Themes/Tokens/DockSurfaceTokens.axaml（按变体给字面色值），
+        这里不再出现跨文件的 StaticResource 别名 —— 12.1.4 在启动早期会因字典未就绪而抛
+        KeyNotFoundException，字面量可以彻底免疫。
+    -->
+    <Styles.Resources>
+        <ResourceDictionary>
+            <!-- 面板圆角与描边 -->
+            <CornerRadius x:Key="CodeWFDockPanelCornerRadius">8</CornerRadius>
+            <CornerRadius x:Key="CodeWFDockPanelHeaderCornerRadius">7 7 0 0</CornerRadius>
+            <CornerRadius x:Key="CodeWFDockPanelContentCornerRadius">0 0 7 7</CornerRadius>
+            <Thickness x:Key="CodeWFDockPanelBorderThickness">1</Thickness>
+
+            <!-- 表头尺寸：Tool 与 Document 共用一个高度 -->
+            <x:Double x:Key="CodeWFDockHeaderHeight">28</x:Double>
+            <Thickness x:Key="CodeWFDockHeaderPadding">6 0</Thickness>
+
+            <!-- Document 页签 -->
+            <x:Double x:Key="CodeWFDockDocumentTabItemMinWidth">132</x:Double>
+            <CornerRadius x:Key="CodeWFDockDocumentTabItemCornerRadius">6 6 0 0</CornerRadius>
+            <Thickness x:Key="CodeWFDockDocumentTabItemMargin">2 0 0 0</Thickness>
+            <x:Double x:Key="DockDocumentTabStripSeparatorSize">1</x:Double>
+
+            <!-- Dock 内置模板消费的几何令牌（Dock Simple 默认值偏紧，这里统一到 28 高表头） -->
+            <x:Double x:Key="DockFontSizeNormal">13</x:Double>
+            <Thickness x:Key="DockDocumentTabItemPadding">6 0</Thickness>
+            <Thickness x:Key="DockToolTabItemPadding">8 0</Thickness>
+            <Thickness x:Key="DockToolTabItemSelectedPadding">8 0</Thickness>
+            <Thickness x:Key="DockDocumentContentBorderThickness">0</Thickness>
+
+            <FontFamily x:Key="CodeWFDocumentEmptyContentFontFamily">Noto Sans SC</FontFamily>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <Style Selector="ToolTabStrip">
+        <Setter Property="Background" Value="{DynamicResource CodeWFToolTabStripBackgroundBrush}" />
+    </Style>
+
+    <Style Selector="ToolTabStripItem:pointerover">
+        <Setter Property="Background" Value="{DynamicResource CodeWFToolTabPointerOverBackgroundBrush}" />
+    </Style>
+
+    <Style Selector="ToolTabStripItem:selected">
+        <Setter Property="Background" Value="{DynamicResource CodeWFToolTabSelectedBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource CodeWFToolTabSelectedForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CodeWFToolTabBorderBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="ToolTabStripItem:selected:pointerover">
+        <Setter Property="Background" Value="{DynamicResource CodeWFToolTabSelectedBackgroundBrush}" />
+    </Style>
+
+    <!-- 分隔条与工作台底色 -->
+    <Style Selector="proportional|ProportionalStackPanelSplitter">
+        <Setter Property="Background" Value="{DynamicResource CodeWFDockSplitterBrush}" />
+    </Style>
+
+    <Style Selector="proportional|ProportionalStackPanelSplitter:pointerover">
+        <Setter Property="Background" Value="{DynamicResource CodeWFDockSplitterPointerOverBrush}" />
+    </Style>
+
+    <!-- RootDock 的延迟内容需要撑满，GridDock 的星号列才能吃掉窗口宽度 -->
+    <Style Selector="RootDockControl /template/ DeferredContentControl#PART_MainContent">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+    </Style>
+</Styles>
