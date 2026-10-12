@@ -64,7 +64,8 @@ public static class MarkdownParser
 				dependencyFlags,
 				ComputeHash(sourceText, kind, dependencyFlags),
 				blockText,
-				sourceText));
+				sourceText,
+				MarkdownBlockClassifier.IsHeavy(block, kind)));
 		}
 
 		return new MarkdownDocumentModel(source, blocks, plainText.ToString().TrimEnd(), flags);

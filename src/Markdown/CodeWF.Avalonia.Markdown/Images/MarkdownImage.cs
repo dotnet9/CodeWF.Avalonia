@@ -10,6 +10,7 @@ using global::Avalonia.Media;
 using global::Avalonia.Media.Imaging;
 using global::Avalonia.Threading;
 using CodeWF.Avalonia.Lang;
+using SkiaSharp;
 
 using CodeWF.Avalonia.Markdown.Rendering;
 
@@ -22,19 +23,27 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
     private const double DefaultMaxImageWidth = 900;
     private const double DefaultMaxImageHeight = 520;
     private const long MaxImageByteCacheBytes = 128L * 1024 * 1024;
+    private const long MaxImagePreviewCacheBytes = 64L * 1024 * 1024;
 
     private static readonly Dictionary<string, MarkdownImageSource> ImageByteCache = new(StringComparer.Ordinal);
     private static readonly LinkedList<string> ImageByteCacheOrder = new();
     private static readonly object ImageByteCacheGate = new();
     private static long _imageByteCacheBytes;
 
+    private static readonly Dictionary<string, byte[]> ImagePreviewCache = new(StringComparer.Ordinal);
+    private static readonly LinkedList<string> ImagePreviewCacheOrder = new();
+    private static readonly object ImagePreviewCacheGate = new();
+    private static long _imagePreviewCacheBytes;
+
     private ContentControl? _contentHost;
     private Bitmap? _bitmap;
     private MemoryStream? _animatedStream;
     private byte[]? _imageBytes;
+    private byte[]? _previewBytes;
     private string? _fileName;
     private bool _isSvg;
     private bool _isGif;
+    private bool _isAnimated;
     private long _loadVersion;
     private CancellationTokenSource? _loadCts;
     private Point? _pressedPoint;
@@ -97,7 +106,8 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
 
         if (string.IsNullOrWhiteSpace(source))
         {
-            ClearImageState();
+            TrimImageState();
+            SetContent(null);
             return;
         }
 
@@ -120,9 +130,11 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
         _bitmap = null;
         _animatedStream = null;
         _imageBytes = null;
+        _previewBytes = null;
         _fileName = null;
         _isSvg = false;
         _isGif = false;
+        _isAnimated = false;
         _pressedPoint = null;
         _isPointerDragging = false;
 
@@ -131,18 +143,30 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
         oldAnimatedStream?.Dispose();
     }
 
+    /// <summary>
+    /// 解码结果只保留在静态缓存里；控件被回收/重建时 <see cref="ClearImageState"/> 不应丢弃它，
+    /// 否则块重新物化又要从字节重新解码（SVG/GIF 还要重新光栅化），滚动就卡。
+    /// </summary>
+    private void TrimImageState()
+    {
+        _bitmap = null;
+        _imageBytes = null;
+        _fileName = null;
+        _pressedPoint = null;
+        _isPointerDragging = false;
+    }
+
     private async Task LoadAsync(string source, long version, CancellationTokenSource loadCts)
     {
         var token = loadCts.Token;
+        var cacheKey = MarkdownImageSourceLoader.CreateCacheKey(source, ImageBasePath);
 
         try
         {
             token.ThrowIfCancellationRequested();
             var loadResult = await LoadBytesAsync(source, token);
             token.ThrowIfCancellationRequested();
-            var previewBytes = loadResult.IsSvg || loadResult.IsGif
-                ? MarkdownImageRasterizer.RenderToPngBytes(loadResult)
-                : loadResult.Bytes;
+            var previewBytes = ResolvePreviewBytes(cacheKey, loadResult);
             token.ThrowIfCancellationRequested();
             using var stream = new MemoryStream(previewBytes);
             var bitmap = new Bitmap(stream);
@@ -157,9 +181,10 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
                 }
 
                 MemoryStream? animatedStream = null;
+                var isAnimated = loadResult.IsGif && CountGifFrames(loadResult.Bytes) > 1;
                 var content = loadResult.IsSvg
                     ? CreateSvgContent(bitmap)
-                    : loadResult.IsGif
+                    : isAnimated
                         ? CreateAnimatedGifContent(loadResult.Bytes, bitmap, out animatedStream)
                         : CreateBitmapContent(bitmap);
 
@@ -168,9 +193,11 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
                 _bitmap = bitmap;
                 _animatedStream = animatedStream;
                 _imageBytes = loadResult.Bytes;
+                _previewBytes = previewBytes;
                 _fileName = fileName;
                 _isSvg = loadResult.IsSvg;
                 _isGif = loadResult.IsGif;
+                _isAnimated = isAnimated;
 
                 SetContent(content);
                 oldBitmap?.Dispose();
@@ -201,6 +228,42 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
             }
 
             loadCts.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// 取静态预览字节：SVG/GIF 需要光栅化，结果按缓存 Key 复用，
+    /// 让被回收后重新物化的图片块跳过解析与光栅化。
+    /// </summary>
+    private static byte[] ResolvePreviewBytes(string cacheKey, MarkdownImageSource loadResult)
+    {
+        if (!loadResult.IsSvg && !loadResult.IsGif)
+        {
+            return loadResult.Bytes;
+        }
+
+        if (TryGetCachedPreviewBytes(cacheKey, out var cached))
+        {
+            return cached;
+        }
+
+        var previewBytes = MarkdownImageRasterizer.RenderToPngBytes(loadResult);
+        AddPreviewBytesToCache(cacheKey, previewBytes);
+        return previewBytes;
+    }
+
+    /// <summary>GIF 只有一帧时按静态图渲染，避免为一张图启动动画时钟。</summary>
+    private static int CountGifFrames(byte[] bytes)
+    {
+        try
+        {
+            using var sourceData = SKData.CreateCopy(bytes);
+            using var codec = SKCodec.Create(sourceData);
+            return codec?.FrameCount ?? 1;
+        }
+        catch
+        {
+            return 1;
         }
     }
 
@@ -265,6 +328,50 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
         }
     }
 
+    private static bool TryGetCachedPreviewBytes(string cacheKey, out byte[] previewBytes)
+    {
+        lock (ImagePreviewCacheGate)
+        {
+            if (!ImagePreviewCache.TryGetValue(cacheKey, out previewBytes!))
+            {
+                return false;
+            }
+
+            ImagePreviewCacheOrder.Remove(cacheKey);
+            ImagePreviewCacheOrder.AddLast(cacheKey);
+            return true;
+        }
+    }
+
+    private static void AddPreviewBytesToCache(string cacheKey, byte[] previewBytes)
+    {
+        lock (ImagePreviewCacheGate)
+        {
+            if (previewBytes.LongLength > MaxImagePreviewCacheBytes)
+            {
+                return;
+            }
+
+            if (ImagePreviewCache.TryGetValue(cacheKey, out var existing))
+            {
+                _imagePreviewCacheBytes -= existing.LongLength;
+                ImagePreviewCacheOrder.Remove(cacheKey);
+            }
+
+            ImagePreviewCache[cacheKey] = previewBytes;
+            ImagePreviewCacheOrder.AddLast(cacheKey);
+            _imagePreviewCacheBytes += previewBytes.LongLength;
+            while (_imagePreviewCacheBytes > MaxImagePreviewCacheBytes && ImagePreviewCacheOrder.First is { } oldest)
+            {
+                ImagePreviewCacheOrder.RemoveFirst();
+                if (ImagePreviewCache.Remove(oldest.Value, out var removed))
+                {
+                    _imagePreviewCacheBytes -= removed.LongLength;
+                }
+            }
+        }
+    }
+
     private void OnImagePointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (e.GetCurrentPoint(this).Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonPressed)
@@ -305,7 +412,7 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
 
     private void OpenPreviewWindow()
     {
-        if (_bitmap is null || _imageBytes is null)
+        if (_bitmap is null || _previewBytes is null)
         {
             return;
         }
@@ -313,15 +420,7 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
         Bitmap previewBitmap;
         try
         {
-            var previewBytes = _isSvg || _isGif
-                ? MarkdownImageRasterizer.RenderToPngBytes(new MarkdownImageSource(
-                    _imageBytes,
-                    _fileName ?? "markdown-image.png",
-                    _isSvg,
-                    _isGif,
-                    null))
-                : _imageBytes;
-            using var previewStream = new MemoryStream(previewBytes);
+            using var previewStream = new MemoryStream(_previewBytes);
             previewBitmap = new Bitmap(previewStream);
         }
         catch
@@ -332,11 +431,11 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
         var title = !string.IsNullOrWhiteSpace(AltText) ? AltText : Source;
         var window = new MarkdownImagePreviewWindow(
             previewBitmap,
-            _imageBytes,
+            _imageBytes ?? _previewBytes,
             _fileName ?? (_isSvg ? "markdown-image.svg" : _isGif ? "markdown-image.gif" : "markdown-image.png"),
             title,
             _isSvg,
-            _isGif);
+            _isAnimated);
         if (TopLevel.GetTopLevel(this) is Window owner)
         {
             window.Show(owner);
@@ -457,9 +556,11 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
             _bitmap = null;
             _animatedStream = null;
             _imageBytes = null;
+            _previewBytes = null;
             _fileName = null;
             _isSvg = false;
             _isGif = false;
+            _isAnimated = false;
 
             var fallback = new Border
             {

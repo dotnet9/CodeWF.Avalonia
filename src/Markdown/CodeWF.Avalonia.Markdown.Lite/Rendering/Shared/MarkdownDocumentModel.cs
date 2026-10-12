@@ -17,7 +17,8 @@ public sealed record MarkdownDocumentBlock(
 	MarkdownDependencyFlags DependencyFlags,
 	ulong ContentHash,
 	string PlainText,
-	string SourceText)
+	string SourceText,
+	bool IsHeavy = false)
 {
 	public bool HasGlobalDependency => (DependencyFlags & MarkdownDependencyFlags.Global) != 0;
 }

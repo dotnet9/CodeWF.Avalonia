@@ -5,6 +5,12 @@
 - 🎨[界面]-Dock 主题去掉 Fluent 依赖：DockSemiTheme 改以 Dock.Avalonia.Themes.Simple 为基座，配色令牌按 6 套变体（Default/Light/Dark + Semi 四套色板）字面量化，彻底绕开启动早期跨文件 StaticResource 解析失败的问题；不再需要 Avalonia.Themes.Fluent / Dock.Avalonia.Themes.Fluent。
 - 🐛[修复]-Semi.Avalonia 12.x 不再提供 `{x:Type Button}` / `{x:Type Window}` 基类主题（旧版由 FluentTheme 提供），Dock 的页签关闭/新建按钮、工具条按钮、浮动窗口等 BasedOn 会解析失败；主题内置最小可用的基类主题。
 - 🐛[修复]-演示应用改回 `DockSemiTheme`，App.axaml 移除自有 FluentTheme，Dock 区域配色跟随所选变体。
+- 🐛[修复]-文档块虚拟化下大块滚出视口即被解体、滚回来又重建（图片重新解码/光栅化、Mermaid 重新布局渲染、代码重新高亮），滚动卡顿：`WindowedStackPanel` 新增保留策略——本帧刚离开窗口的重块按高度预算保留控件，轻量段落照常解体；新增离屏块滚动锚点补偿，变高块量测引起的高度变化不再让视口跳动。
+- 🐛[修复]-`MarkdownViewer` 的保留预算只作用于重块（代码块、表格、图片、公式、Mermaid），并接上「已量测 + 离视口最近」的锚点固定，整篇重建时先清空旧锚点。
+- 🐛[修复]-`MarkdownImage` 复用已解码位图与光栅化结果（LRU 上限 64MB），SVG/GIF 预览不再每次重建；单帧 GIF 按静态图渲染，避免空转动画时钟。
+- 🐛[修复]-Mermaid 图表 SVG 按「源码 + 主题配色」缓存（上限 48 张，失败结果同样缓存），块重建时直接复用。
+- 🐛[修复]-大纲/滚动定位取块边界时先物化目标块并推进布局，读位置采样跳过未量测块。
+- 🧪[验证]-新增虚拟化保留策略单元测试（8 例）与 `MarkdownViewer` 真实控件回归（重块离屏保留、轻量块释放、仅物化视口附近），库全量测试通过。
 
 ## 12.1.4.1 (2026-10-10)
 

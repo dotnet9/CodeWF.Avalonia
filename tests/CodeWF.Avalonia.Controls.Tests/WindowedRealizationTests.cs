@@ -72,6 +72,164 @@ public sealed class WindowedRealizationTests
         Assert.True(double.IsPositiveInfinity(bottom));
     }
 
+    [Fact]
+    public void ResolveInPlace_WithLargeMeasuredBlock_KeepsItWithinBudget()
+    {
+        // 第 0 项是大块（400），其余是估算尺寸的轻量项；窗口在文档后半段。
+        var heights = Enumerable.Repeat(20d, 20).ToArray();
+        heights[0] = 400;
+        var realized = Enumerable.Repeat(true, 20).ToArray();
+        var inWindow = new bool[20];
+        for (var i = 10; i < 20; i++)
+        {
+            inWindow[i] = true;
+        }
+
+        var result = WindowedRealization.ResolveInPlace(
+            heights, new bool[20], realized, inWindow, true, 1000, 100, 0);
+
+        Assert.True(result[0]);
+        Assert.Single(result, keep => keep);
+    }
+
+    [Fact]
+    public void ResolveInPlace_WhenBudgetTooSmall_ReleasesLargeBlock()
+    {
+        var heights = Enumerable.Repeat(20d, 20).ToArray();
+        heights[0] = 400;
+        var realized = Enumerable.Repeat(true, 20).ToArray();
+        var inWindow = new bool[20];
+        for (var i = 10; i < 20; i++)
+        {
+            inWindow[i] = true;
+        }
+
+        var result = WindowedRealization.ResolveInPlace(
+            heights, new bool[20], realized, inWindow, true, 100, 100, 0);
+
+        Assert.False(result[0]);
+    }
+
+    [Fact]
+    public void ResolveInPlace_WhenBelowMinHeight_IsNotKept()
+    {
+        var heights = Enumerable.Repeat(20d, 20).ToArray();
+        var realized = Enumerable.Repeat(true, 20).ToArray();
+        var inWindow = new bool[20];
+        for (var i = 10; i < 20; i++)
+        {
+            inWindow[i] = true;
+        }
+
+        var result = WindowedRealization.ResolveInPlace(
+            heights, new bool[20], realized, inWindow, true, 5000, 100, 0);
+
+        Assert.DoesNotContain(true, result);
+    }
+
+    [Fact]
+    public void ResolveInPlace_WhenCandidateMaskExcludesItem_IsNotKept()
+    {
+        var heights = Enumerable.Repeat(20d, 20).ToArray();
+        heights[0] = 400;
+        heights[5] = 400;
+        var realized = Enumerable.Repeat(true, 20).ToArray();
+        var inWindow = new bool[20];
+        for (var i = 10; i < 20; i++)
+        {
+            inWindow[i] = true;
+        }
+
+        // 只有第 5 项是候选：第 0 项即使更大也不保留。
+        var candidates = new bool[20];
+        candidates[5] = true;
+
+        var result = WindowedRealization.ResolveInPlace(
+            heights, new bool[20], realized, inWindow, true, 1000, 100, 0, candidates);
+
+        Assert.False(result[0]);
+        Assert.True(result[5]);
+    }
+
+    [Fact]
+    public void ResolveInPlace_WhenInWindow_IsNeverAKeepAliveCandidate()
+    {
+        var heights = Enumerable.Repeat(20d, 20).ToArray();
+        heights[12] = 400;
+        var realized = Enumerable.Repeat(true, 20).ToArray();
+        var inWindow = new bool[20];
+        for (var i = 10; i < 20; i++)
+        {
+            inWindow[i] = true;
+        }
+
+        var result = WindowedRealization.ResolveInPlace(
+            heights, new bool[20], realized, inWindow, true, 1000, 100, 0);
+
+        Assert.False(result[12]);
+        Assert.DoesNotContain(true, result);
+    }
+
+    [Fact]
+    public void ResolveInPlace_UnknownSizedItems_FollowScrollDirection()
+    {
+        // 全部尺寸未知（0），窗口为第 10..18 项：窗口上下各有一个紧邻候选（9 与 19），距离相同。
+        var heights = new double[20];
+        Array.Fill(heights, 0d);
+        var realized = Enumerable.Repeat(true, 20).ToArray();
+        var inWindow = new bool[20];
+        for (var i = 10; i <= 18; i++)
+        {
+            inWindow[i] = true;
+        }
+
+        // 向下滚动：同距离时先留窗口上沿外的那一项。
+        var down = WindowedRealization.ResolveInPlace(
+            heights, new bool[20], realized, inWindow, true, 0, 0, 1, null, scrollDown: true);
+        Assert.True(down[9]);
+        Assert.Equal(1, down.Count(keep => keep));
+
+        // 向上滚动：先留窗口下沿外的那一项。
+        var up = WindowedRealization.ResolveInPlace(
+            heights, new bool[20], realized, inWindow, true, 0, 0, 1, null, scrollDown: false);
+        Assert.True(up[19]);
+        Assert.Equal(1, up.Count(keep => keep));
+    }
+
+    [Fact]
+    public void ResolveInPlace_WithoutBudgetOrQuota_KeepsNothing()
+    {
+        var heights = Enumerable.Repeat(400d, 20).ToArray();
+        var realized = Enumerable.Repeat(true, 20).ToArray();
+        var inWindow = new bool[20];
+        for (var i = 10; i < 20; i++)
+        {
+            inWindow[i] = true;
+        }
+
+        var result = WindowedRealization.ResolveInPlace(
+            heights, new bool[20], realized, inWindow, true, 0, 0, 0);
+
+        Assert.DoesNotContain(true, result);
+    }
+
+    [Fact]
+    public void ResolveInPlace_WhenItemWasAlreadyReleased_IsNotKeptAgain()
+    {
+        var heights = Enumerable.Repeat(400d, 20).ToArray();
+        var realized = new bool[20];
+        var inWindow = new bool[20];
+        for (var i = 10; i < 20; i++)
+        {
+            inWindow[i] = true;
+        }
+
+        var result = WindowedRealization.ResolveInPlace(
+            heights, new bool[20], realized, inWindow, true, 5000, 100, 0);
+
+        Assert.DoesNotContain(true, result);
+    }
+
     private static double[] Heights() => Enumerable.Repeat(ItemHeight, ItemCount).ToArray();
 
     private static bool[] Pinned() => new bool[ItemCount];

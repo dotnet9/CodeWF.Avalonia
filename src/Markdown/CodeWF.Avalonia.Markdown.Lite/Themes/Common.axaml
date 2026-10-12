@@ -49,7 +49,10 @@
                             <md:WindowedStackPanel
                                 Name="PART_DocumentHost"
                                 EnableVirtualization="{TemplateBinding EnableVirtualization}"
-                                EstimatedItemHeight="24"
+                                EstimatedItemHeight="42"
+                                KeepAliveBudget="{TemplateBinding HeavyBlockKeepAliveBudget}"
+                                KeepAliveMinItemHeight="72"
+                                KeepAliveUnknownCount="{TemplateBinding HeavyBlockKeepAliveUnknownCount}"
                                 Spacing="{TemplateBinding BlockSpacing}"
                                 VirtualizationThreshold="{TemplateBinding VirtualizationThreshold}" />
                             <Border

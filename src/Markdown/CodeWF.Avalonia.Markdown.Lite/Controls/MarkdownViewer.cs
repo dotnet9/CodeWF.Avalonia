@@ -71,6 +71,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     private bool _isPointerSelecting;
     private string _selectedText = string.Empty;
     private bool _hasSelection;
+    private double _lastScrollOffsetY;
 
     public static readonly StyledProperty<string?> MarkdownProperty =
         AvaloniaProperty.Register<MarkdownViewer, string?>(nameof(Markdown));
@@ -144,6 +145,34 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
     public static readonly StyledProperty<IBrush?> TableHeaderBackgroundBrushProperty =
         AvaloniaProperty.Register<MarkdownViewer, IBrush?>(nameof(TableHeaderBackgroundBrush), Brushes.Transparent);
+
+    /// <summary>
+    /// 重块（代码块、表格、图片、公式、Mermaid 图表）滚动离屏后的保留预算（设备无关像素高度）。
+    /// 面板按「从大到小」保留离屏重块的控件，避免滚动时反复重建（重新高亮、重新解码、重新光栅化）。
+    /// 0 表示不保留。
+    /// </summary>
+    public static readonly StyledProperty<double> HeavyBlockKeepAliveBudgetProperty =
+        AvaloniaProperty.Register<MarkdownViewer, double>(nameof(HeavyBlockKeepAliveBudget), 3000d);
+
+    /// <summary>
+    /// 重块「尺寸未定」时的额外保留数量：按滚动方向优先保住接下来要滚回来的那一侧。
+    /// 变高块在离屏状态下若被解体，尺寸会退回估算值，回来时会造成视口跳动，
+    /// 因此这里额外给未测量过的重块留出配额。
+    /// </summary>
+    public static readonly StyledProperty<int> HeavyBlockKeepAliveUnknownCountProperty =
+        AvaloniaProperty.Register<MarkdownViewer, int>(nameof(HeavyBlockKeepAliveUnknownCount), 6);
+
+    public double HeavyBlockKeepAliveBudget
+    {
+        get => GetValue(HeavyBlockKeepAliveBudgetProperty);
+        set => SetValue(HeavyBlockKeepAliveBudgetProperty, value);
+    }
+
+    public int HeavyBlockKeepAliveUnknownCount
+    {
+        get => GetValue(HeavyBlockKeepAliveUnknownCountProperty);
+        set => SetValue(HeavyBlockKeepAliveUnknownCountProperty, value);
+    }
 
     public static readonly StyledProperty<double> ParagraphFontSizeProperty =
         AvaloniaProperty.Register<MarkdownViewer, double>(nameof(ParagraphFontSize), 16);
@@ -640,6 +669,13 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         {
             _virtualizingHost = panel;
             panel.ScrollHost ??= ResolveScrollHost();
+            // 只有重块参与离屏保留：轻量段落照常解体，内存占用最小。
+            panel.KeepAliveCandidateResolver = IsHeavyBlockAt;
+            if (panel.ScrollHost is { } host)
+            {
+                host.ScrollChanged += OnViewerScrollHostChanged;
+                _documentHost.DetachedFromVisualTree += (_, _) => host.ScrollChanged -= OnViewerScrollHostChanged;
+            }
         }
 
         RenderDocument(MarkdownRenderMode.Full);
@@ -704,6 +740,63 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         QueueRenderDocument(MarkdownRenderMode.Full);
     }
 
+    /// <summary>
+    /// 滚动时把「最靠近视口、沿滚动方向尚未到来」的 1-2 个已量测块固定物化，
+    /// 并解除上一次的固定。这样滚动方向的窗口外边界始终留着一个尺寸已知的驻留块，
+    /// 变高块（图片、图表、公式）量测带来的高度变化不会让视口内容整体跳动。
+    /// </summary>
+    private void OnViewerScrollHostChanged(object? sender, ScrollChangedEventArgs e)
+    {
+        if (_virtualizingHost is not { } host || _renderedBlocks.Count == 0)
+        {
+            return;
+        }
+
+        // 直接读宿主偏移，而不是累加 OffsetDelta：事件合并时会丢增量，累加值会漂移。
+        var offsetY = host.ScrollHost?.Offset.Y ?? _lastScrollOffsetY;
+        var scrollDown = offsetY > _lastScrollOffsetY;
+        _lastScrollOffsetY = offsetY;
+
+        var center = offsetY + Math.Max(0, host.ScrollHost?.Viewport.Height ?? 0) / 2;
+        var anchor = -1;
+        for (var i = 0; i < _renderedBlocks.Count; i++)
+        {
+            if (!host.IsItemMeasured(i))
+            {
+                continue;
+            }
+
+            if (host.TryGetItemTop(i, out var top) && top + host.GetItemHeight(i) < center)
+            {
+                continue;
+            }
+
+            anchor = i;
+            break;
+        }
+
+        var secondary = anchor < 0 ? -1 : anchor + (scrollDown ? 1 : -1);
+        for (var i = 0; i < _renderedBlocks.Count; i++)
+        {
+            if (i != anchor && i != secondary)
+            {
+                host.ReleaseItem(i);
+            }
+        }
+
+        foreach (var index in stackalloc[] { anchor, secondary })
+        {
+            if (index >= 0 && index < host.ItemCount)
+            {
+                host.PinItem(index);
+            }
+        }
+    }
+
+    /// <summary>块序号是否为重块（保留候选），供面板决定离屏后是否保留控件。</summary>
+    private bool IsHeavyBlockAt(int index) =>
+        index >= 0 && index < _renderedBlocks.Count && _renderedBlocks[index].IsHeavy;
+
     private void QueueRenderDocument(MarkdownRenderMode mode)
     {
         if (mode == MarkdownRenderMode.Full)
@@ -754,6 +847,8 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             block.Cleanup();
         }
         DisposePendingBlockDisposables(0);
+        // 整篇重建后块序号全部失效，先清掉上一次的滚动锚点固定。
+        _virtualizingHost?.DetachAllPinned();
         ClearBlockControls();
         _renderedBlocks.Clear();
         _renderedMarkdown = text;
@@ -775,7 +870,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
         foreach (var renderedBlock in CreateRenderedBlocks(_renderedModel.Blocks, text))
         {
-            AddBlockControl(renderedBlock.Control, renderedBlock.Kind);
+            AddBlockControl(renderedBlock.Control);
             _renderedBlocks.Add(renderedBlock);
         }
 
@@ -855,46 +950,6 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         return renderedBlocks;
     }
 
-    private IReadOnlyList<RenderedBlock> CreateRenderedBlocks(string markdown, int sourceOffset)
-    {
-        if (string.IsNullOrWhiteSpace(markdown))
-        {
-            return [];
-        }
-
-        var renderedBlocks = new List<RenderedBlock>();
-        var document = Markdig.Markdown.Parse(markdown, Pipeline);
-
-        foreach (var block in document)
-        {
-            var previousDisposableCount = _currentBlockDisposables.Count;
-            var control = ConvertBlock(block, markdown);
-            if (control is null)
-            {
-                DisposePendingBlockDisposables(previousDisposableCount);
-                continue;
-            }
-
-            var range = GetBlockRange(block, sourceOffset, markdown.Length);
-            var blockDisposables = ExtractCurrentBlockDisposables(previousDisposableCount);
-            renderedBlocks.Add(new RenderedBlock(
-                range.Start,
-                range.End,
-                0,
-                0,
-                string.Empty,
-                MarkdownBlockKind.Unknown,
-                MarkdownDependencyFlags.None,
-                0,
-                control,
-                blockDisposables,
-                false,
-                -1));
-        }
-
-        return renderedBlocks;
-    }
-
     private List<IDisposable>? ExtractCurrentBlockDisposables(int startIndex)
     {
         var count = _currentBlockDisposables.Count - startIndex;
@@ -939,7 +994,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         for (var i = 0; i < newBlocks.Count; i++)
         {
             var renderedBlock = newBlocks[i];
-            AddBlockControl(replaceStartIndex + i, renderedBlock.Control, renderedBlock.Kind);
+            AddBlockControl(replaceStartIndex + i, renderedBlock.Control);
             _renderedBlocks.Insert(replaceStartIndex + i, renderedBlock);
         }
 
@@ -975,7 +1030,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         for (var i = 0; i < newBlocks.Count; i++)
         {
             var renderedBlock = newBlocks[i];
-            AddBlockControl(replaceStartIndex + i, renderedBlock.Control, renderedBlock.Kind);
+            AddBlockControl(replaceStartIndex + i, renderedBlock.Control);
             _renderedBlocks.Insert(replaceStartIndex + i, renderedBlock);
         }
 
@@ -1605,7 +1660,8 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         Control Control,
         List<IDisposable>? Bindings,
         bool HasRemoteImage,
-        int TaskMarkerOffset)
+        int TaskMarkerOffset,
+        bool IsHeavy)
     {
         public static RenderedBlock FromModel(
             MarkdownDocumentBlock modelBlock,
@@ -1626,7 +1682,8 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
                 control,
                 bindings,
                 hasRemoteImage,
-                taskMarkerOffset);
+                taskMarkerOffset,
+                modelBlock.IsHeavy);
         }
 
         public void Cleanup()
@@ -1652,7 +1709,8 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
                 PlainText = modelBlock.PlainText,
                 Kind = modelBlock.Kind,
                 DependencyFlags = modelBlock.DependencyFlags,
-                ContentHash = modelBlock.ContentHash
+                ContentHash = modelBlock.ContentHash,
+                IsHeavy = modelBlock.IsHeavy
             };
         }
 
@@ -1673,22 +1731,22 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     /// <summary>
     /// 追加块控件：宿主为虚拟化面板时按块序号登记，否则退回普通面板行为。
     /// </summary>
-    private void AddBlockControl(Control control, MarkdownBlockKind kind)
+    private void AddBlockControl(Control control)
     {
         if (_virtualizingHost is { } host)
         {
-            host.AddItem(control, pinnedByKind: IsAlwaysRealizedKind(kind));
+            host.AddItem(control);
             return;
         }
 
         _documentHost?.Children.Add(control);
     }
 
-    private void AddBlockControl(int index, Control control, MarkdownBlockKind kind)
+    private void AddBlockControl(int index, Control control)
     {
         if (_virtualizingHost is { } host)
         {
-            host.InsertItem(index, control, pinnedByKind: IsAlwaysRealizedKind(kind));
+            host.InsertItem(index, control);
             return;
         }
 
@@ -1706,14 +1764,13 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         _documentHost?.Children.RemoveAt(index);
     }
 
-    /// <summary>大块（代码块 / 表格 / 图片）始终物化，避免测量与滚动抖动。</summary>
-    private static bool IsAlwaysRealizedKind(MarkdownBlockKind kind) =>
-        kind is MarkdownBlockKind.Code or MarkdownBlockKind.Table or MarkdownBlockKind.Image;
+    /// <summary>重块（代码块 / 表格 / 图片 / 公式 / 图表）由面板按保留预算决定去留，见 <see cref="RenderedBlock.IsHeavy"/>。</summary>
+    private static bool IsAlwaysRealized(MarkdownDocumentBlock block) => block.IsHeavy;
 
-    private void ReplaceBlockControl(int index, Control control, MarkdownBlockKind kind)
+    private void ReplaceBlockControl(int index, Control control)
     {
         RemoveBlockControlAt(index);
-        AddBlockControl(index, control, kind);
+        AddBlockControl(index, control);
     }
 
     private void ClearBlockControls()

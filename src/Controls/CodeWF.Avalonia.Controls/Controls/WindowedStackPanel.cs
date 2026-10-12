@@ -11,11 +11,17 @@ namespace CodeWF.Avalonia.Controls.Controls;
 
 /// <summary>
 /// 窗口化堆叠面板：子项数量超过阈值后，只把「视口 ± overscan」范围内的子项控件挂到可视树，
-/// 其余子项保留已测量的尺寸占位，滚动离屏即释放控件，避免长列表一次性挂载全部控件。
+/// 其余子项保留占位尺寸，滚动离屏即释放控件，避免长列表一次性挂载全部控件。
 /// <para>
 /// 与 Avalonia 自带 <c>VirtualizingStackPanel</c> 的差别：本面板的子项索引由调用方维护，
 /// 即使某项当前未物化，索引也不会错位（<see cref="InsertItem"/> / <see cref="RemoveAt"/> 按索引操作），
 /// 适合「文档块」这类由业务侧按语义增删、又需要按视口裁剪的场景。
+/// </para>
+/// <para>
+/// 变高子项（文档块）的解体策略：<see cref="ResolveInPlace"/> 只在「原本物化的子项彻底离开
+/// 视口窗口」时才把它列入解体候选，overscan 边缘进出不会反复物化/解体；再用
+/// <see cref="KeepAliveBudget"/> 的尺寸预算优先保留大块（图片、表格、图表），
+/// 避免滚动时把已解码/已光栅化的大块丢掉、回来时重建。
 /// </para>
 /// <para>
 /// 关闭 <see cref="EnableVirtualization"/> 或子项数低于 <see cref="VirtualizationThreshold"/> 时，
@@ -36,7 +42,7 @@ public class WindowedStackPanel : Panel
         public Control Control { get; }
 
         /// <summary>调用方指定的固定物化（如当前滚动锚点所在项）。</summary>
-        public bool Pinned { get; }
+        public bool Pinned { get; set; }
 
         /// <summary>按子项类型固定物化（如代码块、表格、图片等大块），避免测量与滚动抖动。</summary>
         public bool PinnedByKind { get; }
@@ -47,6 +53,9 @@ public class WindowedStackPanel : Panel
 
         public bool Measured { get; set; }
 
+        /// <summary>上一帧布局时是否落在视口窗口内（判定「彻底离开」用）。</summary>
+        public bool InWindow { get; set; } = true;
+
         public double Size { get; set; }
     }
 
@@ -55,6 +64,13 @@ public class WindowedStackPanel : Panel
     private double _lastWidth = double.NaN;
     private double[] _sizeBuffer = [];
     private bool[] _pinnedBuffer = [];
+    private bool[] _realizedBuffer = [];
+    private bool[] _inWindowBuffer = [];
+    private bool[] _candidateBuffer = [];
+    private double _anchorOffsetY = double.NaN;
+    private double _anchorTop;
+    private double _lastOffsetY = double.NaN;
+    private bool _scrollDown = true;
 
     public static readonly StyledProperty<bool> EnableVirtualizationProperty =
         AvaloniaProperty.Register<WindowedStackPanel, bool>(nameof(EnableVirtualization), true);
@@ -78,6 +94,33 @@ public class WindowedStackPanel : Panel
     /// <summary>尚未测量过的子项使用的估算尺寸（经验值，量测后回填）。</summary>
     public static readonly StyledProperty<double> EstimatedItemHeightProperty =
         AvaloniaProperty.Register<WindowedStackPanel, double>(nameof(EstimatedItemHeight), 24d);
+
+    /// <summary>
+    /// 离屏大块的像素高度预算：已测量的子项彻底离开视口窗口后，
+    /// 尺寸不小于 <see cref="KeepAliveMinItemHeight"/> 者按「从大到小」保留到本预算用尽，
+    /// 其余立即解体。0 表示不保留（全部立即解体）。
+    /// </summary>
+    public static readonly StyledProperty<double> KeepAliveBudgetProperty =
+        AvaloniaProperty.Register<WindowedStackPanel, double>(nameof(KeepAliveBudget), 0d);
+
+    /// <summary>计入保留预算的最小高度；小于该值的子项离开窗口即解体。</summary>
+    public static readonly StyledProperty<double> KeepAliveMinItemHeightProperty =
+        AvaloniaProperty.Register<WindowedStackPanel, double>(nameof(KeepAliveMinItemHeight), 0d);
+
+    /// <summary>
+    /// 尺寸未确定（尚未测量）离屏子项的最大保留数量：优先保留滚动方向上「接下来要滚回来」
+    /// 的那一侧。这类子项按估算高度占位，保留它们不改变总高度。
+    /// </summary>
+    public static readonly StyledProperty<int> KeepAliveUnknownCountProperty =
+        AvaloniaProperty.Register<WindowedStackPanel, int>(nameof(KeepAliveUnknownCount), 0);
+
+    /// <summary>
+    /// 保留候选判定：返回 true 的子项才参与 <see cref="KeepAliveBudget"/> 与
+    /// <see cref="KeepAliveUnknownCount"/> 的保留。未设置时全部子项都是候选
+    /// （适合「离屏即销毁」代价都差不多的长列表）；文档块这类场景由宿主只把重块标为候选，
+    /// 让轻量段落照常解体。
+    /// </summary>
+    public Func<int, bool>? KeepAliveCandidateResolver { get; set; }
 
     public bool EnableVirtualization
     {
@@ -115,6 +158,24 @@ public class WindowedStackPanel : Panel
         set => SetValue(EstimatedItemHeightProperty, value);
     }
 
+    public double KeepAliveBudget
+    {
+        get => GetValue(KeepAliveBudgetProperty);
+        set => SetValue(KeepAliveBudgetProperty, value);
+    }
+
+    public double KeepAliveMinItemHeight
+    {
+        get => GetValue(KeepAliveMinItemHeightProperty);
+        set => SetValue(KeepAliveMinItemHeightProperty, value);
+    }
+
+    public int KeepAliveUnknownCount
+    {
+        get => GetValue(KeepAliveUnknownCountProperty);
+        set => SetValue(KeepAliveUnknownCountProperty, value);
+    }
+
     /// <summary>当前子项数量（含未物化项）。</summary>
     public int ItemCount => _entries.Count;
 
@@ -124,7 +185,11 @@ public class WindowedStackPanel : Panel
     /// <summary>已物化（挂在可视树上）的子项数量，供诊断与测试使用。</summary>
     public int RealizedItemCount => Children.Count;
 
-    /// <summary>待重构：请求物化但尚未完成布局测量的子项数量。</summary>
+    /// <summary>滚动偏移被回补（布局锚点补偿）的次数，供诊断与测试使用。</summary>
+    public int AnchorCompensationCount { get; private set; }
+
+    /// <summary>当前被调用方固定物化的子项数量，供诊断与测试使用。</summary>
+    public int PinnedItemCount => _entries.Count(entry => entry.Pinned);
 
     static WindowedStackPanel()
     {
@@ -133,6 +198,9 @@ public class WindowedStackPanel : Panel
             VirtualizationThresholdProperty,
             OverscanViewportsProperty,
             EstimatedItemHeightProperty,
+            KeepAliveBudgetProperty,
+            KeepAliveMinItemHeightProperty,
+            KeepAliveUnknownCountProperty,
             SpacingProperty);
         AffectsArrange<WindowedStackPanel>(SpacingProperty);
     }
@@ -201,6 +269,46 @@ public class WindowedStackPanel : Panel
         return true;
     }
 
+    /// <summary>
+    /// 固定物化指定子项（如当前滚动锚点，离开窗口也保留控件与解码结果），
+    /// 取消固定用 <see cref="ReleaseItem"/>。固定项不参与解体与保留预算。
+    /// </summary>
+    public void PinItem(int index, bool pinned = true)
+    {
+        if (index < 0 || index >= _entries.Count || _entries[index].Pinned == pinned)
+        {
+            return;
+        }
+
+        _entries[index].Pinned = pinned;
+        InvalidateMeasure();
+    }
+
+    /// <summary>取消 <see cref="PinItem"/> 设置的固定物化。</summary>
+    public void ReleaseItem(int index) => PinItem(index, false);
+
+    /// <summary>
+    /// 取消全部固定物化；调用方在整篇内容重建（全文重渲、切换文档）前调用，
+    /// 避免上一次的滚动锚点按索引残留在新内容上。
+    /// </summary>
+    public void DetachAllPinned()
+    {
+        var changed = false;
+        foreach (var entry in _entries)
+        {
+            if (entry.Pinned)
+            {
+                entry.Pinned = false;
+                changed = true;
+            }
+        }
+
+        if (changed)
+        {
+            InvalidateMeasure();
+        }
+    }
+
     /// <summary>取子项在滚动方向上的顶边（未物化项用已测量/估算尺寸推算）。</summary>
     public bool TryGetItemTop(int index, out double top)
     {
@@ -222,6 +330,10 @@ public class WindowedStackPanel : Panel
     public double GetItemHeight(int index) =>
         index >= 0 && index < _entries.Count ? ResolveSize(_entries[index]) : 0d;
 
+    /// <summary>该子项是否已经量测出真实尺寸（否则按 <see cref="EstimatedItemHeight"/> 占位）。</summary>
+    public bool IsItemMeasured(int index) =>
+        index >= 0 && index < _entries.Count && _entries[index].Measured;
+
     protected override Size MeasureOverride(Size availableSize)
     {
         var width = double.IsFinite(availableSize.Width) ? availableSize.Width : _lastWidth;
@@ -232,15 +344,36 @@ public class WindowedStackPanel : Panel
 
         var virtualizing = IsVirtualizing;
         var (windowTop, windowBottom) = ResolveVisibleWindow(virtualizing, availableSize);
-        var realization = WindowedRealization.Resolve(
-            FillSizeBuffer(), FillPinnedBuffer(), Spacing, windowTop, windowBottom);
+        var isVisibleWindow = !double.IsNegativeInfinity(windowTop) && !double.IsPositiveInfinity(windowBottom);
+
+        // 解体候选基于「上一帧是否已物化」+「本帧视口窗口判定」：
+        // 本帧刚离开窗口的块才是候选，必须在同一帧决定保留还是解体，
+        // 否则它已被解体，下一帧 realized 为 false，就再也回不到保留逻辑里。
+        var sizes = FillSizeBuffer();
+        var pinned = FillPinnedBuffer();
+        var realized = FillRealizedBuffer();
+        var inWindow = FillInWindowBuffer();
+        var windowRealization = WindowedRealization.Resolve(sizes, pinned, Spacing, windowTop, windowBottom);
+        var keepAlive = WindowedRealization.ResolveInPlace(
+            sizes,
+            pinned,
+            realized,
+            windowRealization,
+            isVisibleWindow,
+            KeepAliveBudget,
+            KeepAliveMinItemHeight,
+            KeepAliveUnknownCount,
+            FillCandidateBuffer(),
+            _scrollDown);
 
         double y = 0;
         var maxWidth = 0d;
         for (var i = 0; i < _entries.Count; i++)
         {
             var entry = _entries[i];
-            SetRealized(entry, realization[i]);
+            var realize = windowRealization[i] || keepAlive[i];
+            entry.InWindow = windowRealization[i];
+            SetRealized(entry, realize);
 
             if (entry.Realized)
             {
@@ -260,7 +393,9 @@ public class WindowedStackPanel : Panel
         }
 
         _lastWidth = width;
-        return new Size(maxWidth, Math.Max(0, y));
+        var size = new Size(maxWidth, Math.Max(0, y));
+        CompensateAnchor(size.Height);
+        return size;
     }
 
     protected override Size ArrangeOverride(Size finalSize)
@@ -290,6 +425,7 @@ public class WindowedStackPanel : Panel
     {
         base.OnAttachedToVisualTree(e);
         SubscribeScrollHost();
+        _anchorOffsetY = double.NaN;
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
@@ -332,12 +468,30 @@ public class WindowedStackPanel : Panel
         }
     }
 
+    /// <summary>
+    /// 滚动只标记「下一帧需要重新量测」（由 Measure 决定窗口内外的物化变化），
+    /// 不做任何同步布局；偏移抖动交给 <see cref="CompensateAnchor"/> 按锚点处理。
+    /// </summary>
     private void OnScrollHostChanged(object? sender, ScrollChangedEventArgs e)
     {
-        if (IsVirtualizing)
+        if (!IsVirtualizing)
         {
-            InvalidateMeasure();
+            return;
         }
+
+        // 记住滚动方向：保留未知尺寸子项时优先「将要滚回来」的那一侧。
+        if (sender is ScrollViewer host)
+        {
+            var offsetY = host.Offset.Y;
+            if (double.IsFinite(_lastOffsetY) && Math.Abs(offsetY - _lastOffsetY) > 0.5)
+            {
+                _scrollDown = offsetY > _lastOffsetY;
+            }
+
+            _lastOffsetY = offsetY;
+        }
+
+        InvalidateMeasure();
     }
 
     private double[] FillSizeBuffer()
@@ -370,6 +524,57 @@ public class WindowedStackPanel : Panel
         return _pinnedBuffer;
     }
 
+    private bool[] FillRealizedBuffer()
+    {
+        if (_realizedBuffer.Length != _entries.Count)
+        {
+            _realizedBuffer = new bool[_entries.Count];
+        }
+
+        for (var i = 0; i < _entries.Count; i++)
+        {
+            _realizedBuffer[i] = _entries[i].Realized;
+        }
+
+        return _realizedBuffer;
+    }
+
+    private bool[] FillInWindowBuffer()
+    {
+        if (_inWindowBuffer.Length != _entries.Count)
+        {
+            _inWindowBuffer = new bool[_entries.Count];
+        }
+
+        for (var i = 0; i < _entries.Count; i++)
+        {
+            _inWindowBuffer[i] = _entries[i].InWindow;
+        }
+
+        return _inWindowBuffer;
+    }
+
+    /// <summary>保留候选掩码；未设置判定委托时返回 null（全部子项都是候选）。</summary>
+    private bool[]? FillCandidateBuffer()
+    {
+        if (KeepAliveCandidateResolver is not { } resolver)
+        {
+            return null;
+        }
+
+        if (_candidateBuffer.Length != _entries.Count)
+        {
+            _candidateBuffer = new bool[_entries.Count];
+        }
+
+        for (var i = 0; i < _entries.Count; i++)
+        {
+            _candidateBuffer[i] = resolver(i);
+        }
+
+        return _candidateBuffer;
+    }
+
     private (double Top, double Bottom) ResolveVisibleWindow(bool virtualizing, Size availableSize)
     {
         if (!virtualizing)
@@ -392,6 +597,80 @@ public class WindowedStackPanel : Panel
         }
 
         return WindowedRealization.ResolveWindow(host.Offset.Y, viewportHeight, OverscanViewports);
+    }
+
+    /// <summary>
+    /// 布局锚点补偿：变高子项（图片、公式、图表）量测后总高度会变化，
+    /// 若锚点（所有尺寸变化项之上最近的已量测子项）顶边发生位移，
+    /// 则把滚动偏移回补同样的差值，使视口内容不因量测而抖动。
+    /// </summary>
+    private void CompensateAnchor(double extentHeight)
+    {
+        var host = _subscribedScrollHost ?? ScrollHost;
+        if (host is null)
+        {
+            _anchorOffsetY = double.NaN;
+            return;
+        }
+
+        var offsetY = host.Offset.Y;
+        if (!double.IsFinite(_anchorOffsetY))
+        {
+            _anchorTop = FindAnchorTop();
+            _anchorOffsetY = offsetY;
+            return;
+        }
+
+        if (Math.Abs(_anchorOffsetY - offsetY) >= 0.5)
+        {
+            // 用户滚动或宿主主动定位：锚点跟随新偏移，不做补偿。
+            _anchorOffsetY = offsetY;
+            _anchorTop = FindAnchorTop();
+            return;
+        }
+
+        var shift = FindAnchorTop() - _anchorTop;
+        if (Math.Abs(shift) < 0.5)
+        {
+            return;
+        }
+
+        var maxOffset = Math.Max(0, extentHeight - host.Viewport.Height);
+        var target = Math.Clamp(offsetY + shift, 0, maxOffset);
+        _anchorTop += target - offsetY;
+        _anchorOffsetY = target;
+        if (Math.Abs(target - offsetY) < 0.5)
+        {
+            return;
+        }
+
+        host.Offset = new Vector(host.Offset.X, target);
+        AnchorCompensationCount++;
+    }
+
+    /// <summary>
+    /// 取「位置已确定」的锚点：自下而上跳过尚未测量（占位高度还会变化）的子项，
+    /// 返回第一个已测量子项的顶边。一个都没量测过时锚在文档顶部。
+    /// </summary>
+    private double FindAnchorTop()
+    {
+        for (var i = _entries.Count - 1; i >= 0; i--)
+        {
+            if (!_entries[i].Measured)
+            {
+                continue;
+            }
+
+            var top = 0d;
+            for (var j = 0; j < i; j++)
+            {
+                top += ResolveSize(_entries[j]) + Spacing;
+            }
+
+            return top;
+        }
+
+        return 0d;
     }
 
     private void SetRealized(ItemEntry entry, bool realized)

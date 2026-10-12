@@ -89,6 +89,13 @@ public partial class MarkdownViewer
 
         for (var i = 0; i < _renderedBlocks.Count; i++)
         {
+            // 未物化/未量测的块拿不到可信位置：跳过昂贵的 TranslatePoint，
+            // 虚拟化下每帧只需检查视口附近那几十个块（这个采样在滚动中会反复执行）。
+            if (_virtualizingHost is not null && !_virtualizingHost.IsItemMeasured(i))
+            {
+                continue;
+            }
+
             var control = _renderedBlocks[i].Control;
             if (control.TranslatePoint(new Point(0, 0), _documentHost) is not { } origin)
             {
@@ -128,6 +135,10 @@ public partial class MarkdownViewer
         }
 
         var index = Math.Clamp(value.BlockIndex, 0, _renderedBlocks.Count - 1);
+        // 虚拟化下目标块可能未物化：先物化并把布局推进到最新，否则 TranslatePoint 拿到的是旧位置。
+        _virtualizingHost?.RealizeItem(index);
+        UpdateLayout();
+
         if (_renderedBlocks[index].Control.TranslatePoint(new Point(0, 0), _documentHost) is not { } origin)
         {
             return false;
@@ -254,8 +265,10 @@ public partial class MarkdownViewer
             return false;
         }
 
-        // 虚拟化宿主下目标块可能未物化：先物化再量测，保证偏移映射给出精确 Bounds。
+        // 虚拟化宿主下目标块可能未物化：先物化，并把布局推进到最新，
+        // 否则 TranslatePoint 拿到的是上一轮的位置（宿主滚动定位会出现「跳不准」）。
         _virtualizingHost?.RealizeItem(_renderedBlocks.IndexOf(renderedBlock));
+        UpdateLayout();
 
         if (renderedBlock.Control.TranslatePoint(new Point(0, 0), this) is not { } topLeft)
         {
@@ -344,7 +357,7 @@ public partial class MarkdownViewer
                 ContainsRemoteImage(modelBlock),
                 TryGetTaskMarkerOffset(_renderedMarkdown, modelBlock));
             block.Cleanup();
-            ReplaceBlockControl(i, control, block.Kind);
+            ReplaceBlockControl(i, control);
             _renderedBlocks[i] = replacement;
         }
 

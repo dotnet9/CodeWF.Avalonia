@@ -33,6 +33,13 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
 {
     private static readonly Regex ThemeChangeProperty = new("^ActualThemeVariant$", RegexOptions.Compiled);
 
+    /// <summary>缓存图表上限：按「源码 + 主题配色」缓存，块被虚拟化回收后重建时不再重新解析渲染。</summary>
+    private const int MaxCachedDiagrams = 48;
+
+    private static readonly Dictionary<string, SvgSource?> DiagramCache = new(StringComparer.Ordinal);
+    private static readonly LinkedList<string> DiagramCacheOrder = new();
+    private static readonly object DiagramCacheGate = new();
+
     public Control? TryRender(Block block, string? sourceMarkdown, IMarkdownRenderContext context)
     {
         if (block is not FencedCodeBlock fenced
@@ -114,19 +121,21 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
             var token = localCts.Token;
 
             var options = GetRenderOptions();
+            var cacheKey = CreateCacheKey(source, options);
 
             try
             {
-                var svgSource = await Task.Run(() =>
-                {
-                    var svg = MermaidRenderer.RenderSvg(source, options);
-                    svg = InlineCssVariables(svg, options);
-                    using var stream = new MemoryStream(Encoding.UTF8.GetBytes(svg));
-                    return SvgSource.LoadFromStream(stream);
-                }, token);
+                var svgSource = await Task.Run(() => ResolveSvgSource(cacheKey, source, options), token);
 
                 if (!token.IsCancellationRequested)
                 {
+                    if (svgSource is null)
+                    {
+                        // 上次渲染已失败且结果被缓存：本次直接回落，不重复尝试。
+                        ShowFallback("Mermaid render failed.");
+                        return;
+                    }
+
                     image.Source = new SvgImage { Source = svgSource };
                 }
             }
@@ -137,18 +146,71 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
             {
                 if (!token.IsCancellationRequested)
                 {
-                    var panel = new StackPanel { Spacing = 4 };
-                    panel.Children.Add(new TextBlock { Text = $"Mermaid render error: {exception.Message}" });
-                    panel.Children.Add(new TextBlock { Text = source, TextWrapping = TextWrapping.Wrap });
-                    border.Child = panel;
-                    border.Classes.Clear();
-                    border.Classes.Add("MdMermaidFallback");
+                    ShowFallback(exception.Message);
                 }
+            }
+
+            void ShowFallback(string message)
+            {
+                var panel = new StackPanel { Spacing = 4 };
+                panel.Children.Add(new TextBlock { Text = $"Mermaid render error: {message}" });
+                panel.Children.Add(new TextBlock { Text = source, TextWrapping = TextWrapping.Wrap });
+                border.Child = panel;
+                border.Classes.Clear();
+                border.Classes.Add("MdMermaidFallback");
             }
         }
 
         return border;
     }
+
+    /// <summary>
+    /// 取图表 SVG：按「源码 + 主题配色」缓存，块被虚拟化回收后重新物化时
+    /// 直接复用已解析的 SVG，不再跑一遍布局与 CSS 变量内联。
+    /// 渲染失败以 null 缓存，避免每次重建都重试同一份坏图。
+    /// </summary>
+    private static SvgSource? ResolveSvgSource(string cacheKey, string source, MermaidRenderOptions options)
+    {
+        lock (DiagramCacheGate)
+        {
+            if (DiagramCache.TryGetValue(cacheKey, out var cached))
+            {
+                DiagramCacheOrder.Remove(cacheKey);
+                DiagramCacheOrder.AddLast(cacheKey);
+                return cached;
+            }
+        }
+
+        SvgSource? svgSource = null;
+        try
+        {
+            var svg = MermaidRenderer.RenderSvg(source, options);
+            svg = InlineCssVariables(svg, options);
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(svg));
+            svgSource = SvgSource.LoadFromStream(stream);
+        }
+        catch
+        {
+            svgSource = null;
+        }
+
+        lock (DiagramCacheGate)
+        {
+            DiagramCache[cacheKey] = svgSource;
+            DiagramCacheOrder.AddLast(cacheKey);
+            while (DiagramCacheOrder.Count > MaxCachedDiagrams && DiagramCacheOrder.First is { } oldest)
+            {
+                DiagramCacheOrder.RemoveFirst();
+                DiagramCache.Remove(oldest.Value);
+            }
+        }
+
+        return svgSource;
+    }
+
+    /// <summary>缓存 Key 含主题配色：同一份图表在明暗主题下是两张不同的图。</summary>
+    private static string CreateCacheKey(string source, MermaidRenderOptions options) =>
+        $"{options.Bg}|{options.Fg}|{options.Accent}|{source}";
 
     /// <summary>
     /// 按当前主题变体构造渲染选项；颜色来自 CodeWFMarkdownMermaid* 画刷资源

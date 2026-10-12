@@ -66,9 +66,32 @@ internal static class MarkdownBlockClassifier
 		};
 	}
 
-	public static MarkdownDependencyFlags GetDependencyFlags(Block block, MarkdownBlockKind kind)
+	/// <summary>
+	/// 是否为「重块」：渲染成本高（代码高亮、图片解码、图表布局+SVG 光栅化、公式排版）
+	/// 或高度远大于一个段落。宿主据此在滚动离屏后保留控件不解体，
+	/// 避免反复付出重建成本（见 WindowedStackPanel.KeepAliveBudget）。
+	/// <para>
+	/// 代码块按围栏信息判定：<c>```mermaid</c> 由能力包渲染成图表（列布局 + SVG 光栅化），
+	/// 成本远高于普通代码块。
+	/// </para>
+	/// </summary>
+	public static bool IsHeavy(Block block, MarkdownBlockKind kind)
 	{
-		var flags = MarkdownDependencyFlags.None;
+		if (kind is MarkdownBlockKind.Image or MarkdownBlockKind.Table or MarkdownBlockKind.Math)
+		{
+			return true;
+		}
+
+		return kind switch
+		{
+			MarkdownBlockKind.Code => block is not FencedCodeBlock { Info: not null } fenced
+									|| !string.Equals(fenced.Info.Trim(), "mermaid", StringComparison.OrdinalIgnoreCase),
+			_ => false
+		};
+	}
+
+	public static MarkdownDependencyFlags GetDependencyFlags(Block block, MarkdownBlockKind kind)
+	{		var flags = MarkdownDependencyFlags.None;
 		if (kind == MarkdownBlockKind.Toc)
 		{
 			flags |= MarkdownDependencyFlags.Toc;
