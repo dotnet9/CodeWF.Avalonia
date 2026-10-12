@@ -62,6 +62,9 @@ button,input,select,textarea{font:inherit;color:inherit}
   border:none;background:transparent;cursor:pointer;color:var(--tx2);font-size:12px}
 .cap .wb:hover{background:var(--hov);color:var(--tx)}
 .cap .wb.cls:hover{background:var(--err);color:#fff}
+.cap .pal{display:inline-flex;gap:5px;align-items:center;margin:0 2px}
+.cap .pal i{width:12px;height:12px;border-radius:50%;cursor:pointer;border:1px solid rgba(128,128,128,.55);display:block;transition:transform .12s}
+.cap .pal i:hover{transform:scale(1.25)}
 
 /* ═══ 2. Ribbon 页签行 ═══ */
 .rtabs{display:flex;align-items:center;height:30px;padding:0 10px;gap:2px;background:var(--bg);border-bottom:1px solid var(--bd)}
@@ -103,8 +106,8 @@ body.rmn .rbn{padding-top:0;padding-bottom:0;min-height:0;height:0;opacity:0;bor
 .phd{display:flex;align-items:center;height:30px;flex:none;padding:0 10px;background:var(--bg2);
   border-bottom:1px solid var(--bd);font-size:11px;font-weight:700;color:var(--tx2);gap:6px;letter-spacing:.5px}
 .phd .tb{margin-left:auto;display:flex;gap:2px}
-.phd .tb button{width:22px;height:20px;border:none;background:transparent;cursor:pointer;border-radius:3px;
-  color:var(--tx2);font-size:11px}
+.phd .tb button{min-width:22px;height:20px;border:none;background:transparent;cursor:pointer;border-radius:3px;
+  color:var(--tx2);font-size:11px;white-space:nowrap;padding:0 5px}
 .phd .tb button:hover{background:var(--pri-lt);color:var(--pri)}
 .pbd{flex:1;min-height:0;overflow:auto}
 .p-nav{width:224px;flex:none}
@@ -286,6 +289,12 @@ body.hideLog .p-log{display:none}
 #DBG{position:fixed;top:0;left:0;z-index:999;background:#000;color:#0f0;font:11px monospace;
   padding:2px 6px;max-width:100%;white-space:pre-wrap}
 </style>
+<script>
+window.addEventListener("error",function(e){
+var d=document.getElementById("jsErrTrap")||function(){var x=document.createElement("div");x.id="jsErrTrap";x.style.cssText="position:fixed;top:0;left:0;z-index:999;background:#000;color:#f88;font:12px monospace;padding:4px 10px;max-width:100%;white-space:pre-wrap";document.documentElement.appendChild(x);return x}();
+d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"+e.lineno+"\n";
+});
+</script>
 </head>
 <body>
 
@@ -295,6 +304,7 @@ body.hideLog .p-log{display:none}
   <div class="cap">
     <span class="lg">◆ CodeWF.Avalonia</span><span class="ver">Demo · v12.1.4.2</span>
     <span class="sp"></span>
+    <span class="pal" id="palDots"></span>
     <select id="palSel" title="色板">
       <option value="default">默认</option>
       <option value="aqua">水生</option>
@@ -325,7 +335,7 @@ body.hideLog .p-log{display:none}
     <div class="dockrow">
 
       <div class="panel p-nav">
-        <div class="phd"><span>◈ 导航树</span>
+        <div class="phd"><span data-i18n="nav">◈ 导航树</span>
           <span class="tb"><button id="hideNav" title="隐藏面板">◀</button></span>
         </div>
         <div class="pbd tree" id="lTree"></div>
@@ -334,11 +344,11 @@ body.hideLog .p-log{display:none}
       <div class="panel p-doc">
         <div class="dts">
           <span class="dkb">
-            <button id="dkNav" title="显示/隐藏导航树">导航树</button>
-            <button id="dkProps" title="显示/隐藏属性面板">属性</button>
-            <button id="dkLog" title="显示/隐藏日志面板">日志</button>
-            <button id="dkMax" title="文档区最大化">最大化</button>
-            <button id="dkReset" title="重置布局">重置</button>
+            <button id="dkNav" title="显示/隐藏导航树" data-i18n="dock.nav">导航树</button>
+            <button id="dkProps" title="显示/隐藏属性面板" data-i18n="dock.props">属性</button>
+            <button id="dkLog" title="显示/隐藏日志面板" data-i18n="dock.log">日志</button>
+            <button id="dkMax" title="文档区最大化" data-i18n="dock.max">最大化</button>
+            <button id="dkReset" title="重置布局" data-i18n="dock.reset">重置</button>
           </span>
           <span id="dT" style="display:flex;gap:4px"></span>
         </div>
@@ -346,7 +356,7 @@ body.hideLog .p-log{display:none}
       </div>
 
       <div class="panel p-props">
-        <div class="phd"><span>⚙ 属性</span>
+        <div class="phd"><span data-i18n="props">⚙ 属性</span>
           <span class="tb"><button id="hideProp2" title="隐藏面板">▶</button></span>
         </div>
         <div class="pbd pgp" id="pGrid"></div>
@@ -355,10 +365,10 @@ body.hideLog .p-log{display:none}
     </div>
 
     <div class="panel p-log">
-      <div class="phd"><span>▤ 日志</span>
+      <div class="phd"><span data-i18n="log">▤ 日志</span>
         <span class="tb">
-          <button id="openLogDir">打开日志目录</button>
-          <button id="clrLogBtn">清空</button>
+          <button id="openLogDir" data-i18n="log.opendir">打开日志目录</button>
+          <button id="clrLogBtn" data-i18n="log.clear">清空</button>
           <button id="hideLogBtn" title="折叠日志面板">▼</button>
         </span>
       </div>
@@ -368,10 +378,10 @@ body.hideLog .p-log{display:none}
 
   <!-- ═══ 5. 任务栏 ═══ -->
   <div class="tbar">
-    <span class="badge">演示台</span>
-    <span class="latest" id="stTx">就绪</span>
+    <span class="badge" data-i18n="status.app">演示台</span>
+    <span class="latest" id="stTx" data-i18n="ready">就绪</span>
     <span class="sp"></span>
-    <button id="logToggleBtn">日志面板</button>
+    <button id="logToggleBtn" data-i18n="status.logpanel">日志面板</button>
     <button id="darkBtn2">◐ 深浅</button>
     <button id="langBtn2">文A 中英</button>
     <span>net10.0 · Avalonia 12.1.4</span>
@@ -396,9 +406,13 @@ var $=function(id){return document.getElementById(id)};
 var LANG="zh-CN";
 var I18N={
  "zh-CN":{"tabs.home":"首 页","tabs.markdown":"Markdown","tabs.data":"数 据","tabs.controls":"控 件","tabs.layout":"布 局","tabs.infra":"基础设施","tabs.views":"视 图",
-   "nav":"◈ 导航树","props":"⚙ 属性","log":"▤ 日志","ready":"就绪"},
+   "nav":"◈ 导航树","props":"⚙ 属性","log":"▤ 日志","ready":"就绪",
+   "dock.nav":"导航树","dock.props":"属性","dock.log":"日志","dock.max":"最大化","dock.reset":"重置",
+   "log.opendir":"打开日志目录","log.clear":"清空","status.app":"演示台","status.logpanel":"日志面板"},
  "en-US":{"tabs.home":"Home","tabs.markdown":"Markdown","tabs.data":"Data","tabs.controls":"Controls","tabs.layout":"Layout","tabs.infra":"Infra","tabs.views":"Views",
-   "nav":"◈ Explorer","props":"⚙ Properties","log":"▤ Log","ready":"Ready"}};
+   "nav":"◈ Explorer","props":"⚙ Properties","log":"▤ Log","ready":"Ready",
+   "dock.nav":"Explorer","dock.props":"Properties","dock.log":"Log","dock.max":"Maximize","dock.reset":"Reset",
+   "log.opendir":"Open Log Dir","log.clear":"Clear","status.app":"Demo Shell","status.logpanel":"Log Panel"}};
 function tt(k){return (I18N[LANG]&&I18N[LANG][k])||((I18N["zh-CN"]||{})[k])||k}
 function dlog(msg,lv){var b=$("logP");if(!b)return;
  var d=new Date(),tm=("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)+":"+("0"+d.getSeconds()).slice(-2);
@@ -885,13 +899,11 @@ $("dkReset").addEventListener("click",function(){document.body.classList.remove(
  log2both("布局已重置")});
 
 /* ═══ 启动 ═══ */
-var DBG=function(m){var d=document.getElementById("DBG");if(d)d.textContent+=m+"
-"};
+var DBG=function(m){var d=document.getElementById("DBG");if(d)d.textContent+=m+"\n"};
 try{
 renderRTabs();DBG("A rTabs");renderTree();DBG("B tree");renderPalDots();DBG("C palDots");
 openDoc("welcome");DBG("D openDoc dT="+$("dT").innerHTML.length+" dBody="+$("dBody").innerHTML.length);
-}catch(e){DBG("EXC: "+e.message+" | "+(e.stack||"").split("
-")[1])}
+}catch(e){DBG("EXC: "+e.message+" | "+(e.stack||"").split("\n")[1])}
 dlog("演示台启动：Lang(I18n) + Logger 已初始化","info");
 dlog("默认打开欢迎文档","info");
 </script>
