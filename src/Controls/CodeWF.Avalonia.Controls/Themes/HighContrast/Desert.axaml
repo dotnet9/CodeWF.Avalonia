@@ -1,0 +1,53 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--  Desert（暖沙 · 高对比） 变体：取值对齐 Semi 高对比调色板（Window / WindowText / GrayText / Hotlight / Highlight），
+          本库控件主题全部走字面色值，不依赖 Semi 的数字令牌（高对比变体下不存在，会回落到 Light）。  -->
+    <SolidColorBrush x:Key="CodeWFWindowBackground">#FFFAEF</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFWindowForeground">#3D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFWindowTitleBarBackground">Transparent</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFWindowTitleBarForeground">#3D3D3DB3</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFWindowTitleBarBorderBrush">#223D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFTitleBarForeground">#3D3D3DB3</SolidColorBrush>
+    <SolidColorBrush x:Key="TabControlSeparatorBorderBrush">#223D3D3D</SolidColorBrush>
+
+    <!--  12.1.4 启动窗口期 Semi 包字典不可达，窗口令牌一并字面量化  -->
+    <SolidColorBrush x:Key="WindowDefaultBackground">#FFFAEF</SolidColorBrush>
+    <SolidColorBrush x:Key="WindowDefaultForeground">#3D3D3D</SolidColorBrush>
+
+    <SolidColorBrush x:Key="SearchListBoxBackground">#FFFAEF</SolidColorBrush>
+    <SolidColorBrush x:Key="SearchListBoxBorderBrush">#223D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="SearchListBoxCounterForeground">#676767</SolidColorBrush>
+
+    <SolidColorBrush x:Key="ColumnDisplayEditorBackground">#FFFAEF</SolidColorBrush>
+    <SolidColorBrush x:Key="ColumnDisplayEditorBorderBrush">#223D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="ColumnDisplayEditorHeaderBackground">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="ColumnDisplayEditorHeaderForeground">#3D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="ColumnDisplayEditorRowForeground">#3D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="ColumnDisplayEditorRowHoverBackground">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="ColumnDisplayEditorRowSelectedBackground">#903909</SolidColorBrush>
+
+    <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#FFF5E3</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeRightTextForeground">#3D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeDebugBorderBrush">#1C5E75</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeInfoBorderBrush">#0F7A5A</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeWarnBorderBrush">#8A5A12</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeErrorBorderBrush">#A3311F</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeFatalBorderBrush">#A3311F</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeDebugBackground">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeInfoBackground">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeWarnBackground">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeErrorBackground">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeFatalBackground">#143D3D3D</SolidColorBrush>
+
+    <SolidColorBrush x:Key="StatusCardTopTextForeground">#676767</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardDebugBackground">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardInfoBackground">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardWarnBackground">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardErrorBackground">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardFatalBackground">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardDebugForeground">#3D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardInfoForeground">#3D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardWarnForeground">#8A5A12</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardErrorForeground">#A3311F</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardFatalForeground">#A3311F</SolidColorBrush>
+</ResourceDictionary>

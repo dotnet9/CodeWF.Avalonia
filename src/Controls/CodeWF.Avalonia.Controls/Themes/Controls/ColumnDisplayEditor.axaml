@@ -12,8 +12,8 @@
                 <Border
                     Background="{DynamicResource ColumnDisplayEditorBackground}"
                     BorderBrush="{DynamicResource ColumnDisplayEditorBorderBrush}"
-                    BorderThickness="{StaticResource SemiBorderThicknessControl}"
-                    CornerRadius="{StaticResource SemiBorderRadiusMedium}">
+                    BorderThickness="1"
+                    CornerRadius="6">
                     <Grid RowDefinitions="34,*">
                         <Border
                             Background="{DynamicResource ColumnDisplayEditorHeaderBackground}"
@@ -49,7 +49,7 @@
                                     <Setter Property="Margin" Value="6,2" />
                                     <Setter Property="MinHeight" Value="34" />
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                    <Setter Property="CornerRadius" Value="{StaticResource SemiBorderRadiusMedium}" />
+                                    <Setter Property="CornerRadius" Value="6" />
                                 </Style>
                                 <Style Selector="ListBoxItem:pointerover">
                                     <Setter Property="Background"
@@ -61,12 +61,12 @@
                                 </Style>
                                 <Style Selector="ListBoxItem.drop-before">
                                     <Setter Property="BorderBrush"
-                                            Value="{DynamicResource SemiColorPrimary}" />
+                                            Value="{DynamicResource CodeWFDockActiveIndicatorBrush}" />
                                     <Setter Property="BorderThickness" Value="0,2,0,0" />
                                 </Style>
                                 <Style Selector="ListBoxItem.drop-after">
                                     <Setter Property="BorderBrush"
-                                            Value="{DynamicResource SemiColorPrimary}" />
+                                            Value="{DynamicResource CodeWFDockActiveIndicatorBrush}" />
                                     <Setter Property="BorderThickness" Value="0,0,0,2" />
                                 </Style>
                             </ListBox.Styles>
@@ -83,7 +83,7 @@
                                             Background="Transparent"
                                             BorderThickness="0"
                                             Cursor="SizeAll"
-                                            Foreground="{DynamicResource SemiColorText2}">
+                                            Foreground="{DynamicResource CodeWFDockHeaderSecondaryForegroundBrush}">
                                             <PathIcon
                                                 Width="15"
                                                 Height="15"

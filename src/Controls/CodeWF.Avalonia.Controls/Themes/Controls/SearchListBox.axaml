@@ -14,7 +14,7 @@
                         <TextBox
                             Name="PART_SearchBox"
                             Classes="clearButton"
-                            Height="{StaticResource SemiHeightControlLarge}"
+                            Height="40"
                             Padding="12,0,38,0"
                             PlaceholderText="Search" />
                         <PathIcon
@@ -24,7 +24,7 @@
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Data="{StaticResource SemiIconSearchStroked}"
-                            Foreground="{DynamicResource SemiColorText2}"
+                            Foreground="{DynamicResource CodeWFDockHeaderSecondaryForegroundBrush}"
                             IsHitTestVisible="False" />
                     </Grid>
                     <TextBlock
@@ -55,7 +55,7 @@
                                     <Setter Property="MinHeight" Value="38" />
                                     <Setter Property="Padding" Value="10,4" />
                                     <Setter Property="Margin" Value="4,1" />
-                                    <Setter Property="CornerRadius" Value="{StaticResource SemiBorderRadiusSmall}" />
+                                    <Setter Property="CornerRadius" Value="3" />
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                     <Setter Property="VerticalContentAlignment" Value="Center" />
                                 </Style>

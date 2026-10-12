@@ -8,9 +8,9 @@
                 <ResourceInclude x:Key="Dark" Source="Dark/_index.axaml" />
                 <ResourceInclude x:Key="Light" Source="Light/_index.axaml" />
                 <ResourceInclude x:Key="{x:Static semi:SemiTheme.Aquatic}" Source="HighContrast/_index.axaml" />
-                <ResourceInclude x:Key="{x:Static semi:SemiTheme.Desert}" Source="HighContrast/_index.axaml" />
-                <ResourceInclude x:Key="{x:Static semi:SemiTheme.Dusk}" Source="HighContrast/_index.axaml" />
-                <ResourceInclude x:Key="{x:Static semi:SemiTheme.NightSky}" Source="HighContrast/_index.axaml" />
+                <ResourceInclude x:Key="{x:Static semi:SemiTheme.Desert}" Source="HighContrast/Desert.axaml" />
+                <ResourceInclude x:Key="{x:Static semi:SemiTheme.Dusk}" Source="HighContrast/Dusk.axaml" />
+                <ResourceInclude x:Key="{x:Static semi:SemiTheme.NightSky}" Source="HighContrast/NightSky.axaml" />
             </ResourceDictionary.ThemeDictionaries>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="Shared/_index.axaml" />

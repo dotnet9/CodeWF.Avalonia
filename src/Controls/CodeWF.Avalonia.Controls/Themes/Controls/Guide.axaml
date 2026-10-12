@@ -6,19 +6,19 @@
         <codewf:Guide Width="360" />
     </Design.PreviewWith>
 
-    <StaticResource x:Key="GuideCardBackground" ResourceKey="SemiColorBackground0" />
-    <StaticResource x:Key="GuideCardBorderBrush" ResourceKey="SemiColorBorder" />
-    <StaticResource x:Key="GuideTextForeground" ResourceKey="SemiColorText0" />
-    <StaticResource x:Key="GuideSecondaryTextForeground" ResourceKey="SemiColorText2" />
-    <StaticResource x:Key="GuideIndicatorBrush" ResourceKey="SemiColorFill2" />
-    <StaticResource x:Key="GuidePrimaryBrush" ResourceKey="SemiColorPrimary" />
-    <StaticResource x:Key="GuidePrimaryHoverBrush" ResourceKey="SemiColorPrimaryPointerover" />
-    <StaticResource x:Key="GuidePrimaryPressedBrush" ResourceKey="SemiColorPrimaryActive" />
-    <StaticResource x:Key="GuidePrimaryForeground" ResourceKey="SemiColorWhite" />
-    <StaticResource x:Key="GuideArrowBorderBrush" ResourceKey="SemiColorPrimaryLightActive" />
-    <StaticResource x:Key="GuideTargetBorderBrush" ResourceKey="SemiColorPrimary" />
-    <StaticResource x:Key="GuideCloseButtonHoverBackground" ResourceKey="SemiColorFill0" />
-    <StaticResource x:Key="GuideCloseButtonPressedBackground" ResourceKey="SemiColorFill1" />
+    <StaticResource x:Key="GuideCardBackground" ResourceKey="CodeWFWindowBackground" />
+    <StaticResource x:Key="GuideCardBorderBrush" ResourceKey="CodeWFDockPanelBorderBrush" />
+    <StaticResource x:Key="GuideTextForeground" ResourceKey="CodeWFDockHeaderForegroundBrush" />
+    <StaticResource x:Key="GuideSecondaryTextForeground" ResourceKey="CodeWFDockHeaderSecondaryForegroundBrush" />
+    <StaticResource x:Key="GuideIndicatorBrush" ResourceKey="CodeWFDockSplitterPointerOverBrush" />
+    <StaticResource x:Key="GuidePrimaryBrush" ResourceKey="CodeWFDockActiveIndicatorBrush" />
+    <StaticResource x:Key="GuidePrimaryHoverBrush" ResourceKey="CodeWFDockActiveIndicatorBrush" />
+    <StaticResource x:Key="GuidePrimaryPressedBrush" ResourceKey="CodeWFDockActiveIndicatorBrush" />
+    <StaticResource x:Key="GuidePrimaryForeground" ResourceKey="CodeWFDockHeaderForegroundBrush" />
+    <StaticResource x:Key="GuideArrowBorderBrush" ResourceKey="CodeWFDockHeaderPointerOverBackgroundBrush" />
+    <StaticResource x:Key="GuideTargetBorderBrush" ResourceKey="CodeWFDockActiveIndicatorBrush" />
+    <StaticResource x:Key="GuideCloseButtonHoverBackground" ResourceKey="CodeWFDockHeaderPointerOverBackgroundBrush" />
+    <StaticResource x:Key="GuideCloseButtonPressedBackground" ResourceKey="CodeWFDockHeaderPointerOverBackgroundBrush" />
     <StaticResource x:Key="GuideCardBoxShadow" ResourceKey="SemiShadowElevated" />
 
     <ControlTheme x:Key="{x:Type codewf:DefaultGuideIndicator}" TargetType="codewf:DefaultGuideIndicator">
@@ -40,12 +40,12 @@
     </ControlTheme>
 
     <ControlTheme x:Key="GuidePrimaryActionButton" TargetType="Button">
-        <Setter Property="MinHeight" Value="{StaticResource SemiHeightControlDefault}" />
+        <Setter Property="MinHeight" Value="32" />
         <Setter Property="Padding" Value="12,6" />
         <Setter Property="Background" Value="{DynamicResource GuidePrimaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource GuidePrimaryBrush}" />
-        <Setter Property="BorderThickness" Value="{StaticResource SemiBorderThicknessControl}" />
-        <Setter Property="CornerRadius" Value="{StaticResource SemiBorderRadiusSmall}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="3" />
         <Setter Property="Foreground" Value="{DynamicResource GuidePrimaryForeground}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -126,9 +126,9 @@
                                 Padding="18"
                                 Background="{DynamicResource GuideCardBackground}"
                                 BorderBrush="{DynamicResource GuideCardBorderBrush}"
-                                BorderThickness="{StaticResource SemiBorderThicknessControl}"
+                                BorderThickness="1"
                                 BoxShadow="{DynamicResource GuideCardBoxShadow}"
-                                CornerRadius="{StaticResource SemiBorderRadiusMedium}"
+                                CornerRadius="6"
                                 Focusable="True">
                                 <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="12">
                                     <Grid ColumnDefinitions="*,Auto">
@@ -258,7 +258,7 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="CornerRadius" Value="{StaticResource SemiBorderRadiusMedium}" />
+            <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Foreground" Value="{DynamicResource GuideSecondaryTextForeground}" />
         </Style>
 

@@ -1,12 +1,53 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="../Light/CodeWFWindow.axaml" />
-        <ResourceInclude Source="../Light/CodeWFTitleBar.axaml" />
-        <ResourceInclude Source="../Light/SearchListBox.axaml" />
-        <ResourceInclude Source="../Light/ColumnDisplayEditor.axaml" />
-        <ResourceInclude Source="../Light/StatusBadge.axaml" />
-        <ResourceInclude Source="../Light/StatusCard.axaml" />
-        <ResourceInclude Source="../Light/TabItem.axaml" />
-    </ResourceDictionary.MergedDictionaries>
+    <!--  Aquatic（深青 · 高对比） 变体：取值对齐 Semi 高对比调色板（Window / WindowText / GrayText / Hotlight / Highlight），
+          本库控件主题全部走字面色值，不依赖 Semi 的数字令牌（高对比变体下不存在，会回落到 Light）。  -->
+    <SolidColorBrush x:Key="CodeWFWindowBackground">#202020</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFWindowForeground">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFWindowTitleBarBackground">Transparent</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFWindowTitleBarForeground">#FFFFFFB3</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFWindowTitleBarBorderBrush">#33FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFTitleBarForeground">#FFFFFFB3</SolidColorBrush>
+    <SolidColorBrush x:Key="TabControlSeparatorBorderBrush">#33FFFFFF</SolidColorBrush>
+
+    <!--  12.1.4 启动窗口期 Semi 包字典不可达，窗口令牌一并字面量化  -->
+    <SolidColorBrush x:Key="WindowDefaultBackground">#202020</SolidColorBrush>
+    <SolidColorBrush x:Key="WindowDefaultForeground">#FFFFFF</SolidColorBrush>
+
+    <SolidColorBrush x:Key="SearchListBoxBackground">#202020</SolidColorBrush>
+    <SolidColorBrush x:Key="SearchListBoxBorderBrush">#33FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="SearchListBoxCounterForeground">#A6A6A6</SolidColorBrush>
+
+    <SolidColorBrush x:Key="ColumnDisplayEditorBackground">#202020</SolidColorBrush>
+    <SolidColorBrush x:Key="ColumnDisplayEditorBorderBrush">#33FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="ColumnDisplayEditorHeaderBackground">#1FFFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="ColumnDisplayEditorHeaderForeground">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="ColumnDisplayEditorRowForeground">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="ColumnDisplayEditorRowHoverBackground">#1FFFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="ColumnDisplayEditorRowSelectedBackground">#8EE3F0</SolidColorBrush>
+
+    <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#263B50</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeRightTextForeground">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeDebugBorderBrush">#75E9FC</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeInfoBorderBrush">#5ED3B2</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeWarnBorderBrush">#F1C46B</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeErrorBorderBrush">#FF8AA0</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeFatalBorderBrush">#FF8AA0</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeDebugBackground">#1FFFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeInfoBackground">#1FFFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeWarnBackground">#1FFFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeErrorBackground">#1FFFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeFatalBackground">#1FFFFFFF</SolidColorBrush>
+
+    <SolidColorBrush x:Key="StatusCardTopTextForeground">#A6A6A6</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardDebugBackground">#1FFFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardInfoBackground">#1FFFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardWarnBackground">#1FFFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardErrorBackground">#1FFFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardFatalBackground">#1FFFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardDebugForeground">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardInfoForeground">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardWarnForeground">#F1C46B</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardErrorForeground">#FF8AA0</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardFatalForeground">#FF8AA0</SolidColorBrush>
 </ResourceDictionary>
