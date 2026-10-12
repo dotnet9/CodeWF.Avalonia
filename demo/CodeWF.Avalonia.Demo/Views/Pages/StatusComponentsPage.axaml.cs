@@ -64,7 +64,7 @@ public partial class StatusComponentsPage : DemoPageBase
                 };
                 break;
             case IdIconWidth when change.NewValue is decimal width:
-                DrivenCard.IconWidth = (double)width;
+                DrivenCard.IconWidth = (int)width;
                 break;
         }
     }

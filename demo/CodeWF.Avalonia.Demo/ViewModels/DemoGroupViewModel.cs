@@ -2,7 +2,7 @@ using CodeWF.Avalonia.Lang;
 using CodeWF.Avalonia.Demo.Views;
 using ReactiveUI;
 using System.Collections.ObjectModel;
-using System.Reactive;
+using ReactiveUI.Primitives;
 
 namespace CodeWF.Avalonia.Demo.ViewModels;
 
@@ -36,7 +36,7 @@ public class DemoGroupViewModel : ReactiveObject
     {
         TitleKey = titleKey;
         Items = new ObservableCollection<DemoItemViewModel>(items);
-        ToggleExpandCommand = ReactiveCommand.Create(() => IsExpanded = !IsExpanded);
+        ToggleExpandCommand = ReactiveCommand.Create(() => { IsExpanded = !IsExpanded; });
 
         I18nManager.Instance.CultureChanged += (_, _) => this.RaisePropertyChanged(nameof(Title));
     }
@@ -53,7 +53,7 @@ public class DemoGroupViewModel : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _isExpanded, value);
     }
 
-    public ReactiveCommand<Unit, Unit> ToggleExpandCommand { get; }
+    public ReactiveCommand<RxVoid, RxVoid> ToggleExpandCommand { get; }
 
     public override string ToString() => Title;
 }

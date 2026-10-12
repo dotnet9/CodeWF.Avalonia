@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using CodeWF.Avalonia.Markdown.Editor.Controls;
+using CodeWF.Avalonia.Markdown.Editor.Services;
 using CodeWF.Avalonia.Markdown.Themes;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 
@@ -128,7 +129,7 @@ public partial class MarkdownLiveEditorPage : DemoPageBase
         _ = _editor.ExecuteAsync(MarkdownEditorAction.Bold);
 
     private void OnTable(object? sender, RoutedEventArgs e) =>
-        _editor.InsertTable("| 列一 | 列二 |\n| --- | --- |\n| A | B |");
+        _ = _editor.ExecuteAsync(MarkdownEditorAction.Table);
 
     private void UpdateStatus()
     {

@@ -43,7 +43,8 @@ public partial class LangPage : DemoPageBase
     public LangPage()
     {
         InitializeComponent();
-        AttachedToVisualTree += OnAttached;
+        I18nManager.Instance.CultureChanged += OnCultureChanged;
+        UpdateState();
     }
 
     public override string TitleKey => "Demo.Page.Lang.Title";
@@ -55,13 +56,6 @@ public partial class LangPage : DemoPageBase
     public override string CSharpCode => CSharpSnippet;
 
     public override void OnDocumentOpened() => UpdateState();
-
-    private void OnAttached(object? sender, RoutedEventArgs e)
-    {
-        UpdateState();
-        I18nManager.Instance.CultureChanged += OnCultureChanged;
-        AttachedToVisualTree -= OnAttached;
-    }
 
     private void OnCultureChanged(object? sender, EventArgs e) => UpdateState();
 

@@ -1,19 +1,21 @@
-using Avalonia;
 using Avalonia.Collections;
-using Avalonia.Controls;
-using Avalonia.Controls.Templates;
-using Avalonia.Layout;
-using Avalonia.Metadata;
-using CodeWF.Avalonia.Markdown.Controls;
+using Dock.Model.Core;
 using Dock.Model.Controls;
 using Dock.Model.ReactiveUI;
 using Dock.Model.ReactiveUI.Controls;
 
 namespace CodeWF.Avalonia.Demo.ViewModels.Pages;
 
+/// <summary>文档区上下文：DataTemplate 按 Context 类型匹配 MarkdownViewer。</summary>
+public record MarkdownDocumentContext(string Markdown);
+
+/// <summary>工具区上下文：同上。</summary>
+public record MarkdownToolContext(string Markdown);
+
 /// <summary>
-/// Dock 演示页 VM：用 Dock.Model.ReactiveUI 构建工作区布局（左工具栏 + 文档区），
-/// DocumentTemplate 用完整包 MarkdownViewer 呈现文档内容。
+/// Dock 演示页 VM：用 Dock.Model.ReactiveUI 构建工作区布局（左工具栏 + 文档区）。
+/// 12.x 无 Content/DocumentTemplate：内容放进 Context，由 DockPage.axaml 的
+/// DataTemplates 按 Context 类型解析为 MarkdownViewer。
 /// </summary>
 public class DockPageViewModel
 {
@@ -27,26 +29,24 @@ public class DockPageViewModel
         {
             Id = "Tool.Overview",
             Title = "工作区概览",
-            Content = ToolOverviewMarkdown,
+            Context = new MarkdownToolContext(ToolOverviewMarkdown),
         };
         var toolDock = new ToolDock
         {
             Id = "ToolDock",
             VisibleDockables = CreateList<IDockable>(overviewTool),
             ActiveDockable = overviewTool,
-            ToolTemplate = ToolTemplate,
             Dock = DockMode.Left,
             Proportion = 0.28,
         };
 
-        var designDocument = new Document { Id = "Doc.Design", Title = "设计说明", Content = DocDesignMarkdown };
-        var apiDocument = new Document { Id = "Doc.Api", Title = "接口草稿", Content = DocApiMarkdown };
+        var designDocument = new Document { Id = "Doc.Design", Title = "设计说明", Context = new MarkdownDocumentContext(DocDesignMarkdown) };
+        var apiDocument = new Document { Id = "Doc.Api", Title = "接口草稿", Context = new MarkdownDocumentContext(DocApiMarkdown) };
         var docDock = new DocumentDock
         {
             Id = "DocDock",
             VisibleDockables = CreateList<IDockable>(designDocument, apiDocument),
             ActiveDockable = designDocument,
-            DocumentTemplate = DocumentTemplate,
             CanCreateDocument = false,
         };
 
@@ -67,6 +67,7 @@ public class DockPageViewModel
             Title = "Dock 工作区",
             VisibleDockables = CreateList<IDockable>(mainDock),
             ActiveDockable = mainDock,
+            IsCollapsable = false,
         };
 
         factory.InitLayout(Layout);
@@ -96,7 +97,7 @@ public class DockPageViewModel
         | ToolDock | 工具停靠区（左 / 右 / 上 / 下） |
         | DocumentDock | 文档页签区 |
 
-        本页内容由 DocumentTemplate 呈现为 MarkdownViewer。
+        本页内容存放在 Document.Context，由页面级 DataTemplate 解析为 MarkdownViewer。
         """;
 
     private const string DocApiMarkdown = """
@@ -108,30 +109,4 @@ public class DockPageViewModel
         factory.InitLayout(layout);
         ```
         """;
-
-    /// <summary>文档内容模板：兼容 Document 与裸字符串两种呈现对象。</summary>
-    public static IDataTemplate DocumentTemplate { get; } =
-        new FuncDataTemplate<object?>((data, _) =>
-        {
-            var markdown = data switch
-            {
-                Document { Content: string text } => text,
-                string text => text,
-                _ => string.Empty,
-            };
-
-            return new MarkdownViewer { Markdown = markdown, Margin = new Thickness(8) };
-        });
-
-    /// <summary>工具内容模板。</summary>
-    public static IDataTemplate ToolTemplate { get; } =
-        new FuncDataTemplate<object?>((data, _) =>
-        {
-            if (data is Tool { Content: string markdown })
-            {
-                return new MarkdownViewer { Markdown = markdown, Margin = new Thickness(8) };
-            }
-
-            return new TextBlock { Text = data?.ToString() ?? string.Empty, Margin = new Thickness(8) };
-        });
 }

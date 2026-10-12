@@ -39,7 +39,7 @@ public partial class SearchListBoxPage : DemoPageBase
         DataContext = new SearchListBoxPageViewModel();
 
         var list = List;
-        list.ListItemDoubleTapped += item =>
+        list.ListItemDoubleTapped += (item, _) =>
         {
             if (DataContext is SearchListBoxPageViewModel vm)
             {

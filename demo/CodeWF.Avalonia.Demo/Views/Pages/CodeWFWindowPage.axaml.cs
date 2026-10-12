@@ -44,8 +44,8 @@ public partial class CodeWFWindowPage : DemoPageBase
         window.Content = new TextBlock
         {
             Text = "无边框窗口内容",
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center,
+            VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
         };
         window.Show(owner);   // DWM 圆角仅 Windows 生效，其它平台自动降级
         """;
@@ -151,11 +151,11 @@ public partial class CodeWFWindowPage : DemoPageBase
             {
                 Text = "◆",
                 Foreground = Brushes.DodgerBlue,
-                VerticalAlignment = VerticalAlignment.Center,
+                VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
                 Margin = new Thickness(10, 0, 0, 0),
             };
             var search = new TextBox { Width = 160, Height = 26, Watermark = "搜索…" };
-            DockPanel.SetDock(search, Dock.Right);
+            DockPanel.SetDock(search, global::Avalonia.Controls.Dock.Right);
             window.RightContent = search;
         }
 
@@ -171,8 +171,8 @@ public partial class CodeWFWindowPage : DemoPageBase
                 {
                     Text = "这段内容钻入了标题栏（ContentExtendsIntoTitleBar=True）",
                     Foreground = Brushes.White,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
+                    HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center,
                 },
             };
             contentPanel.Children.Add(hero);
@@ -181,8 +181,8 @@ public partial class CodeWFWindowPage : DemoPageBase
         contentPanel.Children.Add(new TextBlock
         {
             Text = $"配置：{name}\n关闭此窗口后可再试其它配置。",
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center,
+            VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
             TextAlignment = TextAlignment.Center,
         });
         window.Content = contentPanel;

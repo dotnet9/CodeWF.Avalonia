@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using CodeWF.Avalonia.Markdown.Editor.Controls;
+using CodeWF.Avalonia.Markdown.Editor.Services;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 
 namespace CodeWF.Avalonia.Demo.Views.Pages;

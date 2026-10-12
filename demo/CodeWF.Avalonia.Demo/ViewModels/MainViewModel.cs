@@ -5,9 +5,9 @@ using CodeWF.Avalonia.Lang;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 using CodeWF.Toolkit.Logging;
 using ReactiveUI;
+using ReactiveUI.Primitives;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Reactive;
 using System.Windows.Input;
 
 namespace CodeWF.Avalonia.Demo.ViewModels;
@@ -37,7 +37,7 @@ public class MainViewModel : ReactiveObject
 
         OpenItemCommand = ReactiveCommand.Create<DemoItemViewModel>(OpenItem);
         CloseDocumentCommand = ReactiveCommand.Create<DemoDocumentViewModel>(CloseDocument);
-        ToggleRibbonCommand = ReactiveCommand.Create(() => RibbonExpanded = !RibbonExpanded);
+        ToggleRibbonCommand = ReactiveCommand.Create(() => { RibbonExpanded = !RibbonExpanded; });
         WriteLogsCommand = ReactiveCommand.Create(WriteSampleLogs);
 
         Palettes = new ObservableCollection<AppearanceOption>
@@ -83,12 +83,15 @@ public class MainViewModel : ReactiveObject
         get => _activeDocument;
         set
         {
-            if (this.RaiseAndSetIfChanged(ref _activeDocument, value))
+            if (Equals(_activeDocument, value))
             {
-                this.RaisePropertyChanged(nameof(ActivePropertyItems));
-                this.RaisePropertyChanged(nameof(ActiveValueCommittedCommand));
-                this.RaisePropertyChanged(nameof(ActiveBrowseRequestedCommand));
+                return;
             }
+
+            this.RaiseAndSetIfChanged(ref _activeDocument, value);
+            this.RaisePropertyChanged(nameof(ActivePropertyItems));
+            this.RaisePropertyChanged(nameof(ActiveValueCommittedCommand));
+            this.RaisePropertyChanged(nameof(ActiveBrowseRequestedCommand));
         }
     }
 
@@ -104,17 +107,17 @@ public class MainViewModel : ReactiveObject
     /// <summary>无文档打开时的全局设置属性（外观 / 语言），由 PropertyGrid 直接驱动 Shell。</summary>
     public IReadOnlyList<PropertyItem> GlobalProperties { get; }
 
-    public ReactiveCommand<PropertyValueChange, Unit> GlobalValueCommittedCommand { get; private set; } = null!;
+    public ReactiveCommand<PropertyValueChange, RxVoid> GlobalValueCommittedCommand { get; private set; } = null!;
 
-    public ReactiveCommand<PropertyItem, Unit> GlobalBrowseRequestedCommand { get; private set; } = null!;
+    public ReactiveCommand<PropertyItem, RxVoid> GlobalBrowseRequestedCommand { get; private set; } = null!;
 
-    public ReactiveCommand<DemoItemViewModel, Unit> OpenItemCommand { get; }
+    public ReactiveCommand<DemoItemViewModel, RxVoid> OpenItemCommand { get; }
 
-    public ReactiveCommand<DemoDocumentViewModel, Unit> CloseDocumentCommand { get; }
+    public ReactiveCommand<DemoDocumentViewModel, RxVoid> CloseDocumentCommand { get; }
 
-    public ReactiveCommand<Unit, Unit> ToggleRibbonCommand { get; }
+    public ReactiveCommand<RxVoid, RxVoid> ToggleRibbonCommand { get; }
 
-    public ReactiveCommand<Unit, Unit> WriteLogsCommand { get; }
+    public ReactiveCommand<RxVoid, RxVoid> WriteLogsCommand { get; }
 
     /// <summary>Ribbon 命令区折叠状态（双击页签切换）。</summary>
     public bool RibbonExpanded
@@ -147,10 +150,13 @@ public class MainViewModel : ReactiveObject
         get => _selectedPalette;
         set
         {
-            if (this.RaiseAndSetIfChanged(ref _selectedPalette, value))
+            if (Equals(_selectedPalette, value))
             {
-                ApplyAppearance();
+                return;
             }
+
+            this.RaiseAndSetIfChanged(ref _selectedPalette, value);
+            ApplyAppearance();
         }
     }
 
@@ -160,10 +166,13 @@ public class MainViewModel : ReactiveObject
         get => _isDarkMode;
         set
         {
-            if (this.RaiseAndSetIfChanged(ref _isDarkMode, value))
+            if (Equals(_isDarkMode, value))
             {
-                ApplyAppearance();
+                return;
             }
+
+            this.RaiseAndSetIfChanged(ref _isDarkMode, value);
+            ApplyAppearance();
         }
     }
 
@@ -174,11 +183,14 @@ public class MainViewModel : ReactiveObject
         get => _selectedCulture;
         set
         {
-            if (this.RaiseAndSetIfChanged(ref _selectedCulture, value))
+            if (Equals(_selectedCulture, value))
             {
-                I18nManager.Instance.Culture = new CultureInfo(value.Name);
-                Logger.Info("界面语言切换为 " + value.Name);
+                return;
             }
+
+            this.RaiseAndSetIfChanged(ref _selectedCulture, value);
+            I18nManager.Instance.Culture = new CultureInfo(value.Name);
+            Logger.Info("界面语言切换为 " + value.Name);
         }
     }
 

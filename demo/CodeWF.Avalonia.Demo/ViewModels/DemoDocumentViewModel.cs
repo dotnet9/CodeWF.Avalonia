@@ -41,12 +41,15 @@ public class DemoDocumentViewModel : ReactiveObject
         get => _segment;
         set
         {
-            if (this.RaiseAndSetIfChanged(ref _segment, value))
+            if (Equals(_segment, value))
             {
-                this.RaisePropertyChanged(nameof(IsDemoSegment));
-                this.RaisePropertyChanged(nameof(IsXamlSegment));
-                this.RaisePropertyChanged(nameof(IsCSharpSegment));
+                return;
             }
+
+            this.RaiseAndSetIfChanged(ref _segment, value);
+            this.RaisePropertyChanged(nameof(IsDemoSegment));
+            this.RaisePropertyChanged(nameof(IsXamlSegment));
+            this.RaisePropertyChanged(nameof(IsCSharpSegment));
         }
     }
 

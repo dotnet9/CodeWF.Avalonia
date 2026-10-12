@@ -1,15 +1,26 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:dock="using:Dock.Avalonia.Controls"
+             xmlns:md="using:CodeWF.Avalonia.Markdown.Controls"
              xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels.Pages"
              x:Class="CodeWF.Avalonia.Demo.Views.Pages.DockPage"
              x:DataType="vm:DockPageViewModel"
              x:CompileBindings="True">
 
+  <UserControl.DataTemplates>
+    <!-- 12.x 内容承载：Document/Tool 的 Context 按类型匹配这里的模板 -->
+    <DataTemplate DataType="vm:MarkdownDocumentContext">
+      <md:MarkdownViewer Markdown="{Binding Markdown}" Margin="8" />
+    </DataTemplate>
+    <DataTemplate DataType="vm:MarkdownToolContext">
+      <md:MarkdownViewer Markdown="{Binding Markdown}" Margin="8" />
+    </DataTemplate>
+  </UserControl.DataTemplates>
+
   <Grid RowDefinitions="Auto,*" Margin="12,10">
     <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1" Margin="0,0,0,8"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <TextBlock Text="Dock 工作区：Dock.Avalonia 布局引擎 + CodeWF DockSemiTheme（Semi 皮肤与中英文本地化）。可拖拽停靠、浮动、最大化；文档内容经 DocumentTemplate 以 MarkdownViewer 呈现。"
+      <TextBlock Text="Dock 工作区：Dock.Avalonia 布局引擎 + CodeWF DockSemiTheme（Semi 皮肤与中英文本地化）。可拖拽停靠、浮动、最大化；内容存放在 Document/Tool 的 Context，经 DataTemplate 解析为 MarkdownViewer。"
                  TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
     </Border>
     <dock:DockControl Grid.Row="1" Layout="{Binding Layout}" />

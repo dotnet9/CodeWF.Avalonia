@@ -15,6 +15,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/CodeWF.Avalonia.Controls.Tests/CodeWF.Avalonia.Controls.Tests.csproj" />
+    <Project Path="tests/CodeWF.Avalonia.Content.Tests/CodeWF.Avalonia.Content.Tests.csproj" />
   </Folder>
   <Folder Name="/Solution Files/">
     <File Path=".gitignore" />

@@ -159,7 +159,7 @@ public partial class WindowedStackPanelPage : DemoPageBase
                 Child = new TextBlock
                 {
                     Text = $"块 {i} / {BlockCount}",
-                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
                 },
             });
         }

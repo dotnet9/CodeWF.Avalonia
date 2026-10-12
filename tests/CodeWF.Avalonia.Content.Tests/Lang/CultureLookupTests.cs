@@ -4,6 +4,7 @@ using CodeWF.Avalonia.Lang.Json;
 using CodeWF.Avalonia.Lang.MarkupExtensions;
 using CodeWF.Avalonia.Lang.Resx;
 using CodeWF.Avalonia.Lang.Xml;
+using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,8 +14,17 @@ using Xunit;
 
 namespace CodeWF.Avalonia.Content.Tests.Lang;
 
+/// <summary>
+/// 挂入 AvaloniaPlatform 集合：FixedCulture 用例会触达 I18nManager 单例（有 Avalonia 线程亲和），
+/// 与程序集内 Headless 测试共用同一执行线程，避免跨线程 SetValue。
+/// </summary>
+[Collection("AvaloniaPlatform")]
 public class CultureLookupTests
 {
+    private readonly AvaloniaPlatformFixture _platform;
+
+    public CultureLookupTests(AvaloniaPlatformFixture platform) => _platform = platform;
+
     [Fact]
     public void JsonLookupNormalizesCultureNamesAndFallsBackThroughParents()
     {
@@ -157,19 +167,23 @@ public class CultureLookupTests
     [Fact]
     public void FixedCultureFormatsArgumentsUsingTheSelectedCulture()
     {
-        var plugin = new TestPlugin();
-        I18nManager.Instance.Register(plugin, new CultureInfo("en-US"), out var error);
-        Assert.Null(error);
+        // I18nManager 单例有 Avalonia 线程亲和：统一调度到 Headless 会话线程执行。
+        _platform.Run(() =>
+        {
+            var plugin = new TestPlugin();
+            I18nManager.Instance.Register(plugin, new CultureInfo("en-US"), out var error);
+            Assert.Null(error);
 
-        var binding = new I18nBinding("Message", "de-DE", new object[] { 1234.5 });
-        var converter = new I18nConverter();
-        var result = converter.Convert(
-            new List<object?> { new CultureInfo("en-US"), "Message" },
-            typeof(string),
-            binding,
-            new CultureInfo("en-US"));
+            var binding = new I18nBinding("Message", "de-DE", new object[] { 1234.5 });
+            var converter = new I18nConverter();
+            var result = converter.Convert(
+                new List<object?> { new CultureInfo("en-US"), "Message" },
+                typeof(string),
+                binding,
+                new CultureInfo("en-US"));
 
-        Assert.Equal("Value: 1.234,50", result);
+            Assert.Equal("Value: 1.234,50", result);
+        });
     }
 
     private static void WriteJson(string folder, string fileName, string cultureName, string title)

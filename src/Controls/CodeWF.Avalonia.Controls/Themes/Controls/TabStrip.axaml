@@ -53,7 +53,6 @@
 
     <ControlTheme
         x:Key="TrapezoidShapedTabStrip"
-        BasedOn="{StaticResource {x:Type TabStrip}}"
         TargetType="TabStrip">
         <Setter Property="ItemContainerTheme" Value="{StaticResource TrapezoidShapedTabStripItem}" />
         <Setter Property="ItemsPanel">

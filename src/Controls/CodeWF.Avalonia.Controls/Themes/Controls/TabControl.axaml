@@ -3,7 +3,6 @@
 
     <ControlTheme
         x:Key="TrapezoidShapedTabControl"
-        BasedOn="{StaticResource BaseTabControl}"
         TargetType="TabControl">
         <Setter Property="ItemContainerTheme" Value="{StaticResource TrapezoidShapedTabItem}" />
         <Setter Property="Template">

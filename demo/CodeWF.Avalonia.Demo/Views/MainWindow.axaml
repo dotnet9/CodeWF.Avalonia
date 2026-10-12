@@ -79,14 +79,10 @@
                     ItemsSource="{Binding Groups}"
                     SelectionChanged="OnNavTreeSelectionChanged">
             <TreeView.ItemTemplate>
-              <HierarchicalDataTemplate x:DataType="vm:DemoGroupViewModel" ItemsSource="{Binding Items}">
+              <!-- Avalonia 12 移除了 HierarchicalDataTemplate（WPF 类型），层级用 TreeDataTemplate -->
+              <TreeDataTemplate x:DataType="vm:DemoGroupViewModel" ItemsSource="{Binding Items}">
                 <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
-                <HierarchicalDataTemplate.ItemTemplate>
-                  <DataTemplate x:DataType="vm:DemoItemViewModel">
-                    <TextBlock Text="{Binding Title}" Margin="18,0,0,0" TextTrimming="CharacterEllipsis" />
-                  </DataTemplate>
-                </HierarchicalDataTemplate.ItemTemplate>
-              </HierarchicalDataTemplate>
+              </TreeDataTemplate>
             </TreeView.ItemTemplate>
           </TreeView>
         </Grid>

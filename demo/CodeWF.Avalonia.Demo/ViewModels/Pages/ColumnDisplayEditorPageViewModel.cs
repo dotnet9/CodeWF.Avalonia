@@ -1,8 +1,8 @@
 using CodeWF.Avalonia.Controls.Models;
 using ReactiveUI;
+using ReactiveUI.Primitives;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Reactive;
 
 namespace CodeWF.Avalonia.Demo.ViewModels.Pages;
 
@@ -13,7 +13,7 @@ public class ColumnDisplayEditorPageViewModel : ReactiveObject
 
     public ObservableCollection<string> ChangeLog { get; } = new();
 
-    public ReactiveCommand<Unit, Unit> ResetCommand { get; }
+    public ReactiveCommand<RxVoid, RxVoid> ResetCommand { get; }
 
     public ColumnDisplayEditorPageViewModel()
     {

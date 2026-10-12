@@ -53,7 +53,7 @@ public partial class PropertyGridPage : DemoPageBase
         DataContext = new PropertyPanelDemoViewModel();
     }
 
-    private PropertyGrid Grid => this.FindControl<PropertyGrid>("DemoGrid")!;
+    private PropertyGrid Grid => DemoGrid;
 
     public override string TitleKey => "Demo.Page.PropertyGrid.Title";
 
