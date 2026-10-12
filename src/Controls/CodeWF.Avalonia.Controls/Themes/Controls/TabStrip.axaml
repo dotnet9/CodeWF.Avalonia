@@ -3,6 +3,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:codewf="https://codewf.com"
     x:CompileBindings="True">
+    <!-- 延迟字典 StaticResource 仅文件内作用域：引入 Semi 的 TabStrip 主题供 BasedOn 解析 -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://Semi.Avalonia/Controls/TabStrip.axaml" />
+    </ResourceDictionary.MergedDictionaries>
     <ControlTheme x:Key="TrapezoidShapedTabStripItem" TargetType="TabStripItem">
         <Setter Property="Foreground" Value="{DynamicResource TabItemLineHeaderForeground}" />
         <Setter Property="Background" Value="{DynamicResource TabItemLinePipeBackground}" />
@@ -53,7 +57,8 @@
 
     <ControlTheme
         x:Key="TrapezoidShapedTabStrip"
-        TargetType="TabStrip">
+        TargetType="TabStrip"
+        BasedOn="{StaticResource {x:Type TabStrip}}">
         <Setter Property="ItemContainerTheme" Value="{StaticResource TrapezoidShapedTabStripItem}" />
         <Setter Property="ItemsPanel">
             <ItemsPanelTemplate>

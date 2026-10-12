@@ -1,5 +1,9 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- 延迟字典 StaticResource 仅文件内作用域：引入 Semi 的 TabControl 主题供 BaseTabControl 解析 -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://Semi.Avalonia/Controls/TabControl.axaml" />
+    </ResourceDictionary.MergedDictionaries>
 
     <ControlTheme
         x:Key="TrapezoidShapedTabControl"
