@@ -2,6 +2,8 @@
 
 ## 未发布
 
+- 🐛[修复]-构建流水线在全新检出下必然失败：根目录 `NuGet.config` 写死了本地包源 `artifacts/packages`（该目录被忽略、CI 上不存在），NuGet 对不存在的本地源报 NU1301 直接中断；现只注册 nuget.org，本机要用本地打包产物时在命令行追加包源。
+- 🐛[修复]-`CodeWF.Avalonia.TreeDataGrid` 对同仓 `CodeWF.Avalonia.Lang` 用的是 `PackageReference`，CI 会去 nuget.org 找本仓尚未发布的版本号（NU1102）；改为 `ProjectReference`，打包后的依赖声明不变。
 - 🎨[界面]-Dock 主题去掉 Fluent 依赖：DockSemiTheme 改以 Dock.Avalonia.Themes.Simple 为基座，配色令牌按 6 套变体（Default/Light/Dark + Semi 四套色板）字面量化，彻底绕开启动早期跨文件 StaticResource 解析失败的问题；不再需要 Avalonia.Themes.Fluent / Dock.Avalonia.Themes.Fluent。
 - 🐛[修复]-Semi.Avalonia 12.x 不再提供 `{x:Type Button}` / `{x:Type Window}` 基类主题（旧版由 FluentTheme 提供），Dock 的页签关闭/新建按钮、工具条按钮、浮动窗口等 BasedOn 会解析失败；主题内置最小可用的基类主题。
 - 🐛[修复]-演示应用改回 `DockSemiTheme`，App.axaml 移除自有 FluentTheme，Dock 区域配色跟随所选变体。

@@ -10,10 +10,15 @@
 
   <ItemGroup>
     <PackageReference Include="TreeDataGrid.Avalonia" />
-    <PackageReference Include="CodeWF.Avalonia.Lang" />
     <PackageReference Include="Semi.Avalonia" />
     <PackageReference Include="Avalonia.Controls.ColorPicker" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 同仓项目必须走 ProjectReference：走 PackageReference 时 CI 会去 nuget.org 找本仓
+         尚未发布的版本号（如 12.1.4.2），全新检出直接还原失败。 -->
+    <ProjectReference Include="..\..\Lang\CodeWF.Avalonia.Lang\CodeWF.Avalonia.Lang.csproj" />
   </ItemGroup>
 
 </Project>
