@@ -431,3 +431,6 @@ FodyWeavers.xsd
 !src/Log/
 !src/Log/CodeWF.Avalonia.Log/
 !tests/CodeWF.Avalonia.Controls.Tests/Log/
+
+# 发布 profile 需入库（publish.bat 六 RID 依赖），反排除 pubxml 忽略规则
+!demo/CodeWF.Avalonia.Demo/Properties/PublishProfiles/*.pubxml
