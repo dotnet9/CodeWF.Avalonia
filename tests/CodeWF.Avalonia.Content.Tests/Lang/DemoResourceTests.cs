@@ -87,6 +87,53 @@ public sealed class DemoResourceTests
         }
     }
 
+
+    [Fact]
+    public void ApiCatalogKeepsNativeAndPrototypeRoutesInSync()
+    {
+        var repository = Directory.GetParent(Directory.GetParent(DemoDirectory)!.FullName)!.FullName;
+        using var catalog = JsonDocument.Parse(File.ReadAllText(Path.Combine(repository, "design", "catalog.json")));
+        var generated = File.ReadAllText(Path.Combine(repository, "design", "assets", "catalog-data.js"));
+        const string prefix = "window.CodeWFDemoCatalog = ";
+        var start = generated.IndexOf(prefix, StringComparison.Ordinal) + prefix.Length;
+        using var prototype = JsonDocument.Parse(generated[start..generated.IndexOf(";\nwindow.CodeWFCatalogText", start, StringComparison.Ordinal)]);
+        var groups = catalog.RootElement.EnumerateArray().ToArray();
+        Assert.Equal("home", groups.First().GetProperty("id").GetString());
+        Assert.Equal("examples", groups.Last().GetProperty("id").GetString());
+        Assert.Equal(groups.Length, prototype.RootElement.GetArrayLength());
+        var chinese = Read(Path.Combine(DemoDirectory, "I18n", "CodeWF.Avalonia.Demo.zh-CN.json"));
+        var english = Read(Path.Combine(DemoDirectory, "I18n", "CodeWF.Avalonia.Demo.en-US.json"));
+        var keys = new HashSet<string>();
+        var routes = new HashSet<string>();
+        var apis = new HashSet<string>();
+        var factory = File.ReadAllText(Path.Combine(DemoDirectory, "ViewModels", "DemoCatalog.cs"));
+        foreach (var group in groups)
+        {
+            var groupKey = group.GetProperty("titleKey").GetString()!;
+            Assert.True(keys.Add(groupKey), "Duplicate group: " + groupKey);
+            Assert.Equal(group.GetProperty("titleZh").GetString(), chinese[groupKey]);
+            Assert.Equal(group.GetProperty("titleEn").GetString(), english[groupKey]);
+            var prototypeGroup = prototype.RootElement.EnumerateArray().Single(g => g.GetProperty("id").GetString() == group.GetProperty("id").GetString());
+            Assert.True(JsonElement.DeepEquals(group, prototypeGroup), "Prototype catalog is out of date.");
+            foreach (var item in group.GetProperty("items").EnumerateArray())
+            {
+                var key = item.GetProperty("titleKey").GetString()!;
+                Assert.True(keys.Add(key), "Duplicate menu key: " + key);
+                Assert.True(routes.Add(item.GetProperty("prototypeId").GetString()!), "Duplicate prototype route: " + key);
+                Assert.Equal(item.GetProperty("titleZh").GetString(), chinese[key]);
+                Assert.Equal(item.GetProperty("titleEn").GetString(), english[key]);
+                Assert.Contains("\"" + key + "\"", factory);
+                if (group.GetProperty("id").GetString() is "home" or "examples") continue;
+                var api = item.GetProperty("api").GetString()!;
+                Assert.False(string.IsNullOrWhiteSpace(api), key);
+                Assert.True(apis.Add(api), "Duplicate API menu: " + api);
+                Assert.StartsWith("CodeWF.", item.GetProperty("package").GetString());
+                Assert.True(chinese.ContainsKey("Demo.Api." + key.Split('.').Last() + ".Desc"), key);
+            }
+        }
+    }
+
+
     private static Dictionary<string, string> Read(string path)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(path));
