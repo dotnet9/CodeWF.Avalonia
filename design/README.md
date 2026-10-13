@@ -1,36 +1,42 @@
-# CodeWF.Avalonia · Interface Studio
+# CodeWF.Avalonia Demo 设计
 
-直接用现代浏览器打开 `CodeWF.Avalonia.Demo原型.html`，无需安装依赖。`属性面板原型.html` 是独立的 PropertyGrid 编辑器原型。
+直接打开 `CodeWF.Avalonia.Demo原型.html`。原型与原生 Demo 共用 `catalog.json` 目录；Ribbon 与导航树读取同一份分类。
 
-## 设计方向
+## 信息架构
 
-以实际控件与完整工作区为入口，而不是用说明表格代替功能展示。首页提供实时 Markdown 编辑、三态自然排序、Dock 面板显隐；六个能力入口对应 Markdown、数据表格、Dock、输入选择、引导状态、日志国际化。原有 24 个功能页与 XAML / C# 示例保留。
+按功能分类，每个主导航叶子对应一个具体控件或公开 API；介绍、关于和综合示例是明确的辅助入口。保留 Ribbon + Dock 外壳，将组合工作流集中到最后一组，首页先展示 API 目录，再提供默认折叠的实验区。
 
-外壳继续采用桌面应用的 Ribbon、导航、文档页签、PropertyGrid 与日志布局。统一表面、间距、文字层级与焦点状态，桌面可折叠面板，窄屏优先保留内容和命令搜索。
+| Ribbon 分类 | 菜单对应 API |
+|---|---|
+| 首页 / Home | `介绍`、`关于` |
+| 按钮与输入 / Buttons & Inputs | `SearchListBox`、`Transfer`、`ColumnDisplayEditor` |
+| 对话与反馈 / Dialogs & Feedback | `StatusBadge`、`StatusCard`、`Guide`、`LogNotifications` |
+| 数据展示 / Data Display | `DataGridEnhancement`、`TreeDataGridExtension`、`PropertyGrid`、`LogView` |
+| 布局与导航 / Layout & Navigation | `CodeWFWindow`、`CodeWFTitleBar`、`DockControl`、`TrapezoidShapedTabControl`、`WindowedStackPanel`、`LeftTop2RightBottomLine` |
+| Markdown / Markdown | `MarkdownViewer`、`Lite.MarkdownViewer`、`MarkdownEditorView`、`MarkdownLiveEditorView` |
+| 开发工具 / Developer Tools | `If`、`Switch`、`I18nManager`、`MarkdownDocumentExporter` |
+| 综合示例 / Examples | `Markdown 工作流`、`数据工作流`、`多文档工作流`、`应用级引导示例` |
 
-## 配色
+共 8 个分类、31 个页面。文档区默认完整展示功能演示；源码面板由“查看源码”打开，只提供有内容的 XAML / C# 标签。页面标题展示 API 名、NuGet 包与功能说明。
 
-| 配色 | 用途 | 颜色 |
-|---|---|---|
-| .NET Purple（默认） | .NET 品牌识别 | 品牌紫 `#512BD4`，深色文字使用更亮的紫色以保持可读性 |
-| AI Aurora | 科技感的视觉主题 | 紫色与青色渐变 `#8968FF → #26D4CC` |
-| AI Ember | 柔和、暖色的视觉主题 | 陶土色 `#BD674D` 与暖杏色 |
+## 配色与交互
 
-AI 配色是设计方向名称，不是统一的 AI 官方品牌色，也不代表本库新增了 AI 能力。原有六套配色继续可选，九套配色均支持深浅切换；这些新增配色目前只应用于 HTML 原型，尚未映射到 Avalonia ThemeDictionaries。
+默认 .NET 品牌紫 `#512BD4`，另有 AI Aurora（紫 / 青）与 AI Ember（暖陶）视觉主题，均支持深浅切换。AI 配色是视觉设计名称。标题栏色圈与下拉框共享选中状态，继续提供 Semi 原有配色。
 
-## 交互与动效
+保留主题、语言、密度、命令搜索、布局存档、Dock 面板显隐与引导。页面进入和按钮悬停有动画，并遵循浏览器“减少动态效果”设置。主导航菜单与首页目录点击后同步当前 Ribbon 分类。
 
-- 首页：Markdown 即时预览、自然排序的升 / 降 / 还原、Dock 文档切换与面板显隐、安装命令复制。
-- 全局：页面进入、卡片悬浮、品牌轨道、面板切换和弹层动效；遵循系统「减少动态效果」设置。
-- 快捷键：`Ctrl+K` 搜索命令，`Ctrl+S` 保存布局，`Ctrl+D` 深浅切换，`Ctrl+L` 语言切换，`F1` 引导。
-- 修复原型页面渲染丢失事件绑定的问题；DataGrid 取消排序恢复原始顺序，城市列使用文本排序。
+## 维护
 
-## 实现边界
+1. 在 `catalog.json` 维护分类、API、NuGet 包、页面工厂说明和原型路由。
+2. 在 Demo 的 `I18n/` 配置中维护双语标题与 `Demo.Api.*.Desc` 功能说明。
+3. 为原生 `DemoCatalog` 添加显式页面工厂，为原型注册对应演示。
+4. 执行 `pwsh scripts/sync_design_catalog.ps1` 更新浏览器目录与文案。
+5. 执行目录一致性测试与 Demo 冒烟检查。
 
-首页是浏览器交互预览，Markdown 仅实现标题、粗体、行内代码和简单列表。完整能力请看功能页的 .NET API 示例与仓库源码；HTML 原型不执行 .NET、原生 Dock 拖拽或原生文件导出。
+`assets/catalog-data.js` 是生成文件；`catalog-gallery.js` 和 `catalog-gallery.css` 负责目录布局与浏览器预览。各仓库独立携带所有原型资源。
 
-新增视觉层位于 `assets/studio.css`，首页与交互增强位于 `assets/studio.js`，独立属性面板补充样式位于 `assets/property-studio.css`。两仓的 `studio.css` / `studio.js` 保持相同，通过页面上的 `data-product` 选择内容，分发时各自独立运行。
+## 实现与验证边界
 
-## 验证
+浏览器原型展示交互与布局，不运行 .NET、原生窗口、Socket 或文件导出。页面明确提示仅为浏览器预览；实际 API 结果在原生 Demo 中产生。原生控件使用 Semi 与 Dock 的模板，字体、窗口按钮和平台交互存在差异。
 
-使用 Chromium / Edge 检查了 24 页渲染、首页各项交互、已有 DataGrid 三态排序、写作场景子页切换、九套配色的深浅模式、布局保存恢复、命令面板、320 / 390 / 768 / 1024 / 1440 像素首页布局与减少动态效果设置。独立 PropertyGrid 检查了搜索、分类 / 字母视图、主题切换。未变更或验证原生 .NET 演示程序。
+浏览器逐页检查 31 个路由、中英文和导航切换，未发现脚本异常。NativeAOT 运行范围、命令与限制见 [原生 Demo 文档](../docs/NativeDemo.md)。

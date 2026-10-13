@@ -155,15 +155,17 @@ public class MyMarkdownThemes : MarkdownThemes
 
 ## 演示应用 / Demo
 
-新版原生首页可直接操作 Markdown、自然排序表格和 Dock，并通过能力卡片进入完整演示。共享主题接口、MVVM 约定与截图检查见 [原生演示台文档](docs/NativeDemo.md)。
+Demo 保留 Ribbon + Dock，按按钮与输入、对话与反馈、数据展示、布局与导航、Markdown、开发工具分类；每个主菜单对应一个具体控件或 API。首页先展示目录，组合工作流集中到“综合示例”。共享主题接口、MVVM 约定与截图检查见 [原生演示台文档](docs/NativeDemo.md)。
 
 The native overview offers live Markdown, natural sorting and Dock experiments. See the linked guide for optional Studio themes, localization and validation.
 
-Windows x64 NativeAOT Demo：标题栏支持主题色圈与下拉同步切换，默认 .NET 紫，也提供 AI 极光与暖陶的深浅主题。首页直接使用库内 Markdown 编辑器与渲染器；完整功能与验收范围见上面的文档。
+Windows x64 NativeAOT Demo：标题栏支持主题色圈与下拉同步切换，默认 .NET 紫，也提供 AI 极光与暖陶的深浅主题。首页目录包含 31 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
 
 ![.NET 紫色原生演示台](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-dotnet.png)
 
 ![AI 极光浅色原生演示台](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-aurora-light.png)
+
+![StatusCard 独立演示](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-status-card.png)
 
 ![Markdown 实时编辑](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-markdown.png)
 

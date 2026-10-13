@@ -1,14 +1,14 @@
-# 原生演示台与 Studio 外观
+# CodeWF.Avalonia 原生 Demo
 
-`design/` 中的 HTML 是冻结的设计基准。原生 Demo 使用 Avalonia 12、Semi 的现有控件模板及 Dock 工作区，将库功能放到可操作的界面里。
+保留 Ribbon + Dock，按功能分类查找单个控件。原型与实现由 `design/catalog.json` 共享导航契约，详细清单见 [设计目录](../design/README.md)。
 
-## 功能入口
+## 页面结构
 
-- 首页直接试用 Markdown 实时预览、DataGrid 三态自然排序、Dock 工作区。
-- 六张能力卡片进入完整演示；导航、属性编辑、源码查看、日志和场景步骤保留。
-- 默认 .NET 紫色暗色外观；另外提供 AI 极光（紫色 / 青色渐变）、AI 暖陶，以及原有六套 Semi 配色。三套新增主题均支持深浅模式，原有 Semi 配色沿用各自的主题行为。
-- 卡片悬停、按压、首页淡入、品牌轨道呼吸由 Avalonia 原生动画与 Transitions 完成。
-- `Ctrl+K` 打开命令面板，`Ctrl+D` 切换深浅，`Ctrl+L` 切换语言，`Ctrl+S` 保存工作区布局。
+- 首页仅包含介绍、关于；介绍先展示 API 目录。
+- 主功能组的一个菜单叶子对应一个控件或公开 API。
+- 综合示例统一放在末组，首页的 Markdown 源码编辑与预览、自然排序表格、Dock 面板切换 默认折叠。
+- 演示始终可见；源码按需展开，有内容才显示相应语言标签。
+- 标题栏色圈和下拉同步切换 .NET 紫、AI 极光、AI 暖陶与 Semi 原有配色。
 
 ## 共享库接口
 
@@ -52,38 +52,18 @@ label.Bind(TextBlock.TextProperty, new I18nExtension("App.Overview.Title").Creat
 
 界面中文与代码示例位于 `demo/CodeWF.Avalonia.Demo/I18n/`。AXAML 使用 `I18n`，C# 动态视图使用资源绑定。文化名称保留语言自身的显示名。测试检查中英文键集合、引用缺键、英文翻译与 C# / AXAML 的中文界面字面量。
 
-## 运行与检查
+
+## 目录与回归检查
+
+目录以源生成 JSON 元数据读取，页面工厂使用显式分支，避免 AOT 中依赖反射发现页面。测试检查重复菜单 / API、双语标题、显式工厂和原型生成数据一致性；修改目录后执行 `pwsh scripts/sync_design_catalog.ps1`。
 
 ```powershell
-dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0
-dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0 -- --smoke
-dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0 -- --capture ./artifacts/studio-qa
-dotnet test tests/CodeWF.Avalonia.Controls.Tests --filter FullyQualifiedName~StudioThemeTests
-dotnet test tests/CodeWF.Avalonia.Content.Tests --filter "FullyQualifiedName~Lang|FullyQualifiedName~PropertyGrid"
+dotnet test CodeWF.Avalonia.slnx -c Release
 ```
-
-冒烟覆盖全部页面、主题变体和场景步骤，并验证首页六个导航入口。`--capture` 忽略用户保存的布局，导出三套新主题的深浅截图、各实验页签、能力卡片、英文与 1120×640 窗口截图，结束后自动退出。
-
-## 原型与库功能映射
-
-首页的品牌标题、双行文案、轨道徽标、三个实验、六张能力卡、五个 Ribbon 快捷入口、整行日志与主题色圈按冻结原型实现。原生控件沿用 Semi / Dock 的模板，字体、窗口按钮、属性编辑器与浏览器 CSS 有平台差异，不作为像素级复刻。
-
-| 原型入口 | 原生页面 / 控件 | 实际库能力 | 验证 |
-|---|---|---|---|
-| Markdown 工作区 | MarkdownFlow、阅读 / 源码 / 实时编辑 / 导出 | Markdown、Markdown.Lite | 页面渲染；PNG 解码、PDF 签名、Word ZIP 文档与 HTML 产物 |
-| 首页 Markdown 实验 | MarkdownEditorView + MarkdownViewer | 编辑器 Text 双向绑定、真实渲染、主题资源 | 绑定回归、首页与深浅截图 |
-| 数据交互 | DataFlow、DataGrid、PropertyGrid | DataGrid / TreeDataGrid 增强与属性提交 | 页面渲染、PropertyGrid 回归；首页四行自然排序样例 |
-| 多文档工作区 | DocsFlow、Dock、梯形页签 | Dock 布局、Controls 页签与窗口 | 布局保存 / 恢复、显隐、文档路由与渲染 |
-| 输入与选择 | Transfer、SearchListBox、MarkupExtension | Controls 穿梭 / 搜索 / If 与 Switch | 页面渲染与对应交互入口 |
-| 引导与状态 | Guide、AppGuide、Status、WindowedStackPanel | Controls 引导、状态、虚拟布局 | 页面渲染与场景步骤 |
-| 日志与国际化 | Log、Lang、外壳通知与语言切换 | Log、Lang | 日志事件流、双语资源、通知与外壳冒烟 |
-| 强类型语言资源 | Lang 页面显示生成的资源键 | Lang.Generator 编译 Demo 的 AdditionalFiles | 生成器真实编译、资源键命名冲突回归；生成器不参与运行期 AOT |
-
-首页预览使用紧凑字号和间距；完整 Markdown 页面保留 18 套可选排版主题，以及公式、图表、代码、编辑和导出能力。`MarkdownFullThemes` 复用 AvaloniaEdit 原生模板并提供编辑器资源，无需加载 Fluent / Simple 应用主题；编辑器调色板沿派生主题识别深浅模式。`MarkdownEditorView.TextProperty` 默认双向绑定，程序装载文本仍不会触发 `MarkdownChanged`，用户输入会同时通知绑定与原有事件。
 
 ## Windows NativeAOT 验收
 
-当前验收环境为 Windows x64、.NET SDK 10.0.401，版本 `12.1.4.7`。执行仓库脚本后，直接运行生成的原生 EXE，而不是 `dotnet run`：
+验收环境为 Windows x64、.NET SDK 10.0.401，版本 `12.1.4.8`。用本仓脚本发布后直接启动原生 EXE：
 
 ```powershell
 pwsh scripts/publish_avalonia_demo.ps1 -RuntimeIdentifier win-x64
@@ -92,8 +72,12 @@ Start-Process $demo -ArgumentList '--smoke' -Wait -PassThru
 Start-Process $demo -ArgumentList '--capture ./artifacts/studio-qa' -Wait -PassThru
 ```
 
-冒烟需退出 0：24 个页面、13 个场景步骤、312 次页面渲染、5 次外壳渲染，并验证上述导出产物和首页路由。日志位于系统临时目录 `CodeWFAvaloniaDemo/logs`。README 截图来自这个原生产物；GIF 是主题 / 实验切换的原生界面帧。
+冒烟退出 0：31 个页面、13 个场景步骤、403 次主题渲染、5 次外壳渲染；另外验证首页绑定、六个导航入口以及 PNG 解码、PDF 文件头、Word 文档和 HTML 导出内容。
 
-直接依赖不再声明 Fluent、Simple 或 CommunityToolkit.Mvvm。Dock 的 `Dock.Avalonia.Themes.Simple` 仍提供停靠模板；`Tmds.DBus.Protocol` 由 Avalonia 的 Linux 后端传递引入，用于 D-Bus 桌面服务通信。
+`--capture` 忽略用户存档布局，输出新配色的深浅、实验、英文、紧凑窗口和独立 API 页面截图，结束后退出。README 的 PNG 与 GIF 来自本轮原生 EXE。
 
-发布仍有第三方裁剪 / AOT 分析警告；旧 Prism 对话框模板与动态 XAML Loader 存在版本兼容警告，当前 Demo 不调用这些路径。验收涵盖已列出的页面、产物与操作，不代表所有库 API 和异常路径均已验证。Linux / macOS 留给既有发布流程验证。本版本通过 `v12.1.4.7` 标签触发 NuGet 和演示应用发布。
+## 验收限制
+
+Markdown 的第三方渲染和导出路径仍有裁剪 / AOT 分析警告；Linux / macOS 未在本轮本机验收。 页面渲染通过不等于全部 API、异常路径和平台行为均已验证。
+
+版本标签 `v12.1.4.8` 触发现有 NuGet 与 Demo 发布流程。
