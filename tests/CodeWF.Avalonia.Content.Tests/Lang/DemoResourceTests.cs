@@ -88,15 +88,22 @@ public sealed class DemoResourceTests
     }
 
 
-    [Fact]
-    public void ApiCatalogKeepsNativeAndPrototypeRoutesInSync()
+    [Theory]
+    [InlineData("\n")]
+    [InlineData("\r\n")]
+    public void ApiCatalogKeepsNativeAndPrototypeRoutesInSync(string lineEnding)
     {
         var repository = Directory.GetParent(Directory.GetParent(DemoDirectory)!.FullName)!.FullName;
         using var catalog = JsonDocument.Parse(File.ReadAllText(Path.Combine(repository, "design", "catalog.json")));
-        var generated = File.ReadAllText(Path.Combine(repository, "design", "assets", "catalog-data.js"));
+        var generated = File.ReadAllText(Path.Combine(repository, "design", "assets", "catalog-data.js"))
+            .ReplaceLineEndings(lineEnding);
         const string prefix = "window.CodeWFDemoCatalog = ";
-        var start = generated.IndexOf(prefix, StringComparison.Ordinal) + prefix.Length;
-        using var prototype = JsonDocument.Parse(generated[start..generated.IndexOf(";\nwindow.CodeWFCatalogText", start, StringComparison.Ordinal)]);
+        var assignment = generated.IndexOf(prefix, StringComparison.Ordinal);
+        Assert.True(assignment >= 0, "Prototype catalog assignment is missing.");
+        var start = assignment + prefix.Length;
+        var end = generated.IndexOf("window.CodeWFCatalogText", start, StringComparison.Ordinal);
+        Assert.True(end > start, "Prototype catalog boundary is missing.");
+        using var prototype = JsonDocument.Parse(generated[start..end].TrimEnd().TrimEnd(';'));
         var groups = catalog.RootElement.EnumerateArray().ToArray();
         Assert.Equal("home", groups.First().GetProperty("id").GetString());
         Assert.Equal("examples", groups.Last().GetProperty("id").GetString());
