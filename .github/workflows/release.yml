@@ -1,7 +1,8 @@
 name: release
 
-# 推送 v* 标签发布 CodeWF.Avalonia 演示应用全平台 AOT 包（6 个 RID）：
-# 全平台 NativeAOT（完整反射元数据保全 Prism/DryIoc），产物为 zip + sha256。
+# 推送 v* 标签发布 CodeWF.Avalonia 演示应用全平台包（6 个 RID）：
+# 全平台 NativeAOT（完整反射元数据保全 Prism/DryIoc）；
+# win 出 Inno Setup 安装向导（x64）与便携 zip，linux 出 deb，macOS 出 dmg/pkg，均附 sha256。
 on:
   push:
     tags:
@@ -9,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: '版本号（不含 v），例如 12.1.4.1'
+        description: '版本号（不含 v），例如 12.1.4.4'
         required: true
         type: string
 
@@ -64,29 +65,59 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
 
       # 与 publish.bat 相同的 PublishProfile（目标框架由 Profile 声明：win-* 为 net10.0-windows，
-      # 其余为 net10.0）；全平台追加 NativeAOT 参数（IlcGenerateCompleteTypeMetadata 保全 Prism/DryIoc）。
+      # 其余为 net10.0）；脚本内追加 NativeAOT 参数（IlcGenerateCompleteTypeMetadata 保全 Prism/DryIoc）。
       # 不传 -f：全局 TargetFramework 会传播到单 TFM 引用库，触发 NETSDK1005。
       - name: 发布（PublishProfile + NativeAOT）
         shell: pwsh
-        run: |
-          $rid = '${{ matrix.rid }}'
-          # NativeAOT 的 ILC 在 preview SDK 上并行编译可能崩溃，单线程更稳
-          $ilcArgs = @(
-            '-p:PublishAot=true',
-            '-p:PublishTrimmed=true',
-            '-p:PublishSingleFile=false',
-            '-p:IlcGenerateCompleteTypeMetadata=true',
-            '-p:IlcTrimMetadata=false',
-            '-p:IlcSingleThreaded=true'
-          )
-          # macOS 保留符号（ld_classic 不支持压缩调试段）
-          if ($rid.StartsWith('osx-', [StringComparison]::OrdinalIgnoreCase)) { $ilcArgs += '-p:StripSymbols=false' }
-          dotnet publish demo/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo.csproj -c Release -r $rid $ilcArgs /p:PublishProfile=FolderProfile__$rid
-          if ($LASTEXITCODE -ne 0) { throw "publish failed for $rid" }
+        run: pwsh scripts/publish_avalonia_demo.ps1 -RuntimeIdentifier '${{ matrix.rid }}' -Version $env:APP_VERSION
 
-      - name: 打包 zip + sha256
+      - name: 打包便携 zip + sha256
         shell: pwsh
-        run: pwsh scripts/package_demo_artifacts.ps1 -RuntimeIdentifier '${{ matrix.rid }}' -Version $env:APP_VERSION
+        run: pwsh scripts/package_demo_artifacts.ps1 -RuntimeIdentifier '${{ matrix.rid }}' -Version $env:APP_VERSION -Force
+
+      - name: 打包 Linux deb + sha256
+        if: startsWith(matrix.rid, 'linux-')
+        shell: pwsh
+        run: pwsh scripts/package_linux_deb.ps1 -RuntimeIdentifier '${{ matrix.rid }}' -Version $env:APP_VERSION -Force
+
+      - name: 打包 macOS dmg + sha256
+        if: startsWith(matrix.rid, 'osx-')
+        shell: bash
+        run: |
+          chmod +x scripts/package_macos.sh
+          ./scripts/package_macos.sh ${{ matrix.rid }}
+
+      - name: 收集 macOS dmg 到发布目录
+        if: startsWith(matrix.rid, 'osx-')
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path artifacts/release -Force | Out-Null
+          Copy-Item -Path "artifacts/macos/*.dmg" -Destination artifacts/release/ -Force
+          Copy-Item -Path "artifacts/macos/*.dmg.sha256" -Destination artifacts/release/ -Force
+          Get-ChildItem artifacts/release | ForEach-Object { Write-Host $_.Name }
+
+      # win-x86 没有对应安装向导（Inno 脚本按 x64 编译），只发便携 zip；x64 额外出一个 setup.exe
+      - name: 构建 Windows 安装包
+        if: matrix.rid == 'win-x64'
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: scripts/CodeWF.Avalonia.Demo.iss
+          options: >-
+            /DAppVersion=${{ env.APP_VERSION }}
+            /DSourceDir=${{ github.workspace }}\artifacts\publish\win-x64\CodeWF.Avalonia.Demo
+            /DOutputDir=${{ github.workspace }}\artifacts\release
+
+      - name: 计算安装包 SHA-256
+        if: matrix.rid == 'win-x64'
+        shell: pwsh
+        run: |
+          $installerName = "CodeWF.Avalonia.Demo-v$env:APP_VERSION-win-x64-setup.exe"
+          $installerPath = Join-Path "artifacts/release" $installerName
+          if (-not (Test-Path -LiteralPath $installerPath -PathType Leaf)) {
+            throw "Installer was not produced: $installerPath"
+          }
+          $sha = (Get-FileHash -LiteralPath $installerPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$sha  $installerName" | Set-Content -LiteralPath "$installerPath.sha256" -Encoding ASCII
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
@@ -176,4 +207,7 @@ jobs:
           generate_release_notes: true
           files: |
             artifacts/release/*.zip
+            artifacts/release/*.deb
+            artifacts/release/*.dmg
+            artifacts/release/*.exe
             artifacts/release/*.sha256

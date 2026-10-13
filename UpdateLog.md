@@ -1,5 +1,10 @@
 # 更新日志
 
+## 12.1.4.4 (2026-10-13)
+
+- 🚀[发布]-全平台安装包：推送 v* 标签即由 GitHub Actions 产出 6 个 RID 的 NativeAOT 产物，Windows 出 Inno Setup 安装向导（x64）与便携 zip（x86 仅 zip），Linux 出 deb，macOS 出 dmg，均附 sha256；本地同款脚本在 scripts/ 下（publish_avalonia_demo.ps1、package_linux_deb.ps1、package_macos.sh、package_demo_artifacts.ps1、CodeWF.Avalonia.Demo.iss）。
+- 🔨[优化]-便携 zip 不再打包调试符号，并改为逐文件写入归档，输出稳定可复现。
+
 ## 12.1.4.3 (2026-10-12)
 
 - 🐛[修复]-高对比色板（Aquatic/Desert/Dusk/NightSky）深色底配深色字看不清：Semi 的这四个变体只提供语义令牌（Window/WindowText/GrayText/Hotlight/Highlight），数字令牌会回落到 Light；本库此前四者共用一份 Light 字典，现改为每变体一份并对齐 Semi 高对比取值（Controls 与 Dock 两处同步），同时把控件主题里跨 Style 指向 Semi 令牌的引用自足化。
