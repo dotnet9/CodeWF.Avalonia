@@ -159,7 +159,7 @@ public class MyMarkdownThemes : MarkdownThemes
 # 桌面演示台：Ribbon 页签 + Dock 工作区（左导航 / 中文档 / 右属性面板 / 下日志），含 6 色板、深浅与双语切换
 dotnet run --project demo/CodeWF.Avalonia.Demo
 
-# 冒烟模式：按目录逐页构建页面后立即退出，退出码 0 表示全部页面构建成功（CI 使用）
+# 冒烟模式：逐页构建后逐色板渲染一遍再退出，退出码 0 表示全部页面构建 + 渲染通过（CI 使用）
 dotnet run --project demo/CodeWF.Avalonia.Demo -- --smoke
 ```
 
