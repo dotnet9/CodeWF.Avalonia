@@ -1,5 +1,5 @@
-using ReactiveUI.Avalonia;
 using Avalonia;
+using ReactiveUI.Avalonia;
 
 namespace CodeWF.Avalonia.Demo;
 
