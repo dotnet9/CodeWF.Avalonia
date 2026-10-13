@@ -53,6 +53,7 @@ public class MarkdownEditorView : UserControl
     private readonly Border _chipHost;
     private readonly TextBlock _paneTitle;
     private bool _suppressChanged;
+    private string _lastText = string.Empty;
     private bool _autoPairEnabled = true;
 
     static MarkdownEditorView()
@@ -315,6 +316,11 @@ public class MarkdownEditorView : UserControl
     /// <summary>底层 AvaloniaEdit 控件，供宿主做深度定制（缩进、Tab 行为、右键菜单等）。</summary>
     public TextEditor Editor => _editor;
 
+    public static readonly DirectProperty<MarkdownEditorView, string> TextProperty =
+        AvaloniaProperty.RegisterDirect<MarkdownEditorView, string>(
+            nameof(Text), view => view.Text, (view, value) => view.SetText(value),
+            defaultBindingMode: global::Avalonia.Data.BindingMode.TwoWay);
+
     public string Text
     {
         get => _editor.Text ?? string.Empty;
@@ -365,6 +371,7 @@ public class MarkdownEditorView : UserControl
         {
             _suppressChanged = false;
         }
+        NotifyTextChanged();
     }
 
     /// <summary>执行一次编辑器动作；完成后通过 <see cref="ActionRequested"/> 通知宿主。</summary>
@@ -822,8 +829,17 @@ public class MarkdownEditorView : UserControl
     {
         if (!_suppressChanged)
         {
+            NotifyTextChanged();
             MarkdownChanged?.Invoke(this, _editor.Text ?? string.Empty);
         }
+    }
+
+    private void NotifyTextChanged()
+    {
+        var text = Text;
+        var previous = _lastText;
+        _lastText = text;
+        RaisePropertyChanged(TextProperty, previous, text);
     }
 
     private void RaiseSelectionChanged()

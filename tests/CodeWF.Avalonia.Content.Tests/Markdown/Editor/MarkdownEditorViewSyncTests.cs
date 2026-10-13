@@ -30,6 +30,58 @@ public sealed class MarkdownEditorViewSyncTests
     public MarkdownEditorViewSyncTests(AvaloniaPlatformFixture platform) => _platform = platform;
 
     [Fact]
+    public void FullThemesRenderEditorsWithSemiWithoutSimpleOrFluent() => _platform.Run(() =>
+    {
+        var window = new Window { Width = 480, Height = 320 };
+        window.Styles.Add(new global::Semi.Avalonia.SemiTheme());
+        window.Styles.Add(new global::CodeWF.Avalonia.Markdown.Themes.MarkdownFullThemes());
+        var editor = new MarkdownEditorView { Text = "# Visible source" };
+        window.Content = editor;
+        window.Show();
+        try
+        {
+            foreach (var theme in new[] { ThemeVariant.Light, new ThemeVariant("StudioDark", ThemeVariant.Dark) })
+            {
+                window.RequestedThemeVariant = theme;
+                Dispatcher.UIThread.RunJobs();
+                Assert.NotNull(editor.Editor.Template);
+                Assert.NotNull(editor.Editor.TextArea.Template);
+                Assert.True(editor.Editor.TextArea.TextView.Bounds.Height > 0);
+                Assert.Equal("# Visible source", editor.Editor.Text);
+            }
+        }
+        finally { window.Close(); }
+    });
+
+    [Fact]
+    public void DerivedDarkThemesUseTheDarkFallbackPalette()
+    {
+        var theme = new ThemeVariant("Studio", new ThemeVariant("CustomDark", ThemeVariant.Dark));
+        var expected = MarkdownEditorPalette.Resolve(MarkdownEditorPalette.BackgroundKey, ThemeVariant.Dark);
+        var actual = MarkdownEditorPalette.Resolve(MarkdownEditorPalette.BackgroundKey, theme);
+        Assert.Equal(Assert.IsAssignableFrom<global::Avalonia.Media.ISolidColorBrush>(expected).Color,
+            Assert.IsAssignableFrom<global::Avalonia.Media.ISolidColorBrush>(actual).Color);
+    }
+
+    [Fact]
+    public void TextBindingSynchronizesProgrammaticAndUserEdits() => _platform.Run(() =>
+    {
+        var source = new TextBox { Text = "# Initial" };
+        var view = new MarkdownEditorView();
+        using var binding = view.Bind(MarkdownEditorView.TextProperty, new global::Avalonia.Data.Binding
+        {
+            Source = source, Path = nameof(TextBox.Text), Mode = global::Avalonia.Data.BindingMode.TwoWay
+        });
+        Assert.Equal("# Initial", view.Text);
+        source.Text = "# Updated";
+        Assert.Equal("# Updated", view.Text);
+        view.Editor.Text = "# Typed";
+        Assert.Equal("# Typed", source.Text);
+        view.SetText("# Loaded");
+        Assert.Equal("# Loaded", source.Text);
+    });
+
+    [Fact]
     public void SetText_DoesNotRaiseMarkdownChanged() => _platform.Run(() =>
     {
         var view = new MarkdownEditorView();

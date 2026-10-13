@@ -4,7 +4,8 @@ namespace CodeWF.Avalonia.Markdown.Themes;
 
 /// <summary>
 /// 完整包（CodeWF.Avalonia.Markdown）的样式入口：在基类（Lite.Themes 的控件模板与 18 套排版主题）
-/// 之上叠加图片能力控件外观。基础包请直接使用 CodeWF.Avalonia.Markdown.Lite.Themes 的 MarkdownThemes。
+/// 之上叠加图片外观与 AvaloniaEdit 原生编辑器模板，无需引入 Fluent / Simple 应用主题。
+/// 基础包请直接使用 CodeWF.Avalonia.Markdown.Lite.Themes 的 MarkdownThemes。
 /// <para>
 /// <see cref="TypographyTheme"/> / <see cref="TypographySize"/> 必须在此 override：
 /// 宿主工程（如 Vex）从 NuGet 引用本包时，Avalonia XAML 编译器解析样式根类型只认
@@ -15,7 +16,7 @@ public class MarkdownFullThemes : MarkdownThemes
 {
     public MarkdownFullThemes()
     {
-        // 基类构造已加载 Themes/Common.axaml（模板 + 排版主题），这里追加完整包的图片控件外观。
+        // 基类加载排版主题；完整包追加图片外观与编辑器模板。
         AvaloniaXamlLoader.Load(this);
     }
 

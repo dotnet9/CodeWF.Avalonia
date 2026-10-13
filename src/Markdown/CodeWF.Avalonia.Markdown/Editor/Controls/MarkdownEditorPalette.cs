@@ -65,7 +65,10 @@ public static class MarkdownEditorPalette
             return null;
         }
 
-        var palette = themeVariant == ThemeVariant.Dark ? DarkColors : LightColors;
+        var variant = themeVariant;
+        while (variant is not null && variant != ThemeVariant.Dark && variant != ThemeVariant.Light)
+            variant = variant.InheritVariant;
+        var palette = variant == ThemeVariant.Dark ? DarkColors : LightColors;
         return palette.TryGetValue(key, out var color) ? new SolidColorBrush(color) : null;
     }
 }

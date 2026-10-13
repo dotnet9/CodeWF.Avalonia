@@ -2,7 +2,40 @@
     x:Class="CodeWF.Avalonia.Markdown.Themes.MarkdownFullThemes"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- 基类（CodeWF.Avalonia.Markdown.Lite.Themes 的 MarkdownThemes）已加载控件模板与 18 套排版主题，
-         这里只叠加完整包特有的图片能力控件外观。 -->
+    <!-- 复用 AvaloniaEdit 原生模板，资源独立于 Fluent / Simple 应用主题。 -->
+    <Styles.Resources>
+        <ResourceDictionary>
+            <x:Double x:Key="SearchPanelFontSize">14</x:Double>
+            <FontFamily x:Key="SearchPanelFontFamily">Default</FontFamily>
+            <Thickness x:Key="CompletionToolTipBorderThickness">1</Thickness>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="CompletionToolTipBackground">#FFFFFF</SolidColorBrush>
+                    <SolidColorBrush x:Key="CompletionToolTipForeground">#101828</SolidColorBrush>
+                    <SolidColorBrush x:Key="CompletionToolTipBorderBrush">#E4E9F2</SolidColorBrush>
+                    <SolidColorBrush x:Key="OverloadViewerBackground">#FFFFFF</SolidColorBrush>
+                    <SolidColorBrush x:Key="OverloadViewerForeground">#101828</SolidColorBrush>
+                    <SolidColorBrush x:Key="OverloadViewerBorderBrush">#E4E9F2</SolidColorBrush>
+                    <SolidColorBrush x:Key="SearchPanelBackgroundBrush">#FFFFFF</SolidColorBrush>
+                    <SolidColorBrush x:Key="SearchPanelBorderBrush">#E4E9F2</SolidColorBrush>
+                    <SolidColorBrush x:Key="TextAreaSelectionBrush">#66512BD4</SolidColorBrush>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="CompletionToolTipBackground">#111827</SolidColorBrush>
+                    <SolidColorBrush x:Key="CompletionToolTipForeground">#E5E7EB</SolidColorBrush>
+                    <SolidColorBrush x:Key="CompletionToolTipBorderBrush">#334155</SolidColorBrush>
+                    <SolidColorBrush x:Key="OverloadViewerBackground">#111827</SolidColorBrush>
+                    <SolidColorBrush x:Key="OverloadViewerForeground">#E5E7EB</SolidColorBrush>
+                    <SolidColorBrush x:Key="OverloadViewerBorderBrush">#334155</SolidColorBrush>
+                    <SolidColorBrush x:Key="SearchPanelBackgroundBrush">#111827</SolidColorBrush>
+                    <SolidColorBrush x:Key="SearchPanelBorderBrush">#334155</SolidColorBrush>
+                    <SolidColorBrush x:Key="TextAreaSelectionBrush">#667C5CFF</SolidColorBrush>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://AvaloniaEdit/Themes/Base.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
     <StyleInclude Source="Themes/MarkdownImage.axaml" />
 </Styles>
