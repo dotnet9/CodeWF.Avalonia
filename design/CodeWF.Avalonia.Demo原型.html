@@ -57,23 +57,35 @@ body{
   background:var(--bg);border-radius:10px;overflow:hidden;
   border:1px solid rgba(255,255,255,.14);
   box-shadow:0 24px 70px rgba(0,0,0,.55),0 4px 14px rgba(0,0,0,.35);
-  display:grid;grid-template-rows:34px 32px auto 1fr 26px;
+  display:grid;grid-template-rows:34px 32px auto 1fr 28px;
 }
 button,input,select,textarea{font:inherit;color:inherit}
 ::-webkit-scrollbar{width:9px;height:9px}
 ::-webkit-scrollbar-thumb{background:var(--bd);border-radius:5px;border:2px solid transparent;background-clip:padding-box}
 ::-webkit-scrollbar-thumb:hover{background:var(--tx3)}
 
+/* ═══ 通用：线性图标（stroke 走 currentColor，对齐 IconPark / TDesign 风格） ═══ */
+.svgic{display:block;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none;transition:transform .16s ease}
+.svgic.s14{width:14px;height:14px}
+.svgic.s16{width:16px;height:16px}
+.svgic.s18{width:18px;height:18px}
+.svgic.s20{width:20px;height:20px}
+.svgic.s22{width:22px;height:22px}
+
 /* ═══ 1. 标题栏 34px（CodeWFWindow） ═══ */
-.cap{display:flex;align-items:center;height:34px;padding-left:12px;gap:8px;position:relative;
+.cap{display:flex;align-items:center;height:34px;padding-left:10px;gap:8px;position:relative;
   background:linear-gradient(90deg,var(--pri) 0%,var(--pri-h) 26%,rgba(0,0,0,0) 58%),var(--bg2);
   border-bottom:1px solid var(--bd)}
-.cap .lg{font-weight:700;color:#fff;letter-spacing:.5px;text-shadow:0 1px 2px rgba(0,0,0,.35)}
-.cap .ver{font-size:11px;color:#fff;opacity:.85}
+.cap .logo{width:20px;height:20px;border-radius:5px;display:block;flex:none;
+  box-shadow:0 1px 5px rgba(0,0,0,.3),0 0 0 1px rgba(255,255,255,.22)}
+.cap .lg{font-weight:700;color:#fff;letter-spacing:.4px;font-size:13px;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.cap .vbadge{font-size:10px;padding:0 7px;line-height:16px;border-radius:999px;color:#fff;
+  background:rgba(255,255,255,.20);border:1px solid rgba(255,255,255,.34)}
 .cap .sp{flex:1}
 .cap select{height:22px;font-size:11px;border:1px solid var(--bd);border-radius:4px;background:var(--bg);color:var(--tx)}
-.cap .wb{width:42px;height:34px;display:flex;align-items:center;justify-content:center;
-  border:none;background:transparent;cursor:pointer;color:var(--tx2);font-size:12px}
+.cap .wb{width:40px;height:34px;display:flex;align-items:center;justify-content:center;
+  border:none;background:transparent;cursor:pointer;color:var(--tx2);transition:background .12s,color .12s}
+.cap .wb svg{width:12px;height:12px;stroke:currentColor;stroke-width:1.3;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .cap .wb:hover{background:var(--hov);color:var(--tx)}
 .cap .wb:focus-visible{outline:2px solid var(--pri);outline-offset:-2px}
 .cap .wb.cls:hover{background:var(--err);color:#fff}
@@ -85,42 +97,47 @@ button,input,select,textarea{font:inherit;color:inherit}
 /* ═══ 2. Ribbon 页签行 32px ═══ */
 .rtabs{display:flex;align-items:center;height:32px;padding:0 10px;gap:2px;background:var(--bg);border-bottom:1px solid var(--bd)}
 .qk{display:flex;align-items:center;gap:2px;margin-right:10px;padding-right:12px;border-right:1px solid var(--bd2)}
-.qk button{width:27px;height:25px;border:none;background:transparent;border-radius:4px;cursor:pointer;color:var(--tx2);font-size:13px}
+.qk button{width:28px;height:26px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;
+  border-radius:4px;cursor:pointer;color:var(--tx2);transition:background .12s,color .12s}
 .qk button:hover{background:var(--hov);color:var(--pri)}
 .qk button:focus-visible{outline:2px solid var(--pri);outline-offset:-2px}
-.rt2{display:flex;align-items:center;height:100%;gap:3px;overflow-x:auto;overflow-y:hidden}
-.rt2 .t2{padding:0 16px;height:100%;line-height:32px;cursor:pointer;color:var(--tx2);font-size:12.5px;
-  user-select:none;letter-spacing:1px;position:relative;white-space:nowrap;border-radius:4px 4px 0 0}
+.rt2{display:flex;align-items:center;height:100%;gap:2px;overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap}
+.rt2 .t2{display:inline-flex;align-items:center;gap:6px;flex:none;padding:0 14px;height:100%;cursor:pointer;
+  color:var(--tx2);font-size:12.5px;user-select:none;letter-spacing:.6px;position:relative;white-space:nowrap;
+  border-radius:4px 4px 0 0;transition:background .12s,color .12s}
+.rt2 .t2 .svgic{display:inline-block;vertical-align:-2px}
 .rt2 .t2:hover{color:var(--pri);background:var(--hov)}
 .rt2 .t2:focus-visible{outline:2px solid var(--pri);outline-offset:-4px}
 .rt2 .t2.on{color:var(--pri);font-weight:600}
 .rt2 .t2.on::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:2px;background:var(--pri);border-radius:2px 2px 0 0}
 .qk2{margin-left:auto;display:flex;align-items:center;gap:2px;padding-left:10px}
-.qk2 button{height:24px;border:1px solid transparent;background:transparent;border-radius:4px;cursor:pointer;
-  color:var(--tx2);font-size:11px;padding:0 8px;white-space:nowrap}
+.qk2 button{height:26px;display:inline-flex;align-items:center;gap:6px;border:1px solid transparent;background:transparent;
+  border-radius:4px;cursor:pointer;color:var(--tx2);font-size:11px;padding:0 9px;white-space:nowrap;
+  transition:background .12s,color .12s,border-color .12s}
 .qk2 button:hover{background:var(--hov);color:var(--pri);border-color:var(--bd)}
-.qk2 button .kbd{color:var(--tx3);font-size:10px;margin-left:4px}
+.qk2 button .kbd{color:var(--tx3);font-size:10px;letter-spacing:.2px}
 .qk2 button:focus-visible{outline:2px solid var(--pri);outline-offset:-2px}
 
-/* ═══ 3. Ribbon 命令区 88px 展开 / 0 收起 ═══ */
+/* ═══ 3. Ribbon 命令区：104px 展开 / 0 收起（高度够放下「图标 + 文字 + 分组名」） ═══ */
 .rbn{background:var(--bg);border-bottom:1px solid var(--bd);padding:var(--sp2) var(--sp4) 0;
-  height:88px;display:flex;align-items:stretch;overflow-x:auto;overflow-y:hidden;
+  height:104px;display:flex;align-items:stretch;overflow-x:auto;overflow-y:hidden;
   transition:height .16s ease,padding .16s ease,opacity .12s ease}
 body.rmn .rbn{padding-top:0;padding-bottom:0;height:0;opacity:0;border-bottom:none;overflow:hidden}
-.grp{display:flex;flex-direction:column;padding:0 var(--sp3);border-right:1px solid var(--bd2);flex:none}
+.grp{display:flex;flex-direction:column;gap:2px;padding:0 var(--sp3) 6px;border-right:1px solid var(--bd2);flex:none}
 .grp:last-child{border-right:none}
 .grp .cmds{display:flex;gap:2px;flex:1;align-items:flex-start;flex-wrap:wrap;align-content:flex-start}
-.grp .gname{text-align:center;font-size:10px;color:var(--tx3);padding-top:2px;letter-spacing:1px}
-.cbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-  width:72px;height:72px;padding:4px;border:none;background:transparent;cursor:pointer;border-radius:6px;color:var(--tx)}
+.grp .gname{text-align:center;font-size:10.5px;color:var(--tx2);font-weight:700;letter-spacing:1.5px;padding:4px 0 2px}
+.cbtn{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;
+  width:74px;height:68px;padding:8px 4px 4px;border:none;background:transparent;cursor:pointer;
+  border-radius:7px;color:var(--tx);transition:background .13s ease,transform .13s ease}
 .cbtn:hover{background:var(--hov)}
-.cbtn:active{background:var(--pri-lt)}
+.cbtn:hover .svgic{transform:translateY(-1px) scale(1.06)}
+.cbtn:active{background:var(--pri-lt);transform:scale(.97)}
 .cbtn:focus-visible{outline:2px solid var(--pri);outline-offset:-2px}
-.cbtn[aria-pressed=true]{background:var(--sel)}
+.cbtn[aria-pressed=true]{background:var(--sel);color:var(--pri)}
 .cbtn.on{background:var(--sel);color:var(--pri)}
-.cbtn .ic{font-size:20px;line-height:1.1}
-.cbtn .lb{font-size:11px;text-align:center;line-height:1.25;max-height:2.5em;overflow:hidden;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.cbtn .ic{height:22px;display:flex;align-items:center;justify-content:center;color:var(--pri)}
+.cbtn .lb{font-size:11px;line-height:1.3;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:68px}
 .cbtn:disabled,.cbtn[disabled]{opacity:.45;cursor:not-allowed;background:transparent}
 
 /* ═══ 4. 主内容 = Dock 工作区 ═══ */
@@ -129,11 +146,14 @@ body.rmn .rbn{padding-top:0;padding-bottom:0;height:0;opacity:0;border-bottom:no
 .panel{background:var(--bg);border:1px solid var(--bd);border-radius:8px;display:flex;flex-direction:column;
   overflow:hidden;min-height:0;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .phd{display:flex;align-items:center;height:30px;flex:none;padding:0 10px;background:var(--bg2);
-  border-bottom:1px solid var(--bd);font-size:11px;font-weight:700;color:var(--tx2);gap:6px;letter-spacing:.5px}
-.phd .cnt{font-weight:400;color:var(--tx3);font-size:10px}
-.phd .tb{margin-left:auto;display:flex;gap:2px}
-.phd .tb button{min-width:22px;height:20px;border:none;background:transparent;cursor:pointer;border-radius:3px;
-  color:var(--tx2);font-size:11px;white-space:nowrap;padding:0 5px}
+  border-bottom:1px solid var(--bd);font-size:11px;font-weight:700;color:var(--tx2);gap:7px;letter-spacing:.5px}
+.phd .hdic{color:var(--pri);display:flex;align-items:center}
+.phd .cnt{margin-left:auto;font-weight:600;color:var(--tx3);font-size:10px;background:var(--bg3);
+  border-radius:999px;padding:0 7px;line-height:16px}
+.phd .tb{display:flex;gap:2px;margin-left:6px}
+.phd .tb button{min-width:24px;height:20px;display:inline-flex;align-items:center;justify-content:center;
+  border:none;background:transparent;cursor:pointer;border-radius:3px;
+  color:var(--tx2);font-size:11px;white-space:nowrap;padding:0 5px;transition:background .12s,color .12s}
 .phd .tb button:hover{background:var(--pri-lt);color:var(--pri)}
 .phd .tb button:focus-visible{outline:2px solid var(--pri);outline-offset:-2px}
 .pbd{flex:1;min-height:0;overflow:auto}
@@ -185,8 +205,10 @@ body.hideLog .p-log{display:none}
 .dt .x{width:14px;height:14px;display:flex;align-items:center;justify-content:center;border-radius:3px;font-size:10px;color:var(--tx3)}
 .dt .x:hover{background:var(--err);color:#fff}
 .dbody{flex:1;min-height:0;overflow:auto;padding:var(--sp3) var(--sp4) 26px}
-.doc .crumb{font-size:var(--fs-crumb);color:var(--tx3);margin-bottom:4px}
-.doc h1{font-size:var(--fs-h1);margin-bottom:4px}
+.doc .crumb{font-size:12px;color:var(--tx3);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.doc .crumb svg{color:var(--tx3)}
+.doc h1{font-size:19px;margin-bottom:4px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.doc .alias{font-size:11.5px;color:var(--tx3);font-family:Consolas,monospace;margin:-2px 0 6px;letter-spacing:.2px}
 .doc .dsc{color:var(--tx2);font-size:var(--fs-dsc);margin-bottom:var(--sp3);line-height:1.7}
 .ftg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
 .ftg span{font-size:var(--fs-tag);padding:1px 9px;border-radius:10px;background:var(--pri-lt);color:var(--pri);font-weight:600}
@@ -281,16 +303,41 @@ body.hideLog .p-log{display:none}
 
 /* Guide */
 .guide-mask{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:90;display:none}
-.guide-mask.on{display:block}
+.guide-mask.on{display:block;animation:fadein .18s ease}
 .guide-spot{position:fixed;border:2px solid var(--pri);border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.55);z-index:91;display:none;pointer-events:none;transition:all .25s ease}
 .guide-tip{position:fixed;z-index:92;background:var(--bg);border:1px solid var(--pri);border-radius:8px;
   padding:12px 16px;max-width:300px;display:none;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.guide-tip.on{animation:pop .2s cubic-bezier(.2,.9,.3,1.3)}
 .guide-tip .t{font-weight:700;color:var(--pri);margin-bottom:4px;font-size:13px}
 .guide-tip .d{font-size:11px;color:var(--tx2);line-height:1.6;margin-bottom:8px}
 .guide-tip .nav{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .guide-tip .nav button{border:1px solid var(--bd);background:var(--bg);border-radius:4px;padding:3px 12px;cursor:pointer;font-size:11px}
 .guide-tip .nav button:hover{border-color:var(--pri);color:var(--pri)}
 .guide-tip .nav .stepno{font-size:10px;color:var(--tx3)}
+
+/* ═══ 动效（设计感）：淡化 / 弹出 / 滑入 / 进度 / 页签切换 ═══ */
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{opacity:0;transform:translateY(6px) scale(.96)}100%{opacity:1;transform:none}}
+@keyframes slidein{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes bars{from{width:0}}
+@keyframes toast{0%{opacity:0;transform:translateY(14px) scale(.96)}100%{opacity:1;transform:none}}
+#seg-demo-slot>*,#seg-flow-write>*{animation:rise .18s ease}
+.lf,.nd .hd,.dt,.rk{transition:background .12s ease,color .12s ease,transform .12s ease}
+.lf:hover{transform:translateX(1px)}
+.nc .ncard{animation:toast .2s cubic-bezier(.2,.9,.3,1.2)}
+.dlgm.on .dlg{animation:pop .18s cubic-bezier(.2,.9,.3,1.25)}
+.svgic{transition:transform .16s ease,color .12s ease}
+.rk:hover .rkic{transform:scale(1.14) rotate(-3deg)}
+.rk.done .rkic{transform:scale(1.05)}
+.rk.done::after{content:"";position:absolute;inset:0;border-radius:6px;box-shadow:0 0 0 1px var(--ok) inset;pointer-events:none}
+.rk{position:relative}
+.rkic{display:inline-flex;width:26px;height:26px;align-items:center;justify-content:center;transition:transform .18s ease}
+.rkbar{height:4px;border-radius:3px;background:var(--bg3);overflow:hidden;margin-top:6px}
+.rkbar i{display:block;height:100%;background:var(--pri);width:0;transition:width .35s ease}
+.rk.done .rkbar i{background:var(--ok)}
+.tbar .tm{font-variant-numeric:tabular-nums;padding:0 6px;border-radius:999px;background:var(--bg3)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 /* WindowedStackPanel */
 .wsp{height:280px;overflow:auto;border:1px solid var(--bd);border-radius:6px;background:var(--bg)}
@@ -322,12 +369,25 @@ body.hideLog .p-log{display:none}
 .dockws .dtool button:hover{border-color:var(--pri);color:var(--pri)}
 .dockws .dtool button.on{border-color:var(--pri);color:var(--pri);background:var(--pri-lt)}
 
-/* ═══ 场景页：带子标签的工作流 ═══ */
-.flow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.flow .st{display:flex;align-items:center;gap:6px;padding:3px 10px;border-radius:14px;border:1px solid var(--bd);
-  background:var(--bg);font-size:11px;color:var(--tx2)}
+/* ═══ 场景页：工作流轨道 + 子标签 ═══ */
+.flow{position:relative;display:flex;align-items:center;gap:0;flex-wrap:wrap;margin-bottom:14px;
+  padding:10px 12px;border:1px solid var(--bd);border-radius:10px;
+  background:linear-gradient(180deg,var(--bg2),var(--bg))}
+.flow::after{content:"";position:absolute;left:18px;right:18px;top:50%;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,var(--bd2),var(--bd),var(--bd2));z-index:0}
+.flow .st{position:relative;z-index:1;display:flex;align-items:center;gap:7px;margin-right:14px;
+  padding:4px 12px 4px 5px;border-radius:999px;border:1px solid var(--bd);background:var(--bg);
+  font-size:11.5px;color:var(--tx2);cursor:pointer;transition:all .16s ease}
+.flow .st:hover{border-color:var(--pri);color:var(--pri);transform:translateY(-1px)}
+.flow .st .n{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:var(--bg3);color:var(--tx3);font-size:10px;font-weight:700;flex:none}
+.flow .st .si{display:none}
+.flow .st.cur{border-color:var(--pri);background:var(--pri-lt);color:var(--pri);font-weight:700;
+  box-shadow:0 0 0 3px var(--pri-lt)}
+.flow .st.cur .n{background:var(--pri);color:#fff}
 .flow .st.done{border-color:var(--ok);color:var(--ok)}
-.flow .st.cur{border-color:var(--pri);color:var(--pri);background:var(--pri-lt);font-weight:600}
+.flow .st.done .n{background:var(--ok);color:#fff}
+.flow .st.cur .si,.flow .st.done .si{display:inline-flex}
 .subtabs{display:flex;gap:2px;border-bottom:1px solid var(--bd);margin-bottom:12px;flex-wrap:wrap}
 .subtabs button{border:none;background:transparent;padding:6px 12px;cursor:pointer;font-size:12px;color:var(--tx2);
   border-bottom:2px solid transparent;margin-bottom:-1px}
@@ -397,15 +457,16 @@ body.hideLog .p-log{display:none}
 .dlg .db{display:flex;justify-content:flex-end;gap:8px}
 
 /* 任务栏 26px */
-.tbar{height:26px;flex:none;display:flex;align-items:center;gap:10px;padding:0 12px;background:var(--bg2);
+.tbar{height:28px;flex:none;display:flex;align-items:center;gap:9px;padding:0 12px;background:var(--bg2);
   border-top:1px solid var(--bd);font-size:11px;color:var(--tx2);overflow:hidden}
 .tbar .badge{display:inline-flex;align-items:center;gap:5px;padding:1px 9px;border-radius:4px;font-size:10px;color:#fff;background:var(--pri)}
 .tbar .badge::before{content:"";width:5px;height:5px;border-radius:50%;background:#fff}
 .tbar .sp{flex:1}
 .tbar .latest{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:34%}
 .tbar .sep{color:var(--bd)}
-.tbar button{border:none;background:transparent;cursor:pointer;color:var(--tx2);font-size:11px}
-.tbar button:hover{color:var(--pri)}
+.tbar .tm{font-variant-numeric:tabular-nums;padding:0 7px;border-radius:999px;background:var(--bg3);color:var(--tx3)}
+.tbar button{border:none;background:transparent;cursor:pointer;color:var(--tx2);font-size:11px;padding:2px 4px;border-radius:3px;transition:background .12s,color .12s}
+.tbar button:hover{color:var(--pri);background:var(--hov)}
 .tbar button:focus-visible{outline:2px solid var(--pri);outline-offset:1px}
 
 /* 引导调试条（默认隐藏，预留排障用） */
@@ -429,7 +490,8 @@ d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"
 
   <!-- ═══ 1. 标题栏 ═══ -->
   <div class="cap">
-    <span class="lg">◆ CodeWF.Avalonia</span><span class="ver">Demo · v12.1.4.4</span>
+    <img class="logo" src="logo.svg" alt="CodeWF.Avalonia logo" title="CodeWF.Avalonia">
+    <span class="lg">CodeWF.Avalonia</span><span class="vbadge">v12.1.4.4</span>
     <span class="sp"></span>
     <span class="pal" id="palDots"></span>
     <select id="palSel" title="色板">
@@ -440,23 +502,42 @@ d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"
       <option value="night">夜空</option>
       <option value="contrast">高对比</option>
     </select>
-    <button class="wb" id="darkBtn" style="width:30px" title="深色 / 浅色（Ctrl+D）">◐</button>
-    <button class="wb" id="langBtn" style="width:34px;font-weight:700" title="中文 / English（Ctrl+L）">文A</button>
-    <button class="wb" title="最小化">—</button><button class="wb" title="最大化">□</button><button class="wb cls" title="关闭">✕</button>
+    <button class="wb" id="darkBtn" title="深色 / 浅色（Ctrl+D）">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 9.6A5.6 5.6 0 0 1 6.4 3a5.6 5.6 0 1 0 6.6 6.6z"/></svg>
+    </button>
+    <button class="wb" id="langBtn" style="width:34px;font-size:11px;font-weight:700;color:var(--tx2)" title="中文 / English（Ctrl+L）">文A</button>
+    <button class="wb" title="最小化"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6h8"/></svg></button>
+    <button class="wb" title="最大化"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" rx="1.2"/></svg></button>
+    <button class="wb cls" title="关闭"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>
   </div>
 
   <!-- ═══ 2. Ribbon 页签行 ═══ -->
   <div class="rtabs" id="rTabsBar">
     <div class="qk">
-      <button id="qkGuide" title="打开引导（F1）">❔</button>
-      <button id="qkReset" title="重置布局">↺</button>
-      <button id="qkPalette" title="循环切换色板">🎨</button>
+      <button id="qkGuide" title="打开引导（F1）">
+        <svg class="svgic s16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.7 14.3l1.5-4.1 4.1-1.5-1.5 4.1-4.1 1.5z"/></svg>
+      </button>
+      <button id="qkReset" title="重置布局">
+        <svg class="svgic s16" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg>
+      </button>
+      <button id="qkPalette" title="循环切换色板">
+        <svg class="svgic s16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a8.5 8.5 0 0 0 0 17c1.3 0 2-.9 2-1.9 0-1.6 1.1-2.1 2.4-2.1H18a3.5 3.5 0 0 0 3.5-3.5c0-3.9-4.3-7-9.5-7z"/><circle cx="8.5" cy="10" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="8" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="10" r="1.1" fill="currentColor" stroke="none"/></svg>
+      </button>
     </div>
     <div class="rt2" id="rTabs"></div>
     <div class="qk2">
-      <button id="qkCmd" title="命令面板（Ctrl+K）">⌘ 命令<span class="kbd">Ctrl+K</span></button>
-      <button id="qkDensity" title="切换密度：舒适 / 紧凑">▤ 密度</button>
-      <button id="qkSave" title="保存布局（写入浏览器 localStorage）">💾 保存布局</button>
+      <button id="qkCmd" title="命令面板（Ctrl+K）">
+        <svg class="svgic s16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20 20"/></svg>
+        <span>命令</span><span class="kbd">Ctrl+K</span>
+      </button>
+      <button id="qkDensity" title="切换密度：舒适 / 紧凑">
+        <svg class="svgic s16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <span>密度</span>
+      </button>
+      <button id="qkSave" title="保存布局（写入浏览器 localStorage）">
+        <svg class="svgic s16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h11L19.5 8v11.5H5z"/><path d="M8.5 4.5v5h7v-5"/><rect x="8.5" y="13" width="7" height="6.5" rx="1"/></svg>
+        <span data-i18n="qk.save">保存</span>
+      </button>
     </div>
   </div>
 
@@ -468,8 +549,10 @@ d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"
     <div class="dockrow">
 
       <div class="panel p-nav">
-        <div class="phd"><span data-i18n="nav">◈ 导航树</span><span class="cnt" id="navCnt"></span>
-          <span class="tb"><button id="hideNav" title="隐藏面板">◀</button></span>
+        <div class="phd">
+          <span class="hdic"><svg class="svgic s14" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="2.8"/><path d="M5 6v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8V6"/><path d="M5 12v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-6"/></svg></span>
+          <span data-i18n="nav">导航树</span><span class="cnt" id="navCnt"></span>
+          <span class="tb"><button id="hideNav" title="隐藏面板" data-i18n="dock.hide">隐藏</button></span>
         </div>
         <div class="pbd tree" id="lTree"></div>
       </div>
@@ -489,8 +572,10 @@ d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"
       </div>
 
       <div class="panel p-props">
-        <div class="phd"><span data-i18n="props">⚙ 属性</span><span class="cnt" id="pgCnt"></span>
-          <span class="tb"><button id="hideProp2" title="隐藏面板">▶</button></span>
+        <div class="phd">
+          <span class="hdic"><svg class="svgic s14" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h9M17 6.5h3M4 12h4M12 12h8M4 17.5h11M19 17.5h1"/><circle cx="14.5" cy="6.5" r="2.2"/><circle cx="9.5" cy="12" r="2.2"/><circle cx="16.5" cy="17.5" r="2.2"/></svg></span>
+          <span data-i18n="props">属性</span><span class="cnt" id="pgCnt"></span>
+          <span class="tb"><button id="hideProp2" title="隐藏面板" data-i18n="dock.hide">隐藏</button></span>
         </div>
         <div class="pbd pgp" id="pGrid"></div>
       </div>
@@ -498,11 +583,13 @@ d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"
     </div>
 
     <div class="panel p-log">
-      <div class="phd"><span data-i18n="log">▤ 日志</span>
+      <div class="phd">
+        <span class="hdic"><svg class="svgic s14" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4.5h13v15h-13z"/><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4"/></svg></span>
+        <span data-i18n="log">日志</span>
         <span class="tb">
-          <button id="openLogDir" data-i18n="log.opendir">打开日志目录</button>
+          <button id="openLogDir" data-i18n="log.opendir">打开目录</button>
           <button id="clrLogBtn" data-i18n="log.clear">清空</button>
-          <button id="hideLogBtn" title="折叠日志面板">▼</button>
+          <button id="hideLogBtn" title="折叠日志面板" data-i18n="dock.hide">隐藏</button>
         </span>
       </div>
       <div class="pbd" id="logP"></div>
@@ -514,15 +601,17 @@ d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"
     <span class="badge" data-i18n="status.app">演示台</span>
     <span id="stWhere" data-i18n="st.where">未打开文档</span>
     <span class="sep">|</span>
-    <span id="stDocs">0</span><span data-i18n="st.docs">篇文档</span>
+    <span id="stDocs">0</span><span data-i18n="st.docs"> 篇文档</span>
     <span class="sep">|</span>
-    <span data-i18n="st.level">日志级别</span><span id="stLogLv">Info</span>
+    <span data-i18n="st.level">日志级别 </span><span id="stLogLv">Info</span>
     <span class="sp"></span>
     <span class="latest" id="stTx" data-i18n="ready">就绪</span>
     <span class="sep">|</span>
+    <span data-i18n="st.sync">最近同步 </span><span class="tm" id="stFlush">00:00:00</span>
+    <span class="sep">|</span>
     <button id="logToggleBtn" data-i18n="status.logpanel">日志面板</button>
-    <button id="darkBtn2">◐ 深浅</button>
-    <button id="langBtn2">文A 中英</button>
+    <button id="darkBtn2">深浅</button>
+    <button id="langBtn2">中英</button>
     <span>net10.0 · Avalonia 12.1.4</span>
   </div>
 

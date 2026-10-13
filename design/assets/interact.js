@@ -17,10 +17,11 @@ var I18N = {
  "zh-CN": {
   "tabs.home": "首页", "tabs.write": "Markdown 工作区", "tabs.data": "数据工作台", "tabs.docs": "文档工作区",
   "tabs.input": "组件库·输入", "tabs.present": "组件库·呈现", "tabs.infra": "组件库·基础设施",
-  "nav": "◈ 导航树", "props": "⚙ 属性", "log": "▤ 日志", "ready": "就绪",
+  "nav": "导航树", "props": "属性", "log": "日志", "ready": "就绪",
   "dock.nav": "导航树", "dock.props": "属性", "dock.log": "日志", "dock.max": "最大化", "dock.reset": "重置",
+  "dock.hide": "隐藏", "qk.save": "保存",
   "log.opendir": "打开日志目录", "log.clear": "清空", "status.app": "演示台", "status.logpanel": "日志面板",
-  "st.where": "未打开文档", "st.docs": " 篇文档", "st.level": "日志级别 ", "st.ready": "就绪",
+  "st.where": "未打开文档", "st.docs": " 篇文档", "st.level": "日志级别 ", "st.ready": "就绪", "st.sync": "最近同步 ",
   "tree.filter": "过滤页面…", "tree.empty": "无匹配页面", "tree.rename": "双击或点 ✎ 重命名", "tree.reset": "恢复原名",
   "nc.ok": "成功", "nc.warn": "警告", "nc.err": "错误", "nc.info": "提示",
   "cmd.ph": "搜索页面或命令（Esc 关闭，↑↓ 选择，Enter 执行）",
@@ -46,10 +47,11 @@ var I18N = {
  "en-US": {
   "tabs.home": "Home", "tabs.write": "Markdown", "tabs.data": "Data", "tabs.docs": "Workspace",
   "tabs.input": "Lib · Input", "tabs.present": "Lib · Present", "tabs.infra": "Lib · Infra",
-  "nav": "◈ Explorer", "props": "⚙ Properties", "log": "▤ Log", "ready": "Ready",
+  "nav": "Explorer", "props": "Properties", "log": "Log", "ready": "Ready",
   "dock.nav": "Explorer", "dock.props": "Properties", "dock.log": "Log", "dock.max": "Maximize", "dock.reset": "Reset",
+  "dock.hide": "Hide", "qk.save": "Save",
   "log.opendir": "Open Log Dir", "log.clear": "Clear", "status.app": "Demo Shell", "status.logpanel": "Log Panel",
-  "st.where": "No document", "st.docs": " docs", "st.level": "Log level ", "st.ready": "Ready",
+  "st.where": "No document", "st.docs": " docs", "st.level": "Log level ", "st.ready": "Ready", "st.sync": "Synced ",
   "tree.filter": "Filter pages…", "tree.empty": "No matching page", "tree.rename": "Double-click or ✎ to rename", "tree.reset": "Restore names",
   "nc.ok": "Success", "nc.warn": "Warning", "nc.err": "Error", "nc.info": "Info",
   "cmd.ph": "Search pages or commands (Esc close, arrows move, Enter run)",
@@ -97,7 +99,11 @@ function dlog(msg, lv) {
  var st = $("stLogLv"); if (st) st.textContent = LOG_LEVEL;
 }
 function p_append(b, e) { b.appendChild(e); b.scrollTop = b.scrollHeight; }
-function setStatus(msg) { var el = $("stTx"); if (el) el.textContent = msg; }
+function setStatus(msg) {
+ var el = $("stTx"); if (el) el.textContent = msg;
+ var f = $("stFlush");
+ if (f) { var d = new Date(); f.textContent = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ":" + ("0" + d.getSeconds()).slice(-2); }
+}
 function log2both(msg, lv) {
  dlog(msg, lv);
  var s = $("lgStream");
@@ -148,24 +154,78 @@ var CATALOG = [
  { id: "present", icon: "🏷️", items: [{ id: "status" }, { id: "guide" }, { id: "appguide" }, { id: "wsp" }, { id: "colde" }] },
  { id: "infra", icon: "🧱", items: [{ id: "log" }, { id: "lang" }, { id: "codewfwindow" }] }
 ];
+/* 页面短名：中文 ≤ 4 字，保证 Ribbon 按钮与树条目都放得下 */
 var PAGE_NAME = {
- "welcome": "欢迎总览", "flow-write": "写作全流程", "flow-data": "表数据工作流", "flow-docs": "多文档工作流",
- "md-viewer": "MarkdownViewer", "md-lite": "Markdown Lite", "md-editor": "源码编辑器", "md-live": "实时编辑", "md-export": "导出与复制",
- "datagrid": "DataGrid", "propgrid": "PropertyGrid", "dock": "Dock 布局", "trapezoid": "梯形页签",
- "searchlist": "SearchListBox", "transfer": "Transfer", "markup": "标记扩展",
- "status": "状态组件", "guide": "页面引导", "appguide": "应用引导", "wsp": "WindowedStackPanel", "colde": "ColumnDisplayEditor",
- "log": "Log 日志", "lang": "Lang 国际化", "codewfwindow": "CodeWFWindow"
+ "welcome": "欢迎", "flow-write": "写作流程", "flow-data": "数据流程", "flow-docs": "文档流程",
+ "md-viewer": "阅读器", "md-lite": "轻量渲染", "md-editor": "源码编辑", "md-live": "实时编辑", "md-export": "导出复制",
+ "datagrid": "数据表", "propgrid": "属性表", "dock": "停靠布局", "trapezoid": "梯形页签",
+ "searchlist": "搜索列表", "transfer": "穿梭框", "markup": "标记扩展",
+ "status": "状态组件", "guide": "页面引导", "appguide": "应用引导", "wsp": "虚拟面板", "colde": "列配置",
+ "log": "日志控件", "lang": "国际化", "codewfwindow": "无边框窗口"
 };
+/* 页面原名（英文 API / 控件名）：页面正文的小字与命令面板右侧备注用 */
+var PAGE_ALIAS = {
+ "welcome": "Welcome", "flow-write": "Markdown 工作区", "flow-data": "数据工作台", "flow-docs": "文档工作区",
+ "md-viewer": "MarkdownViewer", "md-lite": "Markdown Lite", "md-editor": "MarkdownEditorView", "md-live": "MarkdownLiveEditorView", "md-export": "MarkdownDocumentExporter",
+ "datagrid": "DataGrid", "propgrid": "PropertyGrid", "dock": "DockControl", "trapezoid": "TrapezoidShapedTabControl",
+ "searchlist": "SearchListBox", "transfer": "Transfer", "markup": "If / Switch",
+ "status": "StatusBadge / StatusCard", "guide": "Guide", "appguide": "Guide（应用级）", "wsp": "WindowedStackPanel", "colde": "ColumnDisplayEditor",
+ "log": "LogView", "lang": "I18n", "codewfwindow": "CodeWFWindow"
+};
+/* 图标：统一用 24 网格线性图标（图标思路对齐 IconPark / TDesign，实现期可直接映射到 Semi / Ursa / Iconica） */
+function svg(view, extra) {
+ return '<svg class="svgic ' + (extra || "s20") + '" viewBox="0 0 24 24" aria-hidden="true">' + view + "</svg>";
+}
 var TAB_ICON = {
- "welcome": "🏠", "flow-write": "🧭", "flow-data": "🧭", "flow-docs": "🧭",
- "md-viewer": "📄", "md-lite": "🪶", "md-editor": "✍️", "md-live": "⚡", "md-export": "📤",
- "datagrid": "📊", "propgrid": "🧾", "dock": "🪟", "trapezoid": "🔺",
- "searchlist": "🔎", "transfer": "🔀", "markup": "🧱",
- "status": "🏷️", "guide": "🧭", "appguide": "🧭", "wsp": "📋", "colde": "📐",
- "log": "📜", "lang": "🌐", "codewfwindow": "🪟"
+ "welcome": '<path d="M4.5 10.8L12 4l7.5 6.8"/><path d="M6.5 10v9.5h11V10"/><path d="M10.5 19.5v-4.8h3v4.8"/>',
+ "flow-write": '<circle cx="12" cy="12" r="8.5"/><path d="M14.6 9.4l-1.7 3.8-3.8 1.7 1.7-3.8z"/>',
+ "flow-data": '<path d="M4 19.5V4.5"/><path d="M4 19.5h15.5"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7.5" width="3" height="9.5"/><rect x="17" y="14" width="3" height="3"/>',
+ "flow-docs": '<rect x="3.5" y="7" width="10" height="12.5" rx="1.6"/><path d="M7.5 7V4.5h11a1.5 1.5 0 0 1 1.5 1.5v11a1.5 1.5 0 0 1-1.5 1.5H17"/>',
+ "md-viewer": '<path d="M13.5 3.5H7a1.6 1.6 0 0 0-1.6 1.6v13.8A1.6 1.6 0 0 0 7 20.5h10a1.6 1.6 0 0 0 1.6-1.6V8.6z"/><path d="M13.5 3.5v5.1h5.1"/><path d="M9 13.5h6M9 16.8h4"/>',
+ "md-lite": '<path d="M4.5 5.5h15v13h-15z"/><path d="M7.5 15.5l2-6 2.5 4.5 1.8-3 1.7 4.5"/>',
+ "md-editor": '<path d="M4.5 19.5l.9-3.6L16 5.3l2.7 2.7L8.1 18.6z"/><path d="M14.6 6.7l2.7 2.7"/><path d="M4.5 12.5V4.5h8"/>',
+ "md-live": '<path d="M13 3.5L5.5 13.5H11l-.6 7L18 10.5h-5.4z"/>',
+ "md-export": '<path d="M12 3.5v10.5"/><path d="M8.5 7L12 3.5 15.5 7"/><path d="M5 13.5v5.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5v-5.5"/>',
+ "datagrid": '<rect x="3.5" y="4.5" width="17" height="15" rx="1.7"/><path d="M3.5 9.5h17M3.5 14.5h17M9.5 9.5v10M15 9.5v10"/>',
+ "propgrid": '<path d="M4 6.5h9M17.5 6.5H20"/><circle cx="15" cy="6.5" r="2.1"/><path d="M4 17.5h3.5M11 17.5h9"/><circle cx="9" cy="17.5" r="2.1"/><path d="M4 12h6M13.5 12H20"/><circle cx="11.5" cy="12" r="2.1"/>',
+ "dock": '<rect x="3.5" y="4.5" width="17" height="15" rx="1.7"/><path d="M10 4.5v15"/><path d="M13.5 9.5h4"/>',
+ "trapezoid": '<path d="M7.5 6.5h9l3 11h-15z"/><path d="M9.5 10h5"/>',
+ "searchlist": '<rect x="3.5" y="4.5" width="17" height="15" rx="1.7"/><path d="M6.5 9.5h11M6.5 13.5h7"/><circle cx="16.5" cy="15.8" r="2.3"/><path d="M18.3 17.6l2.2 2.2"/>',
+ "transfer": '<path d="M4 6.5h10l-2.5-2.5M20 17.5H10l2.5 2.5"/><path d="M17.5 6.5H20"/><path d="M4 17.5h2.5"/>',
+ "markup": '<path d="M9 7.5L4.5 12 9 16.5"/><path d="M15 7.5L19.5 12 15 16.5"/><path d="M13.2 5.5l-2.4 13"/>',
+ "status": '<path d="M4.5 5.5h15v10l-3.5 3.5h-11z"/><path d="M15.6 19.2v-3.7h3.7"/><path d="M8 10h8M8 13h5"/>',
+ "guide": '<circle cx="12" cy="12" r="8.5"/><path d="M14.8 9.2l-1.9 4.1-4.1 1.9 1.9-4.1z"/>',
+ "appguide": '<circle cx="9" cy="9" r="5"/><path d="M12.8 12.8L20 20"/><path d="M9 6.5a2.5 2.5 0 0 0-2.5 2.5"/>',
+ "wsp": '<path d="M12 3.5L21 8.5 12 13.5 3 8.5z"/><path d="M3 12.8L12 17.8l9-5"/><path d="M3 16.8L12 21.8l9-5"/>',
+ "colde": '<path d="M4 7.5h4M4 12h4M4 16.5h4"/><rect x="10" y="5.5" width="10" height="4" rx="1.2"/><rect x="10" y="10" width="10" height="4" rx="1.2"/><rect x="10" y="14.5" width="10" height="4" rx="1.2"/>',
+ "log": '<path d="M5.5 4.5h13v15h-13z"/><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4"/>',
+ "lang": '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.4 2.4 3.6 5.3 3.6 8.5S14.4 18.1 12 20.5C9.6 18.1 8.4 15.2 8.4 12S9.6 5.9 12 3.5z"/>',
+ "codewfwindow": '<rect x="3.5" y="4.5" width="17" height="15" rx="1.7"/><path d="M3.5 9h17"/><path d="M6.5 6.7h.01M9 6.7h.01"/>'
 };
+function iconSvg(id, extra) { return svg(TAB_ICON[id] || TAB_ICON["welcome"], extra || "s20"); }
+/* 页签图标（Ribbon 页签行的极简小图标） */
+var TAB_TAB_ICON = {
+ home: '<path d="M4.5 10.8L12 4l7.5 6.8"/><path d="M6.5 10v9.5h11V10"/>',
+ write: '<path d="M4.5 19.5l.9-3.6L16 5.3l2.7 2.7L8.1 18.6z"/>',
+ data: '<path d="M4 19.5V4.5M4 19.5h15.5"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7.5" width="3" height="9.5"/><rect x="17" y="14" width="3" height="3"/>',
+ docs: '<rect x="3.5" y="7" width="10" height="12.5" rx="1.6"/><path d="M7.5 7V4.5h11a1.5 1.5 0 0 1 1.5 1.5v11a1.5 1.5 0 0 1-1.5 1.5H17"/>',
+ input: '<rect x="3.5" y="4.5" width="17" height="15" rx="1.7"/><path d="M6.5 9.5h11M6.5 13.5h7"/><circle cx="16.5" cy="15.8" r="2.3"/><path d="M18.3 17.6l2.2 2.2"/>',
+ present: '<path d="M4.5 5.5h15v10l-3.5 3.5h-11z"/><path d="M8 10h8M8 13h5"/>',
+ infra: '<path d="M5.5 4.5h13v15h-13z"/><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4"/>'
+};
+function tabIconSvg(id) { return svg(TAB_TAB_ICON[id] || TAB_TAB_ICON["home"], "s14"); }
 function tabName(id) { return tt("tabs." + id); }
 function pt(id) { return PAGE_NAME[id] || id; }
+function pa(id) { return PAGE_ALIAS[id] || ""; }
+/* 页面索引表（欢迎页用）：把每个页签下的页面按短名 / 原名列出，保证「功能没被藏起来」 */
+function pageIndexHtml() {
+ return CATALOG.map(function (g) {
+  return '<tr><td style="white-space:nowrap"><span style="color:var(--pri);display:inline-flex;vertical-align:-3px;margin-right:5px">' +
+   tabIconSvg(g.id) + "</span>" + esc(tabName(g.id)) + "</td><td>" +
+   g.items.map(function (it) { return esc(pt(it.id)) + (pa(it.id) ? ' <span style="color:var(--tx3)">(' + esc(pa(it.id)) + ")</span>" : ""); }).join(" · ") +
+   "</td></tr>";
+ }).join("");
+}
 function groupOf(id) {
  for (var i = 0; i < CATALOG.length; i++) {
   if (CATALOG[i].items.some(function (x) { return x.id === id; })) return CATALOG[i];
@@ -208,6 +268,8 @@ REG("welcome", {
    '<tr><td>Markdown 写作与导出</td><td>Markdown.Lite / Markdown</td><td>Markdown 工作区</td></tr>' +
    '<tr><td>日志与本地化</td><td>Log / Lang</td><td>组件库·基础设施</td></tr>' +
    '</tbody></table></div>' +
+   '<div class="demo"><h4>页面索引</h4><table class="dg" style="cursor:default"><tbody>' + pageIndexHtml() + "</tbody></table>" +
+   '<div class="hint">共 24 页：3 个场景工作流 + 21 个组件页，全部可在 Ribbon 页签或导航树里打开。</div></div>' +
    '<div class="demo"><h4>近期更新</h4><table class="dg" style="cursor:default"><tbody>' +
    '<tr><td>v12.1.4.4</td><td>Dock 主题去掉 Fluent 依赖，改以 Dock Simple 为基座并换装 Semi 皮肤</td></tr>' +
    '<tr><td>v12.1.4.3</td><td>高对比色板按变体落地 Semi 语义色，修复深色变体文字看不清</td></tr>' +
@@ -234,7 +296,9 @@ REG("flow-write", {
  ],
  render: function (el) {
   el.innerHTML = '<div class="flow" id="fwFlow">' + FLOW_WRITE_STEPS.map(function (s, i) {
-   return '<span class="st' + (i === flowWriteStep ? " cur" : i < flowWriteStep ? " done" : "") + '" data-s="' + i + '">' + (i + 1) + ". " + s + "</span>";
+   return '<span class="st' + (i === flowWriteStep ? " cur" : i < flowWriteStep ? " done" : "") + '" data-s="' + i +
+    '" title="' + esc(s) + '"><span class="n">' + (i < flowWriteStep ? "✓" : i + 1) + '</span>' + esc(s) +
+    '<span class="si">' + '<svg class="svgic s14" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg>' + "</span></span>";
   }).join("") + "</div>" +
    '<div class="subtabs" id="fwSub">' +
    [["md-viewer", "渲染"], ["md-editor", "源码编辑"], ["md-live", "实时编辑"], ["md-export", "导出 / 复制"]].map(function (t) {
@@ -280,7 +344,9 @@ REG("flow-data", {
  ],
  render: function (el) {
   el.innerHTML = '<div class="flow" id="fdFlow">' + FLOW_DATA_STEPS.map(function (s, i) {
-   return '<span class="st' + (i === flowDataStep ? " cur" : i < flowDataStep ? " done" : "") + '" data-s="' + i + '">' + (i + 1) + ". " + s + "</span>";
+   return '<span class="st' + (i === flowDataStep ? " cur" : i < flowDataStep ? " done" : "") + '" data-s="' + i +
+    '" title="' + esc(s) + '"><span class="n">' + (i < flowDataStep ? "✓" : i + 1) + '</span>' + esc(s) +
+    '<span class="si">' + '<svg class="svgic s14" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg>' + "</span></span>";
   }).join("") + "</div>" +
    '<div class="demo"><h4>数据源</h4><div class="row" style="margin-bottom:8px">' +
    '<button class="btn pri" onclick="fdImport()">导入示例（CSV 1 万行）</button>' +
@@ -994,7 +1060,7 @@ var MODIFIED = {};
 function renderRTabs() {
  $("rTabs").innerHTML = CATALOG.map(function (g) {
   return '<div class="t2' + (g.id === curTab ? " on" : "") + '" data-t="' + g.id + '" role="tab" tabindex="0" title="' +
-   esc(tabName(g.id)) + '（双击折叠命令区）">' + esc(tabName(g.id)) + "</div>";
+   esc(tabName(g.id)) + '（双击折叠命令区）">' + tabIconSvg(g.id) + "<span>" + esc(tabName(g.id)) + "</span></div>";
  }).join("");
  document.querySelectorAll(".rt2 .t2").forEach(function (n) {
   n.onclick = function () { switchTab(n.dataset.t); };
@@ -1008,9 +1074,7 @@ function renderRBody() {
  if (!g) { $("rBody").innerHTML = ""; return; }
  var sceneFirst = g.items[0].id.indexOf("flow-") === 0;
  var html = "";
- if (sceneFirst) {
-  html += '<div class="grp"><div class="cmds">' + cmdBtn(g.items[0]) + '</div><div class="gname">场景工作流</div></div>';
- }
+ if (sceneFirst) html += '<div class="grp"><div class="cmds">' + cmdBtn(g.items[0]) + '</div><div class="gname">场景</div></div>';
  var rest = sceneFirst ? g.items.slice(1) : g.items;
  html += '<div class="grp"><div class="cmds">' + rest.map(cmdBtn).join("") + '</div><div class="gname">' +
   esc(sceneFirst ? "组件" : tabName(g.id)) + "</div></div>";
@@ -1020,9 +1084,10 @@ function renderRBody() {
  });
 }
 function cmdBtn(it) {
- var label = pt(it.id);
- return '<button class="cbtn" data-p="' + it.id + '" title="' + esc(label) + '" aria-pressed="' + (ACTIVE_DOC === it.id) + '">' +
-  '<span class="ic">' + (TAB_ICON[it.id] || "◆") + '</span><span class="lb">' + esc(label) + "</span></button>";
+ var label = pt(it.id), alias = pa(it.id);
+ return '<button class="cbtn" data-p="' + it.id + '" title="' + esc(label + (alias ? "（" + alias + "）" : "")) +
+  '" aria-pressed="' + (ACTIVE_DOC === it.id) + '">' +
+  '<span class="ic">' + iconSvg(it.id) + '</span><span class="lb">' + esc(label) + "</span></button>";
 }
 function switchTab(id) {
  curTab = id;
@@ -1044,17 +1109,17 @@ function renderTree() {
   (Object.keys(RENAMES).length ? '<button class="hbtn" style="visibility:visible" onclick="clearRenames()" title="' + esc(tt("tree.reset")) + '">↺</button>' : "") + "</div>";
  CATALOG.forEach(function (g) {
   var items = g.items.filter(function (it) {
-   return !q || pt(it.id).toLowerCase().indexOf(q) >= 0 || tabName(g.id).toLowerCase().indexOf(q) >= 0;
+   return !q || pt(it.id).toLowerCase().indexOf(q) >= 0 || pa(it.id).toLowerCase().indexOf(q) >= 0 || tabName(g.id).toLowerCase().indexOf(q) >= 0;
   });
   total += items.length;
   if (!items.length && q) return;
   var open = (g.id === curTab || (q && items.length)) ? " open" : "";
   html += '<div class="nd' + open + '" data-g="' + g.id + '">' +
-   '<div class="hd" tabindex="0"><span class="arw">▶</span><span class="gi">' + g.icon + "</span><span>" + esc(tabName(g.id)) + "</span>" +
+   '<div class="hd" tabindex="0"><span class="arw">▶</span><span class="gi">' + tabIconSvg(g.id) + "</span><span>" + esc(tabName(g.id)) + "</span>" +
    '<span style="margin-left:auto;color:var(--tx3);font-size:10px">' + items.length + "</span></div><div class=\"kids\">" +
    items.map(function (it) {
     return '<div class="lf' + (it.id === ACTIVE_DOC ? " on" : "") + '" data-p="' + it.id + '" title="' + esc(pt(it.id)) + '">' +
-     '<span class="ic">' + (TAB_ICON[it.id] || "◆") + '</span><span>' + esc(RENAMES[it.id] || pt(it.id)) + '</span><span class="sp2"></span>' +
+     '<span class="ic">' + iconSvg(it.id, "s14") + '</span><span>' + esc(RENAMES[it.id] || pt(it.id)) + '</span><span class="sp2"></span>' +
      '<button class="hbtn" data-rn="' + it.id + '" title="' + esc(tt("tree.rename")) + '">✎</button></div>';
    }).join("") + "</div></div>";
  });
@@ -1154,7 +1219,10 @@ function renderDocTabs() {
  var st = $("stDocs"); if (st) st.textContent = OPEN_DOCS.length;
 }
 function renderEmptyDoc() {
- $("dBody").innerHTML = '<div class="empty"><div class="ei">🗂️</div><div class="et">' + esc(tt("empty.title")) + "</div>" +
+ $("dBody").innerHTML = '<div class="empty"><div class="ei">' +
+  '<svg class="svgic" style="width:34px;height:34px;color:var(--tx3)" viewBox="0 0 24 24" aria-hidden="true">' +
+  '<rect x="3.5" y="7" width="10" height="12.5" rx="1.6"/><path d="M7.5 7V4.5h11a1.5 1.5 0 0 1 1.5 1.5v11a1.5 1.5 0 0 1-1.5 1.5H17"/></svg>' +
+  '</div><div class="et">' + esc(tt("empty.title")) + "</div>" +
   '<div class="ed">' + esc(tt("empty.desc")) + '</div>' +
   '<button class="btn pri" onclick="openDoc(\'welcome\')">' + esc(tt("empty.action")) + "</button></div>";
  var w = $("stWhere"); if (w) w.textContent = tt("st.where");
@@ -1165,6 +1233,7 @@ function renderDoc(id) {
  var seg = SEG[id];
  $("dBody").innerHTML =
   '<div class="crumb">' + esc(docCrumb(id)) + "</div><h1>" + esc(RENAMES[id] || pg.zh.t) + "</h1>" +
+  (pa(id) ? '<div class="alias">' + esc(pa(id)) + "</div>" : "") +
   '<div class="dsc">' + esc(pg.zh.d) + "</div>" +
   '<div class="ftg">' + pg.zh.f.map(function (f) { return "<span>" + esc(f) + "</span>"; }).join("") + "</div>" +
   '<div class="smt" id="smt-' + id + '">' +
@@ -1344,9 +1413,9 @@ function buildDefaultGuide() {
   { t: tt("g.4.t"), d: tt("g.4.d"), sel: ".p-props" },
   { t: tt("g.5.t"), d: tt("g.5.d"), sel: ".p-log" }];
 }
-function guideOpen() { gSteps = buildDefaultGuide(); gIdx = 0; $("gMask").classList.add("on"); showStep(); }
+function guideOpen() { gSteps = buildDefaultGuide(); gIdx = 0; $("gMask").classList.add("on"); $("gTip").classList.add("on"); showStep(); }
 window.guideOpen = guideOpen;
-window.guideGo = function (steps) { gSteps = steps; gIdx = 0; $("gMask").classList.add("on"); showStep(); };
+window.guideGo = function (steps) { gSteps = steps; gIdx = 0; $("gMask").classList.add("on"); $("gTip").classList.add("on"); showStep(); };
 function showStep() {
  var s = gSteps[gIdx];
  if (!s) { gCloseGuide(); return; }
@@ -1358,6 +1427,7 @@ function showStep() {
  sp.style.width = (r.width + 12) + "px"; sp.style.height = (r.height + 12) + "px";
  var tip = $("gTip");
  tip.style.display = "block";
+ tip.classList.remove("on"); void tip.offsetWidth; tip.classList.add("on");
  var tw = tip.offsetWidth || 300;
  var tx = clamp(r.left, 10, Math.max(10, innerWidth - tw - 10));
  var ty = r.bottom + 12;
@@ -1371,7 +1441,7 @@ function showStep() {
 }
 function gNextStep() { gIdx++; if (gIdx >= gSteps.length) gCloseGuide(); else showStep(); }
 function gPrevStep() { gIdx = Math.max(0, gIdx - 1); showStep(); }
-function gCloseGuide() { $("gMask").classList.remove("on"); $("gSpot").style.display = "none"; $("gTip").style.display = "none"; }
+function gCloseGuide() { $("gMask").classList.remove("on"); $("gTip").classList.remove("on"); $("gSpot").style.display = "none"; $("gTip").style.display = "none"; }
 window.gCloseGuide = gCloseGuide;
 
 /* ═══ 命令面板（Ctrl+K） ═══ */
