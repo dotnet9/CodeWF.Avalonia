@@ -14,6 +14,15 @@ public partial class MainViewModel
     {
         Directory.CreateDirectory(directory);
         var overview = (Views.Pages.WelcomePage)Documents.First(d => d.Page is Views.Pages.WelcomePage).Page;
+        // Dock creates document content after the window's Loaded event.
+        var readyBy = DateTime.UtcNow.AddSeconds(10);
+        while (!overview.IsLoaded || overview.Bounds.Width <= 0 || overview.Bounds.Height <= 0)
+        {
+            if (DateTime.UtcNow >= readyBy)
+                throw new TimeoutException("Overview did not load before visual capture.");
+            await Task.Delay(50);
+            window.UpdateLayout();
+        }
         foreach (var palette in Palettes.Take(3))
         {
             SelectedPalette = palette;
