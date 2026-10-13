@@ -13,6 +13,26 @@ namespace CodeWF.Avalonia.Content.Tests.Lang;
 public class SourceGeneratorTests
 {
     [Fact]
+    public void ThreeSegmentKeysAndMatchingMembersProduceCompilableCode()
+    {
+        var source = GenerateText(("demo.json", """
+            {
+              "language": "English",
+              "description": "Generator collision regression",
+              "cultureName": "en-US",
+              "Demo": { "Lang": { "Greeting": "Hello", "Status": { "Status": "Ready", "Value": "Yes" } } }
+            }
+            """));
+        var compilation = CSharpCompilation.Create("GeneratedKeys",
+            new[] { CSharpSyntaxTree.ParseText(source) },
+            new[] { MetadataReference.CreateFromFile(typeof(object).Assembly.Location) },
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        Assert.DoesNotContain(compilation.GetDiagnostics(), diagnostic => diagnostic.Severity == DiagnosticSeverity.Error);
+        Assert.Contains("\"Demo.Lang.Greeting\"", source);
+        Assert.Contains("\"Demo.Lang.Status.Status\"", source);
+    }
+
+    [Fact]
     public void GeneratorUsesTheUnionOfKeysAndProducesValidIdentifiers()
     {
         var result = RunGenerator(

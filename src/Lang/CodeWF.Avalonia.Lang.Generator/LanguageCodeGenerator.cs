@@ -53,7 +53,7 @@ internal static class LanguageCodeGenerator
                 stringBuilder.AppendLine("    {");
 
                 // 生成属性
-                var usedNames = new HashSet<string>();
+                var usedNames = new HashSet<string>(StringComparer.Ordinal) { className };
                 foreach (var property in properties
                              .OrderBy(p => p.PropertyName, StringComparer.Ordinal)
                              .ThenBy(p => p.ResourceKey, StringComparer.Ordinal))

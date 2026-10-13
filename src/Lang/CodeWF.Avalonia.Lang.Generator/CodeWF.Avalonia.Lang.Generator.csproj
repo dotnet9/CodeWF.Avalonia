@@ -1,8 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk" TreatAsLocalProperty="PublishAot;PublishTrimmed;PublishSingleFile;SelfContained;RuntimeIdentifier">
 
   <PropertyGroup>
     <!-- 源生成器为编译期工具，保持 netstandard2.0 -->
     <TargetFramework>netstandard2.0</TargetFramework>
+    <!-- The generator runs inside the compiler, even when its consumer publishes with NativeAOT. -->
+    <PublishAot>false</PublishAot>
+    <PublishTrimmed>false</PublishTrimmed>
+    <PublishSingleFile>false</PublishSingleFile>
+    <SelfContained>false</SelfContained>
+    <RuntimeIdentifier></RuntimeIdentifier>
     <IsPackable>true</IsPackable>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
