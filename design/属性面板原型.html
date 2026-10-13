@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN" data-theme="dark" data-palette="dotnet">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -267,9 +267,15 @@
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; border: 2px solid transparent; background-clip: content-box; }
   ::-webkit-scrollbar-thumb:hover { background: var(--text-sec); background-clip: content-box; }
 </style>
+<link rel="stylesheet" href="assets/studio.css">
+<link rel="stylesheet" href="assets/property-studio.css">
 </head>
 <body>
 <div id="app">
+  <header class="property-banner">
+    <div><div class="studio-eyebrow">CODEWF / COMPONENT INSPECTOR</div><h1>PropertyGrid 属性工作台</h1><p>11 种编辑器 · 无限层级 · 动态可见性 · 修改追踪</p></div>
+    <select aria-label="界面配色" id="propertyPalette"><option value="dotnet">.NET Purple</option><option value="aurora">AI Aurora</option><option value="ember">AI Ember</option></select>
+  </header>
 
   <!-- 工具条 -->
   <div class="toolbar">
@@ -984,6 +990,9 @@ function attachRowLine(row, n) {
 /* ---------------- 启动 ---------------- */
 render();
 selectProp(ALL["p01"]);
+</script>
+<script>
+document.getElementById('propertyPalette').addEventListener('change', function () { document.documentElement.dataset.palette = this.value; });
 </script>
 </body>
 </html>

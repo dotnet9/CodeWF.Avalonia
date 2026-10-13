@@ -244,9 +244,9 @@ var PROTO = {};
 function REG(id, o) { PROTO[id] = o; }
 function renderInto(id, el) {
  var pg = PROTO[id]; if (!pg || !pg.render || !el) return;
- var tmp = document.createElement("div");
- var out = pg.render(tmp);
- el.innerHTML = (typeof out === "string" ? out : tmp.innerHTML) || "";
+ el.replaceChildren();
+ var out = pg.render(el);
+ if (typeof out === "string") el.innerHTML = out;
 }
 
 /* ═══════════════════════ 页面：欢迎（入口） ═══════════════════════ */
@@ -635,6 +635,7 @@ REG("datagrid", {
   live.innerHTML = '<div class="demo"><h4>点击表头三态排序：升 → 降 → 取消（自然排序：item2 &lt; item10）</h4>' +
    '<table class="dg" id="dgT"><thead><tr><th data-k="0">名称</th><th data-k="1">年龄</th><th data-k="2">城市</th></tr></thead><tbody></tbody></table>' +
    '<div class="hint">悬停截断单元格显示完整内容（智能 ToolTip）· Ctrl+A 全选行</div></div>';
+  var originalRows = rows.slice();
   var tb = live.querySelector("tbody"), dir = [null, null, null], last = -1;
   var key = function (s) { return String(s).replace(/(\d+)/g, function (m) { return ("00000000" + m).slice(-8); }); };
   function draw() {
@@ -652,9 +653,9 @@ REG("datagrid", {
      th.innerHTML = names[i] + '<span class="arr">' + (dir[i] === 1 ? "▲" : "▼") + "</span>";
      rows.sort(function (a, b) {
       if (i === 0) return dir[i] === 1 ? (key(a[0]) > key(b[0]) ? 1 : -1) : (key(b[0]) > key(a[0]) ? 1 : -1);
-      return dir[i] === 1 ? a[i] - b[i] : b[i] - a[i];
+      return dir[i] * (typeof a[i] === "number" ? a[i] - b[i] : String(a[i]).localeCompare(String(b[i])));
      });
-    } else th.innerHTML = names[i];
+    } else { th.innerHTML = names[i]; rows = originalRows.slice(); }
     log2both("排序：第 " + (i + 1) + " 列 " + (dir[i] === null ? "取消（恢复原始顺序）" : dir[i] === 1 ? "升序" : "降序"));
     draw();
    };
@@ -1046,7 +1047,7 @@ var SELF_PROPS = [
    var m = { "默认": "default", "水生": "aqua", "沙漠": "desert", "黄昏": "dusk", "夜空": "night", "高对比": "contrast" };
    setPalette(m[v] || "default");
   } },
- { id: "appearance.dark", label: "深色模式", type: "bool", value: false, global: true,
+ { id: "appearance.dark", label: "深色模式", type: "bool", value: true, global: true,
   apply: function (v) { setTheme(v ? "dark" : "light"); } },
  { id: "appearance.lang", label: "语言", type: "combo", options: ["简体中文", "English"], value: "简体中文", global: true,
   apply: function (v) { setLang(v === "English" ? "en-US" : "zh-CN"); } }
@@ -1392,7 +1393,7 @@ function loadLayout() {
 window.layoutResetAsk = function () {
  confirmDlg(tt("dlg.reset.t"), tt("dlg.reset.d"), function () {
   document.body.classList.remove("hideL", "hideR", "hideLog", "rmn");
-  setDensity("cozy"); setPalette("default"); setTheme("light");
+  setDensity("cozy"); setPalette("dotnet"); setTheme("dark");
   try { localStorage.removeItem(LAYOUT_KEY); } catch (e) { }
   notify("warn", tt("nc.warn"), tt("toast.reset"));
   log2both(tt("toast.reset"), "warn");

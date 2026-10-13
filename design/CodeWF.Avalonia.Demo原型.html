@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="light" data-palette="default" data-density="cozy">
+<html lang="zh-CN" data-theme="dark" data-palette="dotnet" data-density="cozy">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CodeWF.Avalonia.Demo — 原型</title>
 <style>
 /* ═══════════ 色板（6 色板 × 浅深，对应 ACSemiTheme ThemeDictionaries） ═══════════ */
@@ -483,8 +484,9 @@ var d=document.getElementById("jsErrTrap")||function(){var x=document.createElem
 d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"+e.lineno+"\n";
 });
 </script>
+<link rel="stylesheet" href="assets/studio.css">
 </head>
-<body>
+<body data-product="avalonia">
 
 <div class="win">
 
@@ -649,5 +651,6 @@ d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"
 <div id="DBG"></div>
 
 <script src="assets/interact.js"></script>
+<script src="assets/studio.js"></script>
 </body>
 </html>
