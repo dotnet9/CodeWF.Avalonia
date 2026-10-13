@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using Avalonia.Styling;
 using Avalonia.Media;
 using CodeWF.Avalonia.Controls.Themes;
@@ -12,32 +13,21 @@ public sealed class AppearanceOption : global::ReactiveUI.ReactiveObject
 {
     public delegate ThemeVariant VariantResolver(bool isDarkMode);
 
-    public AppearanceOption(string titleKey, VariantResolver resolveVariant)
+    public AppearanceOption(string titleKey, VariantResolver resolveVariant, string swatchKey)
     {
         TitleKey = titleKey;
         ResolveVariant = resolveVariant;
-        Swatch = titleKey.Split('.').Last() switch
-        {
-            "DotNet" => Brush.Parse("#512BD4"),
-            "Aurora" => new LinearGradientBrush
-            {
-                GradientStops = new GradientStops { new(Color.Parse("#8968FF"), 0), new(Color.Parse("#26D4CC"), 1) }
-            },
-            "Ember" => Brush.Parse("#BD674D"),
-            "Default" => Brush.Parse("#0064FA"),
-            "Aquatic" => Brush.Parse("#008D9E"),
-            "Desert" => Brush.Parse("#B57532"),
-            "Dusk" => Brush.Parse("#7A5CC4"),
-            "NightSky" => Brush.Parse("#2B6CB0"),
-            _ => Brush.Parse("#777777")
-        };
+        SwatchKey = swatchKey;
     }
 
     /// <summary>名称的 Lang 键。</summary>
     public string TitleKey { get; }
 
     public VariantResolver ResolveVariant { get; }
-    public IBrush Swatch { get; }
+    public string SwatchKey { get; }
+    public IBrush Swatch => global::Avalonia.Application.Current is { } app
+        && app.TryFindResource(SwatchKey, out var resource) && resource is IBrush brush
+            ? brush : Brushes.Transparent;
 
     public string Title => I18nManager.Instance.GetResource(TitleKey);
 
@@ -46,31 +36,31 @@ public sealed class AppearanceOption : global::ReactiveUI.ReactiveObject
     public override string ToString() => Title;
 
     public static AppearanceOption DotNet() =>
-        new("Demo.Palette.DotNet", dark => dark ? StudioTheme.DotNetDark : StudioTheme.DotNetLight);
+        new("Demo.Palette.DotNet", dark => dark ? StudioTheme.DotNetDark : StudioTheme.DotNetLight, "StudioSwatchDotNet");
 
     public static AppearanceOption Aurora() =>
-        new("Demo.Palette.Aurora", dark => dark ? StudioTheme.AuroraDark : StudioTheme.AuroraLight);
+        new("Demo.Palette.Aurora", dark => dark ? StudioTheme.AuroraDark : StudioTheme.AuroraLight, "StudioSwatchAurora");
 
     public static AppearanceOption Ember() =>
-        new("Demo.Palette.Ember", dark => dark ? StudioTheme.EmberDark : StudioTheme.EmberLight);
+        new("Demo.Palette.Ember", dark => dark ? StudioTheme.EmberDark : StudioTheme.EmberLight, "StudioSwatchEmber");
 
     public static AppearanceOption Default() =>
-        new("Demo.Palette.Default", isDark => isDark ? ThemeVariant.Dark : ThemeVariant.Light);
+        new("Demo.Palette.Default", isDark => isDark ? ThemeVariant.Dark : ThemeVariant.Light, "StudioSwatchDefault");
 
     public static AppearanceOption Aquatic() =>
-        new("Demo.Palette.Aquatic", _ => SemiTheme.Aquatic);
+        new("Demo.Palette.Aquatic", _ => SemiTheme.Aquatic, "StudioSwatchAquatic");
 
     public static AppearanceOption Desert() =>
-        new("Demo.Palette.Desert", _ => SemiTheme.Desert);
+        new("Demo.Palette.Desert", _ => SemiTheme.Desert, "StudioSwatchDesert");
 
     public static AppearanceOption Dusk() =>
-        new("Demo.Palette.Dusk", _ => SemiTheme.Dusk);
+        new("Demo.Palette.Dusk", _ => SemiTheme.Dusk, "StudioSwatchDusk");
 
     public static AppearanceOption NightSky() =>
-        new("Demo.Palette.NightSky", _ => SemiTheme.NightSky);
+        new("Demo.Palette.NightSky", _ => SemiTheme.NightSky, "StudioSwatchNightSky");
 
     public static AppearanceOption HighContrast() =>
-        new("Demo.Palette.HighContrast", _ => CodeWFLogTheme.HighContrast);
+        new("Demo.Palette.HighContrast", _ => CodeWFLogTheme.HighContrast, "StudioSwatchHighContrast");
 }
 
 /// <summary>可选语言。</summary>
