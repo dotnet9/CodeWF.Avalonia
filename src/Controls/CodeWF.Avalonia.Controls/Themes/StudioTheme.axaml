@@ -50,11 +50,8 @@
     <Setter Property="Padding" Value="18" />
   </Style>
   <Style Selector="Border.studio-hero">
-    <Setter Property="Background" Value="{DynamicResource StudioSurface}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource StudioBorder}" />
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="16" />
-    <Setter Property="Padding" Value="24,20" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Padding" Value="0,6,0,4" />
     <Setter Property="ClipToBounds" Value="True" />
   </Style>
   <Style Selector="TextBlock.studio-kicker">
@@ -69,9 +66,16 @@
     <Setter Property="TextWrapping" Value="Wrap" />
   </Style>
   <Style Selector="TextBlock.studio-title">
-    <Setter Property="FontSize" Value="32" />
-    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="FontSize" Value="34" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="TextWrapping" Value="Wrap" />
     <Setter Property="LetterSpacing" Value="-1" />
+  </Style>
+  <Style Selector="TextBlock.studio-package">
+    <Setter Property="FontFamily" Value="Consolas,Cascadia Mono,Menlo,monospace" />
+    <Setter Property="FontSize" Value="10" />
+    <Setter Property="Foreground" Value="{DynamicResource StudioAccent}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
   </Style>
   <Style Selector="Button.studio-capability">
     <Setter Property="Background" Value="{DynamicResource StudioSurface}" />
@@ -97,7 +101,9 @@
     <Setter Property="RenderTransform" Value="translateY(0px) scale(0.98)" />
   </Style>
   <Style Selector="Border.studio-flow-node">
-    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
+    <Setter Property="Background" Value="{DynamicResource StudioBackground}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="8" />
     <Setter Property="Padding" Value="14,10" />
   </Style>
@@ -122,5 +128,35 @@
   <Style Selector="TabControl.studio-lab">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="Padding" Value="0,12,0,0" />
+  </Style>
+  <Style Selector="ListBox.studio-palettes">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Height" Value="26" />
+    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
+  </Style>
+  <Style Selector="ListBox.studio-palettes ListBoxItem">
+    <Setter Property="Width" Value="24" />
+    <Setter Property="MinHeight" Value="24" />
+    <Setter Property="Padding" Value="4" />
+    <Setter Property="Margin" Value="0,1" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Transitions">
+      <Transitions><TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.16" /></Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="ListBox.studio-palettes ListBoxItem:selected">
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioAccent}" />
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="ListBox.studio-palettes ListBoxItem:pointerover">
+    <Setter Property="RenderTransform" Value="scale(1.12)" />
   </Style>
 </Styles>

@@ -1,5 +1,5 @@
 using Avalonia;
-using global::Avalonia.Themes.Simple;
+using Semi.Avalonia;
 using System.Globalization;
 using CodeWF.Avalonia.Dock.Themes;
 using Xunit;
@@ -12,7 +12,7 @@ public sealed class DockSemiThemeTests
     {
         AppBuilder.Configure<Application>()
             .UsePlatformDetect()
-            .AfterSetup(_ => Application.Current!.Styles.Add(new SimpleTheme()))
+            .AfterSetup(_ => Application.Current!.Styles.Add(new SemiTheme()))
             .SetupWithoutStarting();
     }
 

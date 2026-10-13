@@ -12,8 +12,6 @@
     <PackageVersion Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
-    <PackageVersion Include="Avalonia.Themes.Simple" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Headless" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Headless.XUnit" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Controls.DataGrid" Version="12.1.2" />
@@ -50,7 +48,6 @@
     <PackageVersion Include="TextMateSharp.Grammars" Version="2.0.4" />
 
     <!-- MVVM / 行为 / DI -->
-    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageVersion Include="CodeWF.Toolkit.Logging" Version="1.0.0.1" />
     <PackageVersion Include="ReactiveUI" Version="24.2.0" />
     <PackageVersion Include="ReactiveUI.Avalonia" Version="$(ReactiveUIAvaloniaVersion)" />
@@ -70,7 +67,6 @@
     <PackageVersion Include="System.Drawing.Common" Version="10.0.12" />
     <PackageVersion Include="System.Security.Permissions" Version="10.0.12" />
     <PackageVersion Include="System.Windows.Extensions" Version="10.0.12" />
-    <PackageVersion Include="Tmds.DBus.Protocol" Version="0.95.1" />
 
     <!-- 打包基础设施 -->
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.401" />

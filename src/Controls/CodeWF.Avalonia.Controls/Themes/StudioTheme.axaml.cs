@@ -34,10 +34,11 @@ public sealed class StudioTheme : Styles
 
     private static ResourceDictionary Palette(bool dark, string accent, string secondary, bool warm, bool overrideTemplates = true)
     {
-        var background = dark ? (warm ? "#191512" : "#10111C") : (warm ? "#F6F0E9" : "#F4F3FA");
-        var surface = dark ? (warm ? "#221D19" : "#191A2B") : "#FFFFFF";
-        var raised = dark ? (warm ? "#2D251F" : "#22243A") : (warm ? "#EEE5DB" : "#EEECF8");
-        var border = dark ? (warm ? "#49382E" : "#343650") : (warm ? "#DDCABC" : "#DDD9ED");
+        var aurora = secondary is "#26D4CC" or "#1AAFA9";
+        var background = dark ? (warm ? "#1B1616" : aurora ? "#101820" : "#12111C") : "#FFFFFF";
+        var surface = dark ? (warm ? "#241D1B" : aurora ? "#16212A" : "#191724") : (warm ? "#FCF7F3" : "#F7F6FC");
+        var raised = dark ? (warm ? "#302522" : aurora ? "#20303A" : "#211E30") : (warm ? "#F4ECE5" : "#EFEDF7");
+        var border = dark ? (warm ? "#443631" : aurora ? "#2C3B48" : "#343044") : (warm ? "#DDCABC" : "#DDD8EC");
         var text = dark ? "#F3F0FC" : "#242036";
         var muted = dark ? "#AAA5C0" : "#6E6684";
         var dictionary = new ResourceDictionary();
@@ -75,6 +76,16 @@ public sealed class StudioTheme : Styles
             {
                 new(Color.Parse(warm ? "#BD674D" : secondary is "#26D4CC" or "#1AAFA9" ? "#8968FF" : "#512BD4"), 0),
                 new(Color.Parse(secondary), 1),
+            },
+        };
+        dictionary["StudioTextGradient"] = new LinearGradientBrush
+        {
+            StartPoint = new global::Avalonia.RelativePoint(0, 0, global::Avalonia.RelativeUnit.Relative),
+            EndPoint = new global::Avalonia.RelativePoint(1, 0, global::Avalonia.RelativeUnit.Relative),
+            GradientStops = new GradientStops
+            {
+                new(Color.Parse(accent), 0),
+                new(Color.Parse(dark ? warm || aurora ? secondary : "#BAA3FF" : warm ? "#A34C34" : aurora ? "#007C78" : "#7355DE"), 1),
             },
         };
         if (!overrideTemplates) return dictionary;
