@@ -1,4 +1,4 @@
-<ResourceDictionary
+﻿<ResourceDictionary
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:codewf="https://codewf.com">
@@ -20,7 +20,7 @@
                 <Setter Property="BorderBrush" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="CornerRadius" Value="9999" />
-                <Setter Property="Foreground" Value="{DynamicResource CodeWFDockHeaderSecondaryForegroundBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource SemiColorText2}" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="VerticalContentAlignment" Value="Stretch" />
                 <Setter Property="Template">
@@ -40,14 +40,14 @@
                     </ControlTemplate>
                 </Setter>
                 <Style Selector="^:pointerover">
-                    <Setter Property="Background" Value="{DynamicResource CodeWFDockHeaderPointerOverBackgroundBrush}" />
-                    <Setter Property="BorderBrush" Value="{DynamicResource CodeWFDockActiveIndicatorBrush}" />
-                    <Setter Property="Foreground" Value="{DynamicResource CodeWFDockActiveIndicatorBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource SemiColorFill1}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource SemiColorPrimary}" />
+                    <Setter Property="Foreground" Value="{DynamicResource SemiColorPrimary}" />
                 </Style>
                 <Style Selector="^:pressed">
-                    <Setter Property="Background" Value="{DynamicResource CodeWFDockHeaderPointerOverBackgroundBrush}" />
-                    <Setter Property="BorderBrush" Value="{DynamicResource CodeWFDockActiveIndicatorBrush}" />
-                    <Setter Property="Foreground" Value="{DynamicResource CodeWFDockActiveIndicatorBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource SemiColorFill1}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource SemiColorPrimary}" />
+                    <Setter Property="Foreground" Value="{DynamicResource SemiColorPrimary}" />
                 </Style>
                 <Style Selector="^:disabled">
                     <Setter Property="Opacity" Value="0.45" />
@@ -62,7 +62,7 @@
                         <TextBlock
                             FontSize="{DynamicResource SemiFontSizeHeader6}"
                             FontWeight="{DynamicResource SemiFontWeightBold}"
-                            Foreground="{DynamicResource CodeWFDockHeaderForegroundBrush}"
+                            Foreground="{DynamicResource SemiColorText0}"
                             Text="{TemplateBinding LeftHeader}" />
                         <codewf:SearchListBox
                             Name="PART_LeftSearchListBox"
@@ -84,13 +84,13 @@
                                     <Border
                                         Width="1"
                                         HorizontalAlignment="Center"
-                                        Background="{DynamicResource CodeWFDockPanelBorderBrush}" />
+                                        Background="{DynamicResource SemiColorBorder}" />
                                     <Border
                                         Width="4"
                                         Height="54"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
-                                        Background="{DynamicResource CodeWFDockHeaderPointerOverBackgroundBrush}"
+                                        Background="{DynamicResource SemiColorFill1}"
                                         CornerRadius="9999" />
                                 </Grid>
                             </ControlTemplate>
@@ -128,7 +128,7 @@
                         <TextBlock
                             FontSize="{DynamicResource SemiFontSizeHeader6}"
                             FontWeight="{DynamicResource SemiFontWeightBold}"
-                            Foreground="{DynamicResource CodeWFDockHeaderForegroundBrush}"
+                            Foreground="{DynamicResource SemiColorText0}"
                             Text="{TemplateBinding RightHeader}" />
                         <codewf:SearchListBox
                             Name="PART_RightSearchListBox"

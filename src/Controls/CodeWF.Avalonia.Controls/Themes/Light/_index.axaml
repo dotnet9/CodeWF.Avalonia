@@ -1,6 +1,8 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ResourceDictionary.MergedDictionaries>
+        <!--  令牌先行：同变体其余字典以 StaticResource 引用这里的键  -->
+        <ResourceInclude Source="Tokens.axaml" />
         <ResourceInclude Source="CodeWFWindow.axaml" />
         <ResourceInclude Source="CodeWFTitleBar.axaml" />
         <ResourceInclude Source="SearchListBox.axaml" />

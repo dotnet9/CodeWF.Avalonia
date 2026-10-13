@@ -40,8 +40,7 @@ jobs:
       - name: AOT 发布 Demo
         run: dotnet publish demo/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo.csproj -c Release -r win-x64 -p:PublishAot=true -o artifacts/aot-smoke
 
-      # Demo 主题资源在延迟内容中的解析时机待治理（迁移期已知问题），
-      # 先发布验证 AOT 编译，运行冒烟允许失败不阻塞流水线。
+      # 库侧主题令牌已逐变体字面量化（Themes/{Light,Dark,HighContrast}），逐色板渲染不再抛资源异常，
+      # 因此冒烟按退出码阻塞流水线。
       - name: 运行冒烟演示
-        continue-on-error: true
         run: artifacts\aot-smoke\CodeWF.Avalonia.Demo.exe --smoke

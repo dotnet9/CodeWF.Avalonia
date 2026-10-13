@@ -1,0 +1,33 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--  本变体的字面量令牌集（取值对齐 Semi Light 调色板）。
+          同变体的其它字典（SearchListBox / ColumnDisplayEditor / StatusBadge / StatusCard）与 Controls/Guide.axaml
+          以 StaticResource 引用这些键；样式级 StaticResource 只能看见 Styles.Resources 里的键，
+          看不到宿主应用（Semi 主题包在应用级资源里提供的同名令牌），因此这里必须逐变体给足字面量，
+          否则该键在解析期抛 KeyNotFoundException，或缺键时控件静默退化成无色。  -->
+
+    <SolidColorBrush x:Key="WindowDefaultBackground">White</SolidColorBrush>
+    <SolidColorBrush x:Key="WindowDefaultForeground">#FF1C1F23</SolidColorBrush>
+
+    <SolidColorBrush x:Key="SemiColorBorder">#FFE5E6EB</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorFill0">#FFF5F6F8</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorFill1">#FFEFF1F4</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorFill2">#FFE8EAEE</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorText0">#FF1C1F23</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorText1">#FF4A4E57</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorText2">#FF767A82</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorText3">#FFA1A5AD</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorPrimary">#FF0064FA</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorPrimaryLight">#FFE3EDFF</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorInformation">#FF3B82F6</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorInformationLight">#FFE8F1FE</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorSuccess">#FF26A346</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorSuccessLight">#FFE4F5E8</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWarning">#FFE8A103</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWarningLight">#FFFDF3DC</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDanger">#FFE34D4D</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLight">#FFFDECEC</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLightActive">#FFF9DCDC</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerActive">#FFC93B3B</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWhite">#FFFFFFFF</SolidColorBrush>
+</ResourceDictionary>

@@ -1,4 +1,4 @@
-<ResourceDictionary
+﻿<ResourceDictionary
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:codewf="https://codewf.com">
@@ -7,19 +7,20 @@
     </Design.PreviewWith>
 
     <StaticResource x:Key="GuideCardBackground" ResourceKey="CodeWFWindowBackground" />
-    <StaticResource x:Key="GuideCardBorderBrush" ResourceKey="CodeWFDockPanelBorderBrush" />
-    <StaticResource x:Key="GuideTextForeground" ResourceKey="CodeWFDockHeaderForegroundBrush" />
-    <StaticResource x:Key="GuideSecondaryTextForeground" ResourceKey="CodeWFDockHeaderSecondaryForegroundBrush" />
-    <StaticResource x:Key="GuideIndicatorBrush" ResourceKey="CodeWFDockSplitterPointerOverBrush" />
-    <StaticResource x:Key="GuidePrimaryBrush" ResourceKey="CodeWFDockActiveIndicatorBrush" />
-    <StaticResource x:Key="GuidePrimaryHoverBrush" ResourceKey="CodeWFDockActiveIndicatorBrush" />
-    <StaticResource x:Key="GuidePrimaryPressedBrush" ResourceKey="CodeWFDockActiveIndicatorBrush" />
-    <StaticResource x:Key="GuidePrimaryForeground" ResourceKey="CodeWFDockHeaderForegroundBrush" />
-    <StaticResource x:Key="GuideArrowBorderBrush" ResourceKey="CodeWFDockHeaderPointerOverBackgroundBrush" />
-    <StaticResource x:Key="GuideTargetBorderBrush" ResourceKey="CodeWFDockActiveIndicatorBrush" />
-    <StaticResource x:Key="GuideCloseButtonHoverBackground" ResourceKey="CodeWFDockHeaderPointerOverBackgroundBrush" />
-    <StaticResource x:Key="GuideCloseButtonPressedBackground" ResourceKey="CodeWFDockHeaderPointerOverBackgroundBrush" />
-    <StaticResource x:Key="GuideCardBoxShadow" ResourceKey="SemiShadowElevated" />
+    <StaticResource x:Key="GuideCardBorderBrush" ResourceKey="SemiColorBorder" />
+    <StaticResource x:Key="GuideTextForeground" ResourceKey="SemiColorText0" />
+    <StaticResource x:Key="GuideSecondaryTextForeground" ResourceKey="SemiColorText2" />
+    <StaticResource x:Key="GuideIndicatorBrush" ResourceKey="SemiColorFill2" />
+    <StaticResource x:Key="GuidePrimaryBrush" ResourceKey="SemiColorPrimary" />
+    <StaticResource x:Key="GuidePrimaryHoverBrush" ResourceKey="SemiColorPrimary" />
+    <StaticResource x:Key="GuidePrimaryPressedBrush" ResourceKey="SemiColorPrimary" />
+    <StaticResource x:Key="GuidePrimaryForeground" ResourceKey="SemiColorText0" />
+    <StaticResource x:Key="GuideArrowBorderBrush" ResourceKey="SemiColorFill1" />
+    <StaticResource x:Key="GuideTargetBorderBrush" ResourceKey="SemiColorPrimary" />
+    <StaticResource x:Key="GuideCloseButtonHoverBackground" ResourceKey="SemiColorFill1" />
+    <StaticResource x:Key="GuideCloseButtonPressedBackground" ResourceKey="SemiColorFill1" />
+    <!--  12.1.4 延迟字典内 StaticResource 仅文件内解析，Semi 阴影令牌不可达时内联字面量  -->
+    <BoxShadows x:Key="GuideCardBoxShadow">0 6 16 0 #26000000</BoxShadows>
 
     <ControlTheme x:Key="{x:Type codewf:DefaultGuideIndicator}" TargetType="codewf:DefaultGuideIndicator">
         <Setter Property="IndicatorSize" Value="6" />

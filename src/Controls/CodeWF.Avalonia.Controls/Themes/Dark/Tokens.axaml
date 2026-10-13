@@ -1,0 +1,29 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--  本变体的字面量令牌集（取值对齐 Semi Dark 调色板）。说明见 Light/Tokens.axaml。  -->
+
+    <SolidColorBrush x:Key="WindowDefaultBackground">#FF16161A</SolidColorBrush>
+    <SolidColorBrush x:Key="WindowDefaultForeground">#FFF9F9F9</SolidColorBrush>
+
+    <SolidColorBrush x:Key="SemiColorBorder">#FF3A3A40</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorFill0">#FF232327</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorFill1">#FF2A2A30</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorFill2">#FF323238</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorText0">#FFF9F9F9</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorText1">#FFDCDCE0</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorText2">#FF9EA3AB</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorText3">#FF74787F</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorPrimary">#FF4D9AFF</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorPrimaryLight">#FF1D2C44</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorInformation">#FF6FA8FF</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorInformationLight">#FF1B2536</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorSuccess">#FF4FBF6E</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorSuccessLight">#FF17291D</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWarning">#FFF1C46B</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWarningLight">#FF2E2717</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDanger">#FFFF8AA0</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLight">#FF2E1D21</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLightActive">#FF3A2429</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerActive">#FFFFA6B6</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWhite">#FFFFFFFF</SolidColorBrush>
+</ResourceDictionary>

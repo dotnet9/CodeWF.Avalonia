@@ -536,10 +536,10 @@ public partial class MainViewModel : ReactiveObject
         DemoBootstrapper.Initialize();
         Logger.Info("冒烟开始");
         WriteSampleLogs();
-        await SmokeWalkCatalogAsync(cancellation);
-        Logger.Info("冒烟结束：按信息架构逐页构建完成");
+        var ok = await SmokeWalkCatalogAsync(cancellation);
+        Logger.Info(ok ? "冒烟结束：全部页面构建 + 逐色板渲染通过" : "冒烟结束：存在失败页面，详见上方告警");
         await Logger.ShutdownAsync();
-        return true;
+        return ok;
     }
 
     private void ApplyAppearance()

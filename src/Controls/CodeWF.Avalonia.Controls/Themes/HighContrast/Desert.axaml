@@ -50,4 +50,27 @@
     <SolidColorBrush x:Key="StatusCardWarnForeground">#8A5A12</SolidColorBrush>
     <SolidColorBrush x:Key="StatusCardErrorForeground">#A3311F</SolidColorBrush>
     <SolidColorBrush x:Key="StatusCardFatalForeground">#A3311F</SolidColorBrush>
+    <!--  同变体控件主题与 Controls/Guide.axaml 以 StaticResource 引用下列 Semi 令牌；
+          高对比变体下 Semi 不提供数字令牌，故逐变体字面量化（对齐该变体的既有字面色值）。  -->
+    <SolidColorBrush x:Key="SemiColorBorder">#223D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorFill0">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorFill1">#1F3D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorFill2">#293D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorText0">#3D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorText1">#4A4A4A</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorText2">#676767</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorText3">#8A8A8A</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorPrimary">#903909</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorPrimaryLight">#1F903909</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorInformation">#1C5E75</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorInformationLight">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorSuccess">#0F7A5A</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorSuccessLight">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWarning">#8A5A12</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWarningLight">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDanger">#A3311F</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLight">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLightActive">#143D3D3D</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerActive">#A3311F</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWhite">#FFFFFFFF</SolidColorBrush>
 </ResourceDictionary>
