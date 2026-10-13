@@ -32,6 +32,8 @@
 
 颜色资源包含 `StudioBackground`、`StudioSurface`、`StudioRaised`、`StudioBorder`、`StudioText`、`StudioMuted`、`StudioAccent`、`StudioSecondary`、`StudioGradient`、`StudioTextGradient`。`studio-page`、`studio-hero`、`studio-card`、`studio-capability` 等 Classes 按需使用。标题栏色圈用现有 ListBox 实现选中、键盘切换与悬停动画，和下拉框共享选中项。
 
+新增配色遵循 Semi 的资源结构：`Themes/Studio/Tokens/_index.axaml` 按显式 `ThemeVariant` 加载各配色字典；各字典声明颜色令牌、画刷及控件资源别名。标题栏色圈也读取 `StudioSwatch*` 资源。`StudioTheme.axaml.cs` 仅声明六个变体并加载 AXAML，不根据 RGB 色值判断主题，不在 C# 中拼装颜色字典。默认 Light / Dark 字典只补充 Studio 资源，Semi 的水生、沙漠等扩展配色继续使用自身控件资源。
+
 现有 `PropertyGrid.ThemeOverrides` 接收包含 `Pg*` 键的平面 `ResourceDictionary`。控件复制覆盖值，允许多个面板共享同一份配置；设置 null 恢复内置主题。这个扩展不改变 `PropertyItem` 的纯数据模型，也不要求使用 Studio 主题。
 
 `CodeWF.Avalonia.Controls.Presentation.StudioUi` 组合现有控件来构建 C# 视图，样式随 `StudioTheme` 一起加载。`Heading`、`Sub`、`Hint`、`Key`、`Code`、`Card`、`Button` 和 `Table` 的文本参数支持 `@资源键`，自动创建可随语言切换更新的绑定：
@@ -81,7 +83,7 @@ dotnet test tests/CodeWF.Avalonia.Content.Tests --filter "FullyQualifiedName~Lan
 
 ## Windows NativeAOT 验收
 
-当前验收环境为 Windows x64、.NET SDK 10.0.401，版本 `12.1.4.6`。执行仓库脚本后，直接运行生成的原生 EXE，而不是 `dotnet run`：
+当前验收环境为 Windows x64、.NET SDK 10.0.401，版本 `12.1.4.7`。执行仓库脚本后，直接运行生成的原生 EXE，而不是 `dotnet run`：
 
 ```powershell
 pwsh scripts/publish_avalonia_demo.ps1 -RuntimeIdentifier win-x64
@@ -94,4 +96,4 @@ Start-Process $demo -ArgumentList '--capture ./artifacts/studio-qa' -Wait -PassT
 
 直接依赖不再声明 Fluent、Simple 或 CommunityToolkit.Mvvm。Dock 的 `Dock.Avalonia.Themes.Simple` 仍提供停靠模板；`Tmds.DBus.Protocol` 由 Avalonia 的 Linux 后端传递引入，用于 D-Bus 桌面服务通信。
 
-发布仍有第三方裁剪 / AOT 分析警告；旧 Prism 对话框模板与动态 XAML Loader 存在版本兼容警告，当前 Demo 不调用这些路径。验收涵盖已列出的页面、产物与操作，不代表所有库 API 和异常路径均已验证。Linux / macOS 留给既有发布流程验证。本版本通过 `v12.1.4.6` 标签触发 NuGet 和演示应用发布。
+发布仍有第三方裁剪 / AOT 分析警告；旧 Prism 对话框模板与动态 XAML Loader 存在版本兼容警告，当前 Demo 不调用这些路径。验收涵盖已列出的页面、产物与操作，不代表所有库 API 和异常路径均已验证。Linux / macOS 留给既有发布流程验证。本版本通过 `v12.1.4.7` 标签触发 NuGet 和演示应用发布。
