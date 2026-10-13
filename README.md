@@ -23,11 +23,11 @@ A suite of UI control and capability libraries for Avalonia 12, published with t
 
 ## 包一览 / Packages
 
-「依赖」列只列第三方与本仓包依赖；所有包均面向 `net10.0`（`Lang.Generator` 为 `netstandard2.0`）。**只有 4 个包依赖 Semi.Avalonia**。
+「依赖」列只列第三方与本仓包依赖；所有包均面向 `net10.0`（`Lang.Generator` 为 `netstandard2.0`）。**只有 4 个包直接依赖 Semi.Avalonia**。
 
 | 包 | 说明 | 依赖 |
 |---|---|---|
-| [CodeWF.Avalonia.Controls](https://www.nuget.org/packages/CodeWF.Avalonia.Controls) | 基础自定义控件 + Semi 主题：Guide 引导、Transfer/SearchListBox、StatusBadge/StatusCard、CodeWFWindow/标题栏、WindowedStackPanel、梯形页签、If/Switch 标记扩展与转换器 | Avalonia、**Semi.Avalonia** |
+| [CodeWF.Avalonia.Controls](https://www.nuget.org/packages/CodeWF.Avalonia.Controls) | 基础自定义控件 + Semi 主题：Guide 引导、Transfer/SearchListBox、StatusBadge/StatusCard、CodeWFWindow/标题栏、WindowedStackPanel、梯形页签、If/Switch 标记扩展与转换器 | Avalonia、**Semi.Avalonia**、CodeWF.Avalonia.Lang |
 | [CodeWF.Avalonia.DataGrid](https://www.nuget.org/packages/CodeWF.Avalonia.DataGrid) | 官方 DataGrid 增强：三态排序、自然排序、智能 ToolTip，内置 Semi 主题入口 | Avalonia.Controls.DataGrid、**Semi.Avalonia** |
 | [CodeWF.Avalonia.TreeDataGrid](https://www.nuget.org/packages/CodeWF.Avalonia.TreeDataGrid) | 社区版 TreeDataGrid.Avalonia 增强：三态排序、Ctrl+A 全选、智能 ToolTip，内置 Semi 主题（本地 vendor，不依赖商业版）；含通用 PropertyGrid | TreeDataGrid.Avalonia、Avalonia.Controls.ColorPicker、**Semi.Avalonia**、CodeWF.Avalonia.Lang |
 | [CodeWF.Avalonia.Dock](https://www.nuget.org/packages/CodeWF.Avalonia.Dock) | 基于 Dock.Avalonia 的布局扩展与 Semi 风格主题，含中英文本地化 | Dock.Avalonia、Dock.Avalonia.Themes.Simple、**Semi.Avalonia** |
@@ -90,7 +90,7 @@ dotnet add package CodeWF.Avalonia.DataGrid
 | `CodeWFLogTheme` | Log | 否 | 只在不使用日志查看控件时可省 |
 | `MarkdownThemes` / `MarkdownFullThemes` | Markdown.Lite / Markdown | 否 | 用了 Markdown 控件则必须引入（后者包含前者） |
 
-**6 套色板与 `RequestedThemeVariant` 的对应关系**（演示应用顶部切换的就是这 6 套）：
+**6 套色板与 `RequestedThemeVariant` 的对应关系**（演示应用还提供三套 Studio 配色，见下文）：
 
 | 色板 | 取值 |
 |---|---|
@@ -155,8 +155,12 @@ public class MyMarkdownThemes : MarkdownThemes
 
 ## 演示应用 / Demo
 
+新版原生首页可直接操作 Markdown、自然排序表格和 Dock，并通过能力卡片进入完整演示。共享主题接口、MVVM 约定与截图检查见 [原生演示台文档](docs/NativeDemo.md)。
+
+The native overview offers live Markdown, natural sorting and Dock experiments. See the linked guide for optional Studio themes, localization and validation.
+
 ```bash
-# 桌面演示台：Ribbon 页签 + Dock 工作区（左导航 / 中文档 / 右属性面板 / 下日志），含 6 色板、深浅与双语切换
+# 桌面演示台：Ribbon 页签 + Dock 工作区（左导航 / 中文档 / 右属性面板 / 下日志），含 .NET 紫、AI 极光、AI 暖陶与原有六套 Semi 配色，支持深浅与双语切换
 dotnet run --project demo/CodeWF.Avalonia.Demo
 
 # 冒烟模式：逐页构建后逐色板渲染一遍再退出，退出码 0 表示全部页面构建 + 渲染通过（CI 使用）

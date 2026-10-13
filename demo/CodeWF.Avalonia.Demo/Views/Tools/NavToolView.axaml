@@ -1,9 +1,9 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
              x:Class="CodeWF.Avalonia.Demo.Views.Tools.NavToolView"
              x:DataType="vm:MainViewModel"
-             x:CompileBindings="True">
+             x:CompileBindings="True" Background="{DynamicResource StudioSurface}">
   <!--  左侧导航树工具面板：过滤框 + 就地重命名（双击或铅笔）+ 恢复原名  -->
   <Grid RowDefinitions="Auto,*">
     <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="6,4,6,2">

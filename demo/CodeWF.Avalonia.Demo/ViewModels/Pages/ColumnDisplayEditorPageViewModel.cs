@@ -1,3 +1,4 @@
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using CodeWF.Avalonia.Controls.Models;
 using ReactiveUI;
 using ReactiveUI.Primitives;
@@ -41,18 +42,18 @@ public class ColumnDisplayEditorPageViewModel : ReactiveObject
             column.PropertyChanged += OnColumnPropertyChanged;
         }
 
-        ChangeLog.Insert(0, $"[{DateTime.Now:HH:mm:ss}] 重置为默认列配置");
+        ChangeLog.Insert(0, string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.Reset001"), DateTime.Now));
     }
 
     private static ObservableCollection<ColumnDisplayItem> CreateDefaultColumns() =>
         new(
         [
-            new ColumnDisplayItem("name", "名称"),
-            new ColumnDisplayItem("kind", "类型"),
-            new ColumnDisplayItem("status", "状态"),
-            new ColumnDisplayItem("owner", "负责人"),
-            new ColumnDisplayItem("updated", "更新时间"),
-            new ColumnDisplayItem("remark", "备注", visible: false),
+            new ColumnDisplayItem("name", L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.CreateDefaultColumns002")),
+            new ColumnDisplayItem("kind", L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.CreateDefaultColumns003")),
+            new ColumnDisplayItem("status", L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.CreateDefaultColumns004")),
+            new ColumnDisplayItem("owner", L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.CreateDefaultColumns005")),
+            new ColumnDisplayItem("updated", L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.CreateDefaultColumns006")),
+            new ColumnDisplayItem("remark", L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.CreateDefaultColumns007"), visible: false),
         ]);
 
     private void OnColumnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -60,7 +61,7 @@ public class ColumnDisplayEditorPageViewModel : ReactiveObject
         if (e.PropertyName == nameof(ColumnDisplayItem.Visible)
             && sender is ColumnDisplayItem column)
         {
-            ChangeLog.Insert(0, $"[{DateTime.Now:HH:mm:ss}] 「{column.DisplayText}」可见性 → {(column.Visible ? "显示" : "隐藏")}");
+            ChangeLog.Insert(0, string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.OnColumnPropertyChanged010"), DateTime.Now, column.DisplayText, (column.Visible ? L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.OnColumnPropertyChanged008") : L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.OnColumnPropertyChanged009"))));
         }
     }
 
@@ -70,7 +71,7 @@ public class ColumnDisplayEditorPageViewModel : ReactiveObject
         {
             var moved = e.NewItems?.Cast<ColumnDisplayItem>().FirstOrDefault();
             ChangeLog.Insert(0,
-                $"[{DateTime.Now:HH:mm:ss}] 「{moved?.DisplayText}」移动到位置 {e.NewStartingIndex + 1}");
+                string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.OnColumnsCollectionChanged011"), DateTime.Now, moved?.DisplayText, e.NewStartingIndex + 1));
         }
     }
 }

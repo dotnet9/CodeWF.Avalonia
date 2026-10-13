@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="PropertyGrid\I18n\*.json" WithCulture="false" />
     <PackageReference Include="TreeDataGrid.Avalonia" />
     <PackageReference Include="Semi.Avalonia" />
     <PackageReference Include="Avalonia.Controls.ColorPicker" />

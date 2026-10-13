@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using CodeWF.Toolkit.Logging;
 using System.Text.Json;
 
@@ -15,93 +15,93 @@ public partial class MainViewModel
     {
         var ok = true;
 
-        ok &= Check("通知中心容量与去重", () =>
+        ok &= Check("Notification capacity and deduplication", () =>
         {
             ClearNotifications();
             for (var i = 0; i < 6; i++)
             {
-                Notify(DemoNotificationKind.Info, "通知 " + i);
+                Notify(DemoNotificationKind.Info, "Notification " + i);
             }
 
-            Expect(Notifications.Count == 4, "最多保留 4 张卡片", Notifications.Count);
-            Expect(HasNotifications, "有卡片时徽标可见");
+            Expect(Notifications.Count == 4, "At most four notifications retained", Notifications.Count);
+            Expect(HasNotifications, "Badge visible with notifications");
             ClearNotifications();
-            Expect(!HasNotifications, "清空后徽标隐藏");
+            Expect(!HasNotifications, "Badge hidden after clear");
         });
 
-        ok &= Check("命令面板过滤与执行", () =>
+        ok &= Check("Command filtering and execution", () =>
         {
             var all = FilteredCommands;
-            Expect(all.Count >= 25, "默认列出全部文档与外壳动作", all.Count);
+            Expect(all.Count >= 25, "All document and shell commands listed by default", all.Count);
 
-            CommandQuery = "导出";
+            CommandQuery = global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource("Demo.Item.MarkdownExport");
             var filtered = FilteredCommands;
-            Expect(filtered.Count > 0 && filtered.Count < all.Count, "关键字过滤命中且收窄", filtered.Count);
-            Expect(filtered.All(e => e.Title.Contains("导出", StringComparison.OrdinalIgnoreCase)
-                                     || e.Group.Contains("导出", StringComparison.OrdinalIgnoreCase)),
-                "过滤结果都与关键字相关");
+            Expect(filtered.Count > 0 && filtered.Count < all.Count, "Search returns a narrower result set", filtered.Count);
+            Expect(filtered.All(e => e.Title.Contains(global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource("Demo.Item.MarkdownExport"), StringComparison.OrdinalIgnoreCase)
+                                     || e.Group.Contains(global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource("Demo.Item.MarkdownExport"), StringComparison.OrdinalIgnoreCase)),
+                "All results match the query");
 
             MoveCommandSelection(1);
-            Expect(CommandIndex >= 0 && CommandIndex < filtered.Count, "↑↓ 选择在范围内", CommandIndex);
+            Expect(CommandIndex >= 0 && CommandIndex < filtered.Count, "Arrow selection remains in range", CommandIndex);
 
-            CommandQuery = "zzz-不存在的命令";
-            Expect(FilteredCommands.Count == 0, "无匹配时列表为空");
+            CommandQuery = "zzz-no-command";
+            Expect(FilteredCommands.Count == 0, "No match produces empty list");
             CommandQuery = string.Empty;
         });
 
-        ok &= Check("密度切换", () =>
+        ok &= Check("Density toggle", () =>
         {
             Density = DemoDensity.Comfort;
             ToggleDensityCommand.Execute().Subscribe();
-            Expect(Density == DemoDensity.Compact, "切到紧凑", Density);
-            Expect(IsCompactDensity, "紧凑标记生效");
-            Expect(DensityLabel.Length > 0, "密度文案已本地化", DensityLabel);
+            Expect(Density == DemoDensity.Compact, "Switch to compact", Density);
+            Expect(IsCompactDensity, "Compact flag applied");
+            Expect(DensityLabel.Length > 0, "Density label localized", DensityLabel);
             ToggleDensityCommand.Execute().Subscribe();
-            Expect(Density == DemoDensity.Comfort, "再切回舒适", Density);
+            Expect(Density == DemoDensity.Comfort, "Restore comfortable density", Density);
         });
 
-        ok &= Check("通知中心快捷键", () =>
+        ok &= Check("Notification shortcuts", () =>
         {
             CommandPaletteOpen = true;
             EscapeShellOverlay();
-            Expect(!CommandPaletteOpen, "Esc 关闭命令面板");
+            Expect(!CommandPaletteOpen, "Escape closes the command palette");
 
-            Notify(DemoNotificationKind.Warning, "待清理");
+            Notify(DemoNotificationKind.Warning, "Pending cleanup");
             EscapeShellOverlay();
-            Expect(!HasNotifications, "再按 Esc 清空通知");
+            Expect(!HasNotifications, "Escape clears notifications");
         });
 
-        ok &= Check("导航树过滤", () =>
+        ok &= Check("Navigation filtering", () =>
         {
             var before = FilteredGroups.Sum(g => g.Items.Count(i => !i.IsFilteredOut));
-            NavFilter = "导出";
+            NavFilter = global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource("Demo.Item.MarkdownExport");
             var hits = FilteredGroups.Sum(g => g.Items.Count(i => !i.IsFilteredOut));
-            Expect(hits > 0 && hits < before, "过滤后可见叶子变少", hits);
-            NavFilter = "zzz-不存在的页面";
-            Expect(IsNavEmpty, "无匹配时进入空态");
+            Expect(hits > 0 && hits < before, "Filtering reduces visible leaves", hits);
+            NavFilter = "zzz-no-page";
+            Expect(IsNavEmpty, "No match displays empty state");
             NavFilter = string.Empty;
-            Expect(FilteredGroups.Sum(g => g.Items.Count(i => !i.IsFilteredOut)) == before, "清空关键字后恢复全部");
+            Expect(FilteredGroups.Sum(g => g.Items.Count(i => !i.IsFilteredOut)) == before, "Clearing search restores all items");
         });
 
-        ok &= Check("导航树就地重命名", () =>
+        ok &= Check("Navigation rename", () =>
         {
             var first = Groups.SelectMany(g => g.Items).First();
             var original = first.DisplayTitle;
 
             BeginRename(first);
-            Expect(IsRenaming && ReferenceEquals(RenameTarget, first), "进入编辑态", RenameTarget?.TitleKey);
-            RenameText = "我的阅读器";
+            Expect(IsRenaming && ReferenceEquals(RenameTarget, first), "Enter editing state", RenameTarget?.TitleKey);
+            RenameText = "My reader";
             CommitRename();
-            Expect(!IsRenaming, "提交后退出编辑态");
-            Expect(first.DisplayTitle == "我的阅读器", "显示名已更新", first.DisplayTitle);
-            Expect(HasRenames, "出现「已重命名」标记");
+            Expect(!IsRenaming, "Editing ends after commit");
+            Expect(first.DisplayTitle == "My reader", "Display title updated", first.DisplayTitle);
+            Expect(HasRenames, "Rename marker is visible");
 
             ResetRenames();
-            Expect(first.DisplayTitle == original, "恢复原名", first.DisplayTitle);
-            Expect(!HasRenames, "标记清除");
+            Expect(first.DisplayTitle == original, "Original title restored", first.DisplayTitle);
+            Expect(!HasRenames, "Marker cleared");
         });
 
-        ok &= Check("布局存档往返", () =>
+        ok &= Check("Layout snapshot round-trip", () =>
         {
             var temp = Path.Combine(Path.GetTempPath(), "codewf-avalonia-smoke-layout.json");
             var item = Groups.SelectMany(g => g.Items).First();
@@ -110,32 +110,32 @@ public partial class MainViewModel
             Density = DemoDensity.Compact;
             IsDarkMode = true;
             BeginRename(item);
-            RenameText = "烟雾测试名";
+            RenameText = "Smoke title";
             CommitRename();
             OpenItem(Groups[2].Items[1]);
 
-            Expect(SaveLayoutTo(temp), "写出存档文件", temp);
+            Expect(SaveLayoutTo(temp), "Write snapshot file", temp);
 
             // 改掉现场状态，再从存档恢复
             Density = DemoDensity.Comfort;
             IsDarkMode = false;
             ResetRenames();
             var raw = File.ReadAllText(temp);
-            Expect(raw.Contains("烟雾测试名", StringComparison.Ordinal), "存档里带上自定义名");
-            Expect(raw.Contains("Compact", StringComparison.Ordinal), "存档里带上密度");
+            Expect(raw.Contains("Smoke title", StringComparison.Ordinal), "Snapshot contains custom title");
+            Expect(raw.Contains("Compact", StringComparison.Ordinal), "Snapshot contains density");
 
-            Expect(LoadLayoutFrom(temp), "从存档恢复");
-            Expect(Density == DemoDensity.Compact, "密度已恢复", Density);
-            Expect(IsDarkMode, "深浅已恢复", IsDarkMode);
-            Expect(item.DisplayTitle == "烟雾测试名", "自定义名已恢复", item.DisplayTitle);
-            Expect(Documents.Count > 0, "文档列表已恢复", Documents.Count);
+            Expect(LoadLayoutFrom(temp), "Restore layout snapshot");
+            Expect(Density == DemoDensity.Compact, "Density restored", Density);
+            Expect(IsDarkMode, "Appearance mode restored", IsDarkMode);
+            Expect(item.DisplayTitle == "Smoke title", "Custom title restored", item.DisplayTitle);
+            Expect(Documents.Count > 0, "Document list restored", Documents.Count);
 
             // 收尾：删档并回到默认
             File.Delete(temp);
             item.CustomTitle = null;
             Density = DemoDensity.Comfort;
             IsDarkMode = false;
-            Logger.Info("布局存档往返完成，临时文件已删除：" + temp);
+            Logger.Info("Layout round-trip completed, temporary file deleted: " + temp);
         });
 
         // 外壳新控件的渲染（导航树面板 + 命令面板 / 通知中心浮层 + 重命名输入框）
@@ -156,7 +156,7 @@ public partial class MainViewModel
         var host = await AttachSmokeHostAsync(cancellation);
         if (host is null)
         {
-            Logger.Warn("冒烟：没有可挂载的窗口，跳过外壳渲染");
+            Logger.Warn("Smoke: no window; shell rendering skipped");
             return true;
         }
 
@@ -170,8 +170,8 @@ public partial class MainViewModel
             foreach (var paletteOpen in new[] { false, true })
             {
                 CommandPaletteOpen = paletteOpen;
-                NavFilter = paletteOpen ? "文档" : string.Empty;
-                Notify(DemoNotificationKind.Success, "外壳渲染", compact ? "紧凑" : "舒适");
+                NavFilter = paletteOpen ? "Documents" : string.Empty;
+                Notify(DemoNotificationKind.Success, "Shell rendering", compact ? "Compact" : "Comfort");
 
                 var chrome = new Grid();
                 chrome.Children.Add(new Views.Tools.NavToolView { DataContext = this });
@@ -187,7 +187,7 @@ public partial class MainViewModel
                 {
                     failed++;
                     Logger.Warn(
-                        $"冒烟：外壳渲染失败（compact={compact}, palette={paletteOpen}）：{ex.GetType().Name}: {ex.Message}");
+                        $"Smoke: shell render failed (compact={compact}, palette={paletteOpen}): {ex.GetType().Name}: {ex.Message}");
                 }
             }
         }
@@ -205,7 +205,7 @@ public partial class MainViewModel
         catch (Exception ex)
         {
             failed++;
-            Logger.Warn($"冒烟：导航树重命名态渲染失败：{ex.GetType().Name}: {ex.Message}");
+            Logger.Warn($"Smoke: rename render failed: {ex.GetType().Name}: {ex.Message}");
         }
 
         CancelRename();
@@ -215,7 +215,7 @@ public partial class MainViewModel
         host.Content = null;
         ClearNotifications();
 
-        Logger.Info($"冒烟：外壳渲染 {rendered} 次，失败 {failed} 次");
+        Logger.Info($"Smoke: {rendered} shell renders, {failed} failures");
         return failed == 0;
     }
 
@@ -224,12 +224,12 @@ public partial class MainViewModel
         try
         {
             action();
-            Logger.Info("冒烟：外壳用例通过 —— " + name);
+            Logger.Info("Smoke: shell check passed: " + name);
             return true;
         }
         catch (Exception ex)
         {
-            Logger.Warn($"冒烟：外壳用例失败（{name}）：{ex.Message}");
+            Logger.Warn($"Smoke: shell check failed ({name}): {ex.Message}");
             return false;
         }
     }
@@ -238,7 +238,7 @@ public partial class MainViewModel
     {
         if (!condition)
         {
-            throw new InvalidOperationException(actual is null ? what : $"{what}（实际 {actual}）");
+            throw new InvalidOperationException(actual is null ? what : $"{what} (actual: {actual})");
         }
     }
 }

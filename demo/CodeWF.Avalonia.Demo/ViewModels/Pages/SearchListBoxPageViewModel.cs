@@ -1,3 +1,4 @@
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 
@@ -19,11 +20,11 @@ public class SearchListBoxPageViewModel : ReactiveObject
 
     private static ObservableCollection<SearchItem> CreateItems(int count)
     {
-        var categories = new[] { "音频", "视频", "文档", "图片", "压缩包" };
+        var categories = new[] { L.Instance.GetResource("Demo.Text.SearchListBoxPageViewModel.CreateItems001"), L.Instance.GetResource("Demo.Text.SearchListBoxPageViewModel.CreateItems002"), L.Instance.GetResource("Demo.Text.SearchListBoxPageViewModel.CreateItems003"), L.Instance.GetResource("Demo.Text.SearchListBoxPageViewModel.CreateItems004"), L.Instance.GetResource("Demo.Text.SearchListBoxPageViewModel.CreateItems005") };
         var items = new ObservableCollection<SearchItem>();
         for (var i = 1; i <= count; i++)
         {
-            items.Add(new SearchItem($"素材 {i:000}", categories[i % categories.Length]));
+            items.Add(new SearchItem(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.SearchListBoxPageViewModel.CreateItems006"), i), categories[i % categories.Length]));
         }
 
         return items;

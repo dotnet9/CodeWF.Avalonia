@@ -1,3 +1,4 @@
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia;
@@ -17,43 +18,9 @@ public partial class WindowedStackPanelPage : DemoPageBase
     private const string IdSpacing = "wsp.spacing";
     private const int BlockCount = 5000;
 
-    public const string XamlSnippet = """
-        <!-- 与 ScrollViewer 配合使用；子项可通过 XAML 子元素或代码 AddItem -->
-        <ScrollViewer>
-          <codewf:WindowedStackPanel x:Name="BlocksPanel"
-                                     EnableVirtualization="True"
-                                     VirtualizationThreshold="40"
-                                     OverscanViewports="2"
-                                     Spacing="8" />
-        </ScrollViewer>
-        """;
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.XamlSnippet001");
 
-    public const string CSharpSnippet = """
-        var panel = new WindowedStackPanel
-        {
-            EnableVirtualization = true,
-            VirtualizationThreshold = 40,
-            OverscanViewports = 2,
-            Spacing = 8,
-        };
-        scrollViewer.Content = panel;
-
-        for (var i = 0; i < 5000; i++)
-        {
-            panel.AddItem(new TextBlock { Text = $"块 {i}" });
-        }
-
-        // 实时指标
-        panel.ItemCount;           // 5000
-        panel.RealizedItemCount;   // 视口 + 缓冲内已实现的块数（几十）
-        panel.IsVirtualizing;      // 是否处于虚拟化状态
-
-        // 定点操作
-        panel.RealizeItem(100);          // 强制实现
-        panel.TryGetItemTop(100, out var top);
-        panel.ScrollHost?.Offset = new Vector(0, top);   // 滚动到指定块
-        panel.ClearItems();
-        """;
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.CSharpSnippet002");
 
     private readonly DispatcherTimer _metricsTimer;
 
@@ -100,46 +67,46 @@ public partial class WindowedStackPanelPage : DemoPageBase
         var virtualization = new PropertyItem
         {
             Id = IdVirtualization,
-            Name = "虚拟化",
+            Name = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties003"),
             Kind = PropertyItemKind.Boolean,
             Value = true,
             DefaultValue = true,
-            Description = "关闭后全部块常驻可视化树（5000 块时可感受差异）。",
+            Description = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties004"),
         };
         var threshold = new PropertyItem
         {
             Id = IdThreshold,
-            Name = "虚拟化阈值",
+            Name = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties005"),
             Kind = PropertyItemKind.Number,
             Value = 40m,
             DefaultValue = 40m,
             Minimum = 1,
             Maximum = 5000,
-            Description = "块数超过阈值才启用窗口化实现。",
+            Description = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties006"),
         };
         var overscan = new PropertyItem
         {
             Id = IdOverscan,
-            Name = "视口缓冲",
+            Name = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties007"),
             Kind = PropertyItemKind.Number,
             Value = 2m,
             DefaultValue = 2m,
             Minimum = 0,
             Maximum = 10,
             Format = "0",
-            Description = "视口上下各多实现的视口数量，影响滚动平滑度。",
+            Description = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties008"),
         };
         var spacing = new PropertyItem
         {
             Id = IdSpacing,
-            Name = "块间距",
+            Name = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties009"),
             Kind = PropertyItemKind.Number,
             Value = 8m,
             DefaultValue = 0m,
             Minimum = 0,
             Maximum = 32,
             Unit = "px",
-            Description = "相邻块之间的间距。",
+            Description = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties010"),
         };
 
         return [virtualization, threshold, overscan, spacing];
@@ -158,13 +125,13 @@ public partial class WindowedStackPanelPage : DemoPageBase
                 Padding = new Thickness(12, 0),
                 Child = new TextBlock
                 {
-                    Text = $"块 {i} / {BlockCount}",
+                    Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.OnGenerate011"), i, BlockCount),
                     VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
                 },
             });
         }
 
-        Logger.Info($"WindowedStackPanel：已生成 {BlockCount} 块");
+        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.OnGenerate012"), BlockCount));
         UpdateMetrics();
     }
 
@@ -177,6 +144,6 @@ public partial class WindowedStackPanelPage : DemoPageBase
     private void UpdateMetrics()
     {
         MetricsText.Text =
-            $"总块数：{BlocksPanel.ItemCount} · 已实现：{BlocksPanel.RealizedItemCount} · 虚拟化中：{(BlocksPanel.IsVirtualizing ? "是" : "否")}";
+            string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.UpdateMetrics015"), BlocksPanel.ItemCount, BlocksPanel.RealizedItemCount, (BlocksPanel.IsVirtualizing ? L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.UpdateMetrics013") : L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.UpdateMetrics014")));
     }
 }

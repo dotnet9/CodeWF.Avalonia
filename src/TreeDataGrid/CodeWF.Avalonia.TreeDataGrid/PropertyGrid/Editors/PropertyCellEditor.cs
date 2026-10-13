@@ -8,6 +8,8 @@ using HAlignment = Avalonia.Layout.HorizontalAlignment;
 using LOrientation = Avalonia.Layout.Orientation;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Data;
+using Avalonia.Data.Converters;
 using Avalonia.VisualTree;
 
 namespace CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
@@ -262,8 +264,9 @@ public class PropertyCellEditor : ContentControl
         var combo = new ComboBox
         {
             ItemsSource = item.Options,
-            PlaceholderText = item.Watermark ?? PropertyGridLocalization.Get(PropertyGridLanguage.SelectPlaceholder),        };
-        combo.SelectedItem = item.Value as string;
+            PlaceholderText = item.Watermark ?? PropertyGridLocalization.Get(PropertyGridLanguage.SelectPlaceholder),
+        };
+        combo.Bind(ComboBox.SelectedItemProperty, new Binding(nameof(PropertyItem.Value)) { Source = item, Mode = BindingMode.OneWay });
         combo.SelectionChanged += (_, _) =>
         {
             if (combo.SelectedItem is string value && !Equals(item.Value, value))
@@ -291,6 +294,12 @@ public class PropertyCellEditor : ContentControl
                 IsChecked = Equals(item.Value, option),
                 VerticalContentAlignment = VAlignment.Center,
             };
+            radio.Bind(RadioButton.IsCheckedProperty, new Binding(nameof(PropertyItem.Value))
+            {
+                Source = item,
+                Mode = BindingMode.OneWay,
+                Converter = new FuncValueConverter<object?, bool>(value => Equals(value, option)),
+            });
             radio.IsCheckedChanged += (_, _) =>
             {
                 if (radio.IsChecked == true && !Equals(item.Value, option))

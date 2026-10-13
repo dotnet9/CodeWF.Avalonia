@@ -7,37 +7,37 @@
 
     <Border Padding="10" CornerRadius="6" BorderThickness="1"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <TextBlock Text="TrapezoidShapedTabControl：梯形页签 ControlTheme（TrapezoidShapedTabItemBorder 负责路径绘制），首 / 中 / 末页签自动适配左右斜边；配套 TabStrip 版本用于 Ribbon。本演示台的文档页签即该主题。"
+      <TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View001}"
                  TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
     </Border>
 
-    <TextBlock Text="TabControl（梯形主题）" FontWeight="Bold" />
+    <TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View002}" FontWeight="Bold" />
     <TabControl Theme="{StaticResource TrapezoidShapedTabControl}" Height="180">
-      <TabItem Header="首页">
-        <Border Padding="12"><TextBlock Text="首个页签：左侧贴齐、右侧斜边。" /></Border>
+      <TabItem Header="{codewf:I18n Demo.Text.TrapezoidTabPage.View003}">
+        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View004}" /></Border>
       </TabItem>
-      <TabItem Header="设计">
-        <Border Padding="12"><TextBlock Text="中间页签：两侧斜边，DiagonalFilletRatio 控制斜角比例。" /></Border>
+      <TabItem Header="{codewf:I18n Demo.Text.TrapezoidTabPage.View005}">
+        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View006}" /></Border>
       </TabItem>
-      <TabItem Header="开发">
-        <Border Padding="12"><TextBlock Text="中间页签：选中态高亮描边。" /></Border>
+      <TabItem Header="{codewf:I18n Demo.Text.TrapezoidTabPage.View007}">
+        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View008}" /></Border>
       </TabItem>
-      <TabItem Header="发布">
-        <Border Padding="12"><TextBlock Text="中间页签：悬停 / 按压反馈。" /></Border>
+      <TabItem Header="{codewf:I18n Demo.Text.TrapezoidTabPage.View009}">
+        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View010}" /></Border>
       </TabItem>
-      <TabItem Header="关于">
-        <Border Padding="12"><TextBlock Text="末个页签：右侧贴齐、左侧斜边。" /></Border>
+      <TabItem Header="{codewf:I18n Demo.Text.TrapezoidTabPage.View011}">
+        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View012}" /></Border>
       </TabItem>
     </TabControl>
 
-    <TextBlock Text="TabStrip（独立页签条）" FontWeight="Bold" />
+    <TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View013}" FontWeight="Bold" />
     <TabStrip Theme="{StaticResource TrapezoidShapedTabStrip}" SelectedIndex="1">
-      <TabStripItem Content="概览" Padding="16,6" />
-      <TabStripItem Content="明细" Padding="16,6" />
-      <TabStripItem Content="统计" Padding="16,6" />
+      <TabStripItem Content="{codewf:I18n Demo.Text.TrapezoidTabPage.View014}" Padding="16,6" />
+      <TabStripItem Content="{codewf:I18n Demo.Text.TrapezoidTabPage.View015}" Padding="16,6" />
+      <TabStripItem Content="{codewf:I18n Demo.Text.TrapezoidTabPage.View016}" Padding="16,6" />
     </TabStrip>
     <Panel Height="72">
-      <TextBlock Text="↑ TabStrip 仅承载选择状态，内容区自行联动（Ribbon 页签即此用法）。"
+      <TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View017}"
                  Opacity="0.7" FontSize="12" />
     </Panel>
   </StackPanel>

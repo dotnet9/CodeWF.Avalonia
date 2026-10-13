@@ -1,4 +1,5 @@
-﻿using Avalonia;
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
+using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Styling;
 using CodeWF.Avalonia.Demo.Infrastructure;
@@ -30,7 +31,7 @@ public partial class MainViewModel : ReactiveObject
     private bool _logPanelVisible = true;
     private bool _propertiesPanelVisible = true;
     private AppearanceOption _selectedPalette;
-    private bool _isDarkMode;
+    private bool _isDarkMode = true;
     private CultureOption _selectedCulture;
     private DemoGroupViewModel? _selectedGroup;
     private PropertyItem? _paletteItem;
@@ -52,14 +53,17 @@ public partial class MainViewModel : ReactiveObject
         CloseDocumentCommand = ReactiveCommand.Create<DemoDocumentViewModel>(CloseDocument);
         ToggleRibbonCommand = ReactiveCommand.Create(() => { RibbonExpanded = !RibbonExpanded; });
         TogglePanelCommand = ReactiveCommand.Create<string>(TogglePanel);
-        QuickSaveCommand = ReactiveCommand.Create(() => { Logger.Info("保存工作区布局（演示）"); });
+        QuickSaveCommand = ReactiveCommand.Create(SaveLayout);
         QuickResetCommand = ReactiveCommand.Create(ResetLayout);
-        QuickSettingsCommand = ReactiveCommand.Create(() => { Logger.Info("打开设置（演示）"); });
+        QuickSettingsCommand = ReactiveCommand.Create(() => TogglePanel("props"));
         QuickGuideCommand = ReactiveCommand.Create(OpenGuidanceDemo);
         WriteLogsCommand = ReactiveCommand.Create(WriteSampleLogs);
 
         Palettes = new ObservableCollection<AppearanceOption>
         {
+            AppearanceOption.DotNet(),
+            AppearanceOption.Aurora(),
+            AppearanceOption.Ember(),
             AppearanceOption.Default(),
             AppearanceOption.Aquatic(),
             AppearanceOption.Desert(),
@@ -71,12 +75,13 @@ public partial class MainViewModel : ReactiveObject
 
         Cultures = new ObservableCollection<CultureOption>
         {
-            new("zh-CN", "简体中文"),
+            new("zh-CN", L.Instance.GetResource("Demo.Text.MainViewModel.Content001")),
             new("en-US", "English"),
         };
         _selectedCulture = Cultures[0];
 
         GlobalProperties = BuildGlobalProperties();
+        ApplyAppearance();
 
         I18nManager.Instance.CultureChanged += (_, _) => this.RaisePropertyChanged(nameof(StatusText));
 
@@ -157,16 +162,16 @@ public partial class MainViewModel : ReactiveObject
     }
 
     public IReadOnlyList<PropertyItem> ActivePropertyItems =>
-        ActiveDocument?.Page.Properties ?? GlobalProperties;
+        ActiveDocument?.Page is Views.Pages.WelcomePage ? GlobalProperties : ActiveDocument?.Page.Properties ?? GlobalProperties;
 
     public ICommand ActiveValueCommittedCommand =>
-        ActiveDocument?.ValueCommittedCommand ?? GlobalValueCommittedCommand;
+        ActiveDocument?.Page is Views.Pages.WelcomePage ? GlobalValueCommittedCommand : ActiveDocument?.ValueCommittedCommand ?? GlobalValueCommittedCommand;
 
     public ICommand ActiveBrowseRequestedCommand =>
-        ActiveDocument?.BrowseRequestedCommand ?? GlobalBrowseRequestedCommand;
+        ActiveDocument?.Page is Views.Pages.WelcomePage ? GlobalBrowseRequestedCommand : ActiveDocument?.BrowseRequestedCommand ?? GlobalBrowseRequestedCommand;
 
     /// <summary>无文档打开时的全局设置属性（外观 / 语言），由 PropertyGrid 直接驱动 Shell。</summary>
-    public IReadOnlyList<PropertyItem> GlobalProperties { get; }
+    public IReadOnlyList<PropertyItem> GlobalProperties { get; private set; }
 
     public ReactiveCommand<PropertyValueChange, RxVoid> GlobalValueCommittedCommand { get; private set; } = null!;
 
@@ -251,6 +256,11 @@ public partial class MainViewModel : ReactiveObject
 
     public ObservableCollection<CultureOption> Cultures { get; }
 
+    public void SelectCulture(string name)
+    {
+        if (Cultures.FirstOrDefault(culture => culture.Name == name) is { } culture) SelectedCulture = culture;
+    }
+
     public CultureOption SelectedCulture
     {
         get => _selectedCulture;
@@ -264,7 +274,26 @@ public partial class MainViewModel : ReactiveObject
             this.RaiseAndSetIfChanged(ref _selectedCulture, value);
             I18nManager.Instance.Culture = new CultureInfo(value.Name);
             SyncToolTitles();
-            Logger.Info("界面语言切换为 " + value.Name);
+            foreach (var palette in Palettes) palette.RefreshTitle();
+            GlobalProperties = BuildGlobalProperties();
+            SyncGlobalItems();
+            foreach (var document in Documents)
+            {
+                document.Page.RefreshProperties();
+                document.RefreshTitle();
+            }
+            this.RaisePropertyChanged(nameof(ActivePropertyItems));
+            this.RaisePropertyChanged(nameof(NavFilterPlaceholder));
+            this.RaisePropertyChanged(nameof(NavEmptyHint));
+            this.RaisePropertyChanged(nameof(RenameHint));
+            this.RaisePropertyChanged(nameof(ResetRenamesHint));
+            this.RaisePropertyChanged(nameof(DensityLabel));
+            this.RaisePropertyChanged(nameof(CommandPlaceholder));
+            this.RaisePropertyChanged(nameof(CommandHint));
+            this.RaisePropertyChanged(nameof(NotificationDismissHint));
+            RaiseCommandState();
+            StatusText = I18nManager.Instance.GetResource("Demo.Shell.Ready");
+            Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.SelectedCulture002") + value.Name);
         }
     }
 
@@ -281,6 +310,15 @@ public partial class MainViewModel : ReactiveObject
         }
 
         var page = item.PageFactory();
+        if (page is Views.Pages.WelcomePage overview)
+        {
+            overview.Navigate = key =>
+            {
+                var destination = Groups.SelectMany(g => g.Items).FirstOrDefault(i => i.TitleKey == key);
+                if (destination is not null) OpenItem(destination);
+            };
+            overview.TogglePanel = TogglePanel;
+        }
         var document = new DemoDocumentViewModel(item, page);
         var dockDocument = _dockFactory?.CreateDocument() ?? new Document();
         dockDocument.Id = "Doc." + item.TitleKey;
@@ -308,7 +346,7 @@ public partial class MainViewModel : ReactiveObject
         }
 
         StatusText = I18nManager.Instance.GetResource(DemoKeys.ShellReady);
-        Logger.Info("打开文档：" + item.Title);
+        Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.OpenItem003") + item.Title);
     }
 
     public void CloseDocument(DemoDocumentViewModel document)
@@ -348,7 +386,7 @@ public partial class MainViewModel : ReactiveObject
         }
 
         StatusText = I18nManager.Instance.GetResource(DemoKeys.ShellReady);
-        Logger.Info("关闭文档：" + document.Title);
+        Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.SyncDocumentClosed004") + document.Title);
     }
 
     /// <summary>面板显隐切换：隐藏 = 移入 RootDock 隐藏集合，恢复 = 按 Id 取回。</summary>
@@ -384,12 +422,12 @@ public partial class MainViewModel : ReactiveObject
         if (hidden)
         {
             _dockFactory.RestoreDockable(tool.Id);
-            Logger.Info("显示面板：" + title);
+            Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.ToggleTool005") + title);
         }
         else
         {
             _dockFactory.HideDockable(tool);
-            Logger.Info("隐藏面板：" + title);
+            Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.ToggleTool006") + title);
         }
     }
 
@@ -401,7 +439,7 @@ public partial class MainViewModel : ReactiveObject
         _selectedNavItem = null;
         BuildLayout();
         OpenItem(Groups[0].Items[0]);
-        Logger.Info("重置工作区布局");
+        Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.ResetLayout007"));
     }
 
     /// <summary>
@@ -437,7 +475,7 @@ public partial class MainViewModel : ReactiveObject
             ActiveDockable = _navTool,
             VisibleDockables = _dockFactory.CreateList<IDockable>(_navTool),
             Dock = DockMode.Left,
-            Proportion = 0.18,
+            Proportion = 0.145,
         };
         var propDock = new ToolDock
         {
@@ -445,7 +483,8 @@ public partial class MainViewModel : ReactiveObject
             ActiveDockable = _propTool,
             VisibleDockables = _dockFactory.CreateList<IDockable>(_propTool),
             Dock = DockMode.Right,
-            Proportion = 0.2,
+            Proportion = 0.20,
+            MinWidth = 260,
         };
         var logDock = new ToolDock
         {
@@ -453,7 +492,7 @@ public partial class MainViewModel : ReactiveObject
             ActiveDockable = _logTool,
             VisibleDockables = _dockFactory.CreateList<IDockable>(_logTool),
             Dock = DockMode.Bottom,
-            Proportion = 0.24,
+            Proportion = 0.18,
         };
 
         _docDock = new DocumentDock
@@ -461,7 +500,7 @@ public partial class MainViewModel : ReactiveObject
             Id = "Dock.Docs",
             VisibleDockables = _dockFactory.CreateList<IDockable>(),
             CanCreateDocument = false,
-            Proportion = 0.76,
+            Proportion = 0.82,
             IsCollapsable = false,
         };
         _docDock.PropertyChanged += OnDocDockPropertyChanged;
@@ -534,21 +573,22 @@ public partial class MainViewModel : ReactiveObject
 
     public void WriteSampleLogs()
     {
-        Logger.Info("演示：一条信息日志");
-        Logger.Warn("演示：一条警告日志");
-        Logger.Error("演示：一条错误日志");
+        Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.WriteSampleLogs008"));
+        Logger.Warn(L.Instance.GetResource("Demo.Text.MainViewModel.WriteSampleLogs009"));
+        Logger.Error(L.Instance.GetResource("Demo.Text.MainViewModel.WriteSampleLogs010"));
     }
 
     public async Task<bool> RunSmokeAsync(CancellationToken cancellation)
     {
         // 冒烟：先写三类日志验证日志通道，再按信息架构逐页构建（含场景页步骤切换）。
         DemoBootstrapper.Initialize();
-        Logger.Info("冒烟开始");
+        Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.RunSmokeAsync011"));
         WriteSampleLogs();
+        var overviewOk = await SmokeOverviewAsync(cancellation);
         var ok = await SmokeWalkCatalogAsync(cancellation);
-        Logger.Info(ok ? "冒烟结束：全部页面构建 + 逐色板渲染通过" : "冒烟结束：存在失败页面，详见上方告警");
+        Logger.Info(ok ? L.Instance.GetResource("Demo.Text.MainViewModel.RunSmokeAsync012") : L.Instance.GetResource("Demo.Text.MainViewModel.RunSmokeAsync013"));
         await Logger.ShutdownAsync();
-        return ok;
+        return ok && overviewOk;
     }
 
     private void ApplyAppearance()
@@ -560,7 +600,7 @@ public partial class MainViewModel : ReactiveObject
 
         Application.Current.RequestedThemeVariant = SelectedPalette.ResolveVariant(IsDarkMode);
         SyncGlobalItems();
-        Logger.Info($"外观切换：{SelectedPalette.Title} / {(IsDarkMode ? "深色" : "浅色")}");
+        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.MainViewModel.ApplyAppearance016"), SelectedPalette.Title, (IsDarkMode ? L.Instance.GetResource("Demo.Text.MainViewModel.ApplyAppearance014") : L.Instance.GetResource("Demo.Text.MainViewModel.ApplyAppearance015"))));
     }
 
     private IReadOnlyList<PropertyItem> BuildGlobalProperties()
@@ -571,48 +611,48 @@ public partial class MainViewModel : ReactiveObject
         _paletteItem = new PropertyItem
         {
             Id = "shell.palette",
-            Name = "色板",
+            Name = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties017"),
             Kind = PropertyItemKind.Choice,
             Options = Palettes.Select(p => p.Title).ToArray(),
             Value = Palettes[0].Title,
             DefaultValue = Palettes[0].Title,
-            Description = "应用配色：默认 / 水生 / 沙漠 / 黄昏 / 夜空 / 高对比。",
+            Description = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties018"),
         };
         _modeItem = new PropertyItem
         {
             Id = "shell.mode",
-            Name = "界面模式",
+            Name = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties019"),
             Kind = PropertyItemKind.Radio,
-            Options = ["浅色", "深色"],
-            Value = "浅色",
-            DefaultValue = "浅色",
-            Description = "浅 / 深模式；固定配色的色板不随该模式变化。",
+            Options = [L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties020"), L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties021")],
+            Value = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties022"),
+            DefaultValue = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties023"),
+            Description = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties024"),
         };
         _langItem = new PropertyItem
         {
             Id = "shell.lang",
-            Name = "语言",
+            Name = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties025"),
             Kind = PropertyItemKind.Choice,
             Options = Cultures.Select(c => c.DisplayName).ToArray(),
             Value = Cultures[0].DisplayName,
             DefaultValue = Cultures[0].DisplayName,
-            Description = "界面语言，切换即时生效（I18nManager.Culture）。",
+            Description = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties026"),
         };
 
         var appearance = new PropertyItem
         {
             Id = "shell.appearance",
-            Name = "外观",
+            Name = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties027"),
             Kind = PropertyItemKind.Category,
-            Description = "演示台外观设置（这里的修改即右侧 PropertyGrid 的自我演示）。",
+            Description = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties028"),
             Children = [_paletteItem, _modeItem],
         };
         var language = new PropertyItem
         {
             Id = "shell.language",
-            Name = "语言",
+            Name = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties029"),
             Kind = PropertyItemKind.Category,
-            Description = "演示台语言设置。",
+            Description = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties030"),
             Children = [_langItem],
         };
 
@@ -638,7 +678,7 @@ public partial class MainViewModel : ReactiveObject
                 SelectedPalette = Palettes.FirstOrDefault(p => p.Title == value) ?? SelectedPalette;
                 break;
             case "shell.mode" when value is not null:
-                IsDarkMode = value == "深色";
+                IsDarkMode = value == L.Instance.GetResource("Demo.Text.MainViewModel.OnGlobalPropertyCommitted031");
                 break;
             case "shell.lang" when value is not null:
                 var culture = Cultures.FirstOrDefault(c => c.DisplayName == value);
@@ -665,7 +705,7 @@ public partial class MainViewModel : ReactiveObject
         }
 
         Sync(_paletteItem, SelectedPalette.Title);
-        Sync(_modeItem, IsDarkMode ? "深色" : "浅色");
+        Sync(_modeItem, IsDarkMode ? L.Instance.GetResource("Demo.Text.MainViewModel.SyncGlobalItems032") : L.Instance.GetResource("Demo.Text.MainViewModel.SyncGlobalItems033"));
         Sync(_langItem, SelectedCulture.DisplayName);
     }
 }

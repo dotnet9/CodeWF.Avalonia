@@ -2,20 +2,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:codewf="https://codewf.com"
              x:Class="CodeWF.Avalonia.Demo.Views.Pages.LangPage"
-             x:CompileBindings="False">
+             xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels.Pages"
+             x:DataType="vm:LangPageViewModel"
+             x:CompileBindings="True">
   <ScrollViewer>
     <StackPanel Margin="12,10" Spacing="12" MaxWidth="860" HorizontalAlignment="Left">
 
       <Border Padding="10" CornerRadius="6" BorderThickness="1"
               BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-        <TextBlock Text="I18nManager：插件化国际化核心。演示台使用 Json 后端（输出目录 I18n\\ 递归扫描，含 Markdown 包分发的语言文件），整窗文案经 {codewf:I18n} 绑定，Culture 切换即时刷新——现在点击下面的按钮试试。"
+        <TextBlock Text="{codewf:I18n Demo.Text.LangPage.View001}"
                    TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
       </Border>
 
       <StackPanel Orientation="Horizontal" Spacing="8">
-        <Button Content="切换到 English" Click="OnSwitchEnglish" />
-        <Button Content="切换到 简体中文" Click="OnSwitchChinese" />
-        <Button Content="按系统文化切换" Click="OnSwitchSystem" />
+        <Button Content="{codewf:I18n Demo.Text.LangPage.View002}" Command="{Binding SwitchCultureCommand}" CommandParameter="en-US" />
+        <Button Content="{codewf:I18n Demo.Text.LangPage.View003}" Command="{Binding SwitchCultureCommand}" CommandParameter="zh-CN" />
+        <Button Content="{codewf:I18n Demo.Text.LangPage.View004}" Command="{Binding SwitchCultureCommand}" CommandParameter="system" />
       </StackPanel>
 
       <Border Padding="12" CornerRadius="6" BorderThickness="1"
@@ -32,7 +34,7 @@
               BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
         <StackPanel Spacing="6">
           <TextBlock Text="{codewf:I18n Demo.Lang.StateTitle}" FontWeight="Bold" />
-          <TextBlock x:Name="StateText" FontSize="12" Opacity="0.8" TextWrapping="Wrap" />
+          <TextBlock Text="{Binding State}" FontSize="12" Opacity="0.8" TextWrapping="Wrap" />
         </StackPanel>
       </Border>
     </StackPanel>

@@ -26,6 +26,20 @@ public partial class MainWindow : CodeWFWindow
     {
         Loaded -= OnLoaded;
 
+        if (Program.CaptureDirectory is { } directory)
+        {
+            try
+            {
+                await _viewModel.CaptureStudioAsync(this, directory);
+                Environment.Exit(0);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+                Environment.Exit(1);
+            }
+        }
+
         if (Program.IsSmokeMode)
         {
             try

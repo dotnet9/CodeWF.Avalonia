@@ -11,8 +11,8 @@
       <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1" Margin="0,0,0,8"
               BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
         <StackPanel Orientation="Horizontal" Spacing="8">
-          <Button Content="重置默认配置" Command="{Binding ResetCommand}" />
-          <TextBlock Text="拖拽行首手柄排序；勾选控制列可见性。编辑器直接在源集合上 Move，业务侧无需二次同步。"
+          <Button Content="{codewf:I18n Demo.Text.ColumnDisplayEditorPage.View001}" Command="{Binding ResetCommand}" />
+          <TextBlock Text="{codewf:I18n Demo.Text.ColumnDisplayEditorPage.View002}"
                      TextWrapping="Wrap" Opacity="0.75" FontSize="12" VerticalAlignment="Center" />
         </StackPanel>
       </Border>
@@ -27,7 +27,7 @@
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
             BorderThickness="1,0,0,0" Padding="12,0,0,0">
       <Grid RowDefinitions="Auto,*">
-        <TextBlock Grid.Row="0" Text="变更审计" FontWeight="Bold" Margin="0,0,0,6" />
+        <TextBlock Grid.Row="0" Text="{codewf:I18n Demo.Text.ColumnDisplayEditorPage.View003}" FontWeight="Bold" Margin="0,0,0,6" />
         <ListBox Grid.Row="1" ItemsSource="{Binding ChangeLog}" FontSize="11" />
       </Grid>
     </Border>

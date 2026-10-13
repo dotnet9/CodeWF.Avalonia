@@ -1,3 +1,4 @@
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia.Controls;
 using CodeWF.Avalonia.Controls.Controls;
 using CodeWF.Avalonia.Demo.ViewModels.Pages;
@@ -11,27 +12,9 @@ public partial class SearchListBoxPage : DemoPageBase
     private const string IdSearchCount = "slb.searchCount";
     private const string IdSelectedCount = "slb.selectedCount";
 
-    public const string XamlSnippet = """
-        <!-- 内置搜索框（400ms 防抖）、多选、计数条；条目文本按 item.ToString() 匹配 -->
-        <codewf:SearchListBox ItemsSource="{Binding Items}" />
-        """;
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.XamlSnippet001");
 
-    public const string CSharpSnippet = """
-        var list = new SearchListBox { ItemsSource = items };
-
-        // 计数条指标
-        var total = list.TotalCount;        // 数据源总数
-        var visible = list.SearchCount;     // 当前过滤结果数
-
-        // 多选（Ctrl / Shift）与事件
-        var selected = list.SelectedItems;  // List<object?>
-        list.ListSelectionChanged += (item, args) => Refresh(args.Source.SelectedItems);
-        list.ListItemDoubleTapped += (item, args) => Open(item);
-
-        // 批量增删（直接作用到源集合）
-        list.AddRange(newItems);
-        list.RemoveRange(selected);
-        """;
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.CSharpSnippet002");
 
     public SearchListBoxPage()
     {
@@ -43,14 +26,14 @@ public partial class SearchListBoxPage : DemoPageBase
         {
             if (DataContext is SearchListBoxPageViewModel vm)
             {
-                vm.Log($"双击：{item}");
+                vm.Log(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.Content003"), item));
             }
         };
         list.ListSelectionChanged += (_, args) =>
         {
             if (DataContext is SearchListBoxPageViewModel vm)
             {
-                vm.Log($"选区变化：{(args.Source as SearchListBox)?.SelectedItems?.Count ?? 0} 项");
+                vm.Log(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.Content004"), (args.Source as SearchListBox)?.SelectedItems?.Count ?? 0));
             }
 
             UpdateMetrics();
@@ -80,26 +63,26 @@ public partial class SearchListBoxPage : DemoPageBase
         var total = new PropertyItem
         {
             Id = IdTotal,
-            Name = "总数",
+            Name = L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.BuildProperties005"),
             Kind = PropertyItemKind.ReadOnly,
             Value = List.TotalCount,
-            Description = "数据源总条目数（TotalCount）。",
+            Description = L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.BuildProperties006"),
         };
         var searchCount = new PropertyItem
         {
             Id = IdSearchCount,
-            Name = "过滤结果",
+            Name = L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.BuildProperties007"),
             Kind = PropertyItemKind.ReadOnly,
             Value = List.SearchCount,
-            Description = "当前搜索过滤后的条目数（SearchCount），控件内置 400ms 防抖。",
+            Description = L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.BuildProperties008"),
         };
         var selectedCount = new PropertyItem
         {
             Id = IdSelectedCount,
-            Name = "选中项",
+            Name = L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.BuildProperties009"),
             Kind = PropertyItemKind.ReadOnly,
             Value = List.SelectedItems?.Count ?? 0,
-            Description = "当前多选选中数量（Ctrl / Shift 多选）。",
+            Description = L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.BuildProperties010"),
         };
 
         return [total, searchCount, selectedCount];
@@ -107,7 +90,7 @@ public partial class SearchListBoxPage : DemoPageBase
 
     private void UpdateMetrics()
     {
-        CountText.Text = $"总数 {List.TotalCount} · 过滤结果 {List.SearchCount} · 选中 {List.SelectedItems?.Count ?? 0}";
+        CountText.Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.UpdateMetrics011"), List.TotalCount, List.SearchCount, List.SelectedItems?.Count ?? 0);
 
         foreach (var item in Properties)
         {

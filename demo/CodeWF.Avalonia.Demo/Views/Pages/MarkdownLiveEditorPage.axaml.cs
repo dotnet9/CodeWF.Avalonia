@@ -1,3 +1,4 @@
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using CodeWF.Avalonia.Markdown.Editor.Controls;
@@ -12,31 +13,9 @@ public partial class MarkdownLiveEditorPage : DemoPageBase
     private const string IdTheme = "mle.theme";
     private const string IdFontSize = "mle.fontsize";
 
-    public const string XamlSnippet = """
-        <!-- MarkdownLiveEditorView 为纯代码构建控件，在代码中创建并放入容器 -->
-        <Border x:Name="EditorHost" />
-        """;
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.MarkdownLiveEditorPageaxaml.XamlSnippet001");
 
-    public const string CSharpSnippet = """
-        var editor = new MarkdownLiveEditorView(new MarkdownEditorOptions
-        {
-            EnableAutoPair = true,
-            FontSize = 15,
-        });
-        editor.TypographyTheme = MarkdownTypographyThemes.Verdrant;  // 所见即所得的排版主题
-        editor.SetText("# 实时编辑\\n\\n直接在块上编辑");
-        EditorHost.Content = editor;
-
-        editor.MarkdownChanged += (_, text) => Save(text);
-        editor.FocusBlock(0);                       // 聚焦指定块
-        await editor.ExecuteAsync(MarkdownEditorAction.Bold);
-        editor.InsertText("追加文本");
-
-        // 块模型指标
-        var blockCount = editor.BlockCount;
-        var activeBlock = editor.ActiveBlockIndex;
-        var markdown = editor.Text;                 // = MarkdownBlockParser.Write(models)
-        """;
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.MarkdownLiveEditorPageaxaml.CSharpSnippet002");
 
     private readonly MarkdownLiveEditorView _editor;
 
@@ -89,7 +68,7 @@ public partial class MarkdownLiveEditorPage : DemoPageBase
         var theme = new PropertyItem
         {
             Id = IdTheme,
-            Name = "排版主题",
+            Name = L.Instance.GetResource("Demo.Text.MarkdownLiveEditorPageaxaml.BuildProperties003"),
             Kind = PropertyItemKind.Choice,
             Options =
             [
@@ -101,26 +80,26 @@ public partial class MarkdownLiveEditorPage : DemoPageBase
             ],
             Value = MarkdownTypographyThemes.Verdant,
             DefaultValue = MarkdownTypographyThemes.Basic,
-            Description = "所见即所得视图应用的排版主题。",
+            Description = L.Instance.GetResource("Demo.Text.MarkdownLiveEditorPageaxaml.BuildProperties004"),
         };
         var fontSize = new PropertyItem
         {
             Id = IdFontSize,
-            Name = "编辑器字号",
+            Name = L.Instance.GetResource("Demo.Text.MarkdownLiveEditorPageaxaml.BuildProperties005"),
             Kind = PropertyItemKind.Number,
             Value = 15m,
             DefaultValue = 15m,
             Minimum = 10,
             Maximum = 28,
             Unit = "px",
-            Description = "块编辑器文本字号。",
+            Description = L.Instance.GetResource("Demo.Text.MarkdownLiveEditorPageaxaml.BuildProperties006"),
         };
 
         return [theme, fontSize];
     }
 
     private void OnInsert(object? sender, RoutedEventArgs e) =>
-        _editor.InsertText("\n\n新插入的内容（InsertText）。");
+        _editor.InsertText(L.Instance.GetResource("Demo.Text.MarkdownLiveEditorPageaxaml.OnInsert007"));
 
     private void OnFocusFirst(object? sender, RoutedEventArgs e) =>
         _editor.FocusBlock(0);
@@ -134,24 +113,8 @@ public partial class MarkdownLiveEditorPage : DemoPageBase
     private void UpdateStatus()
     {
         StatusText.Text =
-            $"块数 {_editor.BlockCount} · 活动块索引 {_editor.ActiveBlockIndex} · {(_editor.Text?.Length ?? 0)} 字符";
+            string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.MarkdownLiveEditorPageaxaml.UpdateStatus008"), _editor.BlockCount, _editor.ActiveBlockIndex, (_editor.Text?.Length ?? 0));
     }
 
-    private const string SampleMarkdown = """"
-        # 所见即所得
-
-        直接在块上编辑：标题、段落、列表、表格都是可编辑块。
-
-        ## 列表
-        - 块级建模（MarkdownBlockModel）
-        - 编辑即渲染
-        - 无左右分栏
-
-        > 点击任意块开始编辑；顶部按钮演示插入与聚焦。
-
-        | 能力 | 说明 |
-        | --- | --- |
-        | FocusBlock | 聚焦指定块 |
-        | ApplyExternalEdit | 外部回写 |
-        """";
+    private static string SampleMarkdown => L.Instance.GetResource("Demo.Text.MarkdownLiveEditorPageaxaml.SampleMarkdown009");
 }

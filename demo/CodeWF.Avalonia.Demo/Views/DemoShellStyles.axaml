@@ -1,4 +1,4 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <!--  演示台外壳样式：与设计原型对齐（间距 / 四态 / 命令按钮 / 状态栏 / 步骤条）  -->
 
@@ -13,14 +13,14 @@
     <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
 
-  <!--  Ribbon 命令按钮：72×68 热区、图标 20 / 文字 11、悬停轻抬  -->
+  <!--  Ribbon 命令按钮：横向图标与名称、悬停轻抬  -->
   <Style Selector="Button.rbn-cmd">
-    <Setter Property="Width" Value="72" />
-    <Setter Property="MinHeight" Value="66" />
-    <Setter Property="Padding" Value="6,8,6,6" />
+    <Setter Property="MinWidth" Value="72" />
+    <Setter Property="MinHeight" Value="36" />
+    <Setter Property="Padding" Value="10,5" />
     <Setter Property="CornerRadius" Value="7" />
     <Setter Property="HorizontalContentAlignment" Value="Center" />
-    <Setter Property="VerticalContentAlignment" Value="Top" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="Transitions">
       <Transitions>
         <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.13" />
@@ -40,7 +40,7 @@
     <Setter Property="Background" Value="Transparent" />
   </Style>
   <Style Selector="Button.st-btn:pointerover">
-    <Setter Property="Background" Value="#14000000" />
+    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
   </Style>
 
   <!--  面板头部：标题 + 计数 + 右侧工具按钮  -->
@@ -61,7 +61,7 @@
     <Setter Property="MinHeight" Value="26" />
   </Style>
   <Style Selector="ToggleButton.nav-group:pointerover">
-    <Setter Property="Background" Value="#14000000" />
+    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
   </Style>
   <Style Selector="Button.nav-leaf">
     <Setter Property="Padding" Value="6,3,4,3" />
@@ -74,13 +74,13 @@
     <Setter Property="CornerRadius" Value="4" />
   </Style>
   <Style Selector="Button.nav-leaf:pointerover">
-    <Setter Property="Background" Value="#14000000" />
+    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
   </Style>
 
   <!--  密度：紧凑档收窄 Ribbon 命令按钮（原型的 data-density=compact）  -->
   <Style Selector="Button.rbn-cmd.compact">
     <Setter Property="MinWidth" Value="60" />
-    <Setter Property="MinHeight" Value="44" />
+    <Setter Property="MinHeight" Value="28" />
     <Setter Property="Padding" Value="4,4" />
   </Style>
 
@@ -90,7 +90,7 @@
     <Setter Property="CornerRadius" Value="14" />
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="BorderBrush" Value="#22000000" />
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioBorder}" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
   <Style Selector="Button.scene-step:pointerover">
@@ -98,14 +98,14 @@
   </Style>
   <Style Selector="Button.scene-step.active">
     <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" />
-    <Setter Property="Background" Value="#1A0078D7" />
+    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
     <Setter Property="FontWeight" Value="SemiBold" />
   </Style>
   <Style Selector="Button.scene-step Border.step-no">
     <Setter Property="Width" Value="16" />
     <Setter Property="Height" Value="16" />
     <Setter Property="CornerRadius" Value="8" />
-    <Setter Property="Background" Value="#22000000" />
+    <Setter Property="Background" Value="{DynamicResource StudioBorder}" />
     <Setter Property="HorizontalAlignment" Value="Center" />
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
@@ -116,5 +116,20 @@
     <Setter Property="HorizontalAlignment" Value="Center" />
     <Setter Property="VerticalAlignment" Value="Center" />
     <Setter Property="Opacity" Value="0.75" />
+  </Style>
+
+  <Style Selector="Button.nav-leaf"><Setter Property="MinHeight" Value="30" /><Setter Property="CornerRadius" Value="6" /></Style>
+  <Style Selector="Button.rbn-cmd"><Setter Property="Background" Value="Transparent" /><Setter Property="MinHeight" Value="36" /></Style>
+  <Style Selector="Border.card"><Setter Property="Background" Value="{DynamicResource StudioSurface}" /><Setter Property="CornerRadius" Value="12" /><Setter Property="Padding" Value="18" /></Style>
+
+  <Style Selector="ToggleButton.nav-group TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource StudioText}" />
+  </Style>
+  <Style Selector="ToggleButton.nav-group /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.nav-group:checked /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
+  <Style Selector="ToggleButton.nav-group:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
   </Style>
 </Styles>

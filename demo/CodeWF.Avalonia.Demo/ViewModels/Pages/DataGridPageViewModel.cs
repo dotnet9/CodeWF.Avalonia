@@ -1,3 +1,5 @@
+using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 
@@ -8,16 +10,24 @@ public record DataGridRowModel(string Name, int Age, string City, string Comment
 /// <summary>DataGrid 演示页 VM：增强版与原生版对照（三态排序 / 自然排序 / 智能 ToolTip）。</summary>
 public class DataGridPageViewModel : ReactiveObject
 {
+    private const string IdUseDefaults = "dg.useDefaults";
+    private const string IdRowHeight = "dg.rowHeight";
+
+    private bool _useDefaults = true;
+    private double _rowHeight = 32;
+    public bool UseDefaults { get => _useDefaults; private set => this.RaiseAndSetIfChanged(ref _useDefaults, value); }
+    public double RowHeight { get => _rowHeight; private set => this.RaiseAndSetIfChanged(ref _rowHeight, value); }
+
     public ObservableCollection<DataGridRowModel> Rows { get; } = CreateRows();
 
     private static ObservableCollection<DataGridRowModel> CreateRows()
     {
         var names = new[]
         {
-            ("item2", 28, "杭州"), ("item10", 35, "北京"), ("item1", 41, "西雅图"),
-            ("item22", 19, "成都"), ("item3", 33, "柏林"), ("alpha", 25, "上海"),
-            ("beta", 30, "深圳"), ("gamma", 45, "广州"), ("delta", 22, "南京"),
-            ("item100", 38, "东京"),
+            ("item2", 28, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows001")), ("item10", 35, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows002")), ("item1", 41, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows003")),
+            ("item22", 19, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows004")), ("item3", 33, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows005")), ("alpha", 25, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows006")),
+            ("beta", 30, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows007")), ("gamma", 45, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows008")), ("delta", 22, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows009")),
+            ("item100", 38, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows010")),
         };
 
         var rows = new ObservableCollection<DataGridRowModel>();
@@ -28,10 +38,50 @@ public class DataGridPageViewModel : ReactiveObject
                 name,
                 age,
                 city,
-                $"{name} 的备注信息第 {i + 1} 行——这段文字足够长，会在列宽不足时被截断，" +
-                "启用智能 ToolTip 后悬停自动显示完整内容，未截断的单元格不弹提示。"));
+                string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows011"), name, i + 1) +
+                L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows012")));
         }
 
         return rows;
     }
+    public void Commit(PropertyValueChange change)
+    {
+        switch (change.Item.Id)
+        {
+            case IdUseDefaults when change.NewValue is bool useDefaults:
+                UseDefaults = useDefaults;
+                break;
+            case IdRowHeight when change.NewValue is decimal rowHeight:
+                RowHeight = (double)rowHeight;
+                break;
+        }
+    }
+
+    public IReadOnlyList<PropertyItem> BuildProperties()
+    {
+        var useDefaults = new PropertyItem
+        {
+            Id = IdUseDefaults,
+            Name = L.Instance.GetResource("Demo.Text.DataGridPageaxaml.BuildProperties003"),
+            Kind = PropertyItemKind.Boolean,
+            Value = UseDefaults,
+            DefaultValue = true,
+            Description = L.Instance.GetResource("Demo.Text.DataGridPageaxaml.BuildProperties004"),
+        };
+        var rowHeight = new PropertyItem
+        {
+            Id = IdRowHeight,
+            Name = L.Instance.GetResource("Demo.Text.DataGridPageaxaml.BuildProperties005"),
+            Kind = PropertyItemKind.Number,
+            Value = (decimal)RowHeight,
+            DefaultValue = 32m,
+            Minimum = 24,
+            Maximum = 64,
+            Unit = "px",
+            Description = L.Instance.GetResource("Demo.Text.DataGridPageaxaml.BuildProperties006"),
+        };
+
+        return [useDefaults, rowHeight];
+    }
+
 }

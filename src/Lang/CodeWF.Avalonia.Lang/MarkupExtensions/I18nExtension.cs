@@ -1,4 +1,5 @@
 using Avalonia.Markup.Xaml;
+using Avalonia.Data;
 using System;
 using System.Collections.Generic;
 
@@ -128,6 +129,9 @@ public class I18nExtension : MarkupExtension
     public string? CultureName { get; set; }
 
     /// <inheritdoc />
-    public override object ProvideValue(IServiceProvider serviceProvider) =>
-        new I18nBinding(Key, CultureName, Args).ProvideValue(serviceProvider);
+    public override object ProvideValue(IServiceProvider serviceProvider) => CreateBinding();
+
+    /// <summary>Creates the same live localization binding for a view built in C#.</summary>
+    public MultiBinding CreateBinding() =>
+        (MultiBinding)new I18nBinding(Key, CultureName, Args).ProvideValue(null!);
 }

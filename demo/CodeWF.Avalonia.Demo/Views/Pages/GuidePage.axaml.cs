@@ -1,3 +1,4 @@
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia.Interactivity;
 using CodeWF.Avalonia.Controls.Controls;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
@@ -7,42 +8,9 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class GuidePage : DemoPageBase
 {
-    public const string XamlSnippet = """
-        <!-- 引导控件：Steps 为内容属性，目标用元素名绑定 -->
-        <codewf:Guide IsArrowVisible="True" Completed="OnGuideCompleted">
-          <codewf:GuideStep Title="步骤 1"
-                            Description="气泡出现在目标的右上方"
-                            Target="{Binding #TargetControl}"
-                            Placement="RightTop" />
-          <codewf:GuideStep Title="步骤 2"
-                            Description="Primary 样式 + 自定义遮罩色"
-                            Target="{Binding #TargetControl2}"
-                            Placement="Bottom"
-                            StyleType="Primary"
-                            MaskColor="#66B3261E" />
-        </codewf:Guide>
-        """;
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.GuidePageaxaml.XamlSnippet001");
 
-    public const string CSharpSnippet = """
-        var guide = new Guide
-        {
-            IsArrowVisible = true,
-            MissingTargetBehavior = GuideMissingTargetBehavior.Center, // 缺省目标：居中/跳过/关闭
-        };
-        guide.Steps.Add(new GuideStep
-        {
-            Title = "第一步",
-            Description = "聚光目标控件",
-            Target = someControl,
-            Placement = GuidePlacementMode.RightTop,
-            OpeningCommand = prepareCommand,     // 步骤打开前命令
-        });
-        guide.StepOpened += (_, e) => Logger.Info($"进入第 {e.Index} 步");
-        guide.Completed += (_, _) => Logger.Info("引导完成");
-        guide.Show();      // 键盘导航：Enter 下一 / Esc 关闭
-        guide.GoNext();
-        guide.Close();
-        """;
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.GuidePageaxaml.CSharpSnippet002");
 
     public GuidePage()
     {
@@ -61,26 +29,26 @@ public partial class GuidePage : DemoPageBase
 
     private void OnStartGuide(object? sender, RoutedEventArgs e)
     {
-        Logger.Info("Guide：开始引导演示");
+        Logger.Info(L.Instance.GetResource("Demo.Text.GuidePageaxaml.OnStartGuide003"));
         Guide.ResetState();
         Guide.Show();
     }
 
     private void OnStepOpened(object? sender, GuideStepEventArgs e) =>
-        Logger.Info($"Guide：第 {e.Index + 1}/{Guide.StepCount} 步 · {Guide.CurrentTitle}");
+        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.GuidePageaxaml.OnStepOpened004"), e.Index + 1, Guide.StepCount, Guide.CurrentTitle));
 
     private void OnGuideCompleted(object? sender, System.EventArgs e) =>
-        Logger.Info("Guide：引导完成");
+        Logger.Info(L.Instance.GetResource("Demo.Text.GuidePageaxaml.OnGuideCompleted005"));
 
     protected override IReadOnlyList<PropertyItem> BuildProperties()
     {
         var placement = new PropertyItem
         {
             Id = "guide.info",
-            Name = "方位说明",
+            Name = L.Instance.GetResource("Demo.Text.GuidePageaxaml.BuildProperties006"),
             Kind = PropertyItemKind.ReadOnly,
             Value = "Center / Top / TopLeft / TopRight / Left / LeftTop / LeftBottom / Right / RightTop / RightBottom / Bottom / BottomLeft / BottomRight",
-            Description = "13 方位由每一步的 Placement 指定，覆盖全部气泡落位组合。",
+            Description = L.Instance.GetResource("Demo.Text.GuidePageaxaml.BuildProperties007"),
         };
 
         return [placement];

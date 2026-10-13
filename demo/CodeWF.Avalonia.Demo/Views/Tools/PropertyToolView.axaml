@@ -4,9 +4,9 @@
              xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
              x:Class="CodeWF.Avalonia.Demo.Views.Tools.PropertyToolView"
              x:DataType="vm:MainViewModel"
-             x:CompileBindings="True">
+             x:CompileBindings="True" Background="{DynamicResource StudioSurface}">
   <!--  右侧 PropertyGrid 工具面板内容（面板本身即控件的自我演示）  -->
-  <codewf:PropertyGrid Items="{Binding ActivePropertyItems}"
+  <codewf:PropertyGrid NameColumnWidth="112" Items="{Binding ActivePropertyItems}"
                        ValueCommittedCommand="{Binding ActiveValueCommittedCommand}"
                        BrowseRequestedCommand="{Binding ActiveBrowseRequestedCommand}" />
 </UserControl>

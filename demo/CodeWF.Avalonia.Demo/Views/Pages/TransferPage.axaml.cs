@@ -1,3 +1,4 @@
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using System.Collections.Specialized;
 using CodeWF.Avalonia.Demo.ViewModels.Pages;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
@@ -9,32 +10,9 @@ public partial class TransferPage : DemoPageBase
     private const string IdLeftCount = "tr.left";
     private const string IdRightCount = "tr.right";
 
-    public const string XamlSnippet = """
-        <!-- 双列穿梭：LeftItemsSource / RightItemsSource 为普通 IList，控件直接在两侧集合间移动 -->
-        <codewf:Transfer LeftHeader="功能清单（可选）"
-                         RightHeader="本期交付（已选）"
-                         LeftItemsSource="{Binding Available}"
-                         RightItemsSource="{Binding Selected}" />
-        """;
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.TransferPageaxaml.XamlSnippet001");
 
-    public const string CSharpSnippet = """
-        var transfer = new Transfer
-        {
-            LeftHeader = "可选",
-            RightHeader = "已选",
-            LeftItemsSource = available,   // ObservableCollection<FeatureItem>
-            RightItemsSource = selected,
-        };
-
-        // 移动方式一：中间按钮（有选中项时可用）
-        transfer.MoveLeftToRight();
-        transfer.MoveRightToLeft();
-
-        // 移动方式二：双击任一侧条目，自动移动到对侧（控件内部处理）
-
-        // 集合即状态：两侧集合的 CollectionChanged 即业务侧的真实变更
-        selected.CollectionChanged += (_, e) => Save(selected);
-        """;
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.TransferPageaxaml.CSharpSnippet002");
 
     public TransferPage()
     {
@@ -65,18 +43,18 @@ public partial class TransferPage : DemoPageBase
         var left = new PropertyItem
         {
             Id = IdLeftCount,
-            Name = "可选数量",
+            Name = L.Instance.GetResource("Demo.Text.TransferPageaxaml.BuildProperties003"),
             Kind = PropertyItemKind.ReadOnly,
             Value = 0,
-            Description = "左列（待选）条目数。",
+            Description = L.Instance.GetResource("Demo.Text.TransferPageaxaml.BuildProperties004"),
         };
         var right = new PropertyItem
         {
             Id = IdRightCount,
-            Name = "已选数量",
+            Name = L.Instance.GetResource("Demo.Text.TransferPageaxaml.BuildProperties005"),
             Kind = PropertyItemKind.ReadOnly,
             Value = 0,
-            Description = "右列（已选）条目数。",
+            Description = L.Instance.GetResource("Demo.Text.TransferPageaxaml.BuildProperties006"),
         };
 
         return [left, right];
@@ -91,14 +69,14 @@ public partial class TransferPage : DemoPageBase
 
         var action = e.Action switch
         {
-            NotifyCollectionChangedAction.Add => "移入",
-            NotifyCollectionChangedAction.Remove => "移出",
+            NotifyCollectionChangedAction.Add => L.Instance.GetResource("Demo.Text.TransferPageaxaml.OnCollectionChanged007"),
+            NotifyCollectionChangedAction.Remove => L.Instance.GetResource("Demo.Text.TransferPageaxaml.OnCollectionChanged008"),
             _ => e.Action.ToString(),
         };
 
         if (e.Action is NotifyCollectionChangedAction.Add or NotifyCollectionChangedAction.Remove)
         {
-            vm.Log($"{action}：{DescribeItems(e.NewItems ?? e.OldItems)} · 可选 {vm.Available.Count} / 已选 {vm.Selected.Count}");
+            vm.Log(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.TransferPageaxaml.OnCollectionChanged009"), action, DescribeItems(e.NewItems ?? e.OldItems), vm.Available.Count, vm.Selected.Count));
         }
 
         UpdateMetrics();

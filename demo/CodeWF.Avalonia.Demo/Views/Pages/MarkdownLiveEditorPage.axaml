@@ -7,15 +7,15 @@
 
     <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <TextBlock Text="MarkdownLiveEditorView：单栏所见即所得编辑。文档按块（标题 / 段落 / 列表 / 表格 / 代码块）建模，编辑时直接在块上进行，所见即所得；写作体验与渲染结果一致。"
+      <TextBlock Text="{codewf:I18n Demo.Text.MarkdownLiveEditorPage.View001}"
                  TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
     </Border>
 
     <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
-      <Button Content="插入文本" Click="OnInsert" />
-      <Button Content="聚焦首块" Click="OnFocusFirst" />
-      <Button Content="加粗" Click="OnBold" />
-      <Button Content="表格" Click="OnTable" />
+      <Button Content="{codewf:I18n Demo.Text.MarkdownLiveEditorPage.View002}" Click="OnInsert" />
+      <Button Content="{codewf:I18n Demo.Text.MarkdownLiveEditorPage.View003}" Click="OnFocusFirst" />
+      <Button Content="{codewf:I18n Demo.Text.MarkdownLiveEditorPage.View004}" Click="OnBold" />
+      <Button Content="{codewf:I18n Demo.Text.MarkdownLiveEditorPage.View005}" Click="OnTable" />
     </StackPanel>
 
     <Border Grid.Row="2" x:Name="EditorHost" Margin="0,8,0,0"

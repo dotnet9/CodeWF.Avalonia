@@ -1,3 +1,4 @@
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -13,42 +14,9 @@ public partial class CodeWFWindowPage : DemoPageBase
     private const string IdCornerRadius = "cw.cornerRadius";
     private const string IdExtends = "cw.extends";
 
-    public const string XamlSnippet = """
-        <!-- 替换 Window：无边框 + DWM 圆角 + 自定义标题栏，需引入 ACSemiTheme -->
-        <codewf:CodeWFWindow xmlns:codewf="https://codewf.com"
-                             Title="CodeWFWindow 示例"
-                             TitleBarHeight="36"
-                             WindowCornerRadius="8"
-                             ContentExtendsIntoTitleBar="True"
-                             IsFullScreenButtonVisible="True">
-          <codewf:CodeWFWindow.LeftContent>
-            <TextBlock Text="◆" Foreground="DodgerBlue" VerticalAlignment="Center" />
-          </codewf:CodeWFWindow.LeftContent>
-          <Panel>
-            <!-- 窗口内容；钻入模式下可延伸到标题栏下方 -->
-          </Panel>
-        </codewf:CodeWFWindow>
-        """;
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.XamlSnippet001");
 
-    public const string CSharpSnippet = """
-        var window = new CodeWFWindow
-        {
-            Title = "CodeWFWindow 示例",
-            Width = 640,
-            Height = 420,
-            ContentExtendsIntoTitleBar = true,   // 内容钻入标题栏
-            IsFullScreenButtonVisible = true,
-            IsMinimizeButtonVisible = true,
-            WindowCornerRadius = new CornerRadius(8),
-        };
-        window.Content = new TextBlock
-        {
-            Text = "无边框窗口内容",
-            HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center,
-            VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
-        };
-        window.Show(owner);   // DWM 圆角仅 Windows 生效，其它平台自动降级
-        """;
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.CSharpSnippet002");
 
     private double _titleBarHeight = 36d;
     private double _cornerRadius = 8d;
@@ -88,55 +56,55 @@ public partial class CodeWFWindowPage : DemoPageBase
         var titleHeight = new PropertyItem
         {
             Id = IdTitleHeight,
-            Name = "标题栏高度",
+            Name = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.BuildProperties003"),
             Kind = PropertyItemKind.Number,
             Value = (decimal)_titleBarHeight,
             DefaultValue = 32m,
             Minimum = 24,
             Maximum = 64,
             Unit = "px",
-            Description = "新打开示例窗口的标题栏高度。",
+            Description = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.BuildProperties004"),
         };
         var cornerRadius = new PropertyItem
         {
             Id = IdCornerRadius,
-            Name = "窗口圆角",
+            Name = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.BuildProperties005"),
             Kind = PropertyItemKind.Number,
             Value = (decimal)_cornerRadius,
             DefaultValue = 4m,
             Minimum = 0,
             Maximum = 24,
             Unit = "px",
-            Description = "窗口四角圆角半径（Windows DWM）。",
+            Description = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.BuildProperties006"),
         };
         var extends = new PropertyItem
         {
             Id = IdExtends,
-            Name = "内容钻入标题栏",
+            Name = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.BuildProperties007"),
             Kind = PropertyItemKind.Boolean,
             Value = _extends,
             DefaultValue = false,
-            Description = "窗口内容延伸至标题栏下方，形成整体化视觉。",
+            Description = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.BuildProperties008"),
         };
 
         return [titleHeight, cornerRadius, extends];
     }
 
     private void OnOpenDefault(object? sender, RoutedEventArgs e) =>
-        ShowSample("默认配置", extends: false, fullScreenButton: false, customTitleContent: false);
+        ShowSample(L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.OnOpenDefault009"), extends: false, fullScreenButton: false, customTitleContent: false);
 
     private void OnOpenCustom(object? sender, RoutedEventArgs e) =>
-        ShowSample("精简按钮 + 自定义标题栏", extends: false, fullScreenButton: false, customTitleContent: true);
+        ShowSample(L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.OnOpenCustom010"), extends: false, fullScreenButton: false, customTitleContent: true);
 
     private void OnOpenExtends(object? sender, RoutedEventArgs e) =>
-        ShowSample("内容钻入标题栏", extends: true, fullScreenButton: true, customTitleContent: false);
+        ShowSample(L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.OnOpenExtends011"), extends: true, fullScreenButton: true, customTitleContent: false);
 
     private void ShowSample(string name, bool extends, bool fullScreenButton, bool customTitleContent)
     {
         var owner = TopLevel.GetTopLevel(this) as Window;
         var window = new CodeWFWindow
         {
-            Title = $"CodeWFWindow 示例 · {name}",
+            Title = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.ShowSample012"), name),
             Width = 640,
             Height = 420,
             TitleBarHeight = _titleBarHeight,
@@ -154,7 +122,7 @@ public partial class CodeWFWindowPage : DemoPageBase
                 VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
                 Margin = new Thickness(10, 0, 0, 0),
             };
-            var search = new TextBox { Width = 160, Height = 26, Watermark = "搜索…" };
+            var search = new TextBox { Width = 160, Height = 26, Watermark = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.ShowSample013") };
             DockPanel.SetDock(search, global::Avalonia.Controls.Dock.Right);
             window.RightContent = search;
         }
@@ -169,7 +137,7 @@ public partial class CodeWFWindowPage : DemoPageBase
                 Opacity = 0.85,
                 Child = new TextBlock
                 {
-                    Text = "这段内容钻入了标题栏（ContentExtendsIntoTitleBar=True）",
+                    Text = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.ShowSample014"),
                     Foreground = Brushes.White,
                     VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
                     HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center,
@@ -180,7 +148,7 @@ public partial class CodeWFWindowPage : DemoPageBase
 
         contentPanel.Children.Add(new TextBlock
         {
-            Text = $"配置：{name}\n关闭此窗口后可再试其它配置。",
+            Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.ShowSample015"), name),
             HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center,
             VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
             TextAlignment = TextAlignment.Center,

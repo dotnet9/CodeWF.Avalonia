@@ -1,3 +1,4 @@
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -85,7 +86,7 @@ public abstract class ScenePageBase : DemoPageBase
         RefreshSummary();
         _pageHost.Content = ActiveScenePage;
         ActiveScenePage?.OnDocumentOpened();
-        Logger.Info($"工作流步骤 {index + 1}/{_pages.Count}：{I18nManager.Instance.GetResource(_stepKeys[index])}");
+        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.ScenePageBase.GoToStep001"), index + 1, _pages.Count, I18nManager.Instance.GetResource(_stepKeys[index])));
     }
 
     public override void OnDocumentOpened()

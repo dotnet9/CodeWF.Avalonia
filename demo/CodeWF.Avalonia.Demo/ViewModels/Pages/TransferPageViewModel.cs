@@ -1,3 +1,4 @@
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 
@@ -13,16 +14,16 @@ public class TransferPageViewModel : ReactiveObject
 {
     public ObservableCollection<FeatureItem> Available { get; } = new(
     [
-        new FeatureItem("增量渲染", "已完成"),
-        new FeatureItem("块级虚拟化", "已完成"),
-        new FeatureItem("18 套排版主题", "已完成"),
-        new FeatureItem("PDF 导出", "已完成"),
-        new FeatureItem("Word 导出", "已完成"),
-        new FeatureItem("公众号复制", "已完成"),
-        new FeatureItem("协作批注", "规划中"),
-        new FeatureItem("版本对比", "规划中"),
-        new FeatureItem("AI 摘要", "规划中"),
-        new FeatureItem("公式手写识别", "规划中"),
+        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available001"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available002")),
+        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available003"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available004")),
+        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available005"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available006")),
+        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available007"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available008")),
+        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available009"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available010")),
+        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available011"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available012")),
+        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available013"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available014")),
+        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available015"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available016")),
+        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available017"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available018")),
+        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available019"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available020")),
     ]);
 
     public ObservableCollection<FeatureItem> Selected { get; } = new();

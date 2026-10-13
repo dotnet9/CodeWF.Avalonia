@@ -1,5 +1,5 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:codewf="https://codewf.com" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:dock="using:Dock.Avalonia.Controls"
              xmlns:md="using:CodeWF.Avalonia.Markdown.Controls"
              xmlns:dockmodel="using:Dock.Model.ReactiveUI.Controls"
@@ -28,7 +28,7 @@
   <Grid RowDefinitions="Auto,*" Margin="12,10">
     <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1" Margin="0,0,0,8"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <TextBlock Text="Dock 工作区：Dock.Avalonia 布局引擎 + CodeWF DockSemiTheme（Semi 皮肤与中英文本地化）。可拖拽停靠、浮动、最大化；内容存放在 Document/Tool 的 Context，经 DataTemplate 解析为 MarkdownViewer。"
+      <TextBlock Text="{codewf:I18n Demo.Text.DockPage.View001}"
                  TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
     </Border>
     <dock:DockControl Grid.Row="1" Layout="{Binding Layout}" />

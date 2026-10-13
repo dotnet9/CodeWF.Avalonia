@@ -1,3 +1,4 @@
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using CodeWF.Avalonia.Demo.Views.Pages;
 
 namespace CodeWF.Avalonia.Demo.Views.Scenes;
@@ -23,25 +24,7 @@ public class DataFlowPage : ScenePageBase
 
     protected override string SummaryKey => "Demo.Scene.Summary.Data";
 
-    public override string XamlCode => """
-        <!-- 表数据工作流：DataGrid 增强 + 列配置 + 导出 -->
-        <DataGrid codewf:DataGridEnhancement.UseDefaults="True"
-                  ItemsSource="{Binding Rows}" />
+    public override string XamlCode => L.Instance.GetResource("Demo.Text.DataFlowPage.XamlCode001");
 
-        <codewf:ColumnDisplayEditor Items="{Binding Columns}" />
-        """;
-
-    public override string CSharpCode => """
-        // 1) 导入：一键打开三态排序 / 自然排序 / 智能 ToolTip
-        dataGrid.EnableDefaults(itemsSource);
-
-        // 2) 列配置：拖拽排序直接在源集合上移动
-        Columns.Move(oldIndex, newIndex);
-
-        // 3) 排序 / 过滤：三态循环，取消时恢复原始顺序
-        dataGrid.AddNaturalSorting();
-
-        // 4) 导出：DataTableExtensions 负责 Csv / Excel 落盘
-        dataTable.ToExcel("order-2026.xlsx");
-        """;
+    public override string CSharpCode => L.Instance.GetResource("Demo.Text.DataFlowPage.CSharpCode002");
 }

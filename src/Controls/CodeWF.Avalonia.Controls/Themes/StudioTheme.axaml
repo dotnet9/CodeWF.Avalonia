@@ -1,0 +1,126 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="CodeWF.Avalonia.Controls.Themes.StudioTheme">
+  <!-- Opt-in presentation classes, using Semi's existing templates. -->
+  <Style Selector="UserControl.studio-page">
+    <Setter Property="Background" Value="{DynamicResource StudioBackground}" />
+    <Setter Property="Foreground" Value="{DynamicResource StudioText}" />
+    <Style.Animations>
+      <Animation Duration="0:0:0.24" FillMode="Forward">
+        <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0" /></KeyFrame>
+        <KeyFrame Cue="100%"><Setter Property="Opacity" Value="1" /></KeyFrame>
+      </Animation>
+    </Style.Animations>
+  </Style>
+  <Style Selector="TextBlock.studio-heading">
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource StudioText}" />
+  </Style>
+  <Style Selector="TextBlock.studio-description, TextBlock.studio-key, TextBlock.studio-hint">
+    <Setter Property="Foreground" Value="{DynamicResource StudioMuted}" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+  <Style Selector="SelectableTextBlock.studio-code, SelectableTextBlock.studio-output">
+    <Setter Property="FontFamily" Value="Consolas,Cascadia Mono,Menlo,monospace" />
+    <Setter Property="FontSize" Value="11.5" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="Padding" Value="10,8" />
+    <Setter Property="Foreground" Value="{DynamicResource StudioText}" />
+  </Style>
+  <Style Selector="SelectableTextBlock.studio-output">
+    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
+  </Style>
+  <Style Selector="StackPanel.studio-row">
+    <Setter Property="Orientation" Value="Horizontal" />
+    <Setter Property="Spacing" Value="8" />
+  </Style>
+  <Style Selector="Button.studio-button">
+    <Setter Property="Padding" Value="10,3" />
+    <Setter Property="MinHeight" Value="28" />
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+  <Style Selector="Border.studio-card">
+    <Setter Property="Background" Value="{DynamicResource StudioSurface}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Padding" Value="18" />
+  </Style>
+  <Style Selector="Border.studio-hero">
+    <Setter Property="Background" Value="{DynamicResource StudioSurface}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="16" />
+    <Setter Property="Padding" Value="24,20" />
+    <Setter Property="ClipToBounds" Value="True" />
+  </Style>
+  <Style Selector="TextBlock.studio-kicker">
+    <Setter Property="Foreground" Value="{DynamicResource StudioAccent}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="LetterSpacing" Value="2" />
+  </Style>
+  <Style Selector="TextBlock.studio-muted">
+    <Setter Property="Foreground" Value="{DynamicResource StudioMuted}" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+  <Style Selector="TextBlock.studio-title">
+    <Setter Property="FontSize" Value="32" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="LetterSpacing" Value="-1" />
+  </Style>
+  <Style Selector="Button.studio-capability">
+    <Setter Property="Background" Value="{DynamicResource StudioSurface}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Padding" Value="16" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="RenderTransform" Value="translateY(0px)" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.18" />
+        <BrushTransition Property="Background" Duration="0:0:0.18" />
+      </Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="Button.studio-capability:pointerover">
+    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioAccent}" />
+    <Setter Property="RenderTransform" Value="translateY(-3px)" />
+  </Style>
+  <Style Selector="Button.studio-capability:pressed">
+    <Setter Property="RenderTransform" Value="translateY(0px) scale(0.98)" />
+  </Style>
+  <Style Selector="Border.studio-flow-node">
+    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="14,10" />
+  </Style>
+  <Style Selector="Border.studio-flow-node.active">
+    <Setter Property="Background" Value="{DynamicResource StudioGradient}" />
+  </Style>
+  <Style Selector="Border.studio-flow-node.active TextBlock">
+    <Setter Property="Foreground" Value="White" />
+  </Style>
+  <Style Selector="Border.studio-orbit">
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioAccent}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="100" />
+    <Setter Property="Opacity" Value="0.35" />
+    <Style.Animations>
+      <Animation Duration="0:0:6" IterationCount="INFINITE" PlaybackDirection="Alternate">
+        <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.18" /></KeyFrame>
+        <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.6" /></KeyFrame>
+      </Animation>
+    </Style.Animations>
+  </Style>
+  <Style Selector="TabControl.studio-lab">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Padding" Value="0,12,0,0" />
+  </Style>
+</Styles>

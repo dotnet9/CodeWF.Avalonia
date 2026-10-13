@@ -1,3 +1,4 @@
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia.Collections;
 using Dock.Model.Core;
 using Dock.Model.Controls;
@@ -28,7 +29,7 @@ public class DockPageViewModel
         var overviewTool = new Tool
         {
             Id = "Tool.Overview",
-            Title = "工作区概览",
+            Title = L.Instance.GetResource("Demo.Text.DockPageViewModel.overviewTool001"),
             Context = new MarkdownToolContext(ToolOverviewMarkdown),
         };
         var toolDock = new ToolDock
@@ -40,8 +41,8 @@ public class DockPageViewModel
             Proportion = 0.28,
         };
 
-        var designDocument = new Document { Id = "Doc.Design", Title = "设计说明", Context = new MarkdownDocumentContext(DocDesignMarkdown) };
-        var apiDocument = new Document { Id = "Doc.Api", Title = "接口草稿", Context = new MarkdownDocumentContext(DocApiMarkdown) };
+        var designDocument = new Document { Id = "Doc.Design", Title = L.Instance.GetResource("Demo.Text.DockPageViewModel.designDocument002"), Context = new MarkdownDocumentContext(DocDesignMarkdown) };
+        var apiDocument = new Document { Id = "Doc.Api", Title = L.Instance.GetResource("Demo.Text.DockPageViewModel.apiDocument003"), Context = new MarkdownDocumentContext(DocApiMarkdown) };
         var docDock = new DocumentDock
         {
             Id = "DocDock",
@@ -64,7 +65,7 @@ public class DockPageViewModel
         Layout = new RootDock
         {
             Id = "Root",
-            Title = "Dock 工作区",
+            Title = L.Instance.GetResource("Demo.Text.DockPageViewModel.Content004"),
             VisibleDockables = CreateList<IDockable>(mainDock),
             ActiveDockable = mainDock,
             IsCollapsable = false,
@@ -75,38 +76,9 @@ public class DockPageViewModel
 
     private static AvaloniaList<T> CreateList<T>(params T[] items) => new(items);
 
-    private const string ToolOverviewMarkdown = """
-        ### 工作区概览
+    private static string ToolOverviewMarkdown => L.Instance.GetResource("Demo.Text.DockPageViewModel.ToolOverviewMarkdown005");
 
-        - 左侧：工具面板（本面板）
-        - 右侧：文档区（可拖拽 / 停靠 / 浮动）
-        - 页签：双击可最大化工作区
+    private static string DocDesignMarkdown => L.Instance.GetResource("Demo.Text.DockPageViewModel.DocDesignMarkdown006");
 
-        试试拖动文档页签重新停靠。
-        """;
-
-    private const string DocDesignMarkdown = """
-        # 设计说明
-
-        Dock.Avalonia 的布局模型：**RootDock → ProportionalDock → ToolDock / DocumentDock**。
-
-        | 概念 | 说明 |
-        | --- | --- |
-        | RootDock | 布局根，含隐藏停靠物集合 |
-        | ProportionalDock | 比例分割容器 |
-        | ToolDock | 工具停靠区（左 / 右 / 上 / 下） |
-        | DocumentDock | 文档页签区 |
-
-        本页内容存放在 Document.Context，由页面级 DataTemplate 解析为 MarkdownViewer。
-        """;
-
-    private const string DocApiMarkdown = """
-        # 接口草稿
-
-        ```csharp
-        var factory = new Dock.Model.ReactiveUI.Factory();
-        var layout = new RootDock { VisibleDockables = [mainDock] };
-        factory.InitLayout(layout);
-        ```
-        """;
+    private static string DocApiMarkdown => L.Instance.GetResource("Demo.Text.DockPageViewModel.DocApiMarkdown007");
 }

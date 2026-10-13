@@ -10,12 +10,12 @@
     <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
       <StackPanel Spacing="6">
-        <TextBlock Text="PropertyGrid 自我演示：右侧属性面板即本控件；此处再放一个实例承载完整的阀门属性树。试试：搜索过滤、分类/字母视图、修改值出现加粗与子树重置、右键行重置单项、拖拽名称列宽。"
+        <TextBlock Text="{codewf:I18n Demo.Text.PropertyGridPage.View001}"
                    TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
         <StackPanel Orientation="Horizontal" Spacing="6">
-          <Button Content="全部展开" Click="OnExpandAll" />
-          <Button Content="全部折叠" Click="OnCollapseAll" />
-          <Button Content="重置全部修改" Click="OnResetAll" />
+          <Button Content="{codewf:I18n Demo.Text.PropertyGridPage.View002}" Click="OnExpandAll" />
+          <Button Content="{codewf:I18n Demo.Text.PropertyGridPage.View003}" Click="OnCollapseAll" />
+          <Button Content="{codewf:I18n Demo.Text.PropertyGridPage.View004}" Click="OnResetAll" />
         </StackPanel>
       </StackPanel>
     </Border>
@@ -34,9 +34,9 @@
       <Border Grid.Column="1" BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
               BorderThickness="1,0,0,0" Padding="10,0,0,0">
         <Grid RowDefinitions="Auto,*,Auto,*">
-          <TextBlock Grid.Row="0" Text="值变更日志" FontWeight="Bold" Margin="0,0,0,4" />
+          <TextBlock Grid.Row="0" Text="{codewf:I18n Demo.Text.PropertyGridPage.View005}" FontWeight="Bold" Margin="0,0,0,4" />
           <ListBox Grid.Row="1" ItemsSource="{Binding ChangeLog}" FontSize="11" />
-          <TextBlock Grid.Row="2" Text="浏览请求" FontWeight="Bold" Margin="0,8,0,4" />
+          <TextBlock Grid.Row="2" Text="{codewf:I18n Demo.Text.PropertyGridPage.View006}" FontWeight="Bold" Margin="0,8,0,4" />
           <ListBox Grid.Row="3" ItemsSource="{Binding BrowseLog}" FontSize="11" />
         </Grid>
       </Border>

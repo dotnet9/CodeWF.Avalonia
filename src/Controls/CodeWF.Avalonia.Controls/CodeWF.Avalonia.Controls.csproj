@@ -20,4 +20,7 @@
     <AvaloniaResource Include="..\..\..\logo.png" Link="Themes\Assets\logo.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Lang\CodeWF.Avalonia.Lang\CodeWF.Avalonia.Lang.csproj" />
+  </ItemGroup>
 </Project>

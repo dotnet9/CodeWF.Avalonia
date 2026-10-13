@@ -1,36 +1,20 @@
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using CodeWF.Avalonia.Markdown.Themes;
 using ReactiveUI;
+using System.Windows.Input;
+using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 
 namespace CodeWF.Avalonia.Demo.ViewModels.Pages;
 
 /// <summary>MarkdownViewer 演示页 VM：源文本编辑 / 增量渲染 / 排版主题 / 虚拟化。</summary>
 public class MarkdownViewerPageViewModel : ReactiveObject
 {
-    public const string SampleMarkdown = """
-        # MarkdownViewer 演示
+    private const string IdTheme = "mdv.theme";
+    private const string IdSize = "mdv.size";
+    private const string IdVirtualization = "mdv.virtualization";
+    private const string IdThreshold = "mdv.threshold";
 
-        完整渲染管线：**Markdig 解析** → 块级模型 → `WindowedStackPanel` 虚拟化呈现。
-
-        ## 任务回写
-        勾选下面的任务，Markdown 源文本会同步更新（TaskWriteBackRequested）：
-
-        - [x] 解析 Markdown 文本
-        - [ ] 调整排版主题（右侧属性面板）
-        - [ ] 编辑左侧源文本后点击「应用」，观察增量渲染耗时
-
-        ## 表格与代码
-
-        | 能力 | 说明 |
-        | --- | --- |
-        | 增量渲染 | 只重排变更块 |
-        | 虚拟化 | 超过阈值后按窗口实现块 |
-
-        ```csharp
-        var viewer = new MarkdownViewer { Markdown = "# 你好" };
-        ```
-
-        > 提示：右侧 PropertyGrid 即本控件的兄弟实例——属性面板自身也是一次自我演示。
-        """;
+    public static string SampleMarkdown => L.Instance.GetResource("Demo.Text.MarkdownViewerPageViewModel.SampleMarkdown001");
 
     private string _source = SampleMarkdown;
     private string _appliedMarkdown = SampleMarkdown;
@@ -38,6 +22,22 @@ public class MarkdownViewerPageViewModel : ReactiveObject
     private string _size = MarkdownTypographySizes.Normal;
     private bool _enableVirtualization = true;
     private int _threshold = 40;
+
+    private string _metrics = string.Empty;
+    public string Metrics { get => _metrics; private set => this.RaiseAndSetIfChanged(ref _metrics, value); }
+    public ICommand ApplyCommand { get; }
+    public ICommand AppendCommand { get; }
+    public ICommand ResetCommand { get; }
+
+    public MarkdownViewerPageViewModel()
+    {
+        ApplyCommand = ReactiveCommand.Create(Apply);
+        AppendCommand = ReactiveCommand.Create(AppendParagraph);
+        ResetCommand = ReactiveCommand.Create(ResetSample);
+    }
+
+    public void UpdateMetrics(string mode, double milliseconds, int blocks) => Metrics =
+        string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.MarkdownViewerPageaxaml.UpdateMetrics011"), mode, milliseconds, blocks);
 
     /// <summary>源文本（编辑区）。</summary>
     public string Source
@@ -105,8 +105,8 @@ public class MarkdownViewerPageViewModel : ReactiveObject
 
     public void AppendParagraph()
     {
-        Source += "\n\n新增段落：增量渲染只解析与重排变更块（"
-                  + DateTime.Now.ToString("HH:mm:ss") + "）。";
+        Source += L.Instance.GetResource("Demo.Text.MarkdownViewerPageViewModel.AppendParagraph002")
+                  + DateTime.Now.ToString("HH:mm:ss") + L.Instance.GetResource("Demo.Studio.SampleSuffix");
         Apply();
     }
 
@@ -122,4 +122,71 @@ public class MarkdownViewerPageViewModel : ReactiveObject
         Source = markdown;
         AppliedMarkdown = markdown;
     }
+    public void Commit(PropertyValueChange change)
+    {
+        switch (change.Item.Id)
+        {
+            case IdTheme when change.NewValue is string theme:
+                Theme = theme;
+                break;
+            case IdSize when change.NewValue is string size:
+                Size = size;
+                break;
+            case IdVirtualization when change.NewValue is bool enable:
+                EnableVirtualization = enable;
+                break;
+            case IdThreshold when change.NewValue is decimal threshold:
+                Threshold = (int)threshold;
+                break;
+        }
+
+    }
+
+    public IReadOnlyList<PropertyItem> BuildProperties()
+    {
+
+        var theme = new PropertyItem
+        {
+            Id = IdTheme,
+            Name = L.Instance.GetResource("Demo.Text.MarkdownViewerPageaxaml.BuildProperties003"),
+            Kind = PropertyItemKind.Choice,
+            Options = ThemeOptions,
+            Value = Theme,
+            DefaultValue = MarkdownTypographyThemes.Basic,
+            Description = L.Instance.GetResource("Demo.Text.MarkdownViewerPageaxaml.BuildProperties004"),
+        };
+        var size = new PropertyItem
+        {
+            Id = IdSize,
+            Name = L.Instance.GetResource("Demo.Text.MarkdownViewerPageaxaml.BuildProperties005"),
+            Kind = PropertyItemKind.Choice,
+            Options = SizeOptions,
+            Value = Size,
+            DefaultValue = MarkdownTypographySizes.Normal,
+            Description = L.Instance.GetResource("Demo.Text.MarkdownViewerPageaxaml.BuildProperties006"),
+        };
+        var virtualization = new PropertyItem
+        {
+            Id = IdVirtualization,
+            Name = L.Instance.GetResource("Demo.Text.MarkdownViewerPageaxaml.BuildProperties007"),
+            Kind = PropertyItemKind.Boolean,
+            Value = EnableVirtualization,
+            DefaultValue = true,
+            Description = L.Instance.GetResource("Demo.Text.MarkdownViewerPageaxaml.BuildProperties008"),
+        };
+        var threshold = new PropertyItem
+        {
+            Id = IdThreshold,
+            Name = L.Instance.GetResource("Demo.Text.MarkdownViewerPageaxaml.BuildProperties009"),
+            Kind = PropertyItemKind.Number,
+            Value = (decimal)Threshold,
+            DefaultValue = 40m,
+            Minimum = 1,
+            Maximum = 2000,
+            Description = L.Instance.GetResource("Demo.Text.MarkdownViewerPageaxaml.BuildProperties010"),
+        };
+
+        return [theme, size, virtualization, threshold];
+    }
+
 }

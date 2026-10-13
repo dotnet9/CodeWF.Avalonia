@@ -1,4 +1,4 @@
-﻿using CodeWF.Avalonia.Demo.Views;
+using CodeWF.Avalonia.Demo.Views;
 using CodeWF.Avalonia.Lang;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 using ReactiveUI;
@@ -29,6 +29,8 @@ public class DemoDocumentViewModel : ReactiveObject
 
     public DemoPageBase Page { get; }
 
+    public bool HasDocumentHeader => Page is not Views.Pages.WelcomePage;
+
     /// <summary>承载本文档的 Dock Document 包装（用于 Dock 工作区页签），由 Shell 回填。</summary>
     public global::Dock.Model.Core.IDockable? DockDocument { get; set; }
 
@@ -46,6 +48,7 @@ public class DemoDocumentViewModel : ReactiveObject
     {
         this.RaisePropertyChanged(nameof(Title));
         this.RaisePropertyChanged(nameof(DisplayTitle));
+        if (DockDocument is not null) DockDocument.Title = DisplayTitle;
     }
 
     /// <summary>ShowMeCode 当前段。</summary>
@@ -105,7 +108,9 @@ public class DemoDocumentViewModel : ReactiveObject
 
     private void OnCultureChanged(object? sender, EventArgs e)
     {
-        this.RaisePropertyChanged(nameof(Title));
+        RefreshTitle();
+        this.RaisePropertyChanged(nameof(XamlMarkdown));
+        this.RaisePropertyChanged(nameof(CSharpMarkdown));
         this.RaisePropertyChanged(nameof(DisplayTitle));
         this.RaisePropertyChanged(nameof(Description));
     }

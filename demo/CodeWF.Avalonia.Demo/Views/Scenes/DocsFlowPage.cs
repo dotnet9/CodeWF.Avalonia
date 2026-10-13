@@ -1,3 +1,4 @@
+using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using CodeWF.Avalonia.Demo.Views.Pages;
 
 namespace CodeWF.Avalonia.Demo.Views.Scenes;
@@ -23,27 +24,7 @@ public class DocsFlowPage : ScenePageBase
 
     protected override string SummaryKey => "Demo.Scene.Summary.Docs";
 
-    public override string XamlCode => """
-        <!-- 多文档工作区：文档内容走 Context + DataTemplate -->
-        <dock:DockControl Layout="{Binding Layout}">
-          <DockControl.DataTemplates>
-            <DataTemplate DataType="vm:DocContext">
-              <md:MarkdownViewer Markdown="{Binding Markdown}" />
-            </DataTemplate>
-          </DockControl.DataTemplates>
-        </dock:DockControl>
-        """;
+    public override string XamlCode => L.Instance.GetResource("Demo.Text.DocsFlowPage.XamlCode001");
 
-    public override string CSharpCode => """
-        // 12.x 文档内容放 Context，由 DataTemplate 解析成视图
-        var doc = new Document
-        {
-            Title = "设计说明",
-            Context = new DocContext(markdown),
-        };
-
-        // 面板显隐 / 恢复走同一套工厂方法，布局重置整体重建
-        factory.HideDockable(tool);
-        factory.RestoreDockable(tool.Id);
-        """;
+    public override string CSharpCode => L.Instance.GetResource("Demo.Text.DocsFlowPage.CSharpCode002");
 }

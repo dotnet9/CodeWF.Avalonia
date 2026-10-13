@@ -69,6 +69,12 @@ public partial class PropertyGrid : UserControl
     public static readonly StyledProperty<IBrush?> BackgroundBrushProperty =
         AvaloniaProperty.Register<PropertyGrid, IBrush?>(nameof(BackgroundBrush));
 
+    /// <summary>Optional flat resource overrides (Pg* keys); null restores the built-in theme.</summary>
+    public static readonly StyledProperty<ResourceDictionary?> ThemeOverridesProperty =
+        AvaloniaProperty.Register<PropertyGrid, ResourceDictionary?>(nameof(ThemeOverrides));
+
+    private readonly ResourceDictionary _hostTheme = new();
+
     private PropertyItem? _selectedItem;
     private bool _hasVisibleWhen;
     private bool _syncingViewButtons;
@@ -79,12 +85,32 @@ public partial class PropertyGrid : UserControl
     public PropertyGrid()
     {
         InitializeComponent();
+        // Keep defaults as a fallback so host resources can override every editor and row.
+        var defaults = new ResourceDictionary();
+        var themeDefaults = Resources.ThemeDictionaries.ToArray();
+        Resources.ThemeDictionaries.Clear();
+        foreach (var entry in themeDefaults)
+            defaults.ThemeDictionaries[entry.Key] = entry.Value;
+        Resources.MergedDictionaries.Add(defaults);
+        Resources.MergedDictionaries.Add(_hostTheme);
         RowsHost.ItemsSource = Rows;
         PropertyGridLocalization.RegisterResources();
-        I18nManager.Instance.CultureChanged += HandleCultureChanged;
         ApplyChromeStrings();
         SyncViewButtons();
         SyncDescriptionMenu();
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        I18nManager.Instance.CultureChanged += HandleCultureChanged;
+        ApplyChromeStrings();
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        I18nManager.Instance.CultureChanged -= HandleCultureChanged;
+        base.OnDetachedFromVisualTree(e);
     }
 
     public event EventHandler<PropertyValueChangedEventArgs>? ValueCommitted;
@@ -147,6 +173,12 @@ public partial class PropertyGrid : UserControl
         set => SetValue(BackgroundBrushProperty, value);
     }
 
+    public ResourceDictionary? ThemeOverrides
+    {
+        get => GetValue(ThemeOverridesProperty);
+        set => SetValue(ThemeOverridesProperty, value);
+    }
+
     /// <summary>Currently selected property (description pane data source).</summary>
     public PropertyItem? SelectedItem
     {
@@ -183,7 +215,14 @@ public partial class PropertyGrid : UserControl
     {
         base.OnPropertyChanged(change);
 
-        if (change.Property == ItemsProperty)
+        if (change.Property == ThemeOverridesProperty)
+        {
+            _hostTheme.Clear();
+            if (ThemeOverrides is { } overrides)
+                foreach (var entry in overrides)
+                    _hostTheme[entry.Key] = entry.Value;
+        }
+        else if (change.Property == ItemsProperty)
         {
             OnItemsChanged();
         }
@@ -351,10 +390,10 @@ public partial class PropertyGrid : UserControl
         _hasVisibleWhen = roots.Any(item => item.SelfAndDescendants().Any(x => x.VisibleWhen is not null));
         RebuildRows();
 
-        if (SelectedItem is null && Rows.FirstOrDefault(static row => row is PropertyLeafRow) is { } first)
-        {
-            Select(first.Item);
-        }
+        var selection = Rows.FirstOrDefault(row => row is PropertyLeafRow && row.Item.Id is not null && row.Item.Id == SelectedItem?.Id)
+            ?? Rows.FirstOrDefault(static row => row is PropertyLeafRow);
+        if (selection is not null) Select(selection.Item);
+        else SelectedItem = null;
     }
 
     private void RebuildRows()

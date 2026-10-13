@@ -10,7 +10,7 @@
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
       <StackPanel Spacing="6">
         <TextBlock Text="Markdown Lite" FontWeight="Bold" />
-        <TextBlock Text="CodeWF.Avalonia.Markdown.Lite：Markdig 解析 + 自研渲染管线，只渲染常规元素——标题 / 段落 / 列表 / 引用 / 表格 / 链接 / 代码块（单色）/ 图片替代文本 / 公式原文，内置同款 18 套排版主题，体积与依赖更小。"
+        <TextBlock Text="{codewf:I18n Demo.Text.MarkdownLitePage.View001}"
                    TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
       </StackPanel>
     </Border>

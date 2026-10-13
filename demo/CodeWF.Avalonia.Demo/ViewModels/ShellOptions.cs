@@ -1,12 +1,13 @@
 using Avalonia.Styling;
+using CodeWF.Avalonia.Controls.Themes;
 using CodeWF.Avalonia.Lang;
 using CodeWF.Avalonia.Log;
 using Semi.Avalonia;
 
 namespace CodeWF.Avalonia.Demo.ViewModels;
 
-/// <summary>6 色板（默认/水生/沙漠/黄昏/夜空/高对比），叠加浅/深模式映射为应用主题变体。</summary>
-public sealed class AppearanceOption
+/// <summary>9 色板（默认/水生/沙漠/黄昏/夜空/高对比），叠加浅/深模式映射为应用主题变体。</summary>
+public sealed class AppearanceOption : global::ReactiveUI.ReactiveObject
 {
     public delegate ThemeVariant VariantResolver(bool isDarkMode);
 
@@ -23,7 +24,18 @@ public sealed class AppearanceOption
 
     public string Title => I18nManager.Instance.GetResource(TitleKey);
 
+    public void RefreshTitle() => global::ReactiveUI.IReactiveObjectExtensions.RaisePropertyChanged(this, nameof(Title));
+
     public override string ToString() => Title;
+
+    public static AppearanceOption DotNet() =>
+        new("Demo.Palette.DotNet", dark => dark ? StudioTheme.DotNetDark : StudioTheme.DotNetLight);
+
+    public static AppearanceOption Aurora() =>
+        new("Demo.Palette.Aurora", dark => dark ? StudioTheme.AuroraDark : StudioTheme.AuroraLight);
+
+    public static AppearanceOption Ember() =>
+        new("Demo.Palette.Ember", dark => dark ? StudioTheme.EmberDark : StudioTheme.EmberLight);
 
     public static AppearanceOption Default() =>
         new("Demo.Palette.Default", isDark => isDark ? ThemeVariant.Dark : ThemeVariant.Light);
