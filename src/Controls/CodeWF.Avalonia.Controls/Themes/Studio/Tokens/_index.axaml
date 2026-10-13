@@ -1,0 +1,27 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:themes="using:CodeWF.Avalonia.Controls.Themes">
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceInclude x:Key="Default" Source="Light.axaml" />
+        <ResourceInclude x:Key="Light" Source="Light.axaml" />
+        <ResourceInclude x:Key="Dark" Source="Dark.axaml" />
+        <ResourceInclude x:Key="{x:Static themes:StudioTheme.DotNetLight}" Source="DotNetLight.axaml" />
+        <ResourceInclude x:Key="{x:Static themes:StudioTheme.DotNetDark}" Source="DotNetDark.axaml" />
+        <ResourceInclude x:Key="{x:Static themes:StudioTheme.AuroraLight}" Source="AuroraLight.axaml" />
+        <ResourceInclude x:Key="{x:Static themes:StudioTheme.AuroraDark}" Source="AuroraDark.axaml" />
+        <ResourceInclude x:Key="{x:Static themes:StudioTheme.EmberLight}" Source="EmberLight.axaml" />
+        <ResourceInclude x:Key="{x:Static themes:StudioTheme.EmberDark}" Source="EmberDark.axaml" />
+    </ResourceDictionary.ThemeDictionaries>
+    <SolidColorBrush x:Key="StudioSwatchDotNet">#512BD4</SolidColorBrush>
+    <LinearGradientBrush x:Key="StudioSwatchAurora">
+        <GradientStop Offset="0" Color="#8968FF" />
+        <GradientStop Offset="1" Color="#26D4CC" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="StudioSwatchEmber">#BD674D</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioSwatchDefault">#0064FA</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioSwatchAquatic">#008D9E</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioSwatchDesert">#B57532</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioSwatchDusk">#7A5CC4</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioSwatchNightSky">#2B6CB0</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioSwatchHighContrast">#777777</SolidColorBrush>
+</ResourceDictionary>

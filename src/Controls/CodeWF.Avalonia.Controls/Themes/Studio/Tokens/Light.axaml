@@ -1,0 +1,47 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Color tokens and their brushes follow Semi theme dictionaries. -->
+    <Color x:Key="StudioBackgroundColor">#FFFFFF</Color>
+    <Color x:Key="StudioSurfaceColor">#F7F6FC</Color>
+    <Color x:Key="StudioRaisedColor">#EFEDF7</Color>
+    <Color x:Key="StudioBorderColor">#DDD8EC</Color>
+    <Color x:Key="StudioTextColor">#242036</Color>
+    <Color x:Key="StudioMutedColor">#6E6684</Color>
+    <Color x:Key="StudioAccentColor">#512BD4</Color>
+    <Color x:Key="StudioSecondaryColor">#7355DE</Color>
+    <Color x:Key="StudioPrimaryColor">#512BD4</Color>
+    <Color x:Key="StudioGradientStartColor">#512BD4</Color>
+    <Color x:Key="StudioTextGradientEndColor">#7355DE</Color>
+    <SolidColorBrush x:Key="StudioBackground" Color="{StaticResource StudioBackgroundColor}" />
+    <SolidColorBrush x:Key="StudioSurface" Color="{StaticResource StudioSurfaceColor}" />
+    <SolidColorBrush x:Key="StudioRaised" Color="{StaticResource StudioRaisedColor}" />
+    <SolidColorBrush x:Key="StudioBorder" Color="{StaticResource StudioBorderColor}" />
+    <SolidColorBrush x:Key="StudioText" Color="{StaticResource StudioTextColor}" />
+    <SolidColorBrush x:Key="StudioMuted" Color="{StaticResource StudioMutedColor}" />
+    <SolidColorBrush x:Key="StudioAccent" Color="{StaticResource StudioAccentColor}" />
+    <SolidColorBrush x:Key="StudioSecondary" Color="{StaticResource StudioSecondaryColor}" />
+    <SolidColorBrush x:Key="StudioPrimary" Color="{StaticResource StudioPrimaryColor}" />
+    <LinearGradientBrush x:Key="StudioGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Offset="0" Color="{StaticResource StudioGradientStartColor}" />
+        <GradientStop Offset="1" Color="{StaticResource StudioSecondaryColor}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="StudioTextGradient" StartPoint="0%,0%" EndPoint="100%,0%">
+        <GradientStop Offset="0" Color="{StaticResource StudioAccentColor}" />
+        <GradientStop Offset="1" Color="{StaticResource StudioTextGradientEndColor}" />
+    </LinearGradientBrush>
+    <ResourceDictionary x:Key="StudioPropertyGridTheme">
+        <StaticResource x:Key="PgBackground" ResourceKey="StudioSurface" />
+        <StaticResource x:Key="PgToolbarBackground" ResourceKey="StudioSurface" />
+        <StaticResource x:Key="PgGroupBackground" ResourceKey="StudioRaised" />
+        <StaticResource x:Key="PgForeground" ResourceKey="StudioText" />
+        <StaticResource x:Key="PgSecondaryForeground" ResourceKey="StudioMuted" />
+        <StaticResource x:Key="PgBorder" ResourceKey="StudioBorder" />
+        <StaticResource x:Key="PgLine" ResourceKey="StudioBorder" />
+        <StaticResource x:Key="PgHover" ResourceKey="StudioRaised" />
+        <StaticResource x:Key="PgAccent" ResourceKey="StudioAccent" />
+        <StaticResource x:Key="PgSelected" ResourceKey="StudioPrimary" />
+        <StaticResource x:Key="PgSelectedSoft" ResourceKey="StudioRaised" />
+        <StaticResource x:Key="PgEditorBackground" ResourceKey="StudioSurface" />
+        <SolidColorBrush x:Key="PgSelectedText">White</SolidColorBrush>
+    </ResourceDictionary>
+</ResourceDictionary>

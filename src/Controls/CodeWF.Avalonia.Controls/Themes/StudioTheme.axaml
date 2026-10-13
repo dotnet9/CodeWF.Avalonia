@@ -1,6 +1,13 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="CodeWF.Avalonia.Controls.Themes.StudioTheme">
+  <Styles.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="Studio/Tokens/_index.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Styles.Resources>
   <!-- Opt-in presentation classes, using Semi's existing templates. -->
   <Style Selector="UserControl.studio-page">
     <Setter Property="Background" Value="{DynamicResource StudioBackground}" />
