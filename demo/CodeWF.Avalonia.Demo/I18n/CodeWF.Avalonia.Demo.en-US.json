@@ -16,6 +16,7 @@
       "DemoShell": "Demo Shell",
       "QuickSave": "Save layout",
       "QuickSettings": "Settings",
+      "QuickGuide": "Open guidance (app-wide)",
       "PinRibbon": "Expand / collapse commands"
     },
     "Tool": {
@@ -27,33 +28,36 @@
       "Home": "Home",
       "Markdown": "Markdown",
       "Data": "Data",
-      "Controls": "Controls",
-      "Layout": "Layout",
-      "Infrastructure": "Infrastructure",
-      "Views": "Views"
+      "Docs": "Workspace",
+      "Input": "Lib · Input",
+      "Present": "Lib · Present",
+      "Infrastructure": "Lib · Infra"
     },
     "Item": {
       "Welcome": "Welcome",
-      "MarkdownViewer": "MarkdownViewer",
-      "MarkdownLite": "Markdown Lite",
+      "MarkdownFlow": "Writing Flow",
+      "DataFlow": "Data Flow",
+      "DocsFlow": "Docs Flow",
+      "MarkdownViewer": "Viewer",
+      "MarkdownLite": "Lite",
       "MarkdownEditor": "Editor",
-      "MarkdownLiveEditor": "Live Editor",
+      "MarkdownLiveEditor": "Live Edit",
       "MarkdownExport": "Export",
       "DataGrid": "DataGrid",
       "PropertyGrid": "PropertyGrid",
       "CodeWFWindow": "CodeWFWindow",
-      "SearchListBox": "SearchListBox",
+      "SearchListBox": "SearchList",
       "Transfer": "Transfer",
-      "Status": "Status Components",
+      "Status": "Status",
       "Guide": "Guide",
       "AppGuide": "App Guide",
-      "WindowedStackPanel": "WindowedStackPanel",
-      "ColumnDisplayEditor": "ColumnDisplayEditor",
-      "MarkupExtension": "Markup Extensions",
+      "WindowedStackPanel": "Panel",
+      "ColumnDisplayEditor": "Columns",
+      "MarkupExtension": "Markup",
       "Log": "Log",
       "Lang": "Lang",
       "Dock": "Dock",
-      "TrapezoidTab": "Trapezoid Tabs"
+      "TrapezoidTab": "Tabs"
     },
     "Segment": {
       "Demo": "Demo",
@@ -68,10 +72,40 @@
       "NightSky": "NightSky",
       "HighContrast": "High Contrast"
     },
+    "Scene": {
+      "Step.Open": "Open doc",
+      "Step.Edit": "Edit",
+      "Step.Preview": "Live preview",
+      "Step.Export": "Export / copy",
+      "Step.WriteBack": "Task write-back",
+      "Step.Import": "Import",
+      "Step.Columns": "Columns",
+      "Step.SortFilter": "Sort / filter",
+      "Step.ExportData": "Export",
+      "Step.Dock": "Dock layout",
+      "Step.Tabs": "Doc tabs",
+      "Step.Panels": "Panel sync",
+      "Step.Status": "Status",
+      "Summary.Markdown": "5-step writing flow · each step reuses the component pages below",
+      "Summary.Data": "4-step data flow · wired to the property panel",
+      "Summary.Docs": "4-step multi-document flow · panels and tabs working together"
+    },
     "Page": {
       "Welcome": {
         "Title": "Welcome to CodeWF.Avalonia",
-        "Desc": "Control library showcase: pick a demo from the left tree, switch Demo / XAML / C# segments in each document header, drive the demo from the property panel, and watch live logs at the bottom."
+        "Desc": "A scenario-first showcase: three complete workflows (writing / tabular data / multi-document) plus three component-library sections. Each document header switches Demo / XAML / C#, the right panel drives the demo, and logs stream at the bottom."
+      },
+      "MarkdownFlow": {
+        "Title": "Writing Flow",
+        "Desc": "Open → edit → live preview → export / copy → task write-back: five steps chained into one Markdown workflow, each reusing the very same component pages."
+      },
+      "DataFlow": {
+        "Title": "Data Flow",
+        "Desc": "Import → columns → sort/filter → export: the full tabular-data path, with matching enhancement switches on the property panel."
+      },
+      "DocsFlow": {
+        "Title": "Docs Flow",
+        "Desc": "Dock layout → document tabs → panel sync → status feedback: how the Dock workspace cooperates with the explorer, property and log panels."
       },
       "MarkdownViewer": {
         "Title": "MarkdownViewer",
@@ -161,7 +195,7 @@
       "FeaturesControls": "· Controls: CodeWFWindow, SearchListBox, Transfer, status components, Guide, column display editor",
       "FeaturesInfra": "· Infrastructure & views: logging, localization, If/Switch markup, Dock workspace, trapezoid tabs, virtualizing panel",
       "UsageTitle": "How to use",
-      "UsageRibbon": "· The seven ribbon tabs mirror the seven groups; double-click a tab to collapse / expand the command area",
+      "UsageRibbon": "· The seven ribbon tabs are Home + three scenario workflows + three library sections; double-click a tab to collapse / expand commands",
       "UsageShowMeCode": "· Each demo document header offers Demo / XAML / C# segments, one visible at a time",
       "UsageProperties": "· The right PropertyGrid is the library control itself: edits apply to the demo immediately",
       "UsageLog": "· The bottom log panel streams Logger events live and supports copy, clear and open-log-folder"

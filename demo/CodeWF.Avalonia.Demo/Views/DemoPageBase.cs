@@ -28,6 +28,15 @@ public abstract class DemoPageBase : UserControl
     /// <summary>构建右侧属性面板定义；仅调用一次。</summary>
     protected virtual IReadOnlyList<PropertyItem> BuildProperties() => [];
 
+    /// <summary>本场景页的工作流步骤标题键（原型里的轨道式步骤条）；为空表示这是普通组件页。</summary>
+    public IReadOnlyList<string> SceneStepKeys { get; protected init; } = [];
+
+    /// <summary>每个步骤对应要显示的组件页实例（与步骤一一对应，实例由场景页自身持有）。</summary>
+    public IReadOnlyList<DemoPageBase> SceneStepPages { get; protected init; } = [];
+
+    /// <summary>当前显示的场景步骤页；由场景页在步骤切换时写回。</summary>
+    public DemoPageBase? ActiveScenePage { get; set; }
+
     /// <summary>属性提交回调：把右侧面板的修改反映到演示内容。</summary>
     public virtual void OnPropertyCommitted(PropertyValueChange change)
     {

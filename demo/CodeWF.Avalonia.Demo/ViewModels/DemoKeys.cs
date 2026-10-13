@@ -3,16 +3,21 @@ namespace CodeWF.Avalonia.Demo.ViewModels;
 /// <summary>Demo 语言资源键（zh-CN / en-US JSON 均按此层级组织）。</summary>
 public static class DemoKeys
 {
-    // Ribbon 分组 = 左树组节点
+    // Ribbon 分组 = 左树组节点（场景优先 + 组件库分区）
     public const string GroupHome = "Demo.Group.Home";
     public const string GroupMarkdown = "Demo.Group.Markdown";
     public const string GroupData = "Demo.Group.Data";
-    public const string GroupControls = "Demo.Group.Controls";
-    public const string GroupLayout = "Demo.Group.Layout";
+    public const string GroupDocs = "Demo.Group.Docs";
+    public const string GroupInput = "Demo.Group.Input";
+    public const string GroupPresent = "Demo.Group.Present";
     public const string GroupInfrastructure = "Demo.Group.Infrastructure";
-    public const string GroupViews = "Demo.Group.Views";
 
-    // 演示项
+    // 场景页（工作流）
+    public const string ItemMarkdownFlow = "Demo.Item.MarkdownFlow";
+    public const string ItemDataFlow = "Demo.Item.DataFlow";
+    public const string ItemDocsFlow = "Demo.Item.DocsFlow";
+
+    // 组件页
     public const string ItemWelcome = "Demo.Item.Welcome";
     public const string ItemMarkdownViewer = "Demo.Item.MarkdownViewer";
     public const string ItemMarkdownLite = "Demo.Item.MarkdownLite";
@@ -42,45 +47,51 @@ public static class DemoKeys
     public const string ToolLog = "Demo.Tool.Log";
 }
 
-/// <summary>演示目录图标（Ribbon 命令按钮 / 导航树节点），与设计原型保持一致。</summary>
+/// <summary>
+/// 演示目录图标（Ribbon 命令按钮 / 导航树节点），与设计原型保持一致。
+/// 图标为几何符号；实现期若要换成矢量图标，可整体替换为 Semi / Ursa / Iconica 的图标控件。
+/// </summary>
 public static class DemoIcons
 {
     private static readonly Dictionary<string, string> ItemMap = new()
     {
-        [DemoKeys.ItemWelcome] = "🏠",
-        [DemoKeys.ItemMarkdownViewer] = "📄",
-        [DemoKeys.ItemMarkdownLite] = "🪶",
-        [DemoKeys.ItemMarkdownEditor] = "✍️",
+        [DemoKeys.ItemWelcome] = "⌂",
+        [DemoKeys.ItemMarkdownFlow] = "▶",
+        [DemoKeys.ItemDataFlow] = "▤",
+        [DemoKeys.ItemDocsFlow] = "❐",
+        [DemoKeys.ItemMarkdownViewer] = "▤",
+        [DemoKeys.ItemMarkdownLite] = "▭",
+        [DemoKeys.ItemMarkdownEditor] = "✎",
         [DemoKeys.ItemMarkdownLiveEditor] = "⚡",
-        [DemoKeys.ItemMarkdownExport] = "📤",
-        [DemoKeys.ItemDataGrid] = "📊",
-        [DemoKeys.ItemPropertyGrid] = "🧾",
-        [DemoKeys.ItemCodeWFWindow] = "🪟",
-        [DemoKeys.ItemSearchListBox] = "🔎",
-        [DemoKeys.ItemTransfer] = "🔀",
-        [DemoKeys.ItemStatus] = "🏷️",
-        [DemoKeys.ItemGuide] = "🧭",
-        [DemoKeys.ItemAppGuide] = "🧭",
-        [DemoKeys.ItemWindowedStackPanel] = "📋",
-        [DemoKeys.ItemColumnDisplayEditor] = "📐",
-        [DemoKeys.ItemMarkupExtension] = "🧱",
-        [DemoKeys.ItemLog] = "📜",
-        [DemoKeys.ItemLang] = "🌐",
-        [DemoKeys.ItemDock] = "🪟",
-        [DemoKeys.ItemTrapezoidTab] = "🔺",
+        [DemoKeys.ItemMarkdownExport] = "⇪",
+        [DemoKeys.ItemDataGrid] = "▦",
+        [DemoKeys.ItemPropertyGrid] = "☰",
+        [DemoKeys.ItemCodeWFWindow] = "▣",
+        [DemoKeys.ItemSearchListBox] = "⌕",
+        [DemoKeys.ItemTransfer] = "⇄",
+        [DemoKeys.ItemStatus] = "◈",
+        [DemoKeys.ItemGuide] = "◉",
+        [DemoKeys.ItemAppGuide] = "◎",
+        [DemoKeys.ItemWindowedStackPanel] = "▥",
+        [DemoKeys.ItemColumnDisplayEditor] = "▥",
+        [DemoKeys.ItemMarkupExtension] = "⟨⟩",
+        [DemoKeys.ItemLog] = "☰",
+        [DemoKeys.ItemLang] = "⊕",
+        [DemoKeys.ItemDock] = "▣",
+        [DemoKeys.ItemTrapezoidTab] = "◤",
     };
 
     public static string ResolveItem(string key) => ItemMap.GetValueOrDefault(key, "◆");
 
     public static string ResolveGroup(string key) => key switch
     {
-        DemoKeys.GroupHome => "🏠",
-        DemoKeys.GroupMarkdown => "📄",
-        DemoKeys.GroupData => "📊",
-        DemoKeys.GroupControls => "🧩",
-        DemoKeys.GroupLayout => "📐",
-        DemoKeys.GroupInfrastructure => "🧰",
-        DemoKeys.GroupViews => "👓",
+        DemoKeys.GroupHome => "⌂",
+        DemoKeys.GroupMarkdown => "▤",
+        DemoKeys.GroupData => "▦",
+        DemoKeys.GroupDocs => "❐",
+        DemoKeys.GroupInput => "⌕",
+        DemoKeys.GroupPresent => "◈",
+        DemoKeys.GroupInfrastructure => "☰",
         _ => "◆",
     };
 }

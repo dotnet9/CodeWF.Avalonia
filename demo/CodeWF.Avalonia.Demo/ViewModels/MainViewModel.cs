@@ -21,7 +21,7 @@ namespace CodeWF.Avalonia.Demo.ViewModels;
 /// Shell 视图模型：Ribbon 分组、导航树镜像、文档区、右侧 PropertyGrid 与底部日志的调度中枢。
 /// 页面/子 VM 不走容器注册，按演示目录工厂直接构造。
 /// </summary>
-public class MainViewModel : ReactiveObject
+public partial class MainViewModel : ReactiveObject
 {
     private DemoDocumentViewModel? _activeDocument;
     private DemoItemViewModel? _selectedNavItem;
@@ -55,6 +55,7 @@ public class MainViewModel : ReactiveObject
         QuickSaveCommand = ReactiveCommand.Create(() => { Logger.Info("保存工作区布局（演示）"); });
         QuickResetCommand = ReactiveCommand.Create(ResetLayout);
         QuickSettingsCommand = ReactiveCommand.Create(() => { Logger.Info("打开设置（演示）"); });
+        QuickGuideCommand = ReactiveCommand.Create(OpenGuidanceDemo);
         WriteLogsCommand = ReactiveCommand.Create(WriteSampleLogs);
 
         Palettes = new ObservableCollection<AppearanceOption>
@@ -176,6 +177,9 @@ public class MainViewModel : ReactiveObject
     public ReactiveCommand<RxVoid, RxVoid> QuickResetCommand { get; }
 
     public ReactiveCommand<RxVoid, RxVoid> QuickSettingsCommand { get; }
+
+    /// <summary>标签栏的引导入口：切换到「应用引导」页并说明用法。</summary>
+    public ReactiveCommand<RxVoid, RxVoid> QuickGuideCommand { get; }
 
     public ReactiveCommand<RxVoid, RxVoid> WriteLogsCommand { get; }
 
@@ -528,12 +532,12 @@ public class MainViewModel : ReactiveObject
 
     public async Task<bool> RunSmokeAsync(CancellationToken cancellation)
     {
-        // 冒烟：写入三类日志，验证日志渲染数据源与命令通道。
+        // 冒烟：先写三类日志验证日志通道，再按信息架构逐页构建（含场景页步骤切换）。
         DemoBootstrapper.Initialize();
         Logger.Info("冒烟开始");
         WriteSampleLogs();
-        await Task.Delay(500, cancellation);
-        Logger.Info("冒烟结束");
+        await SmokeWalkCatalogAsync(cancellation);
+        Logger.Info("冒烟结束：按信息架构逐页构建完成");
         await Logger.ShutdownAsync();
         return true;
     }

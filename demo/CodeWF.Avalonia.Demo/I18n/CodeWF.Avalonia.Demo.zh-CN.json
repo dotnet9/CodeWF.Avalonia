@@ -16,6 +16,7 @@
       "DemoShell": "演示台",
       "QuickSave": "保存布局",
       "QuickSettings": "设置",
+      "QuickGuide": "打开引导（应用级）",
       "PinRibbon": "展开/折叠命令区"
     },
     "Tool": {
@@ -25,34 +26,37 @@
     },
     "Group": {
       "Home": "首页",
-      "Markdown": "Markdown",
-      "Data": "数据",
-      "Controls": "控件",
-      "Layout": "布局",
-      "Infrastructure": "基础设施",
-      "Views": "视图"
+      "Markdown": "Markdown 工作区",
+      "Data": "数据工作台",
+      "Docs": "文档工作区",
+      "Input": "组件库·输入",
+      "Present": "组件库·呈现",
+      "Infrastructure": "组件库·基础设施"
     },
     "Item": {
       "Welcome": "欢迎",
-      "MarkdownViewer": "MarkdownViewer",
-      "MarkdownLite": "Markdown Lite",
-      "MarkdownEditor": "编辑器",
+      "MarkdownFlow": "写作流程",
+      "DataFlow": "数据流程",
+      "DocsFlow": "文档流程",
+      "MarkdownViewer": "阅读器",
+      "MarkdownLite": "轻量渲染",
+      "MarkdownEditor": "源码编辑",
       "MarkdownLiveEditor": "实时编辑",
-      "MarkdownExport": "导出",
-      "DataGrid": "DataGrid",
-      "PropertyGrid": "PropertyGrid",
-      "CodeWFWindow": "CodeWFWindow",
-      "SearchListBox": "SearchListBox",
-      "Transfer": "Transfer",
+      "MarkdownExport": "导出复制",
+      "DataGrid": "数据表",
+      "PropertyGrid": "属性表",
+      "CodeWFWindow": "无边框窗口",
+      "SearchListBox": "搜索列表",
+      "Transfer": "穿梭框",
       "Status": "状态组件",
-      "Guide": "Guide",
+      "Guide": "页面引导",
       "AppGuide": "应用引导",
-      "WindowedStackPanel": "WindowedStackPanel",
-      "ColumnDisplayEditor": "ColumnDisplayEditor",
-      "MarkupExtension": "Markup 扩展",
-      "Log": "Log",
-      "Lang": "Lang",
-      "Dock": "Dock",
+      "WindowedStackPanel": "虚拟面板",
+      "ColumnDisplayEditor": "列配置",
+      "MarkupExtension": "标记扩展",
+      "Log": "日志控件",
+      "Lang": "国际化",
+      "Dock": "停靠布局",
       "TrapezoidTab": "梯形页签"
     },
     "Segment": {
@@ -68,10 +72,40 @@
       "NightSky": "夜空",
       "HighContrast": "高对比"
     },
+    "Scene": {
+      "Step.Open": "打开文档",
+      "Step.Edit": "编辑",
+      "Step.Preview": "实时预览",
+      "Step.Export": "导出复制",
+      "Step.WriteBack": "任务回写",
+      "Step.Import": "导入数据",
+      "Step.Columns": "列配置",
+      "Step.SortFilter": "排序过滤",
+      "Step.ExportData": "导出",
+      "Step.Dock": "停靠布局",
+      "Step.Tabs": "多文档页签",
+      "Step.Panels": "面板联动",
+      "Step.Status": "状态反馈",
+      "Summary.Markdown": "5 步写作流程 · 每一步复用下方组件页",
+      "Summary.Data": "4 步表数据流程 · 与属性面板联动",
+      "Summary.Docs": "4 步多文档流程 · 面板与页签协同"
+    },
     "Page": {
       "Welcome": {
         "Title": "欢迎使用 CodeWF.Avalonia",
-        "Desc": "控件库演示台：左侧导航选择演示，文档头部可切换 演示 / XAML / C# 源码，右侧属性面板实时驱动当前演示，底部为实时日志。"
+        "Desc": "场景优先的演示台：3 条完整工作流（写作 / 表数据 / 多文档）+ 3 个组件库分区；文档头部可切换 演示 / XAML / C#，右侧属性面板实时驱动当前演示，底部为实时日志。"
+      },
+      "MarkdownFlow": {
+        "Title": "写作全流程",
+        "Desc": "打开 → 编辑 → 实时预览 → 导出复制 → 任务回写：五步串成一条 Markdown 工作流，每一步直接复用组件库里的同一批页面。"
+      },
+      "DataFlow": {
+        "Title": "表数据工作流",
+        "Desc": "导入 → 列配置 → 排序过滤 → 导出：表数据处理的完整链路，右侧属性面板给出对应的增强开关。"
+      },
+      "DocsFlow": {
+        "Title": "多文档工作流",
+        "Desc": "停靠布局 → 多文档页签 → 面板联动 → 状态反馈：Dock 工作区与导航 / 属性 / 日志面板的协作方式。"
       },
       "MarkdownViewer": {
         "Title": "MarkdownViewer",
@@ -161,7 +195,7 @@
       "FeaturesControls": "· 控件：CodeWFWindow、SearchListBox、Transfer、状态组件、Guide 引导、列配置编辑器",
       "FeaturesInfra": "· 基础设施与视图：日志、国际化、If/Switch 标记扩展、Dock 工作区、梯形页签、虚拟化面板",
       "UsageTitle": "使用方式",
-      "UsageRibbon": "· 顶部 Ribbon 七个页签对应七个分组；双击页签可折叠 / 展开命令区",
+      "UsageRibbon": "· 顶部 Ribbon 七个页签 = 首页 + 3 条场景工作流 + 3 个组件库分区；双击页签可折叠 / 展开命令区",
       "UsageShowMeCode": "· 每个演示文档头部提供 演示 / XAML / C# 三段切换，同一时刻只显示一段",
       "UsageProperties": "· 右侧 PropertyGrid 即本库控件：修改属性立即作用于左侧演示内容",
       "UsageLog": "· 底部日志面板实时显示 Logger 事件流，可复制、清空、打开日志目录"

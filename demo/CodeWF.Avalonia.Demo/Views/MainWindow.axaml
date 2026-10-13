@@ -49,7 +49,10 @@
     <!--  Ribbon 页签行：快捷工具栏 + 7 页签（双击页签折叠/展开命令区，不另设图钉按钮）  -->
     <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
       <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="6,0,2,0">
-        <Button Classes="qk-btn" Content="💾" Margin="0,0,2,0"
+        <Button Classes="qk-btn" Content="◉" Margin="0,0,2,0"
+                ToolTip.Tip="{codewf:I18n Demo.Shell.QuickGuide}"
+                Command="{Binding QuickGuideCommand}" />
+        <Button Classes="qk-btn" Content="▣" Margin="0,0,2,0"
                 ToolTip.Tip="{codewf:I18n Demo.Shell.QuickSave}"
                 Command="{Binding QuickSaveCommand}" />
         <Button Classes="qk-btn" Content="↺" Margin="0,0,2,0"
@@ -68,7 +71,7 @@
         <TabStrip.ItemTemplate>
           <DataTemplate x:DataType="vm:DemoGroupViewModel">
             <StackPanel Orientation="Horizontal" Spacing="6" Margin="14,4">
-              <TextBlock Text="{Binding Icon}" FontSize="13" VerticalAlignment="Center" />
+              <TextBlock Text="{Binding Icon}" FontSize="14" VerticalAlignment="Center" />
               <TextBlock Text="{Binding Title}" FontWeight="SemiBold" VerticalAlignment="Center" />
             </StackPanel>
           </DataTemplate>
@@ -95,7 +98,7 @@
                       CommandParameter="{Binding}">
                 <StackPanel Spacing="4">
                   <TextBlock Text="{Binding Icon}" FontSize="20" HorizontalAlignment="Center" />
-                  <TextBlock Text="{Binding Title}" FontSize="11" MaxWidth="84"
+                  <TextBlock Text="{Binding Title}" FontSize="11" MaxWidth="64"
                              HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" />
                 </StackPanel>
               </Button>
