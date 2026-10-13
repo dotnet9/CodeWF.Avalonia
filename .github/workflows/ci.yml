@@ -38,9 +38,10 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: AOT 发布 Demo
-        run: dotnet publish demo/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo.csproj -c Release -r win-x64 -p:PublishAot=true -o artifacts/aot-smoke
+        shell: pwsh
+        run: pwsh scripts/publish_avalonia_demo.ps1 -RuntimeIdentifier win-x64
 
       # 库侧主题令牌已逐变体字面量化（Themes/{Light,Dark,HighContrast}），逐色板渲染不再抛资源异常，
       # 因此冒烟按退出码阻塞流水线。
       - name: 运行冒烟演示
-        run: artifacts\aot-smoke\CodeWF.Avalonia.Demo.exe --smoke
+        run: artifacts\publish\win-x64\CodeWF.Avalonia.Demo\CodeWF.Avalonia.Demo.exe --smoke
