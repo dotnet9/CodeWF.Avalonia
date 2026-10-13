@@ -1,5 +1,13 @@
 # 更新日志
 
+## 12.1.4.5 (2026-10-13)
+
+- 🐛[修复]-主题令牌在渲染期解析失败：Light / Dark 变体字典用 `StaticResource` 把 `SemiColor*`、`WindowDefaultBackground` 别名到自己变体里，而样式级静态查找看不到宿主应用级（Semi 主题包）提供的同名键，导致应用引导 / 文档流程等页面在测量排布时抛 `KeyNotFoundException`；现两个变体各增一份字面量令牌集（`Themes/Light/Tokens.axaml`、`Themes/Dark/Tokens.axaml`）并置于该变体 `_index` 的首位。
+- 🐛[修复]-高对比色板（Aquatic / Desert / Dusk / NightSky）此前完全没有这组令牌，控件静默退化成无色；现按各自既有字面色就地补齐。
+- 🐛[修复]-控件主题对 Dock 包的隐藏依赖：`ColumnDisplayEditor`、`Guide`、`SearchListBox`、`Transfer` 引用的 `CodeWFDock*` 令牌改走本库 `SemiColor*`，只装 Controls 不再缺键。
+- 🐛[修复]-`SemiIconHandle` / `SemiIconSearchStroked` 在 Default 变体下解析失败或类型不符（`PathIcon.Data` 需要 `SvgPath`），改为内联几何；`SemiShadowElevated` 不可达时内联阴影字面量。
+- 🧪[验证]-演示台冒烟升级为「逐页面 × 逐色板」渲染：24 页 × 7 变体（Light / Dark + 4 套高对比）= 168 次测量排布，失败 0，退出码即门禁；CI 的 AOT 冒烟不再 `continue-on-error`。
+
 ## 12.1.4.4 (2026-10-13)
 
 - 🚀[发布]-全平台安装包：推送 v* 标签即由 GitHub Actions 产出 6 个 RID 的 NativeAOT 产物，Windows 出 Inno Setup 安装向导（x64）与便携 zip（x86 仅 zip），Linux 出 deb，macOS 出 dmg，均附 sha256；本地同款脚本在 scripts/ 下（publish_avalonia_demo.ps1、package_linux_deb.ps1、package_macos.sh、package_demo_artifacts.ps1、CodeWF.Avalonia.Demo.iss）。
