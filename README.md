@@ -159,12 +159,22 @@ public class MyMarkdownThemes : MarkdownThemes
 
 The native overview offers live Markdown, natural sorting and Dock experiments. See the linked guide for optional Studio themes, localization and validation.
 
+Windows x64 NativeAOT Demo：标题栏支持主题色圈与下拉同步切换，默认 .NET 紫，也提供 AI 极光与暖陶的深浅主题。首页直接使用库内 Markdown 编辑器与渲染器；完整功能与验收范围见上面的文档。
+
+![.NET 紫色原生演示台](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-dotnet.png)
+
+![AI 极光浅色原生演示台](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-aurora-light.png)
+
+![Markdown 实时编辑](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-markdown.png)
+
+![主题与实验切换](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-interactions.gif)
+
 ```bash
 # 桌面演示台：Ribbon 页签 + Dock 工作区（左导航 / 中文档 / 右属性面板 / 下日志），含 .NET 紫、AI 极光、AI 暖陶与原有六套 Semi 配色，支持深浅与双语切换
-dotnet run --project demo/CodeWF.Avalonia.Demo
+dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0
 
 # 冒烟模式：逐页构建后逐色板渲染一遍再退出，退出码 0 表示全部页面构建 + 渲染通过（CI 使用）
-dotnet run --project demo/CodeWF.Avalonia.Demo -- --smoke
+dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0 -- --smoke
 ```
 
 安装包由 [GitHub Releases](https://github.com/dotnet9/CodeWF.Avalonia/releases) 提供（随 `v*` tag 构建）：Windows `setup.exe` / 便携 `zip`、Linux `deb`、macOS `dmg`，均附 `.sha256` 校验文件。
