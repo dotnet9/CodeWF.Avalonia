@@ -13,6 +13,7 @@ public sealed class LangPageViewModel : ReactiveObject
     public LangPageViewModel() => SwitchCultureCommand = ReactiveCommand.Create<string>(ApplyCulture);
     public ICommand SwitchCultureCommand { get; }
     public Action<string>? CultureRequested { private get; set; }
+    public string GeneratedKey => global::Demo.Text.LangPageaxaml.ApplyCulture003;
     public string State
     {
         get
@@ -48,7 +49,7 @@ public sealed class LangPageViewModel : ReactiveObject
         if (name == "system") name = CultureInfo.CurrentUICulture.Name.StartsWith("zh", StringComparison.OrdinalIgnoreCase) ? "zh-CN" : "en-US";
         I18nManager.Instance.Culture = new CultureInfo(name);
         CultureRequested?.Invoke(name);
-        Logger.Info(I18nManager.Instance.GetResource("Demo.Text.LangPageaxaml.ApplyCulture003") + name);
+        Logger.Info(I18nManager.Instance.GetResource(GeneratedKey) + name);
         this.RaisePropertyChanged(nameof(State));
     }
 }

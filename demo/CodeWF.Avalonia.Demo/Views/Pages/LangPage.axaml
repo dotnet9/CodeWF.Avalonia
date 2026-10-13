@@ -35,6 +35,8 @@
         <StackPanel Spacing="6">
           <TextBlock Text="{codewf:I18n Demo.Lang.StateTitle}" FontWeight="Bold" />
           <TextBlock Text="{Binding State}" FontSize="12" Opacity="0.8" TextWrapping="Wrap" />
+          <TextBlock Text="CodeWF.Avalonia.Lang.Generator" FontFamily="Consolas" FontSize="11" />
+          <SelectableTextBlock Text="{Binding GeneratedKey}" FontFamily="Consolas" FontSize="11" />
         </StackPanel>
       </Border>
     </StackPanel>

@@ -239,8 +239,8 @@
       "SwitchTitle": "Switch：多分支取值"
     },
     "Studio": {
-      "Lab": "交互实验台",
-      "Explore": "探索全部能力",
+      "Lab": "动手试一试",
+      "Explore": "从能力出发",
       "QuickStart": "从一行命令开始",
       "Copy": "复制命令",
       "Copied": "已复制",
@@ -272,7 +272,7 @@
       "Output": "打开产物目录",
       "PipelineHint": "真实执行 JSON → YAML → ZIP → 二维码，产物写入独立临时目录。",
       "Tagline": "让控件的能力，看得见、摸得着。",
-      "Intro": "Markdown 编辑与导出、数据增强和可停靠工作区。一个原生桌面应用，探索 CodeWF 的完整组件能力。",
+      "Intro": "面向 Avalonia 12 的开源控件与能力库。从一个控件，到完整的写作、数据与多文档工作区。",
       "BusReady": "EventBus 就绪 · 1 个订阅者",
       "Delivery": "GreetCommand → {0}\n订阅者 #{1} · {2:HH:mm:ss.fff}",
       "Subscribed": "● GreetCommand · 已订阅",
@@ -281,7 +281,46 @@
       "Int32Range": "Int32: -2147483648 … 2147483647",
       "ByteResult": "{0}\n{1} 字节 · 小端序 · {2} → {3}",
       "SampleSuffix": "）。",
-      "PackageCount": "9 个包"
+      "PackageCount": "9 个包",
+      "HeroLead": "让桌面界面，",
+      "HeroAccent": "拥有表现力。",
+      "PageCount": "24 个交互页面",
+      "SortName": "名称",
+      "SortModule": "模块",
+      "SortStatus": "状态",
+      "SortReady": "就绪",
+      "DensityDescription": "同时调整工具栏与导航的显示密度。",
+      "IntegrationRun": "验证注册与查询",
+      "Capability0": {
+        "Title": "Markdown 工作区",
+        "Description": "从源码编辑、实时预览到多格式导出。",
+        "Packages": "Markdown · Markdown.Lite"
+      },
+      "Capability1": {
+        "Title": "数据交互",
+        "Description": "三态自然排序、列配置与树形属性编辑。",
+        "Packages": "DataGrid · TreeDataGrid"
+      },
+      "Capability2": {
+        "Title": "多文档工作区",
+        "Description": "停靠、面板显隐与梯形文档页签。",
+        "Packages": "Dock · Controls"
+      },
+      "Capability3": {
+        "Title": "输入与选择",
+        "Description": "搜索列表、穿梭框与 If / Switch 标记扩展。",
+        "Packages": "Controls"
+      },
+      "Capability4": {
+        "Title": "引导与状态",
+        "Description": "页面引导、状态徽标、状态卡片与虚拟面板。",
+        "Packages": "Controls"
+      },
+      "Capability5": {
+        "Title": "日志与国际化",
+        "Description": "实时日志、桌面通知与强类型语言资源。",
+        "Packages": "Log · Lang · Lang.Generator"
+      }
     },
     "Text": {
       "MarkdownLiveEditorPageaxaml": {
@@ -998,7 +1037,7 @@
         "XamlCode001": "<!-- 多文档工作区：文档内容走 Context + DataTemplate -->\n<dock:DockControl Layout=\"{Binding Layout}\">\n  <DockControl.DataTemplates>\n    <DataTemplate DataType=\"vm:DocContext\">\n      <md:MarkdownViewer Markdown=\"{Binding Markdown}\" />\n    </DataTemplate>\n  </DockControl.DataTemplates>\n</dock:DockControl>"
       },
       "WelcomeViewModel": {
-        "markdown001": "# Hello, CodeWF\n\n让想法成为界面。\n\n- **实时预览** Markdown\n- 探索 `DataGrid` 与 Dock\n\n> 编辑左侧，右侧同步渲染。"
+        "markdown001": "# 让界面更有表现力\n\n用 **CodeWF.Avalonia** 构建桌面体验。\n\n- 实时 Markdown 预览\n- 三态排序与属性编辑\n- `Dock` 多文档工作区"
       },
       "DemoBootstrapper": {
         "Initialize001": "CodeWF.Avalonia 演示启动：日志目录 "

@@ -1,6 +1,5 @@
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using System.Windows.Input;
-using CodeWF.Avalonia.Demo.ViewModels.Pages;
 using ReactiveUI;
 
 namespace CodeWF.Avalonia.Demo.ViewModels;
@@ -22,7 +21,13 @@ public sealed class WelcomeViewModel : ReactiveObject
     public string Markdown { get => _markdown; set => this.RaiseAndSetIfChanged(ref _markdown, value); }
     public string CopyStatus { get => _copyStatus; set => this.RaiseAndSetIfChanged(ref _copyStatus, value); }
     public int LabIndex { get => _labIndex; set => this.RaiseAndSetIfChanged(ref _labIndex, value); }
-    public System.Collections.ObjectModel.ObservableCollection<DataGridRowModel> Rows { get; } = new DataGridPageViewModel().Rows;
+    public System.Collections.ObjectModel.ObservableCollection<WelcomeSortRow> Rows { get; } =
+        [new("item10", "Markdown"), new("item2", "DataGrid"), new("item1", "Dock"), new("item100", "PropertyGrid")];
+
+    public void RefreshCulture()
+    {
+        foreach (var row in Rows) row.RefreshCulture();
+    }
     public string InstallCommand => "dotnet add package CodeWF.Avalonia.Controls";
     public ICommand NavigateCommand { get; }
     public ICommand CopyInstallCommand { get; }
@@ -42,4 +47,12 @@ public sealed class WelcomeViewModel : ReactiveObject
         }
     }
     public ICommand TogglePanelCommand { get; }
+}
+
+public sealed class WelcomeSortRow(string name, string module) : ReactiveObject
+{
+    public string Name { get; } = name;
+    public string Module { get; } = module;
+    public string Status => L.Instance.GetResource("Demo.Studio.SortReady");
+    public void RefreshCulture() => this.RaisePropertyChanged(nameof(Status));
 }

@@ -16,7 +16,7 @@ public partial class MainWindow : CodeWFWindow
         var version = typeof(MainWindow).Assembly.GetName().Version;
         if (version is not null)
         {
-            VersionText.Text = "Demo · v" + version.ToString(3);
+            VersionText.Text = "Demo · v" + version.ToString(4);
         }
 
         Loaded += OnLoaded;

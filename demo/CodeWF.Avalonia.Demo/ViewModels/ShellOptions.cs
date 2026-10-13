@@ -1,4 +1,5 @@
 using Avalonia.Styling;
+using Avalonia.Media;
 using CodeWF.Avalonia.Controls.Themes;
 using CodeWF.Avalonia.Lang;
 using CodeWF.Avalonia.Log;
@@ -15,12 +16,28 @@ public sealed class AppearanceOption : global::ReactiveUI.ReactiveObject
     {
         TitleKey = titleKey;
         ResolveVariant = resolveVariant;
+        Swatch = titleKey.Split('.').Last() switch
+        {
+            "DotNet" => Brush.Parse("#512BD4"),
+            "Aurora" => new LinearGradientBrush
+            {
+                GradientStops = new GradientStops { new(Color.Parse("#8968FF"), 0), new(Color.Parse("#26D4CC"), 1) }
+            },
+            "Ember" => Brush.Parse("#BD674D"),
+            "Default" => Brush.Parse("#0064FA"),
+            "Aquatic" => Brush.Parse("#008D9E"),
+            "Desert" => Brush.Parse("#B57532"),
+            "Dusk" => Brush.Parse("#7A5CC4"),
+            "NightSky" => Brush.Parse("#2B6CB0"),
+            _ => Brush.Parse("#777777")
+        };
     }
 
     /// <summary>名称的 Lang 键。</summary>
     public string TitleKey { get; }
 
     public VariantResolver ResolveVariant { get; }
+    public IBrush Swatch { get; }
 
     public string Title => I18nManager.Instance.GetResource(TitleKey);
 

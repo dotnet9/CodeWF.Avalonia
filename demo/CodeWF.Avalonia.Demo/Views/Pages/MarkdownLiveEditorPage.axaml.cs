@@ -27,7 +27,10 @@ public partial class MarkdownLiveEditorPage : DemoPageBase
         {
             EnableAutoPair = true,
             FontSize = 15,
-        });
+        })
+        {
+            EditorBackgroundKey = "StudioBackground", EditorForegroundKey = "StudioText"
+        };
         _editor.TypographyTheme = MarkdownTypographyThemes.Verdant;
         _editor.SetText(SampleMarkdown);
         _editor.MarkdownChanged += (_, _) => UpdateStatus();

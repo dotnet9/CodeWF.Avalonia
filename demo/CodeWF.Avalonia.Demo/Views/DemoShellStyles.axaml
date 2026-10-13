@@ -15,9 +15,9 @@
 
   <!--  Ribbon 命令按钮：横向图标与名称、悬停轻抬  -->
   <Style Selector="Button.rbn-cmd">
-    <Setter Property="MinWidth" Value="72" />
-    <Setter Property="MinHeight" Value="36" />
-    <Setter Property="Padding" Value="10,5" />
+    <Setter Property="MinWidth" Value="70" />
+    <Setter Property="MinHeight" Value="55" />
+    <Setter Property="Padding" Value="5,3" />
     <Setter Property="CornerRadius" Value="7" />
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />

@@ -239,8 +239,8 @@
       "SwitchTitle": "Switch: multi-branch value"
     },
     "Studio": {
-      "Lab": "INTERACTIVE LAB",
-      "Explore": "EXPLORE CAPABILITIES",
+      "Lab": "Try it live",
+      "Explore": "Explore the capabilities",
       "QuickStart": "Start with one command",
       "Copy": "Copy command",
       "Copied": "Copied",
@@ -272,7 +272,7 @@
       "Output": "Open output folder",
       "PipelineHint": "Runs JSON → YAML → ZIP → QR code, writing to an isolated temporary directory.",
       "Tagline": "Components you can see, touch, and explore.",
-      "Intro": "Markdown editing and export, enhanced data controls, and dockable workspaces. Explore CodeWF in a native desktop application.",
+      "Intro": "Open-source controls for Avalonia 12. Go from a single component to complete writing, data and document workspaces.",
       "BusReady": "EventBus ready · 1 subscriber",
       "Delivery": "GreetCommand → {0}\nSubscriber #{1} · {2:HH:mm:ss.fff}",
       "Subscribed": "● GreetCommand · subscribed",
@@ -281,7 +281,46 @@
       "Int32Range": "Int32: -2147483648 … 2147483647",
       "ByteResult": "{0}\n{1} bytes · little endian · {2} → {3}",
       "SampleSuffix": ").",
-      "PackageCount": "9 PACKAGES"
+      "PackageCount": "9 PACKAGES",
+      "HeroLead": "Give desktop interfaces",
+      "HeroAccent": "a little more possibility.",
+      "PageCount": "24 DEMO PAGES",
+      "SortName": "Name",
+      "SortModule": "Module",
+      "SortStatus": "Status",
+      "SortReady": "Ready",
+      "DensityDescription": "Adjust the toolbar and navigation density together.",
+      "IntegrationRun": "Verify registration and query",
+      "Capability0": {
+        "Title": "Markdown workspace",
+        "Description": "Source editing, live preview and multi-format export.",
+        "Packages": "Markdown · Markdown.Lite"
+      },
+      "Capability1": {
+        "Title": "Data interaction",
+        "Description": "Natural sorting, column configuration and property editing.",
+        "Packages": "DataGrid · TreeDataGrid"
+      },
+      "Capability2": {
+        "Title": "Document workspace",
+        "Description": "Docking, panel visibility and trapezoid document tabs.",
+        "Packages": "Dock · Controls"
+      },
+      "Capability3": {
+        "Title": "Input & selection",
+        "Description": "Search lists, item transfer and If / Switch markup.",
+        "Packages": "Controls"
+      },
+      "Capability4": {
+        "Title": "Guides & status",
+        "Description": "Guided tours, badges, status cards and virtual panels.",
+        "Packages": "Controls"
+      },
+      "Capability5": {
+        "Title": "Logging & localization",
+        "Description": "Live logs, desktop notifications and typed language resources.",
+        "Packages": "Log · Lang · Lang.Generator"
+      }
     },
     "Text": {
       "MarkdownLiveEditorPageaxaml": {
@@ -998,7 +1037,7 @@
         "XamlCode001": "<dock:DockControl Layout=\"{Binding Layout}\">\n  <DockControl.DataTemplates>\n    <DataTemplate DataType=\"vm:DocContext\">\n      <md:MarkdownViewer Markdown=\"{Binding Markdown}\" />\n    </DataTemplate>\n  </DockControl.DataTemplates>\n</dock:DockControl>"
       },
       "WelcomeViewModel": {
-        "markdown001": "# Hello, CodeWF\n\nTurn ideas into interfaces.\n\n- **Live preview** of Markdown\n- Explore DataGrid and Dock\n\n> Edit the source to update the preview."
+        "markdown001": "# Give interfaces expression\n\nBuild desktop experiences with **CodeWF.Avalonia**.\n\n- Live Markdown preview\n- Three-state sorting and property editing\n- `Dock` multi-document workspace"
       },
       "DemoBootstrapper": {
         "Initialize001": "CodeWF.Avalonia started. Log directory: "

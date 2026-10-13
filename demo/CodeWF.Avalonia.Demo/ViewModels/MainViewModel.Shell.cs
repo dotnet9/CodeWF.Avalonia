@@ -176,6 +176,7 @@ public partial class MainViewModel
             this.RaiseAndSetIfChanged(ref _density, value);
             this.RaisePropertyChanged(nameof(IsCompactDensity));
             this.RaisePropertyChanged(nameof(DensityLabel));
+            SyncGlobalItems();
             Notify(DemoNotificationKind.Info, T(DemoKeys.ShellDensity), DensityLabel);
         }
     }

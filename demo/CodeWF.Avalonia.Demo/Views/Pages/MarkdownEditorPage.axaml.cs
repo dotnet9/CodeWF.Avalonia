@@ -30,7 +30,13 @@ public partial class MarkdownEditorPage : DemoPageBase
             EnableAutoPair = true,
             ShowLineNumbers = true,
             FontSize = 15,
-        });
+        })
+        {
+            EditorBackgroundKey = "StudioBackground", EditorForegroundKey = "StudioText",
+            CurrentLineBackgroundKey = "StudioSurface", CurrentLineBorderKey = "StudioBorder",
+            AccentKey = "StudioAccent", CodeKey = "StudioAccent", QuoteKey = "StudioMuted",
+            LinkKey = "StudioSecondary", SeparatorKey = "StudioBorder"
+        };
         _editor.SetText(SampleMarkdown);
         _editor.MarkdownChanged += (_, _) => UpdateStatus();
 
