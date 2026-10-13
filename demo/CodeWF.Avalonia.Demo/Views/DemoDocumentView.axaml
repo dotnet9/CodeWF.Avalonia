@@ -1,47 +1,27 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:codewf="https://codewf.com"
-             xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
-             x:Class="CodeWF.Avalonia.Demo.Views.DemoDocumentView"
-             x:DataType="vm:DemoDocumentViewModel"
-             x:CompileBindings="True">
-  <Grid RowDefinitions="Auto,*" Background="{DynamicResource StudioBackground}">
-
-    <!--  文档头部：标题 / 说明 + ShowMeCode 三段切换（同一时刻只显示一段）  -->
-    <Border Grid.Row="0" Padding="20,16" IsVisible="{Binding HasDocumentHeader}"
-            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
-            BorderThickness="0,0,0,1">
-      <Grid ColumnDefinitions="*,Auto">
-        <StackPanel Grid.Column="0" Spacing="2" Margin="0,0,12,0">
-          <TextBlock Text="{Binding Title}" FontSize="17" FontWeight="Bold" />
-          <TextBlock Text="{Binding Description}" Opacity="0.72" TextWrapping="Wrap" FontSize="12" />
-        </StackPanel>
-        <Border Grid.Column="1" VerticalAlignment="Center"
-                BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
-                BorderThickness="1" CornerRadius="6" Padding="2">
-          <StackPanel Orientation="Horizontal">
-            <RadioButton GroupName="ShowMeCode"
-                         Content="{codewf:I18n Demo.Segment.Demo}"
-                         IsChecked="{Binding IsDemoSegment}"
-                         Padding="12,4" Background="Transparent" BorderThickness="0" />
-            <RadioButton GroupName="ShowMeCode"
-                         Content="{codewf:I18n Demo.Segment.Xaml}"
-                         IsChecked="{Binding IsXamlSegment}"
-                         Padding="12,4" Background="Transparent" BorderThickness="0" />
-            <RadioButton GroupName="ShowMeCode"
-                         Content="{codewf:I18n Demo.Segment.CSharp}"
-                         IsChecked="{Binding IsCSharpSegment}"
-                         Padding="12,4" Background="Transparent" BorderThickness="0" />
-          </StackPanel>
-        </Border>
-      </Grid>
-    </Border>
-
-    <!--  文档内容：三段互斥显示  -->
-    <Panel Grid.Row="1">
-      <ContentControl Content="{Binding Page}" IsVisible="{Binding IsDemoSegment}" />
-      <codewf:MarkdownViewer Markdown="{Binding XamlMarkdown}" IsVisible="{Binding IsXamlSegment}" />
-      <codewf:MarkdownViewer Markdown="{Binding CSharpMarkdown}" IsVisible="{Binding IsCSharpSegment}" />
-    </Panel>
-  </Grid>
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:codewf="https://codewf.com" xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
+ x:Class="CodeWF.Avalonia.Demo.Views.DemoDocumentView" x:DataType="vm:DemoDocumentViewModel" x:CompileBindings="True">
+ <Grid RowDefinitions="Auto,*,Auto" Background="{DynamicResource StudioBackground}">
+  <Border Padding="16,10" IsVisible="{Binding HasDocumentHeader}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="0,0,0,1">
+   <Grid ColumnDefinitions="*,Auto">
+    <StackPanel Spacing="3" Margin="0,0,12,0">
+     <TextBlock Text="{Binding Title}" FontSize="19" FontWeight="SemiBold" TextWrapping="Wrap" />
+     <TextBlock Text="{Binding Package}" IsVisible="{Binding HasApi}" Foreground="{DynamicResource StudioAccent}" FontSize="11" />
+     <TextBlock Text="{Binding Description}" Foreground="{DynamicResource StudioMuted}" FontSize="12" TextWrapping="Wrap" />
+    </StackPanel>
+    <ToggleButton Grid.Column="1" Content="{codewf:I18n Demo.Catalog.Source}" IsChecked="{Binding ShowSource}" IsVisible="{Binding HasSource}" VerticalAlignment="Center" />
+   </Grid>
+  </Border>
+  <ContentControl Grid.Row="1" Content="{Binding Page}" />
+  <Border Grid.Row="2" IsVisible="{Binding ShowSource}" Height="220" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="0,1,0,0">
+   <Grid RowDefinitions="Auto,*">
+    <StackPanel Orientation="Horizontal" Margin="12,4" Spacing="8">
+     <RadioButton GroupName="SourceLanguage" Content="XAML" IsChecked="{Binding IsXamlSegment}" IsVisible="{Binding HasXaml}" />
+     <RadioButton GroupName="SourceLanguage" Content="C#" IsChecked="{Binding IsCSharpSegment}" IsVisible="{Binding HasCSharp}" />
+    </StackPanel>
+    <Panel Grid.Row="1"><codewf:MarkdownViewer Markdown="{Binding XamlMarkdown}" IsVisible="{Binding IsXamlSegment}" />
+       <codewf:MarkdownViewer Markdown="{Binding CSharpMarkdown}" IsVisible="{Binding IsCSharpSegment}" /></Panel>
+   </Grid>
+  </Border>
+ </Grid>
 </UserControl>

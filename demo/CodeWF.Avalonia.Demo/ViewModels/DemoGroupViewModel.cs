@@ -1,4 +1,4 @@
-﻿using CodeWF.Avalonia.Lang;
+using CodeWF.Avalonia.Lang;
 using CodeWF.Avalonia.Demo.Views;
 using ReactiveUI;
 using System.Collections.ObjectModel;
@@ -13,10 +13,13 @@ public class DemoItemViewModel : ReactiveObject
     private bool _isRenaming;
     private bool _isFilteredOut;
 
-    public DemoItemViewModel(string titleKey, Func<DemoPageBase> pageFactory)
+    public DemoItemViewModel(string titleKey, Func<DemoPageBase> pageFactory, string api = "", string package = "", string prototypeId = "")
     {
         TitleKey = titleKey;
         PageFactory = pageFactory;
+        Api = api;
+        Package = package;
+        PrototypeId = prototypeId;
 
         I18nManager.Instance.CultureChanged += (_, _) =>
         {
@@ -27,6 +30,9 @@ public class DemoItemViewModel : ReactiveObject
 
     /// <summary>标题的 Lang 键，同时作为文档的唯一标识。</summary>
     public string TitleKey { get; }
+    public string Api { get; }
+    public string Package { get; }
+    public string PrototypeId { get; }
 
     public Func<DemoPageBase> PageFactory { get; }
 
@@ -77,7 +83,7 @@ public class DemoItemViewModel : ReactiveObject
 /// <summary>演示分组（左树组节点 = Ribbon 页签名）。</summary>
 public class DemoGroupViewModel : ReactiveObject
 {
-    private bool _isExpanded = true;
+    private bool _isExpanded;
     private bool _isFilteredOut;
 
     public DemoGroupViewModel(string titleKey, IEnumerable<DemoItemViewModel> items)

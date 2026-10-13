@@ -1,0 +1,376 @@
+[
+  {
+    "titleKey": "Demo.Group.Home",
+    "titleZh": "首页",
+    "titleEn": "Home",
+    "id": "home",
+    "items": [
+      {
+        "titleKey": "Demo.Item.Welcome",
+        "page": "WelcomePage",
+        "api": "",
+        "package": "",
+        "prototypeId": "welcome",
+        "titleZh": "介绍",
+        "titleEn": "Introduction",
+        "description": ""
+      },
+      {
+        "titleKey": "Demo.Item.About",
+        "page": "AboutPage",
+        "api": "",
+        "package": "",
+        "prototypeId": "about",
+        "titleZh": "关于",
+        "titleEn": "About",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "titleKey": "Demo.Group.Input",
+    "titleZh": "按钮与输入",
+    "titleEn": "Buttons & Inputs",
+    "id": "input",
+    "items": [
+      {
+        "titleKey": "Demo.Item.SearchListBox",
+        "page": "SearchListBoxPage",
+        "api": "SearchListBox",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "searchlist",
+        "titleZh": "SearchListBox",
+        "titleEn": "SearchListBox",
+        "description": "SearchListBox"
+      },
+      {
+        "titleKey": "Demo.Item.Transfer",
+        "page": "TransferPage",
+        "api": "Transfer",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "transfer",
+        "titleZh": "Transfer",
+        "titleEn": "Transfer",
+        "description": "Transfer"
+      },
+      {
+        "titleKey": "Demo.Item.ColumnDisplayEditor",
+        "page": "ColumnDisplayEditorPage",
+        "api": "ColumnDisplayEditor",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "colde",
+        "titleZh": "ColumnDisplayEditor",
+        "titleEn": "ColumnDisplayEditor",
+        "description": "ColumnDisplayEditor"
+      }
+    ]
+  },
+  {
+    "titleKey": "Demo.Group.Feedback",
+    "titleZh": "对话与反馈",
+    "titleEn": "Dialogs & Feedback",
+    "id": "feedback",
+    "items": [
+      {
+        "titleKey": "Demo.Item.StatusBadge",
+        "page": "StatusComponentsPage(\"StatusBadge\")",
+        "api": "StatusBadge",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "status-badge",
+        "titleZh": "StatusBadge",
+        "titleEn": "StatusBadge",
+        "description": "StatusBadge"
+      },
+      {
+        "titleKey": "Demo.Item.StatusCard",
+        "page": "StatusComponentsPage(\"StatusCard\")",
+        "api": "StatusCard",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "status-card",
+        "titleZh": "StatusCard",
+        "titleEn": "StatusCard",
+        "description": "StatusCard"
+      },
+      {
+        "titleKey": "Demo.Item.Guide",
+        "page": "GuidePage",
+        "api": "Guide",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "guide",
+        "titleZh": "Guide",
+        "titleEn": "Guide",
+        "description": "Guide"
+      },
+      {
+        "titleKey": "Demo.Item.Notifications",
+        "page": "ControlApiPage(\"LogNotifications\")",
+        "api": "LogNotifications",
+        "package": "CodeWF.Avalonia.Log",
+        "prototypeId": "notifications",
+        "titleZh": "LogNotifications",
+        "titleEn": "LogNotifications",
+        "description": "LogNotifications"
+      }
+    ]
+  },
+  {
+    "titleKey": "Demo.Group.Data",
+    "titleZh": "数据展示",
+    "titleEn": "Data Display",
+    "id": "data",
+    "items": [
+      {
+        "titleKey": "Demo.Item.DataGrid",
+        "page": "DataGridPage",
+        "api": "DataGridEnhancement",
+        "package": "CodeWF.Avalonia.DataGrid",
+        "prototypeId": "datagrid",
+        "titleZh": "DataGridEnhancement",
+        "titleEn": "DataGridEnhancement",
+        "description": "DataGridEnhancement"
+      },
+      {
+        "titleKey": "Demo.Item.TreeDataGrid",
+        "page": "ControlApiPage(\"TreeDataGridExtension\")",
+        "api": "TreeDataGridExtension",
+        "package": "CodeWF.Avalonia.TreeDataGrid",
+        "prototypeId": "treegrid",
+        "titleZh": "TreeDataGridExtension",
+        "titleEn": "TreeDataGridExtension",
+        "description": "TreeDataGridExtension"
+      },
+      {
+        "titleKey": "Demo.Item.PropertyGrid",
+        "page": "PropertyGridPage",
+        "api": "PropertyGrid",
+        "package": "CodeWF.Avalonia.TreeDataGrid",
+        "prototypeId": "propgrid",
+        "titleZh": "PropertyGrid",
+        "titleEn": "PropertyGrid",
+        "description": "PropertyGrid"
+      },
+      {
+        "titleKey": "Demo.Item.Log",
+        "page": "LogPage",
+        "api": "LogView",
+        "package": "CodeWF.Avalonia.Log",
+        "prototypeId": "log",
+        "titleZh": "LogView",
+        "titleEn": "LogView",
+        "description": "LogView"
+      }
+    ]
+  },
+  {
+    "titleKey": "Demo.Group.Layout",
+    "titleZh": "布局与导航",
+    "titleEn": "Layout & Navigation",
+    "id": "layout",
+    "items": [
+      {
+        "titleKey": "Demo.Item.CodeWFWindow",
+        "page": "CodeWFWindowPage",
+        "api": "CodeWFWindow",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "codewfwindow",
+        "titleZh": "CodeWFWindow",
+        "titleEn": "CodeWFWindow",
+        "description": "CodeWFWindow"
+      },
+      {
+        "titleKey": "Demo.Item.TitleBar",
+        "page": "ControlApiPage(\"CodeWFTitleBar\")",
+        "api": "CodeWFTitleBar",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "titlebar",
+        "titleZh": "CodeWFTitleBar",
+        "titleEn": "CodeWFTitleBar",
+        "description": "CodeWFTitleBar"
+      },
+      {
+        "titleKey": "Demo.Item.Dock",
+        "page": "DockPage",
+        "api": "DockControl",
+        "package": "CodeWF.Avalonia.Dock",
+        "prototypeId": "dock",
+        "titleZh": "DockControl",
+        "titleEn": "DockControl",
+        "description": "DockControl"
+      },
+      {
+        "titleKey": "Demo.Item.TrapezoidTab",
+        "page": "TrapezoidTabPage",
+        "api": "TrapezoidShapedTabControl",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "trapezoid",
+        "titleZh": "TrapezoidShapedTabControl",
+        "titleEn": "TrapezoidShapedTabControl",
+        "description": "TrapezoidShapedTabControl"
+      },
+      {
+        "titleKey": "Demo.Item.WindowedStackPanel",
+        "page": "WindowedStackPanelPage",
+        "api": "WindowedStackPanel",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "wsp",
+        "titleZh": "WindowedStackPanel",
+        "titleEn": "WindowedStackPanel",
+        "description": "WindowedStackPanel"
+      },
+      {
+        "titleKey": "Demo.Item.DiagonalLine",
+        "page": "ControlApiPage(\"LeftTop2RightBottomLine\")",
+        "api": "LeftTop2RightBottomLine",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "diagonal-line",
+        "titleZh": "LeftTop2RightBottomLine",
+        "titleEn": "LeftTop2RightBottomLine",
+        "description": "LeftTop2RightBottomLine"
+      }
+    ]
+  },
+  {
+    "titleKey": "Demo.Group.Markdown",
+    "titleZh": "Markdown",
+    "titleEn": "Markdown",
+    "id": "markdown",
+    "items": [
+      {
+        "titleKey": "Demo.Item.MarkdownViewer",
+        "page": "MarkdownViewerPage",
+        "api": "MarkdownViewer",
+        "package": "CodeWF.Avalonia.Markdown",
+        "prototypeId": "md-viewer",
+        "titleZh": "MarkdownViewer",
+        "titleEn": "MarkdownViewer",
+        "description": "MarkdownViewer"
+      },
+      {
+        "titleKey": "Demo.Item.MarkdownLite",
+        "page": "MarkdownLitePage",
+        "api": "Lite.MarkdownViewer",
+        "package": "CodeWF.Avalonia.Markdown.Lite",
+        "prototypeId": "md-lite",
+        "titleZh": "Lite.MarkdownViewer",
+        "titleEn": "Lite.MarkdownViewer",
+        "description": "Lite.MarkdownViewer"
+      },
+      {
+        "titleKey": "Demo.Item.MarkdownEditor",
+        "page": "MarkdownEditorPage",
+        "api": "MarkdownEditorView",
+        "package": "CodeWF.Avalonia.Markdown",
+        "prototypeId": "md-editor",
+        "titleZh": "MarkdownEditorView",
+        "titleEn": "MarkdownEditorView",
+        "description": "MarkdownEditorView"
+      },
+      {
+        "titleKey": "Demo.Item.MarkdownLiveEditor",
+        "page": "MarkdownLiveEditorPage",
+        "api": "MarkdownLiveEditorView",
+        "package": "CodeWF.Avalonia.Markdown",
+        "prototypeId": "md-live",
+        "titleZh": "MarkdownLiveEditorView",
+        "titleEn": "MarkdownLiveEditorView",
+        "description": "MarkdownLiveEditorView"
+      }
+    ]
+  },
+  {
+    "titleKey": "Demo.Group.Utilities",
+    "titleZh": "开发工具",
+    "titleEn": "Developer Tools",
+    "id": "utilities",
+    "items": [
+      {
+        "titleKey": "Demo.Item.If",
+        "page": "MarkupExtensionPage(\"If\")",
+        "api": "If",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "if",
+        "titleZh": "If",
+        "titleEn": "If",
+        "description": "If"
+      },
+      {
+        "titleKey": "Demo.Item.Switch",
+        "page": "MarkupExtensionPage(\"Switch\")",
+        "api": "Switch",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "switch",
+        "titleZh": "Switch",
+        "titleEn": "Switch",
+        "description": "Switch"
+      },
+      {
+        "titleKey": "Demo.Item.Lang",
+        "page": "LangPage",
+        "api": "I18nManager",
+        "package": "CodeWF.Avalonia.Lang",
+        "prototypeId": "lang",
+        "titleZh": "I18nManager",
+        "titleEn": "I18nManager",
+        "description": "I18nManager"
+      },
+      {
+        "titleKey": "Demo.Item.MarkdownExport",
+        "page": "MarkdownExportPage",
+        "api": "MarkdownDocumentExporter",
+        "package": "CodeWF.Avalonia.Markdown",
+        "prototypeId": "md-export",
+        "titleZh": "MarkdownDocumentExporter",
+        "titleEn": "MarkdownDocumentExporter",
+        "description": "MarkdownDocumentExporter"
+      }
+    ]
+  },
+  {
+    "titleKey": "Demo.Group.Examples",
+    "titleZh": "综合示例",
+    "titleEn": "Examples",
+    "id": "examples",
+    "items": [
+      {
+        "titleKey": "Demo.Item.MarkdownFlow",
+        "page": "MarkdownFlowPage",
+        "api": "",
+        "package": "",
+        "prototypeId": "flow-write",
+        "titleZh": "Markdown 工作流",
+        "titleEn": "Markdown workflow",
+        "description": ""
+      },
+      {
+        "titleKey": "Demo.Item.DataFlow",
+        "page": "DataFlowPage",
+        "api": "",
+        "package": "",
+        "prototypeId": "flow-data",
+        "titleZh": "数据工作流",
+        "titleEn": "Data workflow",
+        "description": ""
+      },
+      {
+        "titleKey": "Demo.Item.DocsFlow",
+        "page": "DocsFlowPage",
+        "api": "",
+        "package": "",
+        "prototypeId": "flow-docs",
+        "titleZh": "多文档工作流",
+        "titleEn": "Document workflow",
+        "description": ""
+      },
+      {
+        "titleKey": "Demo.Item.AppGuide",
+        "page": "AppGuidePage",
+        "api": "",
+        "package": "",
+        "prototypeId": "appguide",
+        "titleZh": "应用级引导示例",
+        "titleEn": "Application guide",
+        "description": ""
+      }
+    ]
+  }
+]

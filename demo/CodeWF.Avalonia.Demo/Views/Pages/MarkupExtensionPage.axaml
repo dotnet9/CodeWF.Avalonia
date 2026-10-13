@@ -7,13 +7,7 @@
              x:CompileBindings="True">
   <StackPanel Margin="12,10" Spacing="14" MaxWidth="760" HorizontalAlignment="Left">
 
-    <Border Padding="10" CornerRadius="6" BorderThickness="1"
-            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <TextBlock Text="{codewf:I18n Demo.Text.MarkupExtensionPage.View001}"
-                 TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
-    </Border>
-
-    <Border Padding="14" CornerRadius="6" BorderThickness="1"
+    <Border IsVisible="{Binding ShowIf}" Padding="14" CornerRadius="6" BorderThickness="1"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
       <StackPanel Spacing="10">
         <TextBlock Text="{codewf:I18n Demo.Markup.IfTitle}" FontWeight="Bold" />
@@ -28,7 +22,7 @@
       </StackPanel>
     </Border>
 
-    <Border Padding="14" CornerRadius="6" BorderThickness="1"
+    <Border IsVisible="{Binding ShowSwitch}" Padding="14" CornerRadius="6" BorderThickness="1"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
       <StackPanel Spacing="10">
         <TextBlock Text="{codewf:I18n Demo.Markup.SwitchTitle}" FontWeight="Bold" />

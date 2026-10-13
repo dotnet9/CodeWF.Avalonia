@@ -132,4 +132,7 @@
   <Style Selector="ToggleButton.nav-group:pointerover /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
   </Style>
+  <Style Selector="TextBlock.studio-title">
+    <Setter Property="FontSize" Value="26" />
+  </Style>
 </Styles>

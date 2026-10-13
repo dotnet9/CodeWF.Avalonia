@@ -81,6 +81,15 @@ public static class DemoIcons
     private static readonly Dictionary<string, string> ItemMap = new()
     {
         [DemoKeys.ItemWelcome] = "⌂",
+        ["Demo.Item.About"] = "ⓘ",
+        ["Demo.Item.StatusBadge"] = "◈",
+        ["Demo.Item.StatusCard"] = "▣",
+        ["Demo.Item.TreeDataGrid"] = "▦",
+        ["Demo.Item.TitleBar"] = "▤",
+        ["Demo.Item.DiagonalLine"] = "╲",
+        ["Demo.Item.Notifications"] = "◉",
+        ["Demo.Item.If"] = "⟨⟩",
+        ["Demo.Item.Switch"] = "⇄",
         [DemoKeys.ItemMarkdownFlow] = "▶",
         [DemoKeys.ItemDataFlow] = "▤",
         [DemoKeys.ItemDocsFlow] = "❐",
@@ -117,6 +126,10 @@ public static class DemoIcons
         DemoKeys.GroupInput => "⌕",
         DemoKeys.GroupPresent => "◈",
         DemoKeys.GroupInfrastructure => "☰",
+        "Demo.Group.Feedback" => "◈",
+        "Demo.Group.Layout" => "❐",
+        "Demo.Group.Tools" => "⚙",
+        "Demo.Group.Examples" => "▶",
         _ => "◆",
     };
 }

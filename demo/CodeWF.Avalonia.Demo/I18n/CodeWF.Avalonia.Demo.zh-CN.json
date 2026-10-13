@@ -50,38 +50,51 @@
     },
     "Group": {
       "Home": "首页",
-      "Markdown": "Markdown 工作区",
-      "Data": "数据工作台",
+      "Markdown": "Markdown",
+      "Data": "数据展示",
       "Docs": "文档工作区",
-      "Input": "组件库·输入",
+      "Input": "按钮与输入",
       "Present": "组件库·呈现",
-      "Infrastructure": "组件库·基础设施"
+      "Infrastructure": "组件库·基础设施",
+      "Feedback": "对话与反馈",
+      "Layout": "布局与导航",
+      "Utilities": "开发工具",
+      "Examples": "综合示例"
     },
     "Item": {
-      "Welcome": "欢迎",
-      "MarkdownFlow": "写作流程",
-      "DataFlow": "数据流程",
-      "DocsFlow": "文档流程",
-      "MarkdownViewer": "阅读器",
-      "MarkdownLite": "轻量渲染",
-      "MarkdownEditor": "源码编辑",
-      "MarkdownLiveEditor": "实时编辑",
-      "MarkdownExport": "导出复制",
-      "DataGrid": "数据表",
-      "PropertyGrid": "属性表",
-      "CodeWFWindow": "无边框窗口",
-      "SearchListBox": "搜索列表",
-      "Transfer": "穿梭框",
+      "Welcome": "介绍",
+      "MarkdownFlow": "Markdown 工作流",
+      "DataFlow": "数据工作流",
+      "DocsFlow": "多文档工作流",
+      "MarkdownViewer": "MarkdownViewer",
+      "MarkdownLite": "Lite.MarkdownViewer",
+      "MarkdownEditor": "MarkdownEditorView",
+      "MarkdownLiveEditor": "MarkdownLiveEditorView",
+      "MarkdownExport": "MarkdownDocumentExporter",
+      "DataGrid": "DataGridEnhancement",
+      "PropertyGrid": "PropertyGrid",
+      "CodeWFWindow": "CodeWFWindow",
+      "SearchListBox": "SearchListBox",
+      "Transfer": "Transfer",
       "Status": "状态组件",
-      "Guide": "页面引导",
-      "AppGuide": "应用引导",
-      "WindowedStackPanel": "虚拟面板",
-      "ColumnDisplayEditor": "列配置",
+      "Guide": "Guide",
+      "AppGuide": "应用级引导示例",
+      "WindowedStackPanel": "WindowedStackPanel",
+      "ColumnDisplayEditor": "ColumnDisplayEditor",
       "MarkupExtension": "标记扩展",
-      "Log": "日志控件",
-      "Lang": "国际化",
-      "Dock": "停靠布局",
-      "TrapezoidTab": "梯形页签"
+      "Log": "LogView",
+      "Lang": "I18nManager",
+      "Dock": "DockControl",
+      "TrapezoidTab": "TrapezoidShapedTabControl",
+      "About": "关于",
+      "StatusBadge": "StatusBadge",
+      "StatusCard": "StatusCard",
+      "Notifications": "LogNotifications",
+      "TreeDataGrid": "TreeDataGridExtension",
+      "TitleBar": "CodeWFTitleBar",
+      "DiagonalLine": "LeftTop2RightBottomLine",
+      "If": "If",
+      "Switch": "Switch"
     },
     "Segment": {
       "Demo": "演示",
@@ -120,7 +133,7 @@
     "Page": {
       "Welcome": {
         "Title": "欢迎使用 CodeWF.Avalonia",
-        "Desc": "场景优先的演示台：3 条完整工作流（写作 / 表数据 / 多文档）+ 3 个组件库分区；文档头部可切换 演示 / XAML / C#，右侧属性面板实时驱动当前演示，底部为实时日志。"
+        "Desc": "按功能分类，每个主菜单对应一个具体控件；综合示例位于最后一组，源码按需展开，属性与日志提供交互反馈。"
       },
       "MarkdownFlow": {
         "Title": "写作全流程",
@@ -223,7 +236,7 @@
       "FeaturesInfra": "· 基础设施与视图：日志、国际化、If/Switch 标记扩展、Dock 工作区、梯形页签、虚拟化面板",
       "UsageTitle": "使用方式",
       "UsageRibbon": "· 顶部 Ribbon 七个页签 = 首页 + 3 条场景工作流 + 3 个组件库分区；双击页签可折叠 / 展开命令区",
-      "UsageShowMeCode": "· 每个演示文档头部提供 演示 / XAML / C# 三段切换，同一时刻只显示一段",
+      "UsageShowMeCode": "· 演示始终可见，点击查看源码后选择 XAML 或 C#",
       "UsageProperties": "· 右侧 PropertyGrid 即本库控件：修改属性立即作用于左侧演示内容",
       "UsageLog": "· 底部日志面板实时显示 Logger 事件流，可复制、清空、打开日志目录"
     },
@@ -284,7 +297,7 @@
       "PackageCount": "9 个包",
       "HeroLead": "让桌面界面，",
       "HeroAccent": "拥有表现力。",
-      "PageCount": "24 个交互页面",
+      "PageCount": "31 个演示页面",
       "SortName": "名称",
       "SortModule": "模块",
       "SortStatus": "状态",
@@ -663,7 +676,7 @@
         "BuildProperties016": "演示台五个区域控件名；跨控件树目标在代码中解析后传入 GuideStep.Target。",
         "BuildProperties015": "目标解析",
         "OnStartGuide013": "AppGuide：开始演示台引导",
-        "OnStartGuide009": "每个控件一个独立演示文档；文档头部可切换 演示 / XAML / C# 三段。",
+        "OnStartGuide009": "每个控件一个独立演示文档；演示始终可见，源码按需展开。",
         "OnStartGuide008": "③ 文档区"
       },
       "SearchListBoxPageaxaml": {
@@ -775,7 +788,7 @@
         "View002": "遮罩聚光目标控件，支持 13 个方位（Center / Top×3 / Bottom×3 / Left×3 / Right×3）、键盘导航（Enter 下一 / Esc 关闭）、缺省目标行为。"
       },
       "AppGuidePage": {
-        "View004": "① Ribbon 命令区（双击页签可折叠）\n② 左侧导航树（单击打开演示文档）\n③ 中央文档区（ShowMeCode 三段切换）\n④ 右侧 PropertyGrid（驱动当前演示）\n⑤ 底部日志面板（实时事件流）",
+        "View004": "① Ribbon 命令区（双击页签可折叠）\n② 左侧导航树（单击打开演示文档）\n③ 中央文档区（演示与可折叠源码）\n④ 右侧 PropertyGrid（驱动当前演示）\n⑤ 底部日志面板（实时事件流）",
         "View002": "开始演示台引导",
         "View001": "应用引导：对整个演示台做逐区域引导——Ribbon 页签、导航树、文档区、属性面板、日志面板。目标控件位于主窗口（跨控件树解析），因此步骤在代码中构建。",
         "View003": "引导区域"
@@ -1042,6 +1055,108 @@
       "DemoBootstrapper": {
         "Initialize001": "CodeWF.Avalonia 演示启动：日志目录 "
       }
+    },
+    "Api": {
+      "SearchListBox": {
+        "Desc": "输入关键词筛选列表，调整选择方式与下拉展示。"
+      },
+      "Transfer": {
+        "Desc": "在两侧列表间移动条目，演示搜索、选择与批量穿梭。"
+      },
+      "ColumnDisplayEditor": {
+        "Desc": "配置列的显示、顺序和宽度。"
+      },
+      "StatusBadge": {
+        "Desc": "使用 Debug / Info / Warn / Error / Fatal 样式类切换徽标等级，编辑左右文本。",
+        "Xaml": "<codewf:StatusBadge Classes=\"Info\" LeftText=\"Info\" RightText=\"Ready\" />",
+        "CSharp": "badge.Classes.Set(\"Info\", true);\nbadge.LeftText = \"Info\";\nbadge.RightText = \"Ready\";"
+      },
+      "StatusCard": {
+        "Desc": "切换状态等级和上下文本，查看状态卡片的颜色与布局。",
+        "Xaml": "<codewf:StatusCard Kind=\"{Binding Kind}\" IconWidth=\"{Binding IconWidth}\" TopText=\"INFO\" BottomText=\"Ready\" />",
+        "CSharp": "card.Kind = StatusLabelKind.Info;\ncard.IconWidth = 32;"
+      },
+      "Guide": {
+        "Desc": "启动控件引导，体验步骤切换、遮罩与目标定位。"
+      },
+      "Notifications": {
+        "Desc": "写入警告日志，通过 LogNotifications 触发应用内通知。"
+      },
+      "DataGrid": {
+        "Desc": "对比原生表格与增强表格的三态排序、自然排序和智能提示。"
+      },
+      "TreeDataGrid": {
+        "Desc": "使用 EnableDefaults 启用三态排序、全选与智能提示。"
+      },
+      "PropertyGrid": {
+        "Desc": "编辑不同类型的属性，体验分类、搜索、提交和重置。"
+      },
+      "Log": {
+        "Desc": "按级别和关键词过滤实时日志，查看着色与详情。"
+      },
+      "CodeWFWindow": {
+        "Desc": "体验自定义窗口标题栏、内容槽和窗口交互。"
+      },
+      "TitleBar": {
+        "Desc": "修改标题文本，查看左右内容槽和主题适配。"
+      },
+      "Dock": {
+        "Desc": "拖动、停靠和浮动文档或工具面板，保存与恢复布局。"
+      },
+      "TrapezoidTab": {
+        "Desc": "将梯形主题应用于 TabControl，演示选中与位置样式。"
+      },
+      "WindowedStackPanel": {
+        "Desc": "观察可视窗口内的条目布局，调整方向与间距。"
+      },
+      "DiagonalLine": {
+        "Desc": "调整 BorderThickness，实时查看对角线的绘制效果。"
+      },
+      "MarkdownViewer": {
+        "Desc": "渲染 Markdown、代码、公式和图表，切换排版主题。"
+      },
+      "MarkdownLite": {
+        "Desc": "使用轻量渲染器展示常规 Markdown 元素与排版主题。"
+      },
+      "MarkdownEditor": {
+        "Desc": "编辑 Markdown 源码，体验语法高亮与编辑工具。"
+      },
+      "MarkdownLiveEditor": {
+        "Desc": "体验 Markdown 实时编辑与预览。"
+      },
+      "If": {
+        "Desc": "改变条件，观察 If 标记扩展的值选择。",
+        "Xaml": "<TextBlock.Text>\n  <codewf:If Condition=\"{Binding IsBusy}\" True=\"Busy\" False=\"Ready\" />\n</TextBlock.Text>"
+      },
+      "Switch": {
+        "Desc": "改变状态，观察 Switch 标记扩展的分支匹配。",
+        "Xaml": "<TextBlock.Text>\n  <codewf:Switch Value=\"{Binding State}\" Default=\"Unknown\">\n    <codewf:SwitchCase When=\"Idle\" Then=\"Ready\" />\n    <codewf:SwitchCase When=\"Busy\" Then=\"Working\" />\n  </codewf:Switch>\n</TextBlock.Text>"
+      },
+      "Lang": {
+        "Desc": "切换语言，验证资源绑定和文案实时更新。"
+      },
+      "MarkdownExport": {
+        "Desc": "将 Markdown 导出为 PNG、PDF、Word 或 HTML。"
+      }
+    },
+    "Catalog": {
+      "Title": "控件目录",
+      "Intro": "按控件名称查找演示；Ribbon 和导航树使用同一目录。",
+      "Examples": "综合示例与交互实验",
+      "Source": "查看源码",
+      "Input": "输入参数",
+      "Run": "运行示例",
+      "Output": "运行结果",
+      "Ready": "修改输入后运行示例。",
+      "Failed": "调用失败：{0}",
+      "About": "关于项目",
+      "AboutDesc": "开源库的 API 演示。Ribbon 负责分类，Dock 承载演示、属性与日志。",
+      "Project": "项目与安装",
+      "License": "MIT 开源许可 · .NET 10 · Avalonia 12",
+      "Notification": "由 LogNotifications 发出的日志通知。",
+      "Notifications": "发送日志通知",
+      "Preview": "浏览器交互示意；完整调用结果由 .NET Demo 产生。",
+      "WindowsOnly": "此帮助类目前仅支持 Windows。"
     }
   }
 }

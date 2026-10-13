@@ -14,8 +14,8 @@
     <codewf:CodeWFLogTheme />
     <codewf:MarkdownFullThemes />
     <!--  演示台外壳样式：与设计原型对齐（间距 / 四态 / 命令按钮 / 步骤条）  -->
-    <StyleInclude Source="avares://CodeWF.Avalonia.Demo/Views/DemoShellStyles.axaml" />
     <codewf:StudioTheme />
+    <StyleInclude Source="avares://CodeWF.Avalonia.Demo/Views/DemoShellStyles.axaml" />
     <Style Selector="codewf|PropertyGrid">
       <Setter Property="ThemeOverrides" Value="{DynamicResource StudioPropertyGridTheme}" />
     </Style>

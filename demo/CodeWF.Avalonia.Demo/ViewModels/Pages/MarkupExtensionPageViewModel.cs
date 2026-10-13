@@ -6,6 +6,9 @@ namespace CodeWF.Avalonia.Demo.ViewModels.Pages;
 /// <summary>If / Switch 标记扩展演示页 VM。</summary>
 public class MarkupExtensionPageViewModel : ReactiveObject
 {
+    public MarkupExtensionPageViewModel(string extension = "") { ShowIf = extension != "Switch"; ShowSwitch = extension != "If"; }
+    public bool ShowIf { get; }
+    public bool ShowSwitch { get; }
     private bool _isBusy;
     private string _state = L.Instance.GetResource("Demo.Text.MarkupExtensionPageViewModel.state001");
 

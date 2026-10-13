@@ -11,22 +11,37 @@ public partial class StatusComponentsPage : DemoPageBase
 
     public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.StatusComponentsPageaxaml.CSharpSnippet002");
 
-    public CodeWF.Avalonia.Demo.ViewModels.Pages.StatusComponentsPageViewModel ViewModel { get; } = new();
+    public CodeWF.Avalonia.Demo.ViewModels.Pages.StatusComponentsPageViewModel ViewModel { get; }
+    private readonly string _control;
 
-    public StatusComponentsPage()
+    public StatusComponentsPage() : this("") { }
+
+    public StatusComponentsPage(string control)
     {
+        _control = control;
+        ViewModel = new(control);
         InitializeComponent();
         DataContext = ViewModel;
     }
 
 
-    public override string TitleKey => "Demo.Page.Status.Title";
+    public override string TitleKey => string.IsNullOrEmpty(_control) ? "Demo.Page.Status.Title" : "Demo.Item." + _control;
 
-    public override string DescriptionKey => "Demo.Page.Status.Desc";
+    public override string DescriptionKey => string.IsNullOrEmpty(_control) ? "Demo.Page.Status.Desc" : "Demo.Api." + _control + ".Desc";
 
-    public override string XamlCode => XamlSnippet;
+    public override string XamlCode => _control switch
+    {
+        "StatusBadge" => L.Instance.GetResource("Demo.Api.StatusBadge.Xaml"),
+        "StatusCard" => L.Instance.GetResource("Demo.Api.StatusCard.Xaml"),
+        _ => XamlSnippet,
+    };
 
-    public override string CSharpCode => CSharpSnippet;
+    public override string CSharpCode => _control switch
+    {
+        "StatusBadge" => L.Instance.GetResource("Demo.Api.StatusBadge.CSharp"),
+        "StatusCard" => L.Instance.GetResource("Demo.Api.StatusCard.CSharp"),
+        _ => CSharpSnippet,
+    };
 
     public override void OnPropertyCommitted(PropertyValueChange change) => ViewModel.Commit(change);
     protected override IReadOnlyList<PropertyItem> BuildProperties() => ViewModel.BuildProperties();

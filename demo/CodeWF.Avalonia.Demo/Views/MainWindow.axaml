@@ -110,7 +110,8 @@
                 Command="{Binding ToggleCommandPaletteCommand}" />
       </StackPanel>
 
-      <TabStrip Grid.Column="1" x:Name="RibbonTabStrip"
+      <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+      <TabStrip x:Name="RibbonTabStrip"
                 Theme="{StaticResource TrapezoidShapedTabStrip}"
                 ItemsSource="{Binding Groups}"
                 SelectedItem="{Binding SelectedGroup}"
@@ -124,6 +125,7 @@
           </DataTemplate>
         </TabStrip.ItemTemplate>
       </TabStrip>
+      </ScrollViewer>
     </Grid>
 
     <!--  Ribbon 命令区：当前页签的演示命令（图标 + 名称），底部组名；紧凑密度下整体收窄  -->
@@ -132,10 +134,11 @@
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
             BorderThickness="0,1,0,1">
       <StackPanel Spacing="4">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
         <ItemsControl ItemsSource="{Binding RibbonItems}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-              <WrapPanel />
+              <StackPanel Orientation="Horizontal" />
             </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
@@ -143,16 +146,17 @@
               <Button Classes="rbn-cmd" Margin="0,0,8,0"
                       Classes.compact="{Binding $parent[Window].((vm:MainViewModel)DataContext).IsCompactDensity}"
                       Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenItemCommand}"
-                      CommandParameter="{Binding}">
+                      CommandParameter="{Binding}" ToolTip.Tip="{Binding DisplayTitle}">
                 <StackPanel Orientation="Vertical" Spacing="5">
                   <TextBlock Text="{Binding Icon}" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                  <TextBlock Text="{Binding DisplayTitle}" FontSize="11" MaxWidth="94" HorizontalAlignment="Center"
-                             VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                  <TextBlock Text="{Binding DisplayTitle}" FontSize="11" MaxWidth="160" HorizontalAlignment="Center"
+                             VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
                 </StackPanel>
               </Button>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
+        </ScrollViewer>
       </StackPanel>
     </Border>
 

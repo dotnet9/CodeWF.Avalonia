@@ -10,6 +10,7 @@ public sealed class WelcomeViewModel : ReactiveObject
     private string _markdown = L.Instance.GetResource("Demo.Text.WelcomeViewModel.markdown001");
     private string _copyStatus = string.Empty;
     private int _labIndex;
+    private bool _experimentsExpanded;
 
     public WelcomeViewModel(Action<string> navigate, Action<string> togglePanel)
     {
@@ -18,8 +19,12 @@ public sealed class WelcomeViewModel : ReactiveObject
         TogglePanelCommand = ReactiveCommand.Create<string>(togglePanel);
     }
 
+    public IReadOnlyList<DemoGroupViewModel> CatalogGroups { get; } = DemoCatalog.CreateGroups()
+        .Where(group => group.TitleKey is not "Demo.Group.Home" and not "Demo.Group.Examples").ToArray();
+
     public string Markdown { get => _markdown; set => this.RaiseAndSetIfChanged(ref _markdown, value); }
     public string CopyStatus { get => _copyStatus; set => this.RaiseAndSetIfChanged(ref _copyStatus, value); }
+    public bool ExperimentsExpanded { get => _experimentsExpanded; set => this.RaiseAndSetIfChanged(ref _experimentsExpanded, value); }
     public int LabIndex { get => _labIndex; set => this.RaiseAndSetIfChanged(ref _labIndex, value); }
     public System.Collections.ObjectModel.ObservableCollection<WelcomeSortRow> Rows { get; } =
         [new("item10", "Markdown"), new("item2", "DataGrid"), new("item1", "Dock"), new("item100", "PropertyGrid")];

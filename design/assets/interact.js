@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    CodeWF.Avalonia.Demo 原型 · 交互脚本
-   信息架构：场景优先（3 个完整工作流）+ 组件库分区（3 个页签）
+   信息架构：具体 API 优先；综合示例放在最后一组。
    外壳：Ribbon（7 页签 / 双击折叠）+ Dock 工作区 + 属性面板 + 日志面板 + 状态栏
    ═══════════════════════════════════════════════════════════════════════════ */
 "use strict";
@@ -38,7 +38,7 @@ var I18N = {
   "toast.copied": "已复制到剪贴板", "toast.exported": "导出完成",
   "density.cozy": "舒适", "density.compact": "紧凑", "theme.light": "浅色", "theme.dark": "深色",
   "g.prev": "上一步", "g.next": "下一步", "g.skip": "跳过", "g.close": "关闭",
-  "g.1.t": "欢迎使用演示台", "g.1.d": "顶部 Ribbon 是 7 个页签：首页 + 3 个场景工作流 + 3 个组件库分区；双击页签可折叠命令区。",
+  "g.1.t": "欢迎使用演示台", "g.1.d": "Ribbon 按控件功能分组；菜单项对应具体 API。综合示例位于最后一组。",
   "g.2.t": "导航树", "g.2.d": "与 Ribbon 同源；顶部可过滤页面，双击条目可就地重命名（原型内只改显示名）。",
   "g.3.t": "文档区与空态", "g.3.d": "所有演示以文档页签承载：无文档时是空态，打开瞬间显示骨架屏。",
   "g.4.t": "属性面板", "g.4.d": "当前文档的可调属性；被修改过的项左侧会出现色条并加粗。",
@@ -68,7 +68,7 @@ var I18N = {
   "toast.copied": "Copied to clipboard", "toast.exported": "Export finished",
   "density.cozy": "Cozy", "density.compact": "Compact", "theme.light": "Light", "theme.dark": "Dark",
   "g.prev": "Back", "g.next": "Next", "g.skip": "Skip", "g.close": "Close",
-  "g.1.t": "Welcome", "g.1.d": "Seven Ribbon tabs: home + three scenario workflows + three library sections. Double-click a tab to collapse the command area.",
+  "g.1.t": "Welcome", "g.1.d": "Ribbon groups APIs by function, with one menu entry per API. Composite examples are in the final group. Double-click a tab to collapse commands.",
   "g.2.t": "Explorer", "g.2.d": "Same source as the Ribbon. Filter on top; double-click an entry to rename it in place.",
   "g.3.t": "Documents & empty state", "g.3.d": "Every demo is a document tab: an empty state when none is open, a skeleton while the first one loads.",
   "g.4.t": "Properties", "g.4.d": "Editable properties of the current document; changed rows get an accent bar and a bold label.",
@@ -145,15 +145,13 @@ var MD_THEMES = ["Basic", "OrangeHeart", "InkBlack", "ColorfulPurple", "TenderGr
 var MD_THEME_FS = { Basic: "13px", GeekBlack: "12.5px", TechnologyBlue: "13.5px", WeChatFormat: "15px" };
 
 /* ═══ 演示目录：7 个 Ribbon 页签 / 24 页（3 个场景页 + 21 个组件页） ═══ */
-var CATALOG = [
- { id: "home", icon: "🏠", items: [{ id: "welcome" }] },
- { id: "write", icon: "📝", items: [{ id: "flow-write" }, { id: "md-viewer" }, { id: "md-lite" }, { id: "md-editor" }, { id: "md-live" }, { id: "md-export" }] },
- { id: "data", icon: "📊", items: [{ id: "flow-data" }, { id: "datagrid" }, { id: "propgrid" }] },
- { id: "docs", icon: "🪟", items: [{ id: "flow-docs" }, { id: "dock" }, { id: "trapezoid" }] },
- { id: "input", icon: "🔎", items: [{ id: "searchlist" }, { id: "transfer" }, { id: "markup" }] },
- { id: "present", icon: "🏷️", items: [{ id: "status" }, { id: "guide" }, { id: "appguide" }, { id: "wsp" }, { id: "colde" }] },
- { id: "infra", icon: "🧱", items: [{ id: "log" }, { id: "lang" }, { id: "codewfwindow" }] }
-];
+var CATALOG = window.CodeWFDemoCatalog.map(function (group) {
+ return { id:group.id, icon:"◆", items:group.items.map(function (entry) { return {id:entry.prototypeId}; }) };
+});
+window.CodeWFDemoCatalog.forEach(function (group) {
+ I18N["zh-CN"]["tabs."+group.id]=group.titleZh;
+ I18N["en-US"]["tabs."+group.id]=group.titleEn;
+});
 /* 页面短名：中文 ≤ 4 字，保证 Ribbon 按钮与树条目都放得下 */
 var PAGE_NAME = {
  "welcome": "欢迎", "flow-write": "写作流程", "flow-data": "数据流程", "flow-docs": "文档流程",
@@ -1582,7 +1580,7 @@ function boot() {
  else openDoc("welcome");
  renderPGrid(ACTIVE_DOC);
  dlog("演示台启动：Lang(I18n) + Logger 已初始化", "info");
- dlog("信息架构：3 个场景工作流（写作 / 表数据 / 多文档）+ 3 个组件库分区（输入 / 呈现 / 基础设施）", "info");
+ dlog("信息架构：按控件功能分类；综合示例位于最后一组", "info");
  if (restored) dlog("已从浏览器本地恢复上次布局", "info");
 }
 boot();

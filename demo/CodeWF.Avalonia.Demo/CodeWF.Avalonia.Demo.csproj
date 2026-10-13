@@ -68,4 +68,7 @@
                       GlobalPropertiesToRemove="RuntimeIdentifier;SelfContained;PublishAot;PublishTrimmed;PublishSingleFile" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\design\catalog.json" LogicalName="Demo.Catalog.json" />
+  </ItemGroup>
 </Project>

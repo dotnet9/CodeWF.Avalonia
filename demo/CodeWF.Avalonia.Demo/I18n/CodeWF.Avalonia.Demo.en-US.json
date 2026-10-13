@@ -51,37 +51,50 @@
     "Group": {
       "Home": "Home",
       "Markdown": "Markdown",
-      "Data": "Data",
+      "Data": "Data Display",
       "Docs": "Workspace",
-      "Input": "Lib · Input",
+      "Input": "Buttons & Inputs",
       "Present": "Lib · Present",
-      "Infrastructure": "Lib · Infra"
+      "Infrastructure": "Lib · Infra",
+      "Feedback": "Dialogs & Feedback",
+      "Layout": "Layout & Navigation",
+      "Utilities": "Developer Tools",
+      "Examples": "Examples"
     },
     "Item": {
-      "Welcome": "Welcome",
-      "MarkdownFlow": "Writing Flow",
-      "DataFlow": "Data Flow",
-      "DocsFlow": "Docs Flow",
-      "MarkdownViewer": "Viewer",
-      "MarkdownLite": "Lite",
-      "MarkdownEditor": "Editor",
-      "MarkdownLiveEditor": "Live Edit",
-      "MarkdownExport": "Export",
-      "DataGrid": "DataGrid",
+      "Welcome": "Introduction",
+      "MarkdownFlow": "Markdown workflow",
+      "DataFlow": "Data workflow",
+      "DocsFlow": "Document workflow",
+      "MarkdownViewer": "MarkdownViewer",
+      "MarkdownLite": "Lite.MarkdownViewer",
+      "MarkdownEditor": "MarkdownEditorView",
+      "MarkdownLiveEditor": "MarkdownLiveEditorView",
+      "MarkdownExport": "MarkdownDocumentExporter",
+      "DataGrid": "DataGridEnhancement",
       "PropertyGrid": "PropertyGrid",
       "CodeWFWindow": "CodeWFWindow",
-      "SearchListBox": "SearchList",
+      "SearchListBox": "SearchListBox",
       "Transfer": "Transfer",
       "Status": "Status",
       "Guide": "Guide",
-      "AppGuide": "App Guide",
-      "WindowedStackPanel": "Panel",
-      "ColumnDisplayEditor": "Columns",
+      "AppGuide": "Application guide",
+      "WindowedStackPanel": "WindowedStackPanel",
+      "ColumnDisplayEditor": "ColumnDisplayEditor",
       "MarkupExtension": "Markup",
-      "Log": "Log",
-      "Lang": "Lang",
-      "Dock": "Dock",
-      "TrapezoidTab": "Tabs"
+      "Log": "LogView",
+      "Lang": "I18nManager",
+      "Dock": "DockControl",
+      "TrapezoidTab": "TrapezoidShapedTabControl",
+      "About": "About",
+      "StatusBadge": "StatusBadge",
+      "StatusCard": "StatusCard",
+      "Notifications": "LogNotifications",
+      "TreeDataGrid": "TreeDataGridExtension",
+      "TitleBar": "CodeWFTitleBar",
+      "DiagonalLine": "LeftTop2RightBottomLine",
+      "If": "If",
+      "Switch": "Switch"
     },
     "Segment": {
       "Demo": "Demo",
@@ -120,7 +133,7 @@
     "Page": {
       "Welcome": {
         "Title": "Welcome to CodeWF.Avalonia",
-        "Desc": "A scenario-first showcase: three complete workflows (writing / tabular data / multi-document) plus three component-library sections. Each document header switches Demo / XAML / C#, the right panel drives the demo, and logs stream at the bottom."
+        "Desc": "Browse APIs by function, with one primary menu entry per control. Composite examples are in the final group; source is optional, with property and log feedback."
       },
       "MarkdownFlow": {
         "Title": "Writing Flow",
@@ -223,7 +236,7 @@
       "FeaturesInfra": "· Infrastructure & views: logging, localization, If/Switch markup, Dock workspace, trapezoid tabs, virtualizing panel",
       "UsageTitle": "How to use",
       "UsageRibbon": "· The seven ribbon tabs are Home + three scenario workflows + three library sections; double-click a tab to collapse / expand commands",
-      "UsageShowMeCode": "· Each demo document header offers Demo / XAML / C# segments, one visible at a time",
+      "UsageShowMeCode": "· Demos stay visible; open the source panel to select XAML or C#",
       "UsageProperties": "· The right PropertyGrid is the library control itself: edits apply to the demo immediately",
       "UsageLog": "· The bottom log panel streams Logger events live and supports copy, clear and open-log-folder"
     },
@@ -284,7 +297,7 @@
       "PackageCount": "9 PACKAGES",
       "HeroLead": "Give desktop interfaces",
       "HeroAccent": "a little more possibility.",
-      "PageCount": "24 DEMO PAGES",
+      "PageCount": "31 demo pages",
       "SortName": "Name",
       "SortModule": "Module",
       "SortStatus": "Status",
@@ -649,7 +662,7 @@
         "View008": "Name"
       },
       "AppGuidePageaxaml": {
-        "OnStartGuide005": "Seven Ribbon groups contain the demo commands. Double-click a tab to collapse or expand them.",
+        "OnStartGuide005": "Eight Ribbon groups contain the demo commands. Double-click a tab to collapse or expand them.",
         "OnStartGuide010": "The property panel configures the active demo; the overview shows global appearance and language settings.",
         "OnStartGuide004": "① Ribbon commands",
         "OnStartGuide006": "② Navigation",
@@ -1042,6 +1055,108 @@
       "DemoBootstrapper": {
         "Initialize001": "CodeWF.Avalonia started. Log directory: "
       }
+    },
+    "Api": {
+      "SearchListBox": {
+        "Desc": "Filter a list by keyword and explore selection and dropdown options."
+      },
+      "Transfer": {
+        "Desc": "Move items between two lists with search, selection and batch transfer."
+      },
+      "ColumnDisplayEditor": {
+        "Desc": "Configure column visibility, order and width."
+      },
+      "StatusBadge": {
+        "Desc": "Select Debug / Info / Warn / Error / Fatal style classes and edit left/right badge text.",
+        "Xaml": "<codewf:StatusBadge Classes=\"Info\" LeftText=\"Info\" RightText=\"Ready\" />",
+        "CSharp": "badge.Classes.Set(\"Info\", true);\nbadge.LeftText = \"Info\";\nbadge.RightText = \"Ready\";"
+      },
+      "StatusCard": {
+        "Desc": "Change status levels and top/bottom text to preview status cards.",
+        "Xaml": "<codewf:StatusCard Kind=\"{Binding Kind}\" IconWidth=\"{Binding IconWidth}\" TopText=\"INFO\" BottomText=\"Ready\" />",
+        "CSharp": "card.Kind = StatusLabelKind.Info;\ncard.IconWidth = 32;"
+      },
+      "Guide": {
+        "Desc": "Start a control guide with step navigation, overlays and target placement."
+      },
+      "Notifications": {
+        "Desc": "Write a warning log to trigger an in-app notification through LogNotifications."
+      },
+      "DataGrid": {
+        "Desc": "Compare standard and enhanced grids with three-state sorting, natural sorting and smart tooltips."
+      },
+      "TreeDataGrid": {
+        "Desc": "Enable three-state sorting, select-all and smart tooltips with EnableDefaults."
+      },
+      "PropertyGrid": {
+        "Desc": "Edit typed properties with categories, search, commits and reset."
+      },
+      "Log": {
+        "Desc": "Filter live logs by level and keyword, with color coding and details."
+      },
+      "CodeWFWindow": {
+        "Desc": "Explore a custom window title bar, content slots and window interactions."
+      },
+      "TitleBar": {
+        "Desc": "Edit the title and inspect left/right content slots and theme styling."
+      },
+      "Dock": {
+        "Desc": "Drag, dock and float documents and tool panels, then save and restore layouts."
+      },
+      "TrapezoidTab": {
+        "Desc": "Apply the trapezoid theme to TabControl and explore selection and placement."
+      },
+      "WindowedStackPanel": {
+        "Desc": "Explore item layout inside the visible window, with orientation and spacing options."
+      },
+      "DiagonalLine": {
+        "Desc": "Change BorderThickness to preview diagonal line rendering."
+      },
+      "MarkdownViewer": {
+        "Desc": "Render Markdown, code, formulas and diagrams with typography themes."
+      },
+      "MarkdownLite": {
+        "Desc": "Explore standard Markdown elements and typography in the lightweight renderer."
+      },
+      "MarkdownEditor": {
+        "Desc": "Edit Markdown source with syntax highlighting and editing tools."
+      },
+      "MarkdownLiveEditor": {
+        "Desc": "Explore live Markdown editing and preview."
+      },
+      "If": {
+        "Desc": "Change a condition to inspect value selection by the If markup extension.",
+        "Xaml": "<TextBlock.Text>\n  <codewf:If Condition=\"{Binding IsBusy}\" True=\"Busy\" False=\"Ready\" />\n</TextBlock.Text>"
+      },
+      "Switch": {
+        "Desc": "Change state to inspect branch matching by the Switch markup extension.",
+        "Xaml": "<TextBlock.Text>\n  <codewf:Switch Value=\"{Binding State}\" Default=\"Unknown\">\n    <codewf:SwitchCase When=\"Idle\" Then=\"Ready\" />\n    <codewf:SwitchCase When=\"Busy\" Then=\"Working\" />\n  </codewf:Switch>\n</TextBlock.Text>"
+      },
+      "Lang": {
+        "Desc": "Switch language to verify resource bindings and live text updates."
+      },
+      "MarkdownExport": {
+        "Desc": "Export Markdown to PNG, PDF, Word or HTML."
+      }
+    },
+    "Catalog": {
+      "Title": "Control catalog",
+      "Intro": "Find demos by API name. Ribbon and explorer share the same catalog.",
+      "Examples": "Examples and experiments",
+      "Source": "View source",
+      "Input": "Input",
+      "Run": "Run example",
+      "Output": "Output",
+      "Ready": "Edit the input and run the example.",
+      "Failed": "Call failed: {0}",
+      "About": "About this project",
+      "AboutDesc": "An open source API gallery. Ribbon organizes APIs; Dock hosts demos, properties and logs.",
+      "Project": "Project and installation",
+      "License": "MIT license · .NET 10 · Avalonia 12",
+      "Notification": "A log notification presented by LogNotifications.",
+      "Notifications": "Send log notification",
+      "Preview": "Browser interaction preview; the .NET demo runs the complete API call.",
+      "WindowsOnly": "This helper currently supports Windows only."
     }
   }
 }

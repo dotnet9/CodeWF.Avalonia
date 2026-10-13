@@ -37,14 +37,18 @@ public partial class MainViewModel
         }
         SelectedPalette = Palettes[0];
         IsDarkMode = true;
+        overview.Overview.ExperimentsExpanded = true;
         for (var tab = 1; tab <= 2; tab++)
         {
             overview.Overview.LabIndex = tab;
             await Task.Delay(350);
             window.UpdateLayout();
+            overview.GetVisualDescendants().OfType<Expander>().First().BringIntoView();
+            await Task.Delay(250);
             Save("lab-" + tab);
         }
         overview.Overview.LabIndex = 0;
+        overview.Overview.ExperimentsExpanded = false;
         var scroll = overview.GetVisualDescendants().OfType<ScrollViewer>().First();
         scroll.Offset = new Vector(0, scroll.Extent.Height);
         await Task.Delay(250);
@@ -71,6 +75,14 @@ public partial class MainViewModel
             Save(key.Split('.').Last());
         }
 
+        foreach (var key in new[] { "Demo.Item.StatusBadge", "Demo.Item.StatusCard", "Demo.Item.TitleBar", "Demo.Item.TreeDataGrid", "Demo.Item.If", "Demo.Item.Switch" })
+        {
+            overview.Overview.NavigateCommand.Execute(key);
+            await Task.Delay(250);
+            window.UpdateLayout();
+            Save(key.Split('.').Last());
+        }
+
         void Save(string name)
         {
             using var bitmap = new RenderTargetBitmap(new PixelSize((int)window.Bounds.Width, (int)window.Bounds.Height));
@@ -93,14 +105,25 @@ public partial class MainViewModel
                         throw new InvalidOperationException("Missing StudioAccent: " + variant.Key);
                 }
             }
+            ApplyAppearance();
             var overview = (Views.Pages.WelcomePage)Documents.First(d => d.Page is Views.Pages.WelcomePage).Page;
+            overview.Overview.ExperimentsExpanded = true;
             overview.Overview.Markdown = "# Smoke\n**live render**";
-            await Task.Delay(50, cancellation);
-            var sourceEditor = overview.GetVisualDescendants().OfType<global::CodeWF.Avalonia.Markdown.Editor.Controls.MarkdownEditorView>().Single();
+            var window = ((global::Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime)Application.Current!.ApplicationLifetime!).MainWindow!;
+            var readyBy = DateTime.UtcNow.AddSeconds(10);
+            global::CodeWF.Avalonia.Markdown.Editor.Controls.MarkdownEditorView? sourceEditor;
+            do
+            {
+                await Task.Delay(50, cancellation);
+                window.UpdateLayout();
+                sourceEditor = overview.GetVisualDescendants().OfType<global::CodeWF.Avalonia.Markdown.Editor.Controls.MarkdownEditorView>().SingleOrDefault();
+                if (DateTime.UtcNow >= readyBy) throw new TimeoutException("Overview editor did not load.");
+            } while (sourceEditor is null);
             if (sourceEditor.Text != overview.Overview.Markdown || sourceEditor.Editor.Template is null)
                 throw new InvalidOperationException("Markdown source binding or editor template was not applied.");
             if (overview.Overview.Rows.Count == 0) throw new InvalidOperationException("Empty natural-sort source");
             overview.Overview.Markdown = "# Hello, CodeWF\n\n- **Live preview** Markdown\n- Explore `DataGrid` and Dock";
+            overview.Overview.ExperimentsExpanded = false;
             await SmokeMarkdownExportsAsync(cancellation);
             foreach (var key in new[] { DemoKeys.ItemMarkdownFlow, DemoKeys.ItemDataFlow, DemoKeys.ItemDocsFlow, DemoKeys.ItemTransfer, DemoKeys.ItemGuide, DemoKeys.ItemLog })
             {

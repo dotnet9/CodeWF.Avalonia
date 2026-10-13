@@ -103,10 +103,8 @@ public partial class MainViewModel : ReactiveObject
     }
 
     /// <summary>Ribbon 分组（左树镜像同一集合）。</summary>
-    public IReadOnlyList<DemoItemViewModel> RibbonItems => SelectedGroup == Groups[0]
-        ? HomeRibbonKeys.Select(key => Groups.SelectMany(group => group.Items).First(item => item.TitleKey == key)).ToArray()
-        : SelectedGroup?.Items.ToArray() ?? [];
-    private static readonly string[] HomeRibbonKeys = [DemoKeys.ItemWelcome, DemoKeys.ItemMarkdownFlow, DemoKeys.ItemDataFlow, DemoKeys.ItemDocsFlow, DemoKeys.ItemPropertyGrid];
+    public IReadOnlyList<DemoItemViewModel> RibbonItems => SelectedGroup?.Items.ToArray() ?? [];
+
 
     public ObservableCollection<DemoGroupViewModel> Groups { get; }
 
@@ -149,6 +147,7 @@ public partial class MainViewModel : ReactiveObject
         set
         {
             this.RaiseAndSetIfChanged(ref _selectedGroup, value);
+            if (value is not null) value.IsExpanded = true;
             this.RaisePropertyChanged(nameof(RibbonItems));
         }
     }
