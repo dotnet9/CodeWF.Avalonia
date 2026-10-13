@@ -1,19 +1,79 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
              x:Class="CodeWF.Avalonia.Demo.Views.Tools.NavToolView"
              x:DataType="vm:MainViewModel"
              x:CompileBindings="True">
-  <!--  左侧导航树工具面板内容（直接作为 Tool.Context 的控件实例）  -->
-  <TreeView ItemsSource="{Binding Groups}"
-            SelectedItem="{Binding SelectedNavItem}">
-    <TreeView.ItemTemplate>
-      <TreeDataTemplate x:DataType="vm:DemoGroupViewModel" ItemsSource="{Binding Items}">
-        <StackPanel Orientation="Horizontal" Spacing="6">
-          <TextBlock Text="{Binding Icon}" />
-          <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
-        </StackPanel>
-      </TreeDataTemplate>
-    </TreeView.ItemTemplate>
-  </TreeView>
+  <!--  左侧导航树工具面板：过滤框 + 就地重命名（双击或铅笔）+ 恢复原名  -->
+  <Grid RowDefinitions="Auto,*">
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="6,4,6,2">
+      <TextBox Text="{Binding NavFilter}" FontSize="11.5" MinHeight="26"
+               PlaceholderText="{Binding NavFilterPlaceholder}" />
+      <Button Grid.Column="1" Classes="qk-btn" Margin="4,0,0,0"
+              Content="↺" FontSize="12"
+              IsVisible="{Binding HasRenames}"
+              ToolTip.Tip="{Binding ResetRenamesHint}"
+              Command="{Binding ResetRenamesCommand}" />
+    </Grid>
+
+    <ScrollViewer Grid.Row="1">
+      <StackPanel Margin="4,0,4,6">
+        <ItemsControl ItemsSource="{Binding FilteredGroups}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:DemoGroupViewModel">
+              <StackPanel IsVisible="{Binding !IsFilteredOut}">
+                <ToggleButton Classes="nav-group"
+                              HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Stretch"
+                              IsChecked="{Binding IsExpanded, Mode=TwoWay}">
+                  <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                    <TextBlock Text="{Binding Icon}" FontSize="12" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Text="{Binding Title}" FontWeight="SemiBold" FontSize="11.5"
+                               Margin="6,0,0,0" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="3" Text="{Binding Items.Count}" FontSize="10" Opacity="0.55"
+                               VerticalAlignment="Center" />
+                  </Grid>
+                </ToggleButton>
+
+                <ItemsControl ItemsSource="{Binding Items}" IsVisible="{Binding IsExpanded}" Margin="12,0,0,0">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:DemoItemViewModel">
+                      <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding !IsFilteredOut}">
+                        <Button Classes="nav-leaf"
+                                IsVisible="{Binding !IsRenaming}"
+                                DoubleTapped="OnLeafDoubleTapped"
+                                Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).SelectNavItemCommand}"
+                                CommandParameter="{Binding}">
+                          <Grid ColumnDefinitions="Auto,*,Auto">
+                            <TextBlock Text="{Binding Icon}" FontSize="11" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{Binding DisplayTitle}" FontSize="12"
+                                       Margin="6,0,0,0" VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="2" Text="✎" FontSize="10" VerticalAlignment="Center"
+                                       IsVisible="{Binding HasCustomTitle}" Opacity="0.65"
+                                       ToolTip.Tip="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).RenameHint}" />
+                          </Grid>
+                        </Button>
+
+                        <TextBox Grid.ColumnSpan="2" IsVisible="{Binding IsRenaming}"
+                                 FontSize="12" MinHeight="24"
+                                 Text="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).RenameText, Mode=TwoWay}"
+                                 Loaded="OnRenameBoxLoaded"
+                                 KeyDown="OnRenameBoxKeyDown"
+                                 LostFocus="OnRenameBoxLostFocus" />
+                      </Grid>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBlock Text="{Binding NavEmptyHint}" FontSize="11" Opacity="0.6" Margin="10,14"
+                   HorizontalAlignment="Center" TextWrapping="Wrap"
+                   IsVisible="{Binding IsNavEmpty}" />
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
 </UserControl>

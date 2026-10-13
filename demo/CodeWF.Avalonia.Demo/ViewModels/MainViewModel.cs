@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Styling;
 using CodeWF.Avalonia.Demo.Infrastructure;
@@ -85,6 +85,15 @@ public partial class MainViewModel : ReactiveObject
 
         // 启动即打开欢迎文档，避免空文档区。
         OpenItem(Groups[0].Items[0]);
+
+        // 澶栧３瀹炰綋鍖栦欢锛氶€氱煡涓績 / 鍛戒护闈㈡澘 / 瀵嗗害 / 甯冨眬璁板繂 / 灏卞湴閲嶅懡鍚嶃€?
+        InitializeShellServices();
+        InitializeShellCommands();
+        InitializeNavServices();
+        if (LoadLayout())
+        {
+            Notify(DemoNotificationKind.Info, T(DemoKeys.ShellLayoutLoaded), LayoutPath);
+        }
     }
 
     /// <summary>Ribbon 分组（左树镜像同一集合）。</summary>
@@ -275,7 +284,7 @@ public partial class MainViewModel : ReactiveObject
         var document = new DemoDocumentViewModel(item, page);
         var dockDocument = _dockFactory?.CreateDocument() ?? new Document();
         dockDocument.Id = "Doc." + item.TitleKey;
-        dockDocument.Title = item.Title;
+        dockDocument.Title = document.DisplayTitle;
         dockDocument.Context = new Views.DemoDocumentView { DataContext = document };
         document.DockDocument = dockDocument;
 

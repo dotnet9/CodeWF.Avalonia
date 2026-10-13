@@ -1,4 +1,4 @@
-using CodeWF.Avalonia.Lang;
+﻿using CodeWF.Avalonia.Lang;
 using CodeWF.Avalonia.Demo.Views;
 using ReactiveUI;
 using System.Collections.ObjectModel;
@@ -9,12 +9,20 @@ namespace CodeWF.Avalonia.Demo.ViewModels;
 /// <summary>演示目录项（导航树叶子节点 / Ribbon 命令按钮）。</summary>
 public class DemoItemViewModel : ReactiveObject
 {
+    private string? _customTitle;
+    private bool _isRenaming;
+    private bool _isFilteredOut;
+
     public DemoItemViewModel(string titleKey, Func<DemoPageBase> pageFactory)
     {
         TitleKey = titleKey;
         PageFactory = pageFactory;
 
-        I18nManager.Instance.CultureChanged += (_, _) => this.RaisePropertyChanged(nameof(Title));
+        I18nManager.Instance.CultureChanged += (_, _) =>
+        {
+            this.RaisePropertyChanged(nameof(Title));
+            this.RaisePropertyChanged(nameof(DisplayTitle));
+        };
     }
 
     /// <summary>标题的 Lang 键，同时作为文档的唯一标识。</summary>
@@ -24,16 +32,53 @@ public class DemoItemViewModel : ReactiveObject
 
     public string Title => I18nManager.Instance.GetResource(TitleKey);
 
+    /// <summary>导航树就地重命名后的标题；为空表示沿用资源标题。</summary>
+    public string? CustomTitle
+    {
+        get => _customTitle;
+        set
+        {
+            if (Equals(_customTitle, value))
+            {
+                return;
+            }
+
+            this.RaiseAndSetIfChanged(ref _customTitle, value);
+            this.RaisePropertyChanged(nameof(DisplayTitle));
+            this.RaisePropertyChanged(nameof(HasCustomTitle));
+        }
+    }
+
+    public bool HasCustomTitle => !string.IsNullOrEmpty(CustomTitle);
+
+    /// <summary>界面显示名：自定义优先，否则资源标题。</summary>
+    public string DisplayTitle => string.IsNullOrEmpty(CustomTitle) ? Title : CustomTitle!;
+
+    /// <summary>导航树是否正把该节点渲染成输入框。</summary>
+    public bool IsRenaming
+    {
+        get => _isRenaming;
+        set => this.RaiseAndSetIfChanged(ref _isRenaming, value);
+    }
+
+    /// <summary>被导航过滤框排除（仅隐藏，不改变集合）。</summary>
+    public bool IsFilteredOut
+    {
+        get => _isFilteredOut;
+        set => this.RaiseAndSetIfChanged(ref _isFilteredOut, value);
+    }
+
     /// <summary>目录图标（与设计原型一致）。</summary>
     public string Icon => DemoIcons.ResolveItem(TitleKey);
 
-    public override string ToString() => Title;
+    public override string ToString() => DisplayTitle;
 }
 
 /// <summary>演示分组（左树组节点 = Ribbon 页签名）。</summary>
 public class DemoGroupViewModel : ReactiveObject
 {
     private bool _isExpanded = true;
+    private bool _isFilteredOut;
 
     public DemoGroupViewModel(string titleKey, IEnumerable<DemoItemViewModel> items)
     {
@@ -59,7 +104,17 @@ public class DemoGroupViewModel : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _isExpanded, value);
     }
 
+    /// <summary>被导航过滤框排除（仅隐藏，不改变集合）。</summary>
+    public bool IsFilteredOut
+    {
+        get => _isFilteredOut;
+        set => this.RaiseAndSetIfChanged(ref _isFilteredOut, value);
+    }
+
     public ReactiveCommand<RxVoid, RxVoid> ToggleExpandCommand { get; }
+
+    /// <summary>该分组下被就地重命名过的叶子数量。</summary>
+    public int RenamedCount => Items.Count(i => i.HasCustomTitle);
 
     public override string ToString() => Title;
 }

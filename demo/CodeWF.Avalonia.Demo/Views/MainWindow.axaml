@@ -1,4 +1,4 @@
-<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui"
+﻿<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui"
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:codewf="https://codewf.com"
                      xmlns:dock="using:Dock.Avalonia.Controls"
@@ -24,6 +24,15 @@
       <ContentControl Content="{Binding Context}" />
     </DataTemplate>
   </Window.DataTemplates>
+
+  <!--  外壳快捷键：命令面板 / 深浅 / 语言（与设计原型 Ctrl+K、Ctrl+D、Ctrl+L 一致）  -->
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Ctrl+K" Command="{Binding ToggleCommandPaletteCommand}" />
+    <KeyBinding Gesture="Ctrl+D" Command="{Binding ToggleDarkCommand}" />
+    <KeyBinding Gesture="Ctrl+L" Command="{Binding ToggleCultureCommand}" />
+    <KeyBinding Gesture="Escape" Command="{Binding EscapeShellCommand}" />
+  </Window.KeyBindings>
+
   <codewf:CodeWFWindow.LeftContent>
     <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
       <Image Source="/Assets/logo.png" Width="18" Height="18" VerticalAlignment="Center" />
@@ -40,10 +49,29 @@
                     ToolTip.Tip="{codewf:I18n Demo.Shell.Dark}" FontSize="13" />
       <ComboBox MinWidth="88" Height="24" FontSize="11.5"
                 ItemsSource="{Binding Cultures}" SelectedItem="{Binding SelectedCulture}" />
+      <Button Classes="qk-btn" Command="{Binding ToggleDensityCommand}"
+              ToolTip.Tip="{Binding DensityLabel}">
+        <PathIcon Width="13" Height="13"
+                  Data="M4,6 H16 M4,10 H16 M4,14 H16" />
+      </Button>
+      <!--  通知中心入口：徽标显示当前卡片数  -->
+      <Button Classes="qk-btn" Command="{Binding NotifyDemoCommand}"
+              ToolTip.Tip="{codewf:I18n Demo.Shell.NotifyDemo}">
+        <Panel>
+          <PathIcon Width="14" Height="14"
+                    Data="M12,3 A5,5 0 0 0 7,8 V11.5 L5.5,14.5 H18.5 L17,11.5 V8 A5,5 0 0 0 12,3 Z M10,17 A2,2 0 0 0 14,17" />
+          <Border Width="14" Height="14" CornerRadius="7" Margin="0,-14,-12,0"
+                  HorizontalAlignment="Right" VerticalAlignment="Top"
+                  Background="{DynamicResource SemiColorDanger}"
+                  IsVisible="{Binding HasNotifications}">
+            <TextBlock Text="{Binding NotificationCount}" FontSize="8.5" Foreground="White"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+        </Panel>
+      </Button>
     </StackPanel>
   </codewf:CodeWFWindow.RightContent>
 
-  <!--  12.x Dock 内容承载：Tool/Document 的 Context 按类型匹配模板（挂在 DockControl 上确保解析命中）  -->
   <Grid RowDefinitions="Auto,Auto,*,Auto">
 
     <!--  Ribbon 页签行：快捷工具栏 + 7 页签（双击页签折叠/展开命令区，不另设图钉按钮）  -->
@@ -58,9 +86,12 @@
         <Button Classes="qk-btn" Content="↺" Margin="0,0,2,0"
                 ToolTip.Tip="{codewf:I18n Demo.Shell.Reset}"
                 Command="{Binding QuickResetCommand}" />
-        <Button Classes="qk-btn" Content="⚙"
+        <Button Classes="qk-btn" Content="⚙" Margin="0,0,2,0"
                 ToolTip.Tip="{codewf:I18n Demo.Shell.QuickSettings}"
                 Command="{Binding QuickSettingsCommand}" />
+        <Button Classes="qk-btn" Content="⌘"
+                ToolTip.Tip="{codewf:I18n Demo.Shell.Command}"
+                Command="{Binding ToggleCommandPaletteCommand}" />
       </StackPanel>
 
       <TabStrip Grid.Column="1" x:Name="RibbonTabStrip"
@@ -79,7 +110,7 @@
       </TabStrip>
     </Grid>
 
-    <!--  Ribbon 命令区：当前页签的演示命令（图标 + 名称），底部组名  -->
+    <!--  Ribbon 命令区：当前页签的演示命令（图标 + 名称），底部组名；紧凑密度下整体收窄  -->
     <Border Grid.Row="1" IsVisible="{Binding RibbonExpanded}"
             ClipToBounds="True" Padding="12,8,12,5"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
@@ -94,11 +125,12 @@
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="vm:DemoItemViewModel">
               <Button Classes="rbn-cmd" Margin="0,0,8,6"
+                      Classes.compact="{Binding $parent[Window].((vm:MainViewModel)DataContext).IsCompactDensity}"
                       Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenItemCommand}"
                       CommandParameter="{Binding}">
                 <StackPanel Spacing="4">
                   <TextBlock Text="{Binding Icon}" FontSize="20" HorizontalAlignment="Center" />
-                  <TextBlock Text="{Binding Title}" FontSize="11" MaxWidth="64"
+                  <TextBlock Text="{Binding DisplayTitle}" FontSize="11" MaxWidth="64"
                              HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" />
                 </StackPanel>
               </Button>
@@ -109,8 +141,12 @@
       </StackPanel>
     </Border>
 
-    <!--  中央 Dock 工作区：导航树 / 文档区 / 属性 / 日志均为可停靠面板（Context 直接承载控件实例）  -->
-    <dock:DockControl Grid.Row="2" Layout="{Binding Layout}" />
+    <!--  中央 Dock 工作区：导航树 / 文档区 / 属性 / 日志均为可停靠面板（Context 直接承载控件实例）
+          同一格里叠放外壳浮层（命令面板 + 通知中心），浮层未展开时不拦截指针。  -->
+    <Grid Grid.Row="2">
+      <dock:DockControl Layout="{Binding Layout}" />
+      <views:ShellOverlay DataContext="{Binding}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+    </Grid>
 
     <!--  状态栏：运行状态 + 面板开关 + 版本信息  -->
     <Border Grid.Row="3" Padding="10,3"
@@ -131,6 +167,10 @@
                   Command="{Binding TogglePanelCommand}" CommandParameter="props" />
           <Button Classes="st-btn" Content="{codewf:I18n Demo.Shell.Log}"
                   Command="{Binding TogglePanelCommand}" CommandParameter="log" />
+          <Button Classes="st-btn" Content="{codewf:I18n Demo.Shell.DensityLabel}"
+                  Command="{Binding ToggleDensityCommand}" />
+          <Button Classes="st-btn" Content="{codewf:I18n Demo.Shell.Command}"
+                  Command="{Binding ToggleCommandPaletteCommand}" />
           <Button Classes="st-btn" Content="{codewf:I18n Demo.Shell.Reset}"
                   Command="{Binding QuickResetCommand}" />
           <Border Width="1" Height="14" Margin="8,0"
@@ -141,31 +181,4 @@
       </Grid>
     </Border>
   </Grid>
-
-  <Window.Styles>
-    <Style Selector="Button.qk-btn,ToggleButton.qk-btn">
-      <Setter Property="Width" Value="28" />
-      <Setter Property="Height" Value="26" />
-      <Setter Property="Padding" Value="0" />
-      <Setter Property="FontSize" Value="13" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="HorizontalContentAlignment" Value="Center" />
-      <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
-    <Style Selector="Button.rbn-cmd">
-      <Setter Property="MinWidth" Value="84" />
-      <Setter Property="MinHeight" Value="64" />
-      <Setter Property="Padding" Value="8,8" />
-      <Setter Property="CornerRadius" Value="6" />
-      <Setter Property="HorizontalContentAlignment" Value="Center" />
-      <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
-    <Style Selector="Button.st-btn">
-      <Setter Property="Padding" Value="8,2" />
-      <Setter Property="FontSize" Value="11" />
-      <Setter Property="MinHeight" Value="22" />
-      <Setter Property="CornerRadius" Value="3" />
-      <Setter Property="Background" Value="Transparent" />
-    </Style>
-  </Window.Styles>
 </codewf:CodeWFWindow>

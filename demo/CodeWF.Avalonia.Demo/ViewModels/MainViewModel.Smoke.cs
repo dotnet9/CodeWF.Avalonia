@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Layout;
@@ -110,6 +110,12 @@ public partial class MainViewModel
         {
             Logger.Info(
                 $"冒烟：变体 {variant.Key} 渲染 {variantRenders[variant]} 次，失败 {variantFailures[variant]} 次");
+        }
+
+        // 外壳实体化件（通知中心 / 命令面板 / 密度 / 布局记忆 / 就地重命名）
+        if (!await SmokeShellFeaturesAsync(cancellation))
+        {
+            failed++;
         }
 
         return failed == 0;

@@ -1,4 +1,4 @@
-<Styles xmlns="https://github.com/avaloniaui"
+﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <!--  演示台外壳样式：与设计原型对齐（间距 / 四态 / 命令按钮 / 状态栏 / 步骤条）  -->
 
@@ -49,6 +49,39 @@
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="Opacity" Value="0.72" />
     <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!--  导航树：组节点与叶子行  -->
+  <Style Selector="ToggleButton.nav-group">
+    <Setter Property="Padding" Value="4,3" />
+    <Setter Property="FontSize" Value="11.5" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="MinHeight" Value="26" />
+  </Style>
+  <Style Selector="ToggleButton.nav-group:pointerover">
+    <Setter Property="Background" Value="#14000000" />
+  </Style>
+  <Style Selector="Button.nav-leaf">
+    <Setter Property="Padding" Value="6,3,4,3" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="MinHeight" Value="26" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="4" />
+  </Style>
+  <Style Selector="Button.nav-leaf:pointerover">
+    <Setter Property="Background" Value="#14000000" />
+  </Style>
+
+  <!--  密度：紧凑档收窄 Ribbon 命令按钮（原型的 data-density=compact）  -->
+  <Style Selector="Button.rbn-cmd.compact">
+    <Setter Property="MinWidth" Value="60" />
+    <Setter Property="MinHeight" Value="44" />
+    <Setter Property="Padding" Value="4,4" />
   </Style>
 
   <!--  场景页步骤条：轨道式步骤，当前高亮、已完成打勾  -->
