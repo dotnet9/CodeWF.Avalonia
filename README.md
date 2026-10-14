@@ -157,6 +157,10 @@ public class MyMarkdownThemes : MarkdownThemes
 
 Demo 保留 Ribbon + Dock，按输入与选择、反馈与引导、数据展示、布局与导航、Markdown、开发工具分类；每个主菜单对应一个具体控件或 API。首页先展示目录，组合工作流集中到“综合示例”。新增展开动画独立页，块编辑、平面表格增强与状态卡片提供具体用例。共享主题接口、MVVM 约定与截图检查见 [原生演示台文档](docs/NativeDemo.md)。
 
+命令区进一步按状态、引导、表格、窗口、布局动效、Markdown 阅读 / 编辑 / 导出等用途分组。参数与演示优先展示，源码按需打开；长 API 名保持完整，窄窗口可横向滚动。仓库通过 `global.json` 选择稳定版 .NET 10 SDK。
+
+![Ribbon 功能子组与原生 Dock 工作区](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-ribbon.png)
+
 The native overview offers live Markdown, natural sorting and Dock experiments. See the linked guide for optional Studio themes, localization and validation.
 
 Windows x64 NativeAOT Demo：标题栏支持主题色圈与下拉同步切换，默认 .NET 紫，也提供 AI 极光与暖陶的深浅主题。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。

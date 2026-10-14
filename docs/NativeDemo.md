@@ -63,7 +63,7 @@ dotnet test CodeWF.Avalonia.slnx -c Release
 
 ## Windows NativeAOT 验收
 
-验收环境为 Windows x64、.NET SDK 10.0.401，版本 `12.1.4.9`。用本仓脚本发布后直接启动原生 EXE：
+验收环境为 Windows x64、.NET SDK 10.0.303，版本 `12.1.4.10`。`global.json` 选择稳定版 .NET 10 SDK，允许使用后续 10.0 功能版本，不自动选择预览版 SDK。语言源生成器以 Roslyn 5.0 为依赖基线，可在稳定版 .NET 10 编译器中加载。用本仓脚本发布后直接启动原生 EXE：
 
 ```powershell
 pwsh scripts/publish_avalonia_demo.ps1 -RuntimeIdentifier win-x64
@@ -82,7 +82,7 @@ Start-Process $demo -ArgumentList '--capture ./artifacts/studio-qa' -Wait -PassT
 
 Markdown 的第三方渲染和导出路径仍有裁剪 / AOT 分析警告；Linux / macOS 未在本轮本机验收。 页面渲染通过不等于全部 API、异常路径和平台行为均已验证。
 
-版本标签 `v12.1.4.9` 触发现有 NuGet 与 Demo 发布流程。
+版本标签 `v12.1.4.10` 触发现有 NuGet 与 Demo 发布流程。
 
 ## 本轮改进
 
@@ -94,4 +94,21 @@ Markdown 的第三方渲染和导出路径仍有裁剪 / AOT 分析警告；Linu
 
 以上不是全部公开 API 和视觉状态的逐项验收声明。键盘焦点、跨屏浮动、所有 Markdown 扩展语法及长时间性能仍应按具体应用继续验证。
 
-本轮记录：2026-10-14，Windows x64 / .NET SDK 10.0.401。本仓 287 项单元测试通过；两个仓库各自发布脚本执行成功，最终原生 EXE 的 `--smoke` 均退出 0。浏览器全部目录页以及重点交互检查无脚本异常。
+本轮记录：2026-10-14，Windows x64 / .NET SDK 10.0.303。本仓 290 项单元测试通过。本仓发布脚本成功，最终原生 EXE 的 `--smoke`、`--capture` 均退出 0；捕获 31 个非首页目录页和 32 个 Ribbon 状态，实际按钮的数量与顺序均与目录一致。浏览器 32 个路由和重点交互检查无脚本异常。
+
+## 字体、布局与分类对照
+
+| 项目 | 原型与原生采用的指标 |
+|---|---|
+| 标题栏 / 分类行 | 52px / 42px |
+| Ribbon 分类 / 命令 / 子组字号 | 12px / 11px / 10px |
+| 页面标题 / 说明 / 导航叶子 | 19px / 12px / 11.5px |
+| 命令排列 | 按用途分子组；密集分类双行，完整 API 名不换行，窄窗口可横向滚动 |
+| 检查尺寸 / 语言 | 1440×860、1120×640；中文、英文 |
+| Markdown Basic 排版 | 正文 16px、一级标题 32px、二级标题 24px；原型读取库内排版令牌 |
+
+Markdown 导出归入 Markdown，控件的多个状态与方法保留在同页，综合流程放在末组。属性栏有页面参数时显示参数，否则回退全局设置；原型不再额外堆放空参数和状态统计，全局标签与配色名称从原生双语资源生成。
+
+逐页检查发现并修复两个库缺陷：`SwitchBinding` 现在解析绑定形式的 `When` 分支键，键和结果变化都会重新求值；梯形 TabControl / TabStrip 模板恢复内边距、最小高度和选中形状。新增回归测试，最终原生截图也确认运行中分支与梯形页签正确显示。
+
+README 的 PNG 与 GIF 已替换为本轮原生 EXE 截图。字体度量、Dock 页签、PropertyGrid 编辑器和原生窗口行为仍取决于 Semi / Dock 与平台，HTML 也不运行 Markdig，不承诺所有扩展语法及像素完全一致。第三方 Prism 默认对话框及旧运行时 XAML 加载器存在兼容性分析警告，本轮验收覆盖 Demo 实际调用路径。
