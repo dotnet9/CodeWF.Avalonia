@@ -81,7 +81,7 @@ jobs:
       - name: 校验 macOS ARM64 二进制
         if: matrix.rid == 'osx-arm64'
         shell: bash
-        run: lipo -verify_arch arm64 artifacts/publish/osx-arm64/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo
+        run: lipo artifacts/publish/osx-arm64/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo -verify_arch arm64
 
       - name: 打包便携 zip + sha256
         shell: pwsh
