@@ -19,7 +19,7 @@
    <Border Grid.Column="2" IsVisible="{Binding PropertiesVisible}" Background="{DynamicResource StudioSurface}">
     <Grid RowDefinitions="Auto,*">
      <TextBlock Text="{codewf:I18n Demo.Tool.Properties}" Margin="12,10" FontSize="12" FontWeight="SemiBold" />
-     <codewf:PropertyGrid Grid.Row="1" x:Name="DocumentProperties" NameColumnWidth="112"
+     <codewf:PropertyGrid Grid.Row="1" x:Name="DocumentProperties" NameColumnWidth="118" DefaultRowHeight="31"
                           Items="{Binding PropertyItems}" ValueCommittedCommand="{Binding PropertyValueCommittedCommand}"
                           BrowseRequestedCommand="{Binding PropertyBrowseRequestedCommand}" />
     </Grid>

@@ -35,6 +35,9 @@ public partial class MainViewModel
             document.ContentColumns[2].Width = new global::Avalonia.Controls.GridLength(310);
             await Task.Delay(80, cancellation);
             floating.UpdateLayout();
+            var titleBar = document.Page.GetVisualDescendants().OfType<global::CodeWF.Avalonia.Controls.Controls.CodeWFTitleBar>().Single();
+            if (!titleBar.GetVisualDescendants().OfType<TextBlock>().Any(text => text.Text == changed && text.IsEffectivelyVisible && text.Bounds.Width > 0))
+                throw new InvalidOperationException("The floating title parameter did not update the visible preview.");
             if (propertyGrid.Bounds.Width < 250 || view.FindControl<GridSplitter>("DocumentSplitter")?.Bounds.Width is not > 0)
                 throw new InvalidOperationException("The document splitter or property layout did not resize.");
             document.PropertiesVisible = false;

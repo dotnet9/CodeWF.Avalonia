@@ -1,7 +1,6 @@
 using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using Avalonia.Controls;
 using Avalonia.Data;
-using Avalonia.Media;
 using CodeWF.Avalonia.Controls.Controls;
 using CodeWF.Avalonia.Demo.ViewModels.Pages;
 using CodeWF.Avalonia.TreeDataGrid;
@@ -28,33 +27,27 @@ public sealed class ControlApiPage : DemoPageBase
             _ => throw new ArgumentOutOfRangeException(nameof(api)),
         };
         Control preview;
-        Control input;
         if (api == "CodeWFTitleBar")
         {
-            var bar = new CodeWFTitleBar { Height = 44, LeftContent = Ui.Key("CodeWF"), RightContent = Ui.Key(".NET") };
+            var bar = new CodeWFTitleBar { Height = 44, RightContent = Ui.Key(".NET") };
             bar.Bind(CodeWFTitleBar.TitleProperty, new Binding(nameof(ViewModel.Title)));
-            var text = Ui.Input(ViewModel.Title);
-            text.Bind(TextBox.TextProperty, new Binding(nameof(ViewModel.Title)) { Mode = BindingMode.TwoWay });
             preview = bar;
-            input = Ui.Field("Title", text);
         }
         else if (api == "LeftTop2RightBottomLine")
         {
-            var line = new LeftTop2RightBottomLine { Width = 280, Height = 180, BorderBrush = Brushes.MediumPurple };
+            var line = new LeftTop2RightBottomLine { Width = 280, Height = 180 };
+            line.Bind(LeftTop2RightBottomLine.BorderBrushProperty, line.GetResourceObservable("StudioAccent"));
             line.Bind(LeftTop2RightBottomLine.BorderThicknessProperty, new Binding(nameof(ViewModel.Thickness)));
-            var slider = new Slider { Minimum = 1, Maximum = 12, Width = 240 };
-            slider.Bind(Slider.ValueProperty, new Binding(nameof(ViewModel.Thickness)) { Mode = BindingMode.TwoWay });
             preview = line;
-            input = Ui.Field("BorderThickness", slider);
         }
         else if (api == "TreeDataGridExtension")
         {
             var grid = new global::Avalonia.Controls.TreeDataGrid { Source = ViewModel.Source, Height = 260 };
             grid.EnableDefaults(ViewModel.Source);
+            grid.Bind(ToolTip.TipProperty, new Lang.MarkupExtensions.I18nExtension(DemoResources.Catalog.TreeHints).CreateBinding());
             var summary = Ui.Sub("");
             summary.Bind(TextBlock.TextProperty, new Binding(nameof(ViewModel.SelectionSummary)));
             preview = new StackPanel { Spacing = 8, Children = { grid, summary } };
-            input = Ui.Hint("@Demo.Catalog.TreeHints");
         }
         else
         {
@@ -62,9 +55,8 @@ public sealed class ControlApiPage : DemoPageBase
             button.Bind(ContentControl.ContentProperty, new Lang.MarkupExtensions.I18nExtension(DemoResources.Catalog.Notifications).CreateBinding());
             button.Command = ViewModel.NotifyCommand;
             preview = button;
-            input = Ui.Key("LogNotifications.Mode = InApp; MinimumLevel = Warning");
         }
-        Content = Ui.Page(Ui.Card("@Demo.Catalog.Input", input), Ui.Card("@Demo.Segment.Demo", preview));
+        Content = Ui.Page(Ui.Card("@Demo.Segment.Demo", preview));
     }
 
     public override string TitleKey => "Demo.Item." + _key;
