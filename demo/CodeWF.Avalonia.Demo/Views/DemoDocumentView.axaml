@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+﻿<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:codewf="https://codewf.com" xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
  x:Class="CodeWF.Avalonia.Demo.Views.DemoDocumentView" x:DataType="vm:DemoDocumentViewModel" x:CompileBindings="True">
  <Grid RowDefinitions="Auto,*,Auto" Background="{DynamicResource StudioBackground}">
@@ -12,7 +12,19 @@
     <ToggleButton Grid.Column="1" FontSize="11" Content="{codewf:I18n Demo.Catalog.Source}" IsChecked="{Binding ShowSource}" IsVisible="{Binding HasSource}" VerticalAlignment="Center" />
    </Grid>
   </Border>
-  <ContentControl Grid.Row="1" Content="{Binding Page}" />
+  <Grid Grid.Row="1" x:Name="DocumentWorkspace">
+   <ContentControl Grid.Column="0" Content="{Binding Page}" />
+   <GridSplitter Grid.Column="1" x:Name="DocumentSplitter" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext"
+                 HorizontalAlignment="Stretch" Background="{DynamicResource StudioBorder}" IsVisible="{Binding PropertiesVisible}" />
+   <Border Grid.Column="2" IsVisible="{Binding PropertiesVisible}" Background="{DynamicResource StudioSurface}">
+    <Grid RowDefinitions="Auto,*">
+     <TextBlock Text="{codewf:I18n Demo.Tool.Properties}" Margin="12,10" FontSize="12" FontWeight="SemiBold" />
+     <codewf:PropertyGrid Grid.Row="1" x:Name="DocumentProperties" NameColumnWidth="112"
+                          Items="{Binding PropertyItems}" ValueCommittedCommand="{Binding PropertyValueCommittedCommand}"
+                          BrowseRequestedCommand="{Binding PropertyBrowseRequestedCommand}" />
+    </Grid>
+   </Border>
+  </Grid>
   <Border Grid.Row="2" IsVisible="{Binding ShowSource}" Height="220" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="0,1,0,0">
    <Grid RowDefinitions="Auto,*">
     <StackPanel Orientation="Horizontal" Margin="12,4" Spacing="8">

@@ -1,3 +1,4 @@
+﻿using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -9,12 +10,12 @@ namespace CodeWF.Avalonia.Demo.ViewModels;
 
 public partial class MainViewModel
 {
-    // Deterministic visual QA of the native application, independent of persisted user layout.
+    // 原生应用视觉验收，使用固定布局，不依赖用户保存的布局。
     public async Task CaptureStudioAsync(Window window, string directory)
     {
         Directory.CreateDirectory(directory);
         var overview = (Views.Pages.WelcomePage)Documents.First(d => d.Page is Views.Pages.WelcomePage).Page;
-        // Dock creates document content after the window's Loaded event.
+        // Dock 在窗口 Loaded 事件后创建文档内容。
         var readyBy = DateTime.UtcNow.AddSeconds(10);
         while (!overview.IsLoaded || overview.Bounds.Width <= 0 || overview.Bounds.Height <= 0)
         {
@@ -68,7 +69,7 @@ public partial class MainViewModel
         window.Width = 1440;
         window.Height = 860;
         foreach (var key in new[] { DemoPages.MarkdownViewer, DemoPages.MarkdownEditor, DemoPages.MarkdownLiveEditor, DemoPages.MarkdownExport, DemoPages.PropertyGrid, DemoPages.Lang,
-            "Demo.Item.ContentExpansionAnimator", "Demo.Item.StatusBadge", "Demo.Item.StatusCard", "Demo.Item.TitleBar", "Demo.Item.TreeDataGrid", "Demo.Item.If", "Demo.Item.Switch" })
+            DemoResources.Item.ContentExpansionAnimator, DemoResources.Item.StatusBadge, DemoResources.Item.StatusCard, DemoResources.Item.TitleBar, DemoResources.Item.TreeDataGrid, DemoResources.Item.If, DemoResources.Item.Switch })
         {
             overview.Overview.NavigateCommand.Execute(key);
             await WaitForDocumentAsync();
@@ -138,6 +139,14 @@ public partial class MainViewModel
                         .OfType<Button>().Select(button => button.DataContext).OfType<DemoItemViewModel>().ToArray();
                     if (commands.Length != group.Items.Count || !commands.SequenceEqual(group.Items))
                         throw new InvalidOperationException("Ribbon commands do not match the catalog: " + group.TitleKey);
+                    var icons = window.FindControl<ScrollViewer>("RibbonCommands")!.GetVisualDescendants()
+                        .OfType<PathIcon>().Where(icon => icon.Classes.Contains("ribbon-icon")).ToArray();
+                    if (icons.Length != commands.Length || icons.Any(icon => icon.Data is null || icon.Bounds.Width != 32 || icon.Bounds.Height != 32))
+                        throw new InvalidOperationException("Ribbon vector icons must occupy 32 by 32 pixels.");
+                    var quickIcons = window.GetVisualDescendants().OfType<Button>()
+                        .Where(button => button.Classes.Contains("ribbon-quick")).Select(button => button.Content).OfType<PathIcon>().ToArray();
+                    if (quickIcons.Length != 5 || quickIcons.Any(icon => icon.Data is null || icon.Bounds.Width != 24 || icon.Bounds.Height != 24))
+                        throw new InvalidOperationException("Ribbon quick icons must occupy 24 by 24 pixels.");
                     Save($"ribbon-{group.TitleKey.Split('.').Last()}-{(int)size.Width}-{culture.Name}");
                 }
             }
@@ -166,6 +175,7 @@ public partial class MainViewModel
                 }
             }
             ApplyAppearance();
+            await SmokeDocumentIsolationAsync(cancellation);
             var overview = (Views.Pages.WelcomePage)Documents.First(d => d.Page is Views.Pages.WelcomePage).Page;
             overview.Overview.ExperimentsExpanded = true;
             overview.Overview.Markdown = "# Smoke\n**live render**";
@@ -185,6 +195,7 @@ public partial class MainViewModel
             overview.Overview.Markdown = "# Hello, CodeWF\n\n- **Live preview** Markdown\n- Explore `DataGrid` and Dock";
             overview.Overview.ExperimentsExpanded = false;
             await SmokeMarkdownExportsAsync(cancellation);
+            await SmokeMarkdownLocalizationAsync(cancellation);
             foreach (var key in new[] { DemoPages.MarkdownFlow, DemoPages.DataFlow, DemoPages.DocsFlow, DemoPages.Transfer, DemoPages.Guide, DemoPages.Log })
             {
                 overview.Overview.NavigateCommand.Execute(key);

@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:codewf="https://codewf.com" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:dock="using:Dock.Avalonia.Controls"
              xmlns:md="using:CodeWF.Avalonia.Markdown.Controls"
@@ -26,11 +26,6 @@
   </UserControl.DataTemplates>
 
   <Grid RowDefinitions="Auto,*" Margin="12,10">
-    <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1" Margin="0,0,0,8"
-            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <TextBlock Text="{codewf:I18n Demo.Content.Dock.View.DockAvaloniaProvidesTheLayoutEngineDockSemiThemeSupplies}"
-                 TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
-    </Border>
     <dock:DockControl Grid.Row="1" Layout="{Binding Layout}" />
   </Grid>
 </UserControl>

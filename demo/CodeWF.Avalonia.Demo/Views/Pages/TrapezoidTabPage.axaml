@@ -1,15 +1,9 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:codewf="https://codewf.com"
              x:Class="CodeWF.Avalonia.Demo.Views.Pages.TrapezoidTabPage"
              x:CompileBindings="False">
   <StackPanel Margin="12,10" Spacing="14">
-
-    <Border Padding="10" CornerRadius="6" BorderThickness="1"
-            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <TextBlock Text="{codewf:I18n Demo.Content.TrapezoidTab.View.TrapezoidControlThemeAdaptsTheFirstMiddleAndFinal}"
-                 TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
-    </Border>
 
     <TextBlock Text="{codewf:I18n Demo.Content.TrapezoidTab.View.TabControlTrapezoidTheme}" FontWeight="Bold" />
     <TabControl Theme="{StaticResource TrapezoidShapedTabControl}" Height="180">

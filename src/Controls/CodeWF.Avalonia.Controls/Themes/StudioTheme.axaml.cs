@@ -4,8 +4,8 @@ using Avalonia.Styling;
 namespace CodeWF.Avalonia.Controls.Themes;
 
 /// <summary>
-/// Optional Studio appearance using Semi control templates.
-/// Palette resources live in AXAML theme dictionaries, keyed by explicit variants.
+/// 基于 Semi 控件模板提供可选的 Studio 外观。
+/// 配色资源位于 AXAML 主题字典，通过显式主题变体加载。
 /// </summary>
 public sealed class StudioTheme : Styles
 {

@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using ReactiveUI;
 using System.Collections.ObjectModel;
@@ -14,16 +15,16 @@ public class TransferPageViewModel : ReactiveObject
 {
     public ObservableCollection<FeatureItem> Available { get; } = new(
     [
-        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.IncrementalRendering"), L.Instance.GetResource("Demo.Content.Transfer.Available.Completed")),
-        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.BlockVirtualization"), L.Instance.GetResource("Demo.Content.Transfer.Available.Completed")),
-        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.18TypographyThemes"), L.Instance.GetResource("Demo.Content.Transfer.Available.Completed")),
-        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.PDFExport"), L.Instance.GetResource("Demo.Content.Transfer.Available.Completed")),
-        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.WordExport"), L.Instance.GetResource("Demo.Content.Transfer.Available.Completed")),
-        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.RichTextPublishing"), L.Instance.GetResource("Demo.Content.Transfer.Available.Completed")),
-        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.CollaborativeAnnotations"), L.Instance.GetResource("Demo.Content.Transfer.Available.Planned")),
-        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.VersionComparison"), L.Instance.GetResource("Demo.Content.Transfer.Available.Planned")),
-        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.AISummaries"), L.Instance.GetResource("Demo.Content.Transfer.Available.Planned")),
-        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.HandwrittenFormulaRecognition"), L.Instance.GetResource("Demo.Content.Transfer.Available.Planned")),
+        new FeatureItem(L.Instance.GetResource(DemoResources.Content.Transfer.Available.IncrementalRendering), L.Instance.GetResource(DemoResources.Content.Transfer.Available.Completed)),
+        new FeatureItem(L.Instance.GetResource(DemoResources.Content.Transfer.Available.BlockVirtualization), L.Instance.GetResource(DemoResources.Content.Transfer.Available.Completed)),
+        new FeatureItem(L.Instance.GetResource(DemoResources.Content.Transfer.Available._18TypographyThemes), L.Instance.GetResource(DemoResources.Content.Transfer.Available.Completed)),
+        new FeatureItem(L.Instance.GetResource(DemoResources.Content.Transfer.Available.PDFExport), L.Instance.GetResource(DemoResources.Content.Transfer.Available.Completed)),
+        new FeatureItem(L.Instance.GetResource(DemoResources.Content.Transfer.Available.WordExport), L.Instance.GetResource(DemoResources.Content.Transfer.Available.Completed)),
+        new FeatureItem(L.Instance.GetResource(DemoResources.Content.Transfer.Available.RichTextPublishing), L.Instance.GetResource(DemoResources.Content.Transfer.Available.Completed)),
+        new FeatureItem(L.Instance.GetResource(DemoResources.Content.Transfer.Available.CollaborativeAnnotations), L.Instance.GetResource(DemoResources.Content.Transfer.Available.Planned)),
+        new FeatureItem(L.Instance.GetResource(DemoResources.Content.Transfer.Available.VersionComparison), L.Instance.GetResource(DemoResources.Content.Transfer.Available.Planned)),
+        new FeatureItem(L.Instance.GetResource(DemoResources.Content.Transfer.Available.AISummaries), L.Instance.GetResource(DemoResources.Content.Transfer.Available.Planned)),
+        new FeatureItem(L.Instance.GetResource(DemoResources.Content.Transfer.Available.HandwrittenFormulaRecognition), L.Instance.GetResource(DemoResources.Content.Transfer.Available.Planned)),
     ]);
 
     public ObservableCollection<FeatureItem> Selected { get; } = new();

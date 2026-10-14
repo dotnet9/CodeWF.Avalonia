@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:codewf="https://codewf.com"
              xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels.Pages"
@@ -8,11 +8,6 @@
   <Grid ColumnDefinitions="*,260" Margin="12,10">
 
     <Grid Grid.Column="0" RowDefinitions="Auto,*">
-      <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1" Margin="0,0,0,8"
-              BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-        <TextBlock Text="{codewf:I18n Demo.Content.Transfer.View.MoveSelectedItemsBetweenTwoSearchableListsUsing}"
-                   TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
-      </Border>
       <codewf:Transfer Grid.Row="1" x:Name="TransferList"
                        LeftHeader="{codewf:I18n Demo.Content.Transfer.View.FeatureBacklogAvailable}"
                        RightHeader="{codewf:I18n Demo.Content.Transfer.View.CurrentDeliverySelected}"

@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Media;
@@ -5,10 +6,11 @@ using CodeWF.Avalonia.Controls.Controls;
 using CodeWF.Avalonia.Demo.ViewModels.Pages;
 using CodeWF.Avalonia.TreeDataGrid;
 using Ui = CodeWF.Avalonia.Controls.Presentation.StudioUi;
+using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 
 namespace CodeWF.Avalonia.Demo.Views.Pages;
 
-/// <summary>Focused views of existing public controls; interaction state lives in the view model.</summary>
+/// <summary>聚焦单个公开控件，交互状态由视图模型维护。</summary>
 public sealed class ControlApiPage : DemoPageBase
 {
     private readonly string _key;
@@ -57,7 +59,7 @@ public sealed class ControlApiPage : DemoPageBase
         else
         {
             var button = new Button { Classes = { "demo-action" } };
-            button.Bind(ContentControl.ContentProperty, new Lang.MarkupExtensions.I18nExtension("Demo.Catalog.Notifications").CreateBinding());
+            button.Bind(ContentControl.ContentProperty, new Lang.MarkupExtensions.I18nExtension(DemoResources.Catalog.Notifications).CreateBinding());
             button.Command = ViewModel.NotifyCommand;
             preview = button;
             input = Ui.Key("LogNotifications.Mode = InApp; MinimumLevel = Warning");
@@ -66,6 +68,8 @@ public sealed class ControlApiPage : DemoPageBase
     }
 
     public override string TitleKey => "Demo.Item." + _key;
+    protected override IReadOnlyList<PropertyItem> BuildProperties() => ViewModel.BuildProperties(_key);
+    public override void OnPropertyCommitted(PropertyValueChange change) => ViewModel.Commit(change);
     public override string DescriptionKey => "Demo.Api." + _key + ".Desc";
     public override string XamlCode => _key switch
     {

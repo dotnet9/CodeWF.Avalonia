@@ -16,7 +16,8 @@ window.CodeWFDemoCatalog = [
         "titleEn": "Introduction",
         "description": "",
         "icon": "⌂",
-        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
+        "prototypeIcon": "<path d=\"M2 11.45a1 1 0 0 1 .33-.75l9-8.1a1 1 0 0 1 1.34 0l9 8.1a1 1 0 0 1 .33.75V20a2 2 0 0 1-2 2h-4a1 1 0 0 1-1-1v-4a3 3 0 0 0-6 0v4a1 1 0 0 1-1 1H4a2 2 0 0 1-2-2v-8.55Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconHome"
       },
       {
         "titleKey": "Demo.Item.About",
@@ -28,7 +29,8 @@ window.CodeWFDemoCatalog = [
         "titleEn": "About",
         "description": "",
         "icon": "ⓘ",
-        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
+        "prototypeIcon": "<path d=\"M12 23a11 11 0 1 0 0-22 11 11 0 0 0 0 22Zm2-16a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm-5 3.75c0-.41.34-.75.75-.75h2.75a1 1 0 0 1 1 1v5.5h.75a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5h.75v-5h-.75a.75.75 0 0 1-.75-.75Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconInfoCircle"
       }
     ],
     "icon": "⌂",
@@ -50,7 +52,8 @@ window.CodeWFDemoCatalog = [
         "titleEn": "SearchListBox",
         "description": "SearchListBox",
         "icon": "⌕",
-        "prototypeIcon": "<rect x=\"3.5\" y=\"4.5\" width=\"17\" height=\"15\" rx=\"1.7\"/><path d=\"M6.5 9.5h11M6.5 13.5h7\"/><circle cx=\"16.5\" cy=\"15.8\" r=\"2.3\"/><path d=\"M18.3 17.6l2.2 2.2\"/>"
+        "prototypeIcon": "<path d=\"M10.5 2a8.5 8.5 0 1 0 4.86 15.48l4.08 4.08a1.5 1.5 0 1 0 2.12-2.12l-4.08-4.08A8.5 8.5 0 0 0 10.5 2ZM5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconSearch"
       },
       {
         "titleKey": "Demo.Item.Transfer",
@@ -62,7 +65,8 @@ window.CodeWFDemoCatalog = [
         "titleEn": "Transfer",
         "description": "Transfer",
         "icon": "⇄",
-        "prototypeIcon": "<path d=\"M4 6.5h10l-2.5-2.5M20 17.5H10l2.5 2.5\"/><path d=\"M17.5 6.5H20\"/><path d=\"M4 17.5h2.5\"/>"
+        "prototypeIcon": "<path d=\"M1 12c0-.83.67-1.5 1.5-1.5h15.38l-6.44-6.44a1.5 1.5 0 0 1 2.12-2.12l9 9a1.5 1.5 0 0 1 0 2.12l-9 9a1.5 1.5 0 0 1-2.12-2.12l6.44-6.44H2.5A1.5 1.5 0 0 1 1 12Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconArrowRight"
       }
     ],
     "icon": "⌕",
@@ -85,7 +89,8 @@ window.CodeWFDemoCatalog = [
         "description": "StatusBadge",
         "sectionKey": "Demo.Catalog.SectionStatuses",
         "icon": "◈",
-        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
+        "prototypeIcon": "<path d=\"M12 23a11 11 0 1 0 0-22 11 11 0 0 0 0 22Zm5.88-13.18-6.2 7.6a1.5 1.5 0 0 1-2.37 0l-3.5-4a1.5 1.5 0 1 1 2.37-1.84l2.3 2.46L15.5 8a1.5 1.5 0 1 1 2.38 1.82Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconTickCircle"
       },
       {
         "titleKey": "Demo.Item.StatusCard",
@@ -98,7 +103,8 @@ window.CodeWFDemoCatalog = [
         "description": "StatusCard",
         "sectionKey": "Demo.Catalog.SectionStatuses",
         "icon": "▣",
-        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
+        "prototypeIcon": "<path d=\"M4 1a3 3 0 0 0-3 3v16a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3V4a3 3 0 0 0-3-3H4Zm15 3a1 1 0 0 1 1 1v5.5h-6.5V4H19Zm-8.5 0H5a1 1 0 0 0-1 1v5.5h6.5V4ZM4 13.5V19a1 1 0 0 0 1 1h5.5v-6.5H4Zm9.5 6.5H19a1 1 0 0 0 1-1v-5.5h-6.5V20Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconGridSquare"
       },
       {
         "titleKey": "Demo.Item.Guide",
@@ -111,7 +117,8 @@ window.CodeWFDemoCatalog = [
         "description": "Guide",
         "sectionKey": "Demo.Catalog.SectionGuidance",
         "icon": "◉",
-        "prototypeIcon": "<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M14.8 9.2l-1.9 4.1-4.1 1.9 1.9-4.1z\"/>"
+        "prototypeIcon": "<path d=\"M12 23a11 11 0 1 0 0-22 11 11 0 0 0 0 22Zm-.17-8.4c-.86 0-1.3-.53-1.3-1.23 0-1.05.53-1.72 1.74-2.64l.06-.05c.83-.62 1.4-1.06 1.4-1.85 0-.9-.83-1.4-1.76-1.4-.76 0-1.34.28-1.8.87-.33.34-.6.53-1.05.53C8.38 8.83 8 8.3 8 7.7c0-.6.34-1.22.88-1.68A5.15 5.15 0 0 1 12.28 5c2.71 0 4.62 1.34 4.62 3.64 0 1.68-1 2.5-2.2 3.31-.8.59-1.17.93-1.48 1.62-.33.6-.58 1.04-1.4 1.04Zm-.02 4.17c-.94 0-1.71-.6-1.71-1.54 0-.94.77-1.55 1.7-1.55.95 0 1.7.6 1.7 1.55 0 .93-.75 1.54-1.7 1.54Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconHelpCircle"
       },
       {
         "titleKey": "Demo.Item.Notifications",
@@ -124,7 +131,8 @@ window.CodeWFDemoCatalog = [
         "description": "LogNotifications",
         "sectionKey": "Demo.Catalog.SectionNotifications",
         "icon": "◉",
-        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
+        "prototypeIcon": "<path d=\"M18 9a6 6 0 0 0-3-5.2 3 3 0 0 0-6 0A6 6 0 0 0 6 9s0 2-.5 4c-.28 1.13-1.69 2.9-2.86 4.23-.58.67-.12 1.77.77 1.77H20.6c.89 0 1.35-1.1.77-1.77-1.17-1.32-2.58-3.1-2.86-4.23-.5-2-.5-4-.5-4Z\n        M15 20a3 3 0 1 1-6 0h6Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconBell"
       }
     ],
     "icon": "◈",
@@ -147,7 +155,8 @@ window.CodeWFDemoCatalog = [
         "description": "DataGridEnhancement",
         "sectionKey": "Demo.Catalog.SectionGrids",
         "icon": "▦",
-        "prototypeIcon": "<rect x=\"3.5\" y=\"4.5\" width=\"17\" height=\"15\" rx=\"1.7\"/><path d=\"M3.5 9.5h17M3.5 14.5h17M9.5 9.5v10M15 9.5v10\"/>"
+        "prototypeIcon": "<path d=\"M2 4c0-1.1.9-2 2-2h5a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Z\n        M2 15c0-1.1.9-2 2-2h5a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5Z\n        M13 15c0-1.1.9-2 2-2h5a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-5Z\n        M13 4c0-1.1.9-2 2-2h5a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2V4Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconGridView"
       },
       {
         "titleKey": "Demo.Item.ColumnDisplayEditor",
@@ -160,7 +169,8 @@ window.CodeWFDemoCatalog = [
         "description": "ColumnDisplayEditor",
         "sectionKey": "Demo.Catalog.SectionGrids",
         "icon": "▥",
-        "prototypeIcon": "<path d=\"M4 7.5h4M4 12h4M4 16.5h4\"/><rect x=\"10\" y=\"5.5\" width=\"10\" height=\"4\" rx=\"1.2\"/><rect x=\"10\" y=\"10\" width=\"10\" height=\"4\" rx=\"1.2\"/><rect x=\"10\" y=\"14.5\" width=\"10\" height=\"4\" rx=\"1.2\"/>"
+        "prototypeIcon": "<path d=\"M8 5.07c-.8.47-1.8.46-2.6 0l-.24-.15a1.4 1.4 0 0 0-1.82.29c-.64.82-1.16 1.73-1.55 2.7a1.4 1.4 0 0 0 .66 1.71l.24.14a2.57 2.57 0 0 1 0 4.48l-.24.14a1.4 1.4 0 0 0-.66 1.72 11.1 11.1 0 0 0 1.55 2.69 1.4 1.4 0 0 0 1.82.3l.25-.15a2.57 2.57 0 0 1 3.88 2.24v.28c-.01.7.46 1.33 1.16 1.43a11 11 0 0 0 3.1 0 1.4 1.4 0 0 0 1.17-1.43v-.28a2.57 2.57 0 0 1 3.87-2.24l.25.14c.6.36 1.38.26 1.82-.29.64-.82 1.16-1.73 1.55-2.7a1.4 1.4 0 0 0-.66-1.71l-.24-.14a2.57 2.57 0 0 1 0-4.48l.24-.14a1.4 1.4 0 0 0 .66-1.72 11.08 11.08 0 0 0-1.55-2.69 1.4 1.4 0 0 0-1.82-.3l-.25.15a2.57 2.57 0 0 1-3.88-2.24v-.28c.01-.7-.46-1.33-1.16-1.43a10.99 10.99 0 0 0-3.1 0c-.7.1-1.17.72-1.17 1.43v.28C9.3 3.75 8.8 4.61 8 5.07Zm6 10.4a4 4 0 1 0-4-6.93 4 4 0 0 0 4 6.92Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconSetting"
       },
       {
         "titleKey": "Demo.Item.TreeDataGrid",
@@ -173,7 +183,8 @@ window.CodeWFDemoCatalog = [
         "description": "TreeDataGridExtension",
         "sectionKey": "Demo.Catalog.SectionGrids",
         "icon": "▦",
-        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
+        "prototypeIcon": "<path d=\"M2 4c0-1.1.9-2 2-2h16a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Z\n        M2 11.5c0-1.1.9-2 2-2h16a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1Z\n        M2 19c0-1.1.9-2 2-2h16a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconListView"
       },
       {
         "titleKey": "Demo.Item.PropertyGrid",
@@ -186,7 +197,8 @@ window.CodeWFDemoCatalog = [
         "description": "PropertyGrid",
         "sectionKey": "Demo.Catalog.SectionProperties",
         "icon": "☰",
-        "prototypeIcon": "<path d=\"M4 6.5h9M17.5 6.5H20\"/><circle cx=\"15\" cy=\"6.5\" r=\"2.1\"/><path d=\"M4 17.5h3.5M11 17.5h9\"/><circle cx=\"9\" cy=\"17.5\" r=\"2.1\"/><path d=\"M4 12h6M13.5 12H20\"/><circle cx=\"11.5\" cy=\"12\" r=\"2.1\"/>"
+        "prototypeIcon": "<path d=\"M2 4c0-1.1.9-2 2-2h16a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Z\n        M2 11.5c0-1.1.9-2 2-2h16a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1Z\n        M2 19c0-1.1.9-2 2-2h16a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconListView"
       },
       {
         "titleKey": "Demo.Item.Log",
@@ -199,7 +211,8 @@ window.CodeWFDemoCatalog = [
         "description": "LogView",
         "sectionKey": "Demo.Catalog.SectionLogs",
         "icon": "☰",
-        "prototypeIcon": "<path d=\"M5.5 4.5h13v15h-13z\"/><path d=\"M8.5 9h7M8.5 12.5h7M8.5 16h4\"/>"
+        "prototypeIcon": "<path d=\"M2 4c0-1.1.9-2 2-2h16a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Z\n        M2 11.5c0-1.1.9-2 2-2h16a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1Z\n        M2 19c0-1.1.9-2 2-2h16a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconListView"
       }
     ],
     "icon": "▦",
@@ -222,7 +235,8 @@ window.CodeWFDemoCatalog = [
         "description": "CodeWFWindow",
         "sectionKey": "Demo.Catalog.SectionWindows",
         "icon": "▣",
-        "prototypeIcon": "<rect x=\"3.5\" y=\"4.5\" width=\"17\" height=\"15\" rx=\"1.7\"/><path d=\"M3.5 9h17\"/><path d=\"M6.5 6.7h.01M9 6.7h.01\"/>"
+        "prototypeIcon": "<path d=\"M2 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z\n        M9.5 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V3Z\n        M10.5 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\n        M2 10.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3Z\n        M18 9.5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\n        M9.5 10.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-3Z\n        M3 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1H3Z\n        M17 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V3Z\n        M18 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconApps"
       },
       {
         "titleKey": "Demo.Item.TitleBar",
@@ -235,7 +249,8 @@ window.CodeWFDemoCatalog = [
         "description": "CodeWFTitleBar",
         "sectionKey": "Demo.Catalog.SectionWindows",
         "icon": "▤",
-        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
+        "prototypeIcon": "<path d=\"M5 2a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3H5Zm2 4h10a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0V8h-3v8h1a1 1 0 1 1 0 2h-4a1 1 0 1 1 0-2h1V8H8v1a1 1 0 0 1-2 0V7a1 1 0 0 1 1-1Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconTextRectangle"
       },
       {
         "titleKey": "Demo.Item.Dock",
@@ -248,7 +263,8 @@ window.CodeWFDemoCatalog = [
         "description": "DockControl",
         "sectionKey": "Demo.Catalog.SectionNavigation",
         "icon": "▣",
-        "prototypeIcon": "<rect x=\"3.5\" y=\"4.5\" width=\"17\" height=\"15\" rx=\"1.7\"/><path d=\"M10 4.5v15\"/><path d=\"M13.5 9.5h4\"/>"
+        "prototypeIcon": "<path d=\"m21.21 15.05.26.14c.51.28.68.9.38 1.39-.1.15-.23.27-.38.36l-8.92 4.92c-.34.19-.76.19-1.1 0l-8.92-4.92a.98.98 0 0 1-.38-1.39c.1-.15.23-.27.38-.36l.26-.14 8.66 4.78c.32.17.72.18 1.05.02l.05-.02 8.66-4.78Zm0-4.07.26.14c.51.29.68.91.38 1.4-.1.14-.23.27-.38.36l-8.92 4.92c-.34.18-.76.18-1.1 0l-8.92-4.92a.98.98 0 0 1-.38-1.4c.1-.14.23-.27.38-.36l.26-.14 8.66 4.78c.32.18.72.19 1.05.03l.05-.03 8.66-4.78Zm-8.66-8.84 8.92 4.92c.51.28.68.9.38 1.39-.1.15-.23.27-.38.36l-8.92 4.92c-.34.19-.76.19-1.1 0L2.53 8.81a.98.98 0 0 1-.38-1.39c.1-.15.23-.27.38-.36l8.92-4.92c.34-.19.76-.19 1.1 0Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconLayers"
       },
       {
         "titleKey": "Demo.Item.TrapezoidTab",
@@ -261,7 +277,8 @@ window.CodeWFDemoCatalog = [
         "description": "TrapezoidShapedTabControl",
         "sectionKey": "Demo.Catalog.SectionNavigation",
         "icon": "◤",
-        "prototypeIcon": "<path d=\"M7.5 6.5h9l3 11h-15z\"/><path d=\"M9.5 10h5\"/>"
+        "prototypeIcon": "<path d=\"M2 5a3 3 0 0 1 3-3h3.3a2 2 0 0 1 1.25.44l1.13.9a3 3 0 0 0 1.87.66H18c2 0 3 2 3 4H7.53A2 2 0 0 0 5.6 9.48L2.57 20.76C2.21 20.26 2 19.66 2 19V5Zm20.17 5H9.5a2 2 0 0 0-1.92 1.44l-2.7 9.28A1 1 0 0 0 5.82 22H18.5a2 2 0 0 0 1.92-1.44l2.7-9.28a1 1 0 0 0-.95-1.28Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconFolderOpen"
       },
       {
         "titleKey": "Demo.Item.WindowedStackPanel",
@@ -274,7 +291,8 @@ window.CodeWFDemoCatalog = [
         "description": "WindowedStackPanel",
         "sectionKey": "Demo.Catalog.SectionLayout",
         "icon": "▥",
-        "prototypeIcon": "<path d=\"M12 3.5L21 8.5 12 13.5 3 8.5z\"/><path d=\"M3 12.8L12 17.8l9-5\"/><path d=\"M3 16.8L12 21.8l9-5\"/>"
+        "prototypeIcon": "<path d=\"M4 6.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM9.5 3a1.5 1.5 0 1 0 0 3h11a1.5 1.5 0 0 0 0-3h-11ZM8 11.5c0-.83.67-1.5 1.5-1.5h11a1.5 1.5 0 0 1 0 3h-11A1.5 1.5 0 0 1 8 11.5Zm0 7c0-.83.67-1.5 1.5-1.5h11a1.5 1.5 0 0 1 0 3h-11A1.5 1.5 0 0 1 8 18.5Zm-2-7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm-2 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconList"
       },
       {
         "titleKey": "Demo.Item.DiagonalLine",
@@ -287,7 +305,8 @@ window.CodeWFDemoCatalog = [
         "description": "LeftTop2RightBottomLine",
         "sectionKey": "Demo.Catalog.SectionLayout",
         "icon": "╲",
-        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
+        "prototypeIcon": "<path d=\"M14.5 4.5l 5 5 2.09-2.09a2 2 0 0 0 0-2.82L19.4 2.4a2 2 0 0 0-2.82 0L14.5 4.5Z\n        M2.25 21.13l 1.68-5.88a1 1 0 0 1 .25-.43L13 6l5 5-8.82 8.82a1 1 0 0 1-.43.25l-5.88 1.68a.5.5 0 0 1-.62-.62Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconEdit"
       },
       {
         "titleKey": "Demo.Item.ContentExpansionAnimator",
@@ -300,7 +319,8 @@ window.CodeWFDemoCatalog = [
         "description": "ContentExpansionAnimator",
         "sectionKey": "Demo.Catalog.SectionLayout",
         "icon": "◆",
-        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
+        "prototypeIcon": "<path d=\"M10 2a1.5 1.5 0 0 1 0 3H7.12l3.94 3.94a1.5 1.5 0 0 1-2.12 2.12L5 7.12V10a1.5 1.5 0 0 1-3 0V3.5C2 2.67 2.67 2 3.5 2H10Z\n        M19 14a1.5 1.5 0 0 1 3 0v6.5c0 .83-.67 1.5-1.5 1.5H14a1.5 1.5 0 0 1 0-3h2.88l-3.94-3.94a1.5 1.5 0 0 1 2.12-2.12L19 16.88V14Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconExpand"
       }
     ],
     "icon": "❐",
@@ -323,7 +343,8 @@ window.CodeWFDemoCatalog = [
         "description": "MarkdownViewer",
         "sectionKey": "Demo.Catalog.SectionReading",
         "icon": "▤",
-        "prototypeIcon": "<path d=\"M13.5 3.5H7a1.6 1.6 0 0 0-1.6 1.6v13.8A1.6 1.6 0 0 0 7 20.5h10a1.6 1.6 0 0 0 1.6-1.6V8.6z\"/><path d=\"M13.5 3.5v5.1h5.1\"/><path d=\"M9 13.5h6M9 16.8h4\"/>"
+        "prototypeIcon": "<path d=\"M19 1a2 2 0 0 1 2 2v19a1 1 0 0 1-1 1H6a3 3 0 0 1-3-3V5a4 4 0 0 1 4-4h12ZM6 19a1 1 0 0 0 0 2h13v-2H6Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconBook"
       },
       {
         "titleKey": "Demo.Item.MarkdownLite",
@@ -336,7 +357,8 @@ window.CodeWFDemoCatalog = [
         "description": "Lite.MarkdownViewer",
         "sectionKey": "Demo.Catalog.SectionReading",
         "icon": "▭",
-        "prototypeIcon": "<path d=\"M4.5 5.5h15v13h-15z\"/><path d=\"M7.5 15.5l2-6 2.5 4.5 1.8-3 1.7 4.5\"/>"
+        "prototypeIcon": "<path d=\"M19 1a2 2 0 0 1 2 2v19a1 1 0 0 1-1 1H6a3 3 0 0 1-3-3V5a4 4 0 0 1 4-4h12ZM6 19a1 1 0 0 0 0 2h13v-2H6Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconBook"
       },
       {
         "titleKey": "Demo.Item.MarkdownEditor",
@@ -349,7 +371,8 @@ window.CodeWFDemoCatalog = [
         "description": "MarkdownEditorView",
         "sectionKey": "Demo.Catalog.SectionEditing",
         "icon": "✎",
-        "prototypeIcon": "<path d=\"M4.5 19.5l.9-3.6L16 5.3l2.7 2.7L8.1 18.6z\"/><path d=\"M14.6 6.7l2.7 2.7\"/><path d=\"M4.5 12.5V4.5h8\"/>"
+        "prototypeIcon": "<path d=\"M14.5 4.5l 5 5 2.09-2.09a2 2 0 0 0 0-2.82L19.4 2.4a2 2 0 0 0-2.82 0L14.5 4.5Z\n        M2.25 21.13l 1.68-5.88a1 1 0 0 1 .25-.43L13 6l5 5-8.82 8.82a1 1 0 0 1-.43.25l-5.88 1.68a.5.5 0 0 1-.62-.62Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconEdit"
       },
       {
         "titleKey": "Demo.Item.MarkdownLiveEditor",
@@ -362,7 +385,8 @@ window.CodeWFDemoCatalog = [
         "description": "MarkdownLiveEditorView",
         "sectionKey": "Demo.Catalog.SectionEditing",
         "icon": "⚡",
-        "prototypeIcon": "<path d=\"M13 3.5L5.5 13.5H11l-.6 7L18 10.5h-5.4z\"/>"
+        "prototypeIcon": "<path d=\"m16.43 4.1 3.54 3.54 1.48-1.48c.55-.55.55-1.45 0-2L19.9 2.62a1.42 1.42 0 0 0-2 0L16.43 4.1Z\n        m-8.76 11.88 1.19-4.17a.7.7 0 0 1.18-.3l6.24-6.25 3.54 3.54-6.24 6.24a.7.7 0 0 1-.3.18l-4.17 1.2a.35.35 0 0 1-.44-.44Z\n        M7.97 9.78c-.28.29-.5.63-.64 1l-.05.17-1.19 4.17A2.35 2.35 0 0 0 9 18.02l4.17-1.18c.44-.13.84-.37 1.17-.7l4.8-4.8a.5.5 0 0 1 .86.36V21a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h9.54a.5.5 0 0 1 .36.85L7.97 9.78Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconEdit2"
       },
       {
         "titleKey": "Demo.Item.MarkdownExport",
@@ -375,7 +399,8 @@ window.CodeWFDemoCatalog = [
         "description": "MarkdownDocumentExporter",
         "sectionKey": "Demo.Catalog.SectionExport",
         "icon": "⇪",
-        "prototypeIcon": "<path d=\"M12 3.5v10.5\"/><path d=\"M8.5 7L12 3.5 15.5 7\"/><path d=\"M5 13.5v5.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5v-5.5\"/>"
+        "prototypeIcon": "<path d=\"M17.84 8.06A6.5 6.5 0 1 0 5.18 11 4.5 4.5 0 0 0 5.5 20H17a6 6 0 0 0 .84-11.94Zm-5.52.2a.5.5 0 0 0-.64 0l-5.15 4.3a.25.25 0 0 0 .16.44H10v4.5c0 .28.22.5.5.5h3a.5.5 0 0 0 .5-.5V13h3.31c.23 0 .34-.3.16-.44l-5.15-4.3Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconUpload"
       }
     ],
     "icon": "▤",
@@ -397,7 +422,8 @@ window.CodeWFDemoCatalog = [
         "titleEn": "If",
         "description": "If",
         "icon": "⟨⟩",
-        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
+        "prototypeIcon": "<path d=\"M14.49 4.19a1.5 1.5 0 0 0-2.98-.38l-2 16a1.5 1.5 0 1 0 2.98.38l2-16ZM8.06 5.94a1.5 1.5 0 0 1 0 2.12L4.12 12l3.94 3.94a1.5 1.5 0 1 1-2.12 2.12l-5-5a1.5 1.5 0 0 1 0-2.12l5-5a1.5 1.5 0 0 1 2.12 0Zm7.88 0a1.5 1.5 0 0 1 2.12 0l5 5a1.5 1.5 0 0 1 0 2.12l-5 5a1.5 1.5 0 0 1-2.12-2.12L19.88 12l-3.94-3.94a1.5 1.5 0 0 1 0-2.12Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconCode"
       },
       {
         "titleKey": "Demo.Item.Switch",
@@ -409,7 +435,8 @@ window.CodeWFDemoCatalog = [
         "titleEn": "Switch",
         "description": "Switch",
         "icon": "⇄",
-        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
+        "prototypeIcon": "<path d=\"M14.49 4.19a1.5 1.5 0 0 0-2.98-.38l-2 16a1.5 1.5 0 1 0 2.98.38l2-16ZM8.06 5.94a1.5 1.5 0 0 1 0 2.12L4.12 12l3.94 3.94a1.5 1.5 0 1 1-2.12 2.12l-5-5a1.5 1.5 0 0 1 0-2.12l5-5a1.5 1.5 0 0 1 2.12 0Zm7.88 0a1.5 1.5 0 0 1 2.12 0l5 5a1.5 1.5 0 0 1 0 2.12l-5 5a1.5 1.5 0 0 1-2.12-2.12L19.88 12l-3.94-3.94a1.5 1.5 0 0 1 0-2.12Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconCode"
       },
       {
         "titleKey": "Demo.Item.Lang",
@@ -421,7 +448,8 @@ window.CodeWFDemoCatalog = [
         "titleEn": "I18nManager",
         "description": "I18nManager",
         "icon": "⊕",
-        "prototypeIcon": "<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M3.5 12h17\"/><path d=\"M12 3.5c2.4 2.4 3.6 5.3 3.6 8.5S14.4 18.1 12 20.5C9.6 18.1 8.4 15.2 8.4 12S9.6 5.9 12 3.5z\"/>"
+        "prototypeIcon": "<path d=\"M3 4.5C3 3.67 3.67 3 4.5 3h15c.83 0 1.5.67 1.5 1.5v3a1.5 1.5 0 0 1-3 0V6h-4.5v13h2a1.5 1.5 0 0 1 0 3h-7a1.5 1.5 0 0 1 0-3h2V6H6v1.5a1.5 1.5 0 1 1-3 0v-3Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconText"
       }
     ],
     "icon": "◆",
@@ -443,7 +471,8 @@ window.CodeWFDemoCatalog = [
         "titleEn": "Markdown workflow",
         "description": "",
         "icon": "▶",
-        "prototypeIcon": "<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M14.6 9.4l-1.7 3.8-3.8 1.7 1.7-3.8z\"/>"
+        "prototypeIcon": "<path d=\"M2 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z\n        M9.5 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V3Z\n        M10.5 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\n        M2 10.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3Z\n        M18 9.5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\n        M9.5 10.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-3Z\n        M3 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1H3Z\n        M17 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V3Z\n        M18 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconApps"
       },
       {
         "titleKey": "Demo.Item.DataFlow",
@@ -455,7 +484,8 @@ window.CodeWFDemoCatalog = [
         "titleEn": "Data workflow",
         "description": "",
         "icon": "▤",
-        "prototypeIcon": "<path d=\"M4 19.5V4.5\"/><path d=\"M4 19.5h15.5\"/><rect x=\"7\" y=\"11\" width=\"3\" height=\"6\"/><rect x=\"12\" y=\"7.5\" width=\"3\" height=\"9.5\"/><rect x=\"17\" y=\"14\" width=\"3\" height=\"3\"/>"
+        "prototypeIcon": "<path d=\"M2 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z\n        M9.5 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V3Z\n        M10.5 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\n        M2 10.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3Z\n        M18 9.5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\n        M9.5 10.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-3Z\n        M3 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1H3Z\n        M17 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V3Z\n        M18 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconApps"
       },
       {
         "titleKey": "Demo.Item.DocsFlow",
@@ -467,7 +497,8 @@ window.CodeWFDemoCatalog = [
         "titleEn": "Document workflow",
         "description": "",
         "icon": "❐",
-        "prototypeIcon": "<rect x=\"3.5\" y=\"7\" width=\"10\" height=\"12.5\" rx=\"1.6\"/><path d=\"M7.5 7V4.5h11a1.5 1.5 0 0 1 1.5 1.5v11a1.5 1.5 0 0 1-1.5 1.5H17\"/>"
+        "prototypeIcon": "<path d=\"M2 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z\n        M9.5 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V3Z\n        M10.5 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\n        M2 10.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3Z\n        M18 9.5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\n        M9.5 10.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-3Z\n        M3 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1H3Z\n        M17 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V3Z\n        M18 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconApps"
       },
       {
         "titleKey": "Demo.Item.AppGuide",
@@ -479,7 +510,8 @@ window.CodeWFDemoCatalog = [
         "titleEn": "Application guide",
         "description": "",
         "icon": "◎",
-        "prototypeIcon": "<circle cx=\"9\" cy=\"9\" r=\"5\"/><path d=\"M12.8 12.8L20 20\"/><path d=\"M9 6.5a2.5 2.5 0 0 0-2.5 2.5\"/>"
+        "prototypeIcon": "<path d=\"M2 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z\n        M9.5 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V3Z\n        M10.5 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\n        M2 10.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3Z\n        M18 9.5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\n        M9.5 10.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-3Z\n        M3 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1H3Z\n        M17 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V3Z\n        M18 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconApps"
       }
     ],
     "icon": "▶",

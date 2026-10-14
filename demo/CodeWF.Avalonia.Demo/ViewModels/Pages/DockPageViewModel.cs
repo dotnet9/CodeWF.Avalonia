@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia.Collections;
 using Dock.Model.Core;
@@ -29,7 +30,7 @@ public class DockPageViewModel
         var overviewTool = new Tool
         {
             Id = "Tool.Overview",
-            Title = L.Instance.GetResource("Demo.Content.Dock.overviewTool.WorkspaceOverview"),
+            Title = L.Instance.GetResource(DemoResources.Content.Dock.overviewTool.WorkspaceOverview),
             Context = new MarkdownToolContext(ToolOverviewMarkdown),
         };
         var toolDock = new ToolDock
@@ -41,8 +42,8 @@ public class DockPageViewModel
             Proportion = 0.28,
         };
 
-        var designDocument = new Document { Id = "Doc.Design", Title = L.Instance.GetResource("Demo.Content.Dock.designDocument.DesignNotes"), Context = new MarkdownDocumentContext(DocDesignMarkdown) };
-        var apiDocument = new Document { Id = "Doc.Api", Title = L.Instance.GetResource("Demo.Content.Dock.apiDocument.APIDraft"), Context = new MarkdownDocumentContext(DocApiMarkdown) };
+        var designDocument = new Document { Id = "Doc.Design", Title = L.Instance.GetResource(DemoResources.Content.Dock.designDocument.DesignNotes), Context = new MarkdownDocumentContext(DocDesignMarkdown) };
+        var apiDocument = new Document { Id = "Doc.Api", Title = L.Instance.GetResource(DemoResources.Content.Dock.apiDocument.APIDraft), Context = new MarkdownDocumentContext(DocApiMarkdown) };
         var docDock = new DocumentDock
         {
             Id = "DocDock",
@@ -65,7 +66,7 @@ public class DockPageViewModel
         Layout = new RootDock
         {
             Id = "Root",
-            Title = L.Instance.GetResource("Demo.Content.Dock.Content.DockWorkspace"),
+            Title = L.Instance.GetResource(DemoResources.Content.Dock.Content.DockWorkspace),
             VisibleDockables = CreateList<IDockable>(mainDock),
             ActiveDockable = mainDock,
             IsCollapsable = false,
@@ -76,9 +77,9 @@ public class DockPageViewModel
 
     private static AvaloniaList<T> CreateList<T>(params T[] items) => new(items);
 
-    private static string ToolOverviewMarkdown => L.Instance.GetResource("Demo.Content.Dock.ToolOverviewMarkdown.WorkspaceOverviewLeftToolPanelRightDraggableDocuments");
+    private static string ToolOverviewMarkdown => L.Instance.GetResource(DemoResources.Content.Dock.ToolOverviewMarkdown.WorkspaceOverviewLeftToolPanelRightDraggableDocuments);
 
-    private static string DocDesignMarkdown => L.Instance.GetResource("Demo.Content.Dock.DocDesignMarkdown.DesignNotesDockLayoutRootDockProportionalDockToolDockDocumentDock");
+    private static string DocDesignMarkdown => L.Instance.GetResource(DemoResources.Content.Dock.DocDesignMarkdown.DesignNotesDockLayoutRootDockProportionalDockToolDockDocumentDock);
 
-    private static string DocApiMarkdown => L.Instance.GetResource("Demo.Content.Dock.DocApiMarkdown.APIDraftCsharpVarFactoryNewDockModel");
+    private static string DocApiMarkdown => L.Instance.GetResource(DemoResources.Content.Dock.DocApiMarkdown.APIDraftCsharpVarFactoryNewDockModel);
 }

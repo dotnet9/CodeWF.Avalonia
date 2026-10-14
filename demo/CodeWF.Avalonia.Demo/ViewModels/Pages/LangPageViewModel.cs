@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using System.Globalization;
 using System.Windows.Input;
 using CodeWF.Avalonia.Demo.Infrastructure;
@@ -13,18 +14,18 @@ public sealed class LangPageViewModel : ReactiveObject
     public LangPageViewModel() => SwitchCultureCommand = ReactiveCommand.Create<string>(ApplyCulture);
     public ICommand SwitchCultureCommand { get; }
     public Action<string>? CultureRequested { private get; set; }
-    public string GeneratedKey => global::Demo.Content.Lang.ApplyCulture_LangChangingLanguage;
+    public string GeneratedKey => DemoResources.Content.Lang.ApplyCulture.LangChangingLanguage;
     public string State
     {
         get
         {
             var manager = I18nManager.Instance;
             var languages = manager.GetLanguages();
-            var names = languages is null ? manager.GetResource("Demo.Content.Lang.UpdateState.None")
+            var names = languages is null ? manager.GetResource(DemoResources.Content.Lang.UpdateState.None)
                 : string.Join(", ", languages.Select(language => language.CultureName));
-            return string.Format(CultureInfo.CurrentCulture, manager.GetResource("Demo.Content.Lang.UpdateState.CurrentCultureFormat"), manager.Culture?.Name ?? DemoBootstrapper.DefaultCultureName)
-                + string.Format(CultureInfo.CurrentCulture, manager.GetResource("Demo.Content.Lang.UpdateState.LoadedLanguagesFormat"), names)
-                + string.Format(CultureInfo.CurrentCulture, manager.GetResource("Demo.Content.Lang.UpdateState.ResourceDirectoryFormat"), DemoBootstrapper.I18nFolder);
+            return string.Format(CultureInfo.CurrentCulture, manager.GetResource(DemoResources.Content.Lang.UpdateState.CurrentCultureFormat), manager.Culture?.Name ?? DemoBootstrapper.DefaultCultureName)
+                + string.Format(CultureInfo.CurrentCulture, manager.GetResource(DemoResources.Content.Lang.UpdateState.LoadedLanguagesFormat), names)
+                + string.Format(CultureInfo.CurrentCulture, manager.GetResource(DemoResources.Content.Lang.UpdateState.ResourceDirectoryFormat), DemoBootstrapper.I18nFolder);
         }
     }
 

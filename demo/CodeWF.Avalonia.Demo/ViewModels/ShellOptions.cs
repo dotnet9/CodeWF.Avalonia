@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using Avalonia.Controls;
 using Avalonia.Styling;
 using Avalonia.Media;
@@ -36,31 +37,31 @@ public sealed class AppearanceOption : global::ReactiveUI.ReactiveObject
     public override string ToString() => Title;
 
     public static AppearanceOption DotNet() =>
-        new("Demo.Palette.DotNet", dark => dark ? StudioTheme.DotNetDark : StudioTheme.DotNetLight, "StudioSwatchDotNet");
+        new(DemoResources.Palette.DotNet, dark => dark ? StudioTheme.DotNetDark : StudioTheme.DotNetLight, "StudioSwatchDotNet");
 
     public static AppearanceOption Aurora() =>
-        new("Demo.Palette.Aurora", dark => dark ? StudioTheme.AuroraDark : StudioTheme.AuroraLight, "StudioSwatchAurora");
+        new(DemoResources.Palette.Aurora, dark => dark ? StudioTheme.AuroraDark : StudioTheme.AuroraLight, "StudioSwatchAurora");
 
     public static AppearanceOption Ember() =>
-        new("Demo.Palette.Ember", dark => dark ? StudioTheme.EmberDark : StudioTheme.EmberLight, "StudioSwatchEmber");
+        new(DemoResources.Palette.Ember, dark => dark ? StudioTheme.EmberDark : StudioTheme.EmberLight, "StudioSwatchEmber");
 
     public static AppearanceOption Default() =>
-        new("Demo.Palette.Default", isDark => isDark ? ThemeVariant.Dark : ThemeVariant.Light, "StudioSwatchDefault");
+        new(DemoResources.Palette.Default, isDark => isDark ? ThemeVariant.Dark : ThemeVariant.Light, "StudioSwatchDefault");
 
     public static AppearanceOption Aquatic() =>
-        new("Demo.Palette.Aquatic", _ => SemiTheme.Aquatic, "StudioSwatchAquatic");
+        new(DemoResources.Palette.Aquatic, _ => SemiTheme.Aquatic, "StudioSwatchAquatic");
 
     public static AppearanceOption Desert() =>
-        new("Demo.Palette.Desert", _ => SemiTheme.Desert, "StudioSwatchDesert");
+        new(DemoResources.Palette.Desert, _ => SemiTheme.Desert, "StudioSwatchDesert");
 
     public static AppearanceOption Dusk() =>
-        new("Demo.Palette.Dusk", _ => SemiTheme.Dusk, "StudioSwatchDusk");
+        new(DemoResources.Palette.Dusk, _ => SemiTheme.Dusk, "StudioSwatchDusk");
 
     public static AppearanceOption NightSky() =>
-        new("Demo.Palette.NightSky", _ => SemiTheme.NightSky, "StudioSwatchNightSky");
+        new(DemoResources.Palette.NightSky, _ => SemiTheme.NightSky, "StudioSwatchNightSky");
 
     public static AppearanceOption HighContrast() =>
-        new("Demo.Palette.HighContrast", _ => CodeWFLogTheme.HighContrast, "StudioSwatchHighContrast");
+        new(DemoResources.Palette.HighContrast, _ => CodeWFLogTheme.HighContrast, "StudioSwatchHighContrast");
 }
 
 /// <summary>可选语言。</summary>

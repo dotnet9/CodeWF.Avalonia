@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using CodeWF.Avalonia.Controls.Models;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
@@ -16,7 +17,7 @@ public sealed class StatusComponentsPageViewModel : ReactiveObject
 
     private StatusLabelKind _kind = StatusLabelKind.Info;
     private int _iconWidth = 32;
-    private string _badgeText = L.Instance.GetResource("Demo.Content.StatusComponents.View.ChangeTheStatusAndIconWidthInThe");
+    private string _badgeText = L.Instance.GetResource(DemoResources.Content.StatusComponents.View.ChangeTheStatusAndIconWidthInThe);
     public string BadgeKind => Kind.ToString();
     public bool BadgeDebug => Kind == StatusLabelKind.Debug;
     public bool BadgeInfo => Kind == StatusLabelKind.Info;
@@ -33,10 +34,10 @@ public sealed class StatusComponentsPageViewModel : ReactiveObject
             case IdKind when change.NewValue is string kind:
                 Kind = kind switch
                 {
-                    var localizedValue when localizedValue == L.Instance.GetResource("Demo.Content.StatusComponents.OnPropertyCommitted.Information") => StatusLabelKind.Info,
-                    var localizedValue when localizedValue == L.Instance.GetResource("Demo.Content.StatusComponents.OnPropertyCommitted.Warning") => StatusLabelKind.Warn,
-                    var localizedValue when localizedValue == L.Instance.GetResource("Demo.Content.StatusComponents.OnPropertyCommitted.Error") => StatusLabelKind.Error,
-                    var localizedValue when localizedValue == L.Instance.GetResource("Demo.Content.StatusComponents.OnPropertyCommitted.Critical") => StatusLabelKind.Fatal,
+                    var localizedValue when localizedValue == L.Instance.GetResource(DemoResources.Content.StatusComponents.OnPropertyCommitted.Information) => StatusLabelKind.Info,
+                    var localizedValue when localizedValue == L.Instance.GetResource(DemoResources.Content.StatusComponents.OnPropertyCommitted.Warning) => StatusLabelKind.Warn,
+                    var localizedValue when localizedValue == L.Instance.GetResource(DemoResources.Content.StatusComponents.OnPropertyCommitted.Error) => StatusLabelKind.Error,
+                    var localizedValue when localizedValue == L.Instance.GetResource(DemoResources.Content.StatusComponents.OnPropertyCommitted.Critical) => StatusLabelKind.Fatal,
                     _ => StatusLabelKind.Debug,
                 };
                 this.RaisePropertyChanged(nameof(BadgeKind));
@@ -60,35 +61,35 @@ public sealed class StatusComponentsPageViewModel : ReactiveObject
         var kind = new PropertyItem
         {
             Id = IdKind,
-            Name = L.Instance.GetResource("Demo.Content.StatusComponents.Properties.CardStatus"),
+            Name = L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.CardStatus),
             Kind = PropertyItemKind.Choice,
-            Options = [L.Instance.GetResource("Demo.Content.StatusComponents.Properties.Debug"), L.Instance.GetResource("Demo.Content.StatusComponents.Properties.Information"), L.Instance.GetResource("Demo.Content.StatusComponents.Properties.Warning"), L.Instance.GetResource("Demo.Content.StatusComponents.Properties.Error"), L.Instance.GetResource("Demo.Content.StatusComponents.Properties.Critical")],
-            Value = L.Instance.GetResource("Demo.Content.StatusComponents.Properties.Information"),
-            DefaultValue = L.Instance.GetResource("Demo.Content.StatusComponents.Properties.Information"),
-            Description = L.Instance.GetResource("Demo.Content.StatusComponents.Properties.FiveStatusLabelKindValuesChangeTheCardStateAnd"),
+            Options = [L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.Debug), L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.Information), L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.Warning), L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.Error), L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.Critical)],
+            Value = L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.Information),
+            DefaultValue = L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.Information),
+            Description = L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.FiveStatusLabelKindValuesChangeTheCardStateAnd),
         };
         var iconWidth = new PropertyItem
         {
             Id = IdIconWidth,
-            Name = L.Instance.GetResource("Demo.Content.StatusComponents.Properties.IconWidth"),
+            Name = L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.IconWidth),
             Kind = PropertyItemKind.Number,
             Value = 32m,
             DefaultValue = 32m,
             Minimum = 16,
             Maximum = 64,
             Unit = "px",
-            Description = L.Instance.GetResource("Demo.Content.StatusComponents.Properties.IconWidthOfTheConfigurableCard"),
+            Description = L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.IconWidthOfTheConfigurableCard),
         };
 
         if (ShowBadges && !ShowCards)
         {
             kind.Name = "Classes / LeftText";
-            kind.Description = L.Instance.GetResource("Demo.Api.StatusBadge.Desc");
+            kind.Description = L.Instance.GetResource(DemoResources.Api.StatusBadge.Desc);
             return [kind, new PropertyItem
             {
                 Id = "st.badgeText", Name = "RightText", Kind = PropertyItemKind.Text,
-                Value = BadgeText, DefaultValue = L.Instance.GetResource("Demo.Content.StatusComponents.View.ChangeTheStatusAndIconWidthInThe"),
-                Description = L.Instance.GetResource("Demo.Api.StatusBadge.Desc"),
+                Value = BadgeText, DefaultValue = L.Instance.GetResource(DemoResources.Content.StatusComponents.View.ChangeTheStatusAndIconWidthInThe),
+                Description = L.Instance.GetResource(DemoResources.Api.StatusBadge.Desc),
             }];
         }
         return [kind, iconWidth];

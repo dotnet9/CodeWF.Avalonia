@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using CodeWF.Avalonia.Markdown.Themes;
 using ReactiveUI;
@@ -14,7 +15,7 @@ public class MarkdownViewerPageViewModel : ReactiveObject
     private const string IdVirtualization = "mdv.virtualization";
     private const string IdThreshold = "mdv.threshold";
 
-    public static string SampleMarkdown => L.Instance.GetResource("Demo.Content.MarkdownViewer.Samples.Markdown");
+    public static string SampleMarkdown => L.Instance.GetResource(DemoResources.Content.MarkdownViewer.Samples.Markdown);
 
     private string _source = SampleMarkdown;
     private string _appliedMarkdown = SampleMarkdown;
@@ -37,7 +38,7 @@ public class MarkdownViewerPageViewModel : ReactiveObject
     }
 
     public void UpdateMetrics(string mode, double milliseconds, int blocks) => Metrics =
-        string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.MarkdownViewer.UpdateMetrics.ModeParsingMsRealizedBlocksFormat"), mode, milliseconds, blocks);
+        string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource(DemoResources.Content.MarkdownViewer.UpdateMetrics.ModeParsingMsRealizedBlocksFormat), mode, milliseconds, blocks);
 
     /// <summary>源文本（编辑区）。</summary>
     public string Source
@@ -105,8 +106,8 @@ public class MarkdownViewerPageViewModel : ReactiveObject
 
     public void AppendParagraph()
     {
-        Source += L.Instance.GetResource("Demo.Content.MarkdownViewer.AppendParagraph.NewParagraphIncrementalRenderingReparsesAndLaysOut")
-                  + DateTime.Now.ToString("HH:mm:ss") + L.Instance.GetResource("Demo.Studio.SampleSuffix");
+        Source += L.Instance.GetResource(DemoResources.Content.MarkdownViewer.AppendParagraph.NewParagraphIncrementalRenderingReparsesAndLaysOut)
+                  + DateTime.Now.ToString("HH:mm:ss") + L.Instance.GetResource(DemoResources.Studio.SampleSuffix);
         Apply();
     }
 
@@ -148,42 +149,42 @@ public class MarkdownViewerPageViewModel : ReactiveObject
         var theme = new PropertyItem
         {
             Id = IdTheme,
-            Name = L.Instance.GetResource("Demo.Content.MarkdownViewer.Properties.TypographyTheme"),
+            Name = L.Instance.GetResource(DemoResources.Content.MarkdownViewer.Properties.TypographyTheme),
             Kind = PropertyItemKind.Choice,
             Options = ThemeOptions,
             Value = Theme,
             DefaultValue = MarkdownTypographyThemes.Basic,
-            Description = L.Instance.GetResource("Demo.Content.MarkdownViewer.Properties.18TypographyThemesChangesRenderImmediately"),
+            Description = L.Instance.GetResource(DemoResources.Content.MarkdownViewer.Properties._18TypographyThemesChangesRenderImmediately),
         };
         var size = new PropertyItem
         {
             Id = IdSize,
-            Name = L.Instance.GetResource("Demo.Content.MarkdownViewer.Properties.TypographySize"),
+            Name = L.Instance.GetResource(DemoResources.Content.MarkdownViewer.Properties.TypographySize),
             Kind = PropertyItemKind.Choice,
             Options = SizeOptions,
             Value = Size,
             DefaultValue = MarkdownTypographySizes.Normal,
-            Description = L.Instance.GetResource("Demo.Content.MarkdownViewer.Properties.NormalSmallSmallUsesCompactTypography"),
+            Description = L.Instance.GetResource(DemoResources.Content.MarkdownViewer.Properties.NormalSmallSmallUsesCompactTypography),
         };
         var virtualization = new PropertyItem
         {
             Id = IdVirtualization,
-            Name = L.Instance.GetResource("Demo.Content.MarkdownViewer.Properties.Virtualization"),
+            Name = L.Instance.GetResource(DemoResources.Content.MarkdownViewer.Properties.Virtualization),
             Kind = PropertyItemKind.Boolean,
             Value = EnableVirtualization,
             DefaultValue = true,
-            Description = L.Instance.GetResource("Demo.Content.MarkdownViewer.Properties.RealizeVisibleBlocksAboveTheThresholdToReduce"),
+            Description = L.Instance.GetResource(DemoResources.Content.MarkdownViewer.Properties.RealizeVisibleBlocksAboveTheThresholdToReduce),
         };
         var threshold = new PropertyItem
         {
             Id = IdThreshold,
-            Name = L.Instance.GetResource("Demo.Content.MarkdownViewer.Properties.VirtualizationThreshold"),
+            Name = L.Instance.GetResource(DemoResources.Content.MarkdownViewer.Properties.VirtualizationThreshold),
             Kind = PropertyItemKind.Number,
             Value = (decimal)Threshold,
             DefaultValue = 40m,
             Minimum = 1,
             Maximum = 2000,
-            Description = L.Instance.GetResource("Demo.Content.MarkdownViewer.Properties.EnableVirtualizationAboveThisBlockCount"),
+            Description = L.Instance.GetResource(DemoResources.Content.MarkdownViewer.Properties.EnableVirtualizationAboveThisBlockCount),
         };
 
         return [theme, size, virtualization, threshold];

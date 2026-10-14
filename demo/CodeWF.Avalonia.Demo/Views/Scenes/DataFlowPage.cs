@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using CodeWF.Avalonia.Demo.Views.Pages;
 
@@ -11,20 +12,20 @@ public class DataFlowPage : ScenePageBase
 {
     public DataFlowPage()
     {
-        AddStep("Demo.Scene.Step.Import", new DataGridPage());
-        AddStep("Demo.Scene.Step.Columns", new ColumnDisplayEditorPage());
-        AddStep("Demo.Scene.Step.SortFilter", new DataGridPage());
-        AddStep("Demo.Scene.Step.ExportData", new PropertyGridPage());
+        AddStep(DemoResources.Scene.Step.Import, new DataGridPage());
+        AddStep(DemoResources.Scene.Step.Columns, new ColumnDisplayEditorPage());
+        AddStep(DemoResources.Scene.Step.SortFilter, new DataGridPage());
+        AddStep(DemoResources.Scene.Step.ExportData, new PropertyGridPage());
         AttachSceneShell();
     }
 
-    public override string TitleKey => "Demo.Page.DataFlow.Title";
+    public override string TitleKey => DemoResources.Page.DataFlow.Title;
 
-    public override string DescriptionKey => "Demo.Page.DataFlow.Desc";
+    public override string DescriptionKey => DemoResources.Page.DataFlow.Desc;
 
-    protected override string SummaryKey => "Demo.Scene.Summary.Data";
+    protected override string SummaryKey => DemoResources.Scene.Summary.Data;
 
-    public override string XamlCode => L.Instance.GetResource("Demo.Content.DataFlow.XamlCode.DataGridCodewfDataGridEnhancementUseDefaultsTrueItemsSourceCodewfColumnDisplayEditor");
+    public override string XamlCode => L.Instance.GetResource(DemoResources.Content.DataFlow.XamlCode.DataGridCodewfDataGridEnhancementUseDefaultsTrueItemsSourceCodewfColumnDisplayEditor);
 
-    public override string CSharpCode => L.Instance.GetResource("Demo.Content.DataFlow.CSharpCode.DataGridEnableDefaultsItemsSourceColumnsMoveOldIndexNewIndexDataGrid");
+    public override string CSharpCode => L.Instance.GetResource(DemoResources.Content.DataFlow.CSharpCode.DataGridEnableDefaultsItemsSourceColumnsMoveOldIndexNewIndexDataGrid);
 }

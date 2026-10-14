@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CodeWF.Avalonia.Demo.ViewModels.Pages;
@@ -17,10 +18,10 @@ public partial class MarkdownExportPage : DemoPageBase
         ViewModel.SelectOutput = SelectOutputAsync;
     }
 
-    public override string TitleKey => "Demo.Page.MarkdownExport.Title";
-    public override string DescriptionKey => "Demo.Page.MarkdownExport.Desc";
-    public override string XamlCode => I18nManager.Instance.GetResource("Demo.Content.MarkdownExport.Source.Xaml");
-    public override string CSharpCode => I18nManager.Instance.GetResource("Demo.Content.MarkdownExport.Source.CSharp");
+    public override string TitleKey => DemoResources.Page.MarkdownExport.Title;
+    public override string DescriptionKey => DemoResources.Page.MarkdownExport.Desc;
+    public override string XamlCode => I18nManager.Instance.GetResource(DemoResources.Content.MarkdownExport.Source.Xaml);
+    public override string CSharpCode => I18nManager.Instance.GetResource(DemoResources.Content.MarkdownExport.Source.CSharp);
     protected override IReadOnlyList<PropertyItem> BuildProperties() => ViewModel.BuildProperties();
     public override void OnPropertyCommitted(PropertyValueChange change) => ViewModel.Commit(change);
 

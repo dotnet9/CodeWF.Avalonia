@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using CodeWF.Avalonia.Demo.Views.Pages;
 
@@ -11,21 +12,21 @@ public class MarkdownFlowPage : ScenePageBase
 {
     public MarkdownFlowPage()
     {
-        AddStep("Demo.Scene.Step.Open", new MarkdownViewerPage());
-        AddStep("Demo.Scene.Step.Edit", new MarkdownEditorPage());
-        AddStep("Demo.Scene.Step.Preview", new MarkdownLiveEditorPage());
-        AddStep("Demo.Scene.Step.Export", new MarkdownExportPage());
-        AddStep("Demo.Scene.Step.WriteBack", new MarkdownLitePage());
+        AddStep(DemoResources.Scene.Step.Open, new MarkdownViewerPage());
+        AddStep(DemoResources.Scene.Step.Edit, new MarkdownEditorPage());
+        AddStep(DemoResources.Scene.Step.Preview, new MarkdownLiveEditorPage());
+        AddStep(DemoResources.Scene.Step.Export, new MarkdownExportPage());
+        AddStep(DemoResources.Scene.Step.WriteBack, new MarkdownLitePage());
         AttachSceneShell();
     }
 
-    public override string TitleKey => "Demo.Page.MarkdownFlow.Title";
+    public override string TitleKey => DemoResources.Page.MarkdownFlow.Title;
 
-    public override string DescriptionKey => "Demo.Page.MarkdownFlow.Desc";
+    public override string DescriptionKey => DemoResources.Page.MarkdownFlow.Desc;
 
-    protected override string SummaryKey => "Demo.Scene.Summary.Markdown";
+    protected override string SummaryKey => DemoResources.Scene.Summary.Markdown;
 
-    public override string XamlCode => L.Instance.GetResource("Demo.Content.MarkdownFlow.XamlCode.CodewfMarkdownViewerMarkdownTypographyThemeCodewfMarkdownEditorViewMarkdownShowLineNumbers");
+    public override string XamlCode => L.Instance.GetResource(DemoResources.Content.MarkdownFlow.XamlCode.CodewfMarkdownViewerMarkdownTypographyThemeCodewfMarkdownEditorViewMarkdownShowLineNumbers);
 
-    public override string CSharpCode => L.Instance.GetResource("Demo.Content.MarkdownFlow.CSharpCode.AddStepDemoSceneStepOpenNewMarkdownViewerPageAddStep");
+    public override string CSharpCode => L.Instance.GetResource(DemoResources.Content.MarkdownFlow.CSharpCode.AddStepDemoSceneStepOpenNewMarkdownViewerPageAddStep);
 }

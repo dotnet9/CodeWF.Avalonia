@@ -1,0 +1,25 @@
+/* 文档内属性表格：统一分隔线、无边框编辑器、可调整列宽与行高。 */
+.p-props .pbd{display:flex;flex-direction:column;overflow:hidden;padding:0}
+.property-toolbar{flex:none;padding:6px;border-bottom:1px solid var(--bd);background:var(--bg)}
+.property-modes{display:flex;gap:3px}
+.property-modes button{display:flex;align-items:center;justify-content:center;width:32px;height:30px;padding:0;background:transparent;border:1px solid transparent;border-radius:4px;color:var(--tx2);cursor:pointer}
+.property-modes button:hover{background:var(--hov)}
+.property-modes button[aria-pressed="true"]{background:var(--pri-lt);color:var(--pri);border-color:var(--bd)}
+.property-modes svg{width:18px;height:18px;fill:currentColor}
+.property-search{display:block;box-sizing:border-box;width:100%;height:28px;margin-top:5px;padding:0 8px;font-size:11px;color:var(--tx);background:var(--bg2);border:1px solid var(--bd);border-radius:4px}
+#pGrid{flex:1;overflow:auto;padding:0;min-height:0;--property-name-width:118px}
+#pGrid .cat{box-sizing:border-box;margin:0;padding:7px 8px;background:var(--bg2);border-bottom:1px solid var(--bd)}
+#pGrid .rw{box-sizing:border-box;display:grid;grid-template-columns:var(--property-name-width) minmax(0,1fr);gap:0;padding:0;height:31px;min-height:31px;border-radius:0;border-bottom:1px solid var(--bd);align-items:stretch}
+#pGrid .rw[hidden],#pGrid .cat[hidden]{display:none}
+#pGrid .rw>label,#pGrid .rw>.nm{display:flex;align-items:center;padding:0 8px;border-right:1px solid var(--bd);min-width:0}
+#pGrid .rw>.ctl,#pGrid .rw>.vl{display:flex;align-items:center;justify-content:flex-start;min-width:0;overflow:hidden;padding:0}
+#pGrid .rw input[type=text],#pGrid .rw input[type=number],#pGrid .rw select,#pGrid .rw textarea{box-sizing:border-box;display:block;width:100%;height:100%;min-width:0;max-width:none;margin:0;padding:0 6px;border:0;border-radius:0;background:transparent;color:var(--tx);text-align:left;text-align-last:left;outline:none}
+#pGrid .rw textarea{padding:6px;resize:none;min-height:0}
+#pGrid .rw:has(textarea){height:74px}
+#pGrid .rw :is(input,select,textarea):focus{background:var(--bg2);box-shadow:inset 2px 0 var(--pri)}
+#pGrid .rw .switch,#pGrid .rw input[type=checkbox],#pGrid .rw input[type=radio]{margin-left:6px}
+.property-column-handle{position:absolute;z-index:4;top:0;bottom:0;left:calc(var(--property-name-width) - 3px);width:7px;cursor:col-resize;touch-action:none}
+.property-row-handle{position:absolute;z-index:5;left:0;right:0;bottom:-3px;height:7px;cursor:row-resize;touch-action:none}
+.property-column-handle:hover,.property-column-handle:focus-visible{background:linear-gradient(90deg,transparent 3px,var(--pri) 3px,var(--pri) 4px,transparent 4px);outline:none}
+.property-row-handle:hover,.property-row-handle:focus-visible{background:linear-gradient(transparent 3px,var(--pri) 3px,var(--pri) 4px,transparent 4px);outline:none}
+select,select option{ text-align:left;text-align-last:left }

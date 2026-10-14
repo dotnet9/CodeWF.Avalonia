@@ -1,3 +1,5 @@
+﻿using Avalonia;
+using Avalonia.Controls;
 using CodeWF.Avalonia.Demo.Views;
 using CodeWF.Avalonia.Lang;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
@@ -11,14 +13,16 @@ namespace CodeWF.Avalonia.Demo.ViewModels;
 /// 打开的演示文档：演示始终可见，源码按需展开（XAML / C#），
 /// 右侧 PropertyGrid 绑定 <see cref="Page"/> 的属性定义。
 /// </summary>
-public class DemoDocumentViewModel : ReactiveObject
+public class DemoDocumentViewModel : ReactiveObject, IDisposable
 {
     private DemoSegment _segment = DemoSegment.CSharp;
 
-    public DemoDocumentViewModel(DemoItemViewModel item, DemoPageBase page)
+    public DemoDocumentViewModel(DemoItemViewModel item, DemoPageBase page, MainViewModel shell)
     {
+        _shell = shell;
         Item = item;
         Page = page;
+        Page.PropertiesChanged += OnPagePropertiesChanged;
         _segment = string.IsNullOrWhiteSpace(page.CSharpCode) ? DemoSegment.Xaml : DemoSegment.CSharp;
         ValueCommittedCommand = ReactiveCommand.Create<PropertyValueChange>(change => Page.OnPropertyCommitted(change));
         BrowseRequestedCommand = ReactiveCommand.Create<PropertyItem>(_ => { });
@@ -112,6 +116,49 @@ public class DemoDocumentViewModel : ReactiveObject
         }
     }
 
+    private readonly MainViewModel _shell;
+    private bool _propertiesVisible = true;
+    private GridLength _propertyWidth = new(260);
+
+    /// <summary>参数与演示内容共用一个文档，浮动窗口无需查找主窗口的活动文档。</summary>
+    public IReadOnlyList<PropertyItem> PropertyItems => Page is Views.Pages.WelcomePage ? _shell.GlobalProperties : Page.Properties;
+    public ICommand PropertyValueCommittedCommand => Page is Views.Pages.WelcomePage ? _shell.GlobalValueCommittedCommand : ValueCommittedCommand;
+    public ICommand PropertyBrowseRequestedCommand => Page is Views.Pages.WelcomePage ? _shell.GlobalBrowseRequestedCommand : BrowseRequestedCommand;
+    public ColumnDefinitions ContentColumns { get; } = new()
+    {
+        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), MinWidth = 160 },
+        new ColumnDefinition { Width = new GridLength(5) },
+        new ColumnDefinition { Width = new GridLength(260), MinWidth = 180 }
+    };
+
+    public bool PropertiesVisible
+    {
+        get => _propertiesVisible;
+        set
+        {
+            if (_propertiesVisible == value) return;
+            if (!value) _propertyWidth = ContentColumns[2].Width;
+            this.RaiseAndSetIfChanged(ref _propertiesVisible, value);
+            ContentColumns[2].MinWidth = value ? 180 : 0;
+            ContentColumns[2].Width = value ? _propertyWidth : new GridLength(0);
+            ContentColumns[1].Width = new GridLength(value ? 5 : 0);
+        }
+    }
+
+    public void RefreshProperties()
+    {
+        Page.RefreshProperties();
+        this.RaisePropertyChanged(nameof(PropertyItems));
+    }
+
+    private void OnPagePropertiesChanged(object? sender, EventArgs args) => this.RaisePropertyChanged(nameof(PropertyItems));
+
+    public void Dispose()
+    {
+        I18nManager.Instance.CultureChanged -= OnCultureChanged;
+        Page.PropertiesChanged -= OnPagePropertiesChanged;
+    }
+
     public ICommand ValueCommittedCommand { get; }
 
     public ICommand BrowseRequestedCommand { get; }
@@ -119,6 +166,7 @@ public class DemoDocumentViewModel : ReactiveObject
     private void OnCultureChanged(object? sender, EventArgs e)
     {
         RefreshTitle();
+        RefreshProperties();
         this.RaisePropertyChanged(nameof(XamlMarkdown));
         this.RaisePropertyChanged(nameof(CSharpMarkdown));
         this.RaisePropertyChanged(nameof(DisplayTitle));

@@ -33,8 +33,9 @@
 
   <ItemGroup>
     <!-- Lang Json 后端按输出目录 I18n\ 递归扫描 *.json，Demo 语言资源随包拷贝 -->
-    <Content Include="I18n\**\*.json" CopyToOutputDirectory="PreserveNewest" />
-    <AdditionalFiles Include="I18n\CodeWF.Avalonia.Demo.zh-CN.json" />
+    <Content Include="I18n\**\*.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Compile Update="I18n\Language.g.cs" AutoGen="true" DesignTime="true" DependentUpon="Language.tt" />
+    <None Update="I18n\Language.tt" Generator="TextTemplatingFileGenerator" LastGenOutput="Language.g.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,9 +64,6 @@
     <ProjectReference Include="..\..\src\Markdown\CodeWF.Avalonia.Markdown.Lite\CodeWF.Avalonia.Markdown.Lite.csproj" />
     <ProjectReference Include="..\..\src\Log\CodeWF.Avalonia.Log\CodeWF.Avalonia.Log.csproj" />
     <ProjectReference Include="..\..\src\Lang\CodeWF.Avalonia.Lang\CodeWF.Avalonia.Lang.csproj" />
-    <ProjectReference Include="..\..\src\Lang\CodeWF.Avalonia.Lang.Generator\CodeWF.Avalonia.Lang.Generator.csproj"
-                      OutputItemType="Analyzer" ReferenceOutputAssembly="false"
-                      GlobalPropertiesToRemove="RuntimeIdentifier;SelfContained;PublishAot;PublishTrimmed;PublishSingleFile" />
   </ItemGroup>
 
   <ItemGroup>

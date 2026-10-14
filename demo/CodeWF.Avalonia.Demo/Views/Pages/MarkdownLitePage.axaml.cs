@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using CodeWF.Avalonia.Markdown.Controls;
 using CodeWF.Avalonia.Markdown.Themes;
@@ -10,11 +11,11 @@ public partial class MarkdownLitePage : DemoPageBase
     private const string IdTheme = "lite.theme";
     private const string IdSize = "lite.size";
 
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.MarkdownLite.Source.Xaml");
+    public static string XamlSnippet => L.Instance.GetResource(DemoResources.Content.MarkdownLite.Source.Xaml);
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.MarkdownLite.Source.CSharp");
+    public static string CSharpSnippet => L.Instance.GetResource(DemoResources.Content.MarkdownLite.Source.CSharp);
 
-    public static string SampleMarkdown { get; } = L.Instance.GetResource("Demo.Content.MarkdownLite.Samples.Markdown");
+    public static string SampleMarkdown { get; } = L.Instance.GetResource(DemoResources.Content.MarkdownLite.Samples.Markdown);
 
     private string _theme = MarkdownTypographyThemes.Basic;
     private string _size = MarkdownTypographySizes.Normal;
@@ -25,9 +26,9 @@ public partial class MarkdownLitePage : DemoPageBase
     }
 
 
-    public override string TitleKey => "Demo.Page.MarkdownLite.Title";
+    public override string TitleKey => DemoResources.Page.MarkdownLite.Title;
 
-    public override string DescriptionKey => "Demo.Page.MarkdownLite.Desc";
+    public override string DescriptionKey => DemoResources.Page.MarkdownLite.Desc;
 
     public override string XamlCode => XamlSnippet;
 
@@ -54,7 +55,7 @@ public partial class MarkdownLitePage : DemoPageBase
         var theme = new PropertyItem
         {
             Id = IdTheme,
-            Name = L.Instance.GetResource("Demo.Content.MarkdownLite.Properties.TypographyTheme"),
+            Name = L.Instance.GetResource(DemoResources.Content.MarkdownLite.Properties.TypographyTheme),
             Kind = PropertyItemKind.Choice,
             Options =
             [
@@ -65,12 +66,12 @@ public partial class MarkdownLitePage : DemoPageBase
             ],
             Value = _theme,
             DefaultValue = MarkdownTypographyThemes.Basic,
-            Description = L.Instance.GetResource("Demo.Content.MarkdownLite.Properties.LiteIncludesTheSame18TypographyThemesFour"),
+            Description = L.Instance.GetResource(DemoResources.Content.MarkdownLite.Properties.LiteIncludesTheSame18TypographyThemesFour),
         };
         var size = new PropertyItem
         {
             Id = IdSize,
-            Name = L.Instance.GetResource("Demo.Content.MarkdownLite.Properties.TypographySize"),
+            Name = L.Instance.GetResource(DemoResources.Content.MarkdownLite.Properties.TypographySize),
             Kind = PropertyItemKind.Choice,
             Options = [MarkdownTypographySizes.Normal, MarkdownTypographySizes.Small],
             Value = _size,

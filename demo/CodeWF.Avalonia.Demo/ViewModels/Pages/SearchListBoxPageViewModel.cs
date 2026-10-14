@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using ReactiveUI;
 using System.Collections.ObjectModel;
@@ -20,11 +21,11 @@ public class SearchListBoxPageViewModel : ReactiveObject
 
     private static ObservableCollection<SearchItem> CreateItems(int count)
     {
-        var categories = new[] { L.Instance.GetResource("Demo.Content.SearchListBox.CreateItems.Audio"), L.Instance.GetResource("Demo.Content.SearchListBox.CreateItems.Videos"), L.Instance.GetResource("Demo.Content.SearchListBox.CreateItems.Documents"), L.Instance.GetResource("Demo.Content.SearchListBox.CreateItems.Images"), L.Instance.GetResource("Demo.Content.SearchListBox.CreateItems.Archives") };
+        var categories = new[] { L.Instance.GetResource(DemoResources.Content.SearchListBox.CreateItems.Audio), L.Instance.GetResource(DemoResources.Content.SearchListBox.CreateItems.Videos), L.Instance.GetResource(DemoResources.Content.SearchListBox.CreateItems.Documents), L.Instance.GetResource(DemoResources.Content.SearchListBox.CreateItems.Images), L.Instance.GetResource(DemoResources.Content.SearchListBox.CreateItems.Archives) };
         var items = new ObservableCollection<SearchItem>();
         for (var i = 1; i <= count; i++)
         {
-            items.Add(new SearchItem(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.SearchListBox.CreateItems.AssetFormat"), i), categories[i % categories.Length]));
+            items.Add(new SearchItem(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource(DemoResources.Content.SearchListBox.CreateItems.AssetFormat), i), categories[i % categories.Length]));
         }
 
         return items;

@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Layout;
@@ -17,9 +18,9 @@ public sealed class ContentExpansionPage : DemoPageBase
     {
         DataContext = ViewModel;
         var toggle = new Button { Classes = { "demo-action" }, Command = ViewModel.ToggleCommand };
-        toggle.Bind(ContentControl.ContentProperty, new I18nExtension("Demo.Catalog.ExpansionToggle").CreateBinding());
+        toggle.Bind(ContentControl.ContentProperty, new I18nExtension(DemoResources.Catalog.ExpansionToggle).CreateBinding());
         var animate = new CheckBox();
-        animate.Bind(ContentControl.ContentProperty, new I18nExtension("Demo.Catalog.ExpansionAnimate").CreateBinding());
+        animate.Bind(ContentControl.ContentProperty, new I18nExtension(DemoResources.Catalog.ExpansionAnimate).CreateBinding());
         animate.Bind(CheckBox.IsCheckedProperty, new Binding(nameof(ViewModel.Animate)) { Mode = BindingMode.TwoWay });
         var duration = new Slider { Minimum = 0, Maximum = 1000, Width = 200 };
         duration.Bind(Slider.ValueProperty, new Binding(nameof(ViewModel.Milliseconds)) { Mode = BindingMode.TwoWay });
@@ -48,8 +49,8 @@ public sealed class ContentExpansionPage : DemoPageBase
         return animator;
     }
 
-    public override string TitleKey => "Demo.Item.ContentExpansionAnimator";
-    public override string DescriptionKey => "Demo.Api.ContentExpansionAnimator.Desc";
+    public override string TitleKey => DemoResources.Item.ContentExpansionAnimator;
+    public override string DescriptionKey => DemoResources.Api.ContentExpansionAnimator.Desc;
     public override string XamlCode => "<codewf:ContentExpansionAnimator IsExpanded=\"{Binding IsExpanded}\" Orientation=\"Horizontal\"\n  Duration=\"{Binding Duration}\" Animate=\"{Binding Animate}\" ExpandedSize=\"{Binding ExpandedSize}\">\n  <ContentControl Content=\"{Binding PanelContent}\" />\n</codewf:ContentExpansionAnimator>";
     public override string CSharpCode => "animator.IsExpanded = !animator.IsExpanded;\n// Reversing during an active transition continues from the current progress.";
 }

@@ -27,6 +27,8 @@ A suite of UI control and capability libraries for Avalonia 12, published with t
 
 从 `12.1.4.11` 起，国际化的 JSON/XML/RESX 解析、文化回退与全局状态由 NuGet 包 `CodeWF.Toolkit.Lang` 提供，无需获取另一个仓库源码。`CodeWF.Avalonia.Lang` 保留 XAML 绑定和旧接口兼容层，两种命名空间的管理器共用同一状态；已有应用可继续使用原来的插件、自定义 `ILangPlugin` 和语言下拉框类型。控制台、服务及基础库直接安装 `CodeWF.Toolkit.Lang`，无需引入 Avalonia。
 
+资源分发按角色区分：NuGet 库把 JSON 嵌入程序集，自行读取默认文案；Demo 和桌面应用将自己的 JSON 输出到 `I18n/`，沿用已有语言初始化。应用可选添加同名资源键定制库文案，覆盖与缺键回退由 Lang 引擎处理，无需逐库注册、合并 JSON 或提供 resolver。C# 强类型资源键使用 T4 或 `CodeWF.Avalonia.Lang.Generator`，不手写维护映射；Demo 的 T4 映射由 `pwsh scripts/sync_localization_keys.ps1` 更新，CI 使用 `-Check` 校验。
+
 | 包 | 说明 | 依赖 |
 |---|---|---|
 | [CodeWF.Avalonia.Controls](https://www.nuget.org/packages/CodeWF.Avalonia.Controls) | 基础自定义控件 + Semi 主题：Guide 引导、Transfer/SearchListBox、StatusBadge/StatusCard、CodeWFWindow/标题栏、WindowedStackPanel、梯形页签、If/Switch 标记扩展与转换器 | Avalonia、**Semi.Avalonia**、CodeWF.Avalonia.Lang |
@@ -140,7 +142,7 @@ public class MyMarkdownThemes : MarkdownThemes
 |---|---|
 | Dock | `DockSemiTheme` 以 Dock 官方的 `Dock.Avalonia.Themes.Simple` 为基座，并自带 `{x:Type Button}` / `{x:Type Window}` 基类主题（Semi.Avalonia 12.x 不再提供这两个基类主题），因此**不需要**再引入 `FluentTheme`；但 Semi 基础主题仍需引入。保留开源主题的原因与 `Semi.Avalonia.Dock` 的依赖、许可区别见 [Dock 文档](docs/CodeWF.Avalonia.Dock%20说明文档.md)。 |
 | AvaloniaEdit（Markdown 完整包） | 编辑器需要宿主提供字体令牌（`FontSizeNormal` 等，通常来自所引用的主题包）。缺少时编辑器字号会回退到默认值，不影响功能。 |
-| Markdown 语言资源 | 语言 JSON 随包分发到输出目录 `I18n/CodeWF.Markdown/`，用 `CodeWF.Avalonia.Lang` 的 Json 加载器指向该目录即可完成本地化。 |
+| Markdown 语言资源 | 中英日繁体 JSON 嵌入 Markdown.Lite 程序集，默认自动读取并跟随 Lang 文化，缺失文化回退英文；宿主无需复制库 JSON。应用自己的同名键可覆盖默认文案。 |
 | 日志控件 | 需先初始化 `CodeWF.Toolkit.Logging` 的 `Logger`，控件订阅其 UI 日志事件流；回调在后台线程，界面订阅方自行调度到 UI 线程。 |
 
 ## 包 → 源码 → 文档索引 / Source & docs index
@@ -159,11 +161,11 @@ public class MyMarkdownThemes : MarkdownThemes
 
 Demo 保留 Ribbon + Dock，按输入与选择、反馈与引导、数据展示、布局与导航、Markdown、开发工具分类；每个主菜单对应一个具体控件或 API。首页先展示目录，组合工作流集中到“综合示例”。新增展开动画独立页，块编辑、平面表格增强与状态卡片提供具体用例。共享主题接口、MVVM 约定与截图检查见 [原生演示台文档](docs/NativeDemo.md)。
 
-命令区进一步按状态、引导、表格、窗口、布局动效、Markdown 阅读 / 编辑 / 导出等用途分组。参数与演示优先展示，源码按需打开；长 API 名保持完整，窄窗口可横向滚动。仓库通过 `global.json` 选择稳定版 .NET 10 SDK。
+文档内使用 Grid + GridSplitter 放置演示与独立属性面板，浮动时整体移动。命令区进一步按状态、引导、表格、窗口、布局动效、Markdown 阅读 / 编辑 / 导出等用途分组。参数与演示优先展示，源码按需打开；长 API 名保持完整，窄窗口可横向滚动。仓库通过 `global.json` 选择稳定版 .NET 10 SDK。
 
 ![Ribbon 功能子组与原生 Dock 工作区](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-ribbon.png)
 
-The native overview offers live Markdown, natural sorting and Dock experiments. See the linked guide for optional Studio themes, localization and validation.
+Each Dock document contains its demonstration and property panel; both move together when detached. See the linked guide for optional Studio themes, localization and validation.
 
 Windows x64 NativeAOT Demo：标题栏支持主题色圈与下拉同步切换，默认 .NET 紫，也提供 AI 极光与暖陶的深浅主题。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
 
@@ -182,7 +184,7 @@ Windows x64 NativeAOT Demo：标题栏支持主题色圈与下拉同步切换，
 ![主题与实验截图巡览](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-interactions.gif)
 
 ```bash
-# 桌面演示台：Ribbon 页签 + Dock 工作区（左导航 / 中文档 / 右属性面板 / 下日志），含 .NET 紫、AI 极光、AI 暖陶与原有六套 Semi 配色，支持深浅与双语切换
+# 桌面演示台：Ribbon 页签 + Dock 工作区（左导航 / 文档内效果与属性 / 下日志），含 .NET 紫、AI 极光、AI 暖陶与原有六套 Semi 配色，支持深浅与双语切换
 dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0
 
 # 冒烟模式：逐页构建后逐色板渲染一遍再退出，退出码 0 表示全部页面构建 + 渲染通过（CI 使用）

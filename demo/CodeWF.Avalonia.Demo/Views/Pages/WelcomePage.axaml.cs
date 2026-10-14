@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using Avalonia.Controls;
 using Avalonia.Input.Platform;
 using CodeWF.Avalonia.Demo.ViewModels;
@@ -21,7 +22,7 @@ public partial class WelcomePage : DemoPageBase
     }
 
     public override string TitleKey => DemoPages.Welcome;
-    public override string DescriptionKey => "Demo.Page.Welcome.Desc";
+    public override string DescriptionKey => DemoResources.Page.Welcome.Desc;
     public override string XamlCode => "<codewf:StudioTheme />";
     public override string CSharpCode => "Application.Current.RequestedThemeVariant = StudioTheme.DotNetDark;";
 

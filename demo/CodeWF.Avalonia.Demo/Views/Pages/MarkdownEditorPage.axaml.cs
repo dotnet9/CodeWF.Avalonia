@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -13,9 +14,9 @@ public partial class MarkdownEditorPage : DemoPageBase
     private const string IdLineNumbers = "mde.linenums";
     private const string IdAutoPair = "mde.autopair";
 
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.MarkdownEditor.Source.Xaml");
+    public static string XamlSnippet => L.Instance.GetResource(DemoResources.Content.MarkdownEditor.Source.Xaml);
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.MarkdownEditor.Source.CSharp");
+    public static string CSharpSnippet => L.Instance.GetResource(DemoResources.Content.MarkdownEditor.Source.CSharp);
 
     private readonly MarkdownEditorView _editor;
 
@@ -46,9 +47,9 @@ public partial class MarkdownEditorPage : DemoPageBase
 
 
 
-    public override string TitleKey => "Demo.Page.MarkdownEditor.Title";
+    public override string TitleKey => DemoResources.Page.MarkdownEditor.Title;
 
-    public override string DescriptionKey => "Demo.Page.MarkdownEditor.Desc";
+    public override string DescriptionKey => DemoResources.Page.MarkdownEditor.Desc;
 
     public override string XamlCode => XamlSnippet;
 
@@ -79,32 +80,32 @@ public partial class MarkdownEditorPage : DemoPageBase
         var fontSize = new PropertyItem
         {
             Id = IdFontSize,
-            Name = L.Instance.GetResource("Demo.Content.MarkdownEditor.Properties.EditorFontSize"),
+            Name = L.Instance.GetResource(DemoResources.Content.MarkdownEditor.Properties.EditorFontSize),
             Kind = PropertyItemKind.Number,
             Value = 15m,
             DefaultValue = 15m,
             Minimum = 10,
             Maximum = 28,
             Unit = "px",
-            Description = L.Instance.GetResource("Demo.Content.MarkdownEditor.Properties.EditorTextFontSize"),
+            Description = L.Instance.GetResource(DemoResources.Content.MarkdownEditor.Properties.EditorTextFontSize),
         };
         var lineNumbers = new PropertyItem
         {
             Id = IdLineNumbers,
-            Name = L.Instance.GetResource("Demo.Content.MarkdownEditor.Properties.ShowLineNumbers"),
+            Name = L.Instance.GetResource(DemoResources.Content.MarkdownEditor.Properties.ShowLineNumbers),
             Kind = PropertyItemKind.Boolean,
             Value = true,
             DefaultValue = true,
-            Description = L.Instance.GetResource("Demo.Content.MarkdownEditor.Properties.ShowLineNumbersToTheLeftOfThe"),
+            Description = L.Instance.GetResource(DemoResources.Content.MarkdownEditor.Properties.ShowLineNumbersToTheLeftOfThe),
         };
         var autoPair = new PropertyItem
         {
             Id = IdAutoPair,
-            Name = L.Instance.GetResource("Demo.Content.MarkdownEditor.Properties.AutoPairing"),
+            Name = L.Instance.GetResource(DemoResources.Content.MarkdownEditor.Properties.AutoPairing),
             Kind = PropertyItemKind.Boolean,
             Value = true,
             DefaultValue = true,
-            Description = L.Instance.GetResource("Demo.Content.MarkdownEditor.Properties.AutomaticallyCompletePairedMarkersSuchAsAndBackticks"),
+            Description = L.Instance.GetResource(DemoResources.Content.MarkdownEditor.Properties.AutomaticallyCompletePairedMarkersSuchAsAndBackticks),
         };
 
         return [fontSize, lineNumbers, autoPair];
@@ -123,7 +124,7 @@ public partial class MarkdownEditorPage : DemoPageBase
         _ = _editor.ExecuteAsync(MarkdownEditorAction.Heading2);
 
     private void OnTable(object? sender, RoutedEventArgs e) =>
-        _editor.InsertTable(L.Instance.GetResource("Demo.Content.MarkdownEditor.OnTable.Column1Column2AB"));
+        _editor.InsertTable(L.Instance.GetResource(DemoResources.Content.MarkdownEditor.OnTable.Column1Column2AB));
 
     private void OnTaskList(object? sender, RoutedEventArgs e) =>
         _ = _editor.ExecuteAsync(MarkdownEditorAction.TaskList);
@@ -137,8 +138,8 @@ public partial class MarkdownEditorPage : DemoPageBase
     private void UpdateStatus()
     {
         var caret = _editor.CaretPosition;
-        StatusText.Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.MarkdownEditor.UpdateStatus.LineColumnLinesCharactersFormat"), caret.Line, caret.Column, caret.LineCount, (_editor.Text?.Length ?? 0));
+        StatusText.Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource(DemoResources.Content.MarkdownEditor.UpdateStatus.LineColumnLinesCharactersFormat), caret.Line, caret.Column, caret.LineCount, (_editor.Text?.Length ?? 0));
     }
 
-    private static string SampleMarkdown => L.Instance.GetResource("Demo.Content.MarkdownEditor.Samples.Markdown");
+    private static string SampleMarkdown => L.Instance.GetResource(DemoResources.Content.MarkdownEditor.Samples.Markdown);
 }

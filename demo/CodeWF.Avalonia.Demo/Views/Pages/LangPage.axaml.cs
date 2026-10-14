@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using System.Globalization;
 using Avalonia.Controls;
@@ -13,9 +14,9 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class LangPage : DemoPageBase
 {
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.Lang.Source.Xaml");
+    public static string XamlSnippet => L.Instance.GetResource(DemoResources.Content.Lang.Source.Xaml);
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.Lang.Source.CSharp");
+    public static string CSharpSnippet => L.Instance.GetResource(DemoResources.Content.Lang.Source.CSharp);
 
     public CodeWF.Avalonia.Demo.ViewModels.Pages.LangPageViewModel ViewModel { get; } = new();
 
@@ -28,9 +29,9 @@ public partial class LangPage : DemoPageBase
         DetachedFromVisualTree += (_, _) => ViewModel.Deactivate();
     }
 
-    public override string TitleKey => "Demo.Page.Lang.Title";
+    public override string TitleKey => DemoResources.Page.Lang.Title;
 
-    public override string DescriptionKey => "Demo.Page.Lang.Desc";
+    public override string DescriptionKey => DemoResources.Page.Lang.Desc;
 
     public override string XamlCode => XamlSnippet;
 

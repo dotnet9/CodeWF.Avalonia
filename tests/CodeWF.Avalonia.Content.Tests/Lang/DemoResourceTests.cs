@@ -137,6 +137,7 @@ public sealed class DemoResourceTests
                 Assert.Equal(item.GetProperty("titleEn").GetString(), english[key]);
                 Assert.Contains("\"" + key + "\"", factory);
                 Assert.False(string.IsNullOrWhiteSpace(item.GetProperty("icon").GetString()), key);
+                Assert.StartsWith("SemiIcon", item.GetProperty("iconKey").GetString());
                 Assert.False(string.IsNullOrWhiteSpace(item.GetProperty("prototypeIcon").GetString()), key);
                 if (group.GetProperty("id").GetString() is "home" or "examples") continue;
                 var api = item.GetProperty("api").GetString()!;

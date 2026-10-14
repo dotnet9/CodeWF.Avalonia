@@ -88,6 +88,7 @@ body {
 .pgp .rw .vl { min-width:0; }
 .pgp .rw .vl select { max-width:116px; min-width:100px; }
 .pgp .ctl select { max-width:100%; }
+select, select option, .pgp .ctl select { text-align:left; text-align-last:left; }
 .pgp label { font-size:11px; }
 .pgp .switch { transition:background .22s; }
 .pgp .switch::after { transition:left .22s cubic-bezier(.2,.8,.2,1); }

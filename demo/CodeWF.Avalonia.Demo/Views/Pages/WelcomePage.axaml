@@ -1,36 +1,10 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+﻿<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:codewf="https://codewf.com" xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels" xmlns:pages="using:CodeWF.Avalonia.Demo.Views.Pages"
  x:Class="CodeWF.Avalonia.Demo.Views.Pages.WelcomePage" x:DataType="vm:WelcomeViewModel" x:CompileBindings="True" Classes="studio-page">
  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-  <StackPanel Margin="28,24" Spacing="18" MaxWidth="1180">
-   <TextBlock Text="CODEWF / INTERFACE STUDIO" Classes="studio-kicker" />
-   <Border Classes="studio-hero">
-    <Grid ColumnDefinitions="*,126">
-     <StackPanel Spacing="3">
-      <TextBlock Text="{codewf:I18n Demo.Studio.HeroLead}" Classes="studio-title" />
-      <TextBlock Text="{codewf:I18n Demo.Studio.HeroAccent}" Classes="studio-title" Foreground="{DynamicResource StudioTextGradient}" />
-      <TextBlock Text="{codewf:I18n Demo.Studio.Intro}" Classes="studio-muted" MaxWidth="490" HorizontalAlignment="Left" Margin="0,10,14,0" />
-     </StackPanel>
-     <Panel Grid.Column="1" IsHitTestVisible="False">
-      <Border Classes="studio-orbit" Width="124" Height="124" CornerRadius="36" RenderTransform="rotate(25deg)" />
-      <Border Classes="studio-orbit" Width="100" Height="100" CornerRadius="30" RenderTransform="rotate(-15deg)" BorderBrush="{DynamicResource StudioSecondary}" />
-      <Border Width="76" Height="76" CornerRadius="21" Background="{DynamicResource StudioRaised}">
-       <TextBlock Text=".NET" FontSize="24" FontWeight="SemiBold" FontFamily="Consolas" Foreground="{DynamicResource StudioAccent}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-      </Border>
-     </Panel>
-    </Grid>
-   </Border>
-   <Border BorderBrush="{DynamicResource StudioBorder}" BorderThickness="0,1,0,0" Padding="0,12,0,2">
-    <WrapPanel Orientation="Horizontal">
-     <TextBlock Text="{codewf:I18n Demo.Studio.PackageCount}" Classes="studio-muted" Margin="0,0,18,0" />
-     <TextBlock Text="{codewf:I18n Demo.Studio.PageCount}" Classes="studio-muted" Margin="0,0,18,0" />
-     <TextBlock Text=".NET 10 / AVALONIA 12" Classes="studio-muted" Margin="0,0,18,0" />
-     <TextBlock Text="MIT LICENSE" Classes="studio-muted" />
-    </WrapPanel>
-   </Border>
+  <StackPanel Margin="20,16" Spacing="14" MaxWidth="1180">
    <StackPanel Spacing="8">
     <TextBlock Text="{codewf:I18n Demo.Catalog.Title}" FontSize="18" FontWeight="SemiBold" />
-    <TextBlock Text="{codewf:I18n Demo.Catalog.Intro}" Classes="studio-muted" />
     <ItemsControl ItemsSource="{Binding CatalogGroups}">
      <ItemsControl.ItemTemplate>
       <DataTemplate x:DataType="vm:DemoGroupViewModel">
@@ -100,57 +74,7 @@
      </TabControl>
     </StackPanel>
    </Border>
-   <TextBlock Text="{codewf:I18n Demo.Studio.Explore}" Classes="studio-kicker" />
-   <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" Margin="-4">
-    <Button Grid.Row="0" Grid.Column="0" Classes="studio-capability" Margin="4" Command="{Binding NavigateCommand}" CommandParameter="Demo.Item.MarkdownViewer">
-     <StackPanel Spacing="7">
-      <Grid ColumnDefinitions="*,Auto"><TextBlock Text="M↓" FontSize="22" Foreground="{DynamicResource StudioAccent}" /><TextBlock Grid.Column="1" Text="↗" Classes="studio-muted" /></Grid>
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability0.Title}" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap" />
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability0.Description}" Classes="studio-muted" MinHeight="42" />
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability0.Packages}" Classes="studio-package" />
-     </StackPanel>
-    </Button>
-    <Button Grid.Row="0" Grid.Column="1" Classes="studio-capability" Margin="4" Command="{Binding NavigateCommand}" CommandParameter="Demo.Item.DataGrid">
-     <StackPanel Spacing="7">
-      <Grid ColumnDefinitions="*,Auto"><TextBlock Text="▤" FontSize="22" Foreground="{DynamicResource StudioAccent}" /><TextBlock Grid.Column="1" Text="↗" Classes="studio-muted" /></Grid>
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability1.Title}" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap" />
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability1.Description}" Classes="studio-muted" MinHeight="42" />
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability1.Packages}" Classes="studio-package" />
-     </StackPanel>
-    </Button>
-    <Button Grid.Row="0" Grid.Column="2" Classes="studio-capability" Margin="4" Command="{Binding NavigateCommand}" CommandParameter="Demo.Item.Dock">
-     <StackPanel Spacing="7">
-      <Grid ColumnDefinitions="*,Auto"><TextBlock Text="▥" FontSize="22" Foreground="{DynamicResource StudioAccent}" /><TextBlock Grid.Column="1" Text="↗" Classes="studio-muted" /></Grid>
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability2.Title}" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap" />
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability2.Description}" Classes="studio-muted" MinHeight="42" />
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability2.Packages}" Classes="studio-package" />
-     </StackPanel>
-    </Button>
-    <Button Grid.Row="1" Grid.Column="0" Classes="studio-capability" Margin="4" Command="{Binding NavigateCommand}" CommandParameter="Demo.Item.Transfer">
-     <StackPanel Spacing="7">
-      <Grid ColumnDefinitions="*,Auto"><TextBlock Text="⌘" FontSize="22" Foreground="{DynamicResource StudioAccent}" /><TextBlock Grid.Column="1" Text="↗" Classes="studio-muted" /></Grid>
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability3.Title}" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap" />
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability3.Description}" Classes="studio-muted" MinHeight="42" />
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability3.Packages}" Classes="studio-package" />
-     </StackPanel>
-    </Button>
-    <Button Grid.Row="1" Grid.Column="1" Classes="studio-capability" Margin="4" Command="{Binding NavigateCommand}" CommandParameter="Demo.Item.Guide">
-     <StackPanel Spacing="7">
-      <Grid ColumnDefinitions="*,Auto"><TextBlock Text="◎" FontSize="22" Foreground="{DynamicResource StudioAccent}" /><TextBlock Grid.Column="1" Text="↗" Classes="studio-muted" /></Grid>
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability4.Title}" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap" />
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability4.Description}" Classes="studio-muted" MinHeight="42" />
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability4.Packages}" Classes="studio-package" />
-     </StackPanel>
-    </Button>
-    <Button Grid.Row="1" Grid.Column="2" Classes="studio-capability" Margin="4" Command="{Binding NavigateCommand}" CommandParameter="Demo.Item.Log">
-     <StackPanel Spacing="7">
-      <Grid ColumnDefinitions="*,Auto"><TextBlock Text="↔" FontSize="22" Foreground="{DynamicResource StudioAccent}" /><TextBlock Grid.Column="1" Text="↗" Classes="studio-muted" /></Grid>
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability5.Title}" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap" />
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability5.Description}" Classes="studio-muted" MinHeight="42" />
-      <TextBlock Text="{codewf:I18n Demo.Studio.Capability5.Packages}" Classes="studio-package" />
-     </StackPanel>
-    </Button>
-   </Grid>
+
    <Border Classes="studio-card">
     <Grid ColumnDefinitions="*,Auto">
      <StackPanel Spacing="8"><TextBlock Text="{codewf:I18n Demo.Studio.QuickStart}" FontWeight="SemiBold" /><SelectableTextBlock Text="{Binding InstallCommand}" FontFamily="Consolas" FontSize="12" TextWrapping="Wrap" /><TextBlock Text="{Binding CopyStatus}" Classes="studio-muted" /></StackPanel>

@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using CodeWF.Avalonia.Demo.Views.Pages;
 
@@ -11,20 +12,20 @@ public class DocsFlowPage : ScenePageBase
 {
     public DocsFlowPage()
     {
-        AddStep("Demo.Scene.Step.Dock", new DockPage());
-        AddStep("Demo.Scene.Step.Tabs", new TrapezoidTabPage());
-        AddStep("Demo.Scene.Step.Panels", new LogPage());
-        AddStep("Demo.Scene.Step.Status", new StatusComponentsPage());
+        AddStep(DemoResources.Scene.Step.Dock, new DockPage());
+        AddStep(DemoResources.Scene.Step.Tabs, new TrapezoidTabPage());
+        AddStep(DemoResources.Scene.Step.Panels, new LogPage());
+        AddStep(DemoResources.Scene.Step.Status, new StatusComponentsPage());
         AttachSceneShell();
     }
 
-    public override string TitleKey => "Demo.Page.DocsFlow.Title";
+    public override string TitleKey => DemoResources.Page.DocsFlow.Title;
 
-    public override string DescriptionKey => "Demo.Page.DocsFlow.Desc";
+    public override string DescriptionKey => DemoResources.Page.DocsFlow.Desc;
 
-    protected override string SummaryKey => "Demo.Scene.Summary.Docs";
+    protected override string SummaryKey => DemoResources.Scene.Summary.Docs;
 
-    public override string XamlCode => L.Instance.GetResource("Demo.Content.DocsFlow.XamlCode.DockDockControlLayoutDockControlDataTemplatesDataTemplateDataTypeVm");
+    public override string XamlCode => L.Instance.GetResource(DemoResources.Content.DocsFlow.XamlCode.DockDockControlLayoutDockControlDataTemplatesDataTemplateDataTypeVm);
 
-    public override string CSharpCode => L.Instance.GetResource("Demo.Content.DocsFlow.CSharpCode.VarDocNewDocumentFactoryHideDockableToolFactory");
+    public override string CSharpCode => L.Instance.GetResource(DemoResources.Content.DocsFlow.CSharpCode.VarDocNewDocumentFactoryHideDockableToolFactory);
 }

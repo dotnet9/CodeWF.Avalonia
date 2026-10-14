@@ -53,6 +53,10 @@ const { chromium } = require('playwright');
               await page.locator(`#lTree .lf[data-p="${route}"]`).click();
               assert.deepEqual(await page.evaluate(() => [ACTIVE_DOC, curTab]), [route, group.id]);
               assert.equal(await page.locator(`#lTree .lf.on[data-p="${route}"]`).count(), 1);
+              assert.deepEqual(await page.locator('select').evaluateAll(selects => selects.flatMap(select => [select, ...select.options]).filter(element => {
+                const style = getComputedStyle(element);
+                return style.textAlign !== 'left' || style.textAlignLast !== 'left';
+              }).map(element => element.outerHTML)), [], `Dropdown alignment: ${route}`);
               const source = page.locator('#catalog-source-toggle');
               if (await source.count()) {
                 await source.click();
@@ -64,6 +68,35 @@ const { chromium } = require('playwright');
               results.push({ width, culture, route });
             }
           }
+          await page.evaluate(() => openDoc('welcome'));
+          const firstRow = page.locator('#pGrid .rw').first();
+          const column = firstRow.locator('.property-column-handle');
+          const columnBox = await column.boundingBox();
+          const originalNameWidth = await firstRow.locator('label,.nm').evaluate(element => element.getBoundingClientRect().width);
+          await page.mouse.move(columnBox.x + 3, columnBox.y + 10);
+          await page.mouse.down();
+          await page.mouse.move(columnBox.x + 33, columnBox.y + 10);
+          await page.mouse.up();
+          assert.ok(await firstRow.locator('label,.nm').evaluate(element => element.getBoundingClientRect().width) > originalNameWidth + 20, 'Column drag');
+          const rowLine = firstRow.locator('.property-row-handle');
+          const rowBox = await rowLine.boundingBox();
+          const originalRowHeight = (await firstRow.boundingBox()).height;
+          await page.mouse.move(rowBox.x + 30, rowBox.y + 3);
+          await page.mouse.down();
+          await page.mouse.move(rowBox.x + 30, rowBox.y + 21);
+          await page.mouse.up();
+          assert.ok((await firstRow.boundingBox()).height > originalRowHeight + 12, 'Row drag');
+          const search = page.locator('.property-search');
+          const modes = page.locator('.property-modes');
+          assert.ok((await search.boundingBox()).y >= (await modes.boundingBox()).y + (await modes.boundingBox()).height, 'Search below sort buttons');
+          const firstLabel = await firstRow.locator('label,.nm').innerText();
+          await search.fill(firstLabel);
+          assert.equal(await page.locator('#pGrid .rw:visible').count(), 1, 'Property search');
+          await search.fill('');
+          await page.locator('[data-mode="alphabetical"]').click();
+          assert.equal(await page.locator('#pGrid .cat:visible').count(), 0, 'Alphabetical view');
+          await page.locator('[data-mode="categorized"]').click();
+          assert.ok(await page.locator('#pGrid .cat:visible').count() > 0, 'Categorized view');
         }
         assert.deepEqual(await page.evaluate(() => window.auditGuardErrors), [], 'Caught prototype exceptions');
         assert.doesNotMatch(await page.locator('#logP').innerText(), /JS 异常\[/, 'Startup guard exception');

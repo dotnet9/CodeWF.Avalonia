@@ -1,16 +1,10 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:codewf="https://codewf.com"
              x:Class="CodeWF.Avalonia.Demo.Views.Pages.CodeWFWindowPage"
              x:CompileBindings="False">
   <ScrollViewer>
     <StackPanel Margin="12,10" Spacing="12">
-
-      <Border Padding="10" CornerRadius="6" BorderThickness="1"
-              BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-        <TextBlock Text="{codewf:I18n Demo.Content.CodeWFWindow.View.BorderlessCodeWFWindowWithDWMCornersACustomTitle}"
-                   TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
-      </Border>
 
       <StackPanel Orientation="Horizontal" Spacing="8">
         <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.CodeWFWindow.View.OpenDefaultConfiguration}" Click="OnOpenDefault" />

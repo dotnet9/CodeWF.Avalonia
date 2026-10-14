@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -13,9 +14,9 @@ public partial class MarkdownLiveEditorPage : DemoPageBase
     private const string IdTheme = "mle.theme";
     private const string IdFontSize = "mle.fontsize";
 
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.MarkdownLiveEditor.Source.Xaml");
+    public static string XamlSnippet => L.Instance.GetResource(DemoResources.Content.MarkdownLiveEditor.Source.Xaml);
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.MarkdownLiveEditor.Source.CSharp");
+    public static string CSharpSnippet => L.Instance.GetResource(DemoResources.Content.MarkdownLiveEditor.Source.CSharp);
 
     private readonly MarkdownLiveEditorView _editor;
 
@@ -41,9 +42,9 @@ public partial class MarkdownLiveEditorPage : DemoPageBase
 
 
 
-    public override string TitleKey => "Demo.Page.MarkdownLiveEditor.Title";
+    public override string TitleKey => DemoResources.Page.MarkdownLiveEditor.Title;
 
-    public override string DescriptionKey => "Demo.Page.MarkdownLiveEditor.Desc";
+    public override string DescriptionKey => DemoResources.Page.MarkdownLiveEditor.Desc;
 
     public override string XamlCode => XamlSnippet;
 
@@ -71,7 +72,7 @@ public partial class MarkdownLiveEditorPage : DemoPageBase
         var theme = new PropertyItem
         {
             Id = IdTheme,
-            Name = L.Instance.GetResource("Demo.Content.MarkdownLiveEditor.Properties.TypographyTheme"),
+            Name = L.Instance.GetResource(DemoResources.Content.MarkdownLiveEditor.Properties.TypographyTheme),
             Kind = PropertyItemKind.Choice,
             Options =
             [
@@ -83,26 +84,26 @@ public partial class MarkdownLiveEditorPage : DemoPageBase
             ],
             Value = MarkdownTypographyThemes.Verdant,
             DefaultValue = MarkdownTypographyThemes.Basic,
-            Description = L.Instance.GetResource("Demo.Content.MarkdownLiveEditor.Properties.TypographyThemeUsedByTheLiveEditor"),
+            Description = L.Instance.GetResource(DemoResources.Content.MarkdownLiveEditor.Properties.TypographyThemeUsedByTheLiveEditor),
         };
         var fontSize = new PropertyItem
         {
             Id = IdFontSize,
-            Name = L.Instance.GetResource("Demo.Content.MarkdownLiveEditor.Properties.EditorFontSize"),
+            Name = L.Instance.GetResource(DemoResources.Content.MarkdownLiveEditor.Properties.EditorFontSize),
             Kind = PropertyItemKind.Number,
             Value = 15m,
             DefaultValue = 15m,
             Minimum = 10,
             Maximum = 28,
             Unit = "px",
-            Description = L.Instance.GetResource("Demo.Content.MarkdownLiveEditor.Properties.FontSizeOfTheBlockEditor"),
+            Description = L.Instance.GetResource(DemoResources.Content.MarkdownLiveEditor.Properties.FontSizeOfTheBlockEditor),
         };
 
         return [theme, fontSize];
     }
 
     private void OnInsert(object? sender, RoutedEventArgs e) =>
-        _editor.InsertText(L.Instance.GetResource("Demo.Content.MarkdownLiveEditor.OnInsert.ContentAddedWithInsertText"));
+        _editor.InsertText(L.Instance.GetResource(DemoResources.Content.MarkdownLiveEditor.OnInsert.ContentAddedWithInsertText));
 
     private void OnFocusFirst(object? sender, RoutedEventArgs e) =>
         _editor.FocusBlock(0);
@@ -116,8 +117,8 @@ public partial class MarkdownLiveEditorPage : DemoPageBase
     private void UpdateStatus()
     {
         StatusText.Text =
-            string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.MarkdownLiveEditor.UpdateStatus.BlocksActiveBlockCharactersFormat"), _editor.BlockCount, _editor.ActiveBlockIndex, (_editor.Text?.Length ?? 0));
+            string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource(DemoResources.Content.MarkdownLiveEditor.UpdateStatus.BlocksActiveBlockCharactersFormat), _editor.BlockCount, _editor.ActiveBlockIndex, (_editor.Text?.Length ?? 0));
     }
 
-    private static string SampleMarkdown => L.Instance.GetResource("Demo.Content.MarkdownLiveEditor.Samples.Markdown");
+    private static string SampleMarkdown => L.Instance.GetResource(DemoResources.Content.MarkdownLiveEditor.Samples.Markdown);
 }

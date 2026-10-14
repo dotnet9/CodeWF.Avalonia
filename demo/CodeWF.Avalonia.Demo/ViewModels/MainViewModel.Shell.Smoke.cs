@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using Avalonia.Controls;
 using CodeWF.Toolkit.Logging;
 using System.Text.Json;
@@ -64,11 +65,11 @@ public partial class MainViewModel
             var all = FilteredCommands;
             Expect(all.Count >= 25, "All document and shell commands listed by default", all.Count);
 
-            CommandQuery = global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource("Demo.Item.MarkdownExport");
+            CommandQuery = global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource(DemoResources.Item.MarkdownExport);
             var filtered = FilteredCommands;
             Expect(filtered.Count > 0 && filtered.Count < all.Count, "Search returns a narrower result set", filtered.Count);
-            Expect(filtered.All(e => e.Title.Contains(global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource("Demo.Item.MarkdownExport"), StringComparison.OrdinalIgnoreCase)
-                                     || e.Group.Contains(global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource("Demo.Item.MarkdownExport"), StringComparison.OrdinalIgnoreCase)),
+            Expect(filtered.All(e => e.Title.Contains(global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource(DemoResources.Item.MarkdownExport), StringComparison.OrdinalIgnoreCase)
+                                     || e.Group.Contains(global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource(DemoResources.Item.MarkdownExport), StringComparison.OrdinalIgnoreCase)),
                 "All results match the query");
 
             MoveCommandSelection(1);
@@ -104,7 +105,7 @@ public partial class MainViewModel
         ok &= Check("Navigation filtering", () =>
         {
             var before = FilteredGroups.Sum(g => g.Items.Count(i => !i.IsFilteredOut));
-            NavFilter = global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource("Demo.Item.MarkdownExport");
+            NavFilter = global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource(DemoResources.Item.MarkdownExport);
             var hits = FilteredGroups.Sum(g => g.Items.Count(i => !i.IsFilteredOut));
             Expect(hits > 0 && hits < before, "Filtering reduces visible leaves", hits);
             NavFilter = "zzz-no-page";

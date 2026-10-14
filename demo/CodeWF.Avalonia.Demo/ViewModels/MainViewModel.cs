@@ -1,3 +1,4 @@
+﻿using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia;
 using Avalonia.Collections;
@@ -29,7 +30,6 @@ public partial class MainViewModel : ReactiveObject
     private string _statusText = string.Empty;
     private bool _ribbonExpanded = true;
     private bool _logPanelVisible = true;
-    private bool _propertiesPanelVisible = true;
     private AppearanceOption _selectedPalette;
     private bool _isDarkMode = true;
     private CultureOption _selectedCulture;
@@ -41,7 +41,6 @@ public partial class MainViewModel : ReactiveObject
     private DemoDockFactory? _dockFactory;
     private RootDock? _layout;
     private Tool? _navTool;
-    private Tool? _propTool;
     private Tool? _logTool;
     private DocumentDock? _docDock;
 
@@ -56,7 +55,7 @@ public partial class MainViewModel : ReactiveObject
         TogglePanelCommand = ReactiveCommand.Create<string>(TogglePanel);
         QuickSaveCommand = ReactiveCommand.Create(SaveLayout);
         QuickResetCommand = ReactiveCommand.Create(ResetLayout);
-        QuickSettingsCommand = ReactiveCommand.Create(() => TogglePanel("props"));
+        QuickSettingsCommand = ReactiveCommand.Create(() => OpenItem(Groups[0].Items[0]));
         QuickGuideCommand = ReactiveCommand.Create(OpenGuidanceDemo);
         WriteLogsCommand = ReactiveCommand.Create(WriteSampleLogs);
 
@@ -76,7 +75,7 @@ public partial class MainViewModel : ReactiveObject
 
         Cultures = new ObservableCollection<CultureOption>
         {
-            new("zh-CN", L.Instance.GetResource("Demo.Shell.LanguageChinese")),
+            new("zh-CN", L.Instance.GetResource(DemoResources.Shell.LanguageChinese)),
             new("en-US", "English"),
         };
         _selectedCulture = Cultures[0];
@@ -241,8 +240,8 @@ public partial class MainViewModel : ReactiveObject
 
     public bool PropertiesPanelVisible
     {
-        get => _propertiesPanelVisible;
-        set => this.RaiseAndSetIfChanged(ref _propertiesPanelVisible, value);
+        get => ActiveDocument?.PropertiesVisible ?? true;
+        set { if (ActiveDocument is { } document) document.PropertiesVisible = value; }
     }
 
     /// <summary>日志数据源：Logger 的 UI 事件流。</summary>
@@ -309,7 +308,7 @@ public partial class MainViewModel : ReactiveObject
             SyncGlobalItems();
             foreach (var document in Documents)
             {
-                document.Page.RefreshProperties();
+                document.RefreshProperties();
                 document.RefreshTitle();
                 if (document.Page is Views.Pages.WelcomePage overview) overview.Overview.RefreshCulture();
             }
@@ -323,8 +322,8 @@ public partial class MainViewModel : ReactiveObject
             this.RaisePropertyChanged(nameof(CommandHint));
             this.RaisePropertyChanged(nameof(NotificationDismissHint));
             RaiseCommandState();
-            StatusText = I18nManager.Instance.GetResource("Demo.Shell.Ready");
-            Logger.Info(L.Instance.GetResource("Demo.Shell.LanguageChanged") + value.Name);
+            StatusText = I18nManager.Instance.GetResource(DemoResources.Shell.Ready);
+            Logger.Info(L.Instance.GetResource(DemoResources.Shell.LanguageChanged) + value.Name);
         }
     }
 
@@ -350,7 +349,7 @@ public partial class MainViewModel : ReactiveObject
             };
             overview.TogglePanel = TogglePanel;
         }
-        var document = new DemoDocumentViewModel(item, page);
+        var document = new DemoDocumentViewModel(item, page, this);
         var dockDocument = _dockFactory?.CreateDocument() ?? new Document();
         dockDocument.Id = "Doc." + item.TitleKey;
         dockDocument.Title = document.DisplayTitle;
@@ -377,7 +376,7 @@ public partial class MainViewModel : ReactiveObject
         }
 
         StatusText = I18nManager.Instance.GetResource(DemoKeys.ShellReady);
-        Logger.Info(L.Instance.GetResource("Demo.Shell.DocumentOpened") + item.Title);
+        Logger.Info(L.Instance.GetResource(DemoResources.Shell.DocumentOpened) + item.Title);
     }
 
     public void CloseDocument(DemoDocumentViewModel document)
@@ -412,6 +411,7 @@ public partial class MainViewModel : ReactiveObject
     /// <summary>Dock 侧关闭（页签 ✕）后的状态同步入口，仅由 <see cref="DemoDockFactory"/> 回调。</summary>
     private void SyncDocumentClosed(DemoDocumentViewModel document)
     {
+        document.Dispose();
         Documents.Remove(document);
         if (ActiveDocument == document)
         {
@@ -419,7 +419,7 @@ public partial class MainViewModel : ReactiveObject
         }
 
         StatusText = I18nManager.Instance.GetResource(DemoKeys.ShellReady);
-        Logger.Info(L.Instance.GetResource("Demo.Shell.DocumentClosed") + document.Title);
+        Logger.Info(L.Instance.GetResource(DemoResources.Shell.DocumentClosed) + document.Title);
     }
 
     /// <summary>面板显隐切换：隐藏 = 移入 RootDock 隐藏集合，恢复 = 按 Id 取回。</summary>
@@ -436,7 +436,7 @@ public partial class MainViewModel : ReactiveObject
                 ToggleTool(_navTool, I18nManager.Instance.GetResource(DemoKeys.ToolNavigation));
                 break;
             case "props":
-                ToggleTool(_propTool, I18nManager.Instance.GetResource(DemoKeys.ToolProperties));
+                if (ActiveDocument is { } document) document.PropertiesVisible = !document.PropertiesVisible;
                 break;
             case "log":
                 ToggleTool(_logTool, I18nManager.Instance.GetResource(DemoKeys.ToolLog));
@@ -455,28 +455,29 @@ public partial class MainViewModel : ReactiveObject
         if (hidden)
         {
             _dockFactory.RestoreDockable(tool.Id);
-            Logger.Info(L.Instance.GetResource("Demo.Shell.PanelShown") + title);
+            Logger.Info(L.Instance.GetResource(DemoResources.Shell.PanelShown) + title);
         }
         else
         {
             _dockFactory.HideDockable(tool);
-            Logger.Info(L.Instance.GetResource("Demo.Shell.PanelHidden") + title);
+            Logger.Info(L.Instance.GetResource(DemoResources.Shell.PanelHidden) + title);
         }
     }
 
     /// <summary>重置工作区：整体重建 Dock 布局并回到欢迎文档。</summary>
     public void ResetLayout()
     {
+        foreach (var document in Documents) document.Dispose();
         Documents.Clear();
         ActiveDocument = null;
         _selectedNavItem = null;
         BuildLayout();
         OpenItem(Groups[0].Items[0]);
-        Logger.Info(L.Instance.GetResource("Demo.Shell.LayoutReset"));
+        Logger.Info(L.Instance.GetResource(DemoResources.Shell.LayoutReset));
     }
 
     /// <summary>
-    /// 构建 Dock 工作区：左导航树 / 右属性面板 / 下日志为 ToolDock，
+    /// 构建 Dock 工作区：左导航树 / 下日志为 ToolDock，属性面板属于各自文档，
     /// 中央为 DocumentDock（演示文档页签），比例容器组合后挂到 RootDock。
     /// </summary>
     private void BuildLayout()
@@ -489,12 +490,6 @@ public partial class MainViewModel : ReactiveObject
             Id = "Tool.Nav",
             Title = T(DemoKeys.ToolNavigation),
             Context = new Views.Tools.NavToolView { DataContext = this },
-        };
-        _propTool = new Tool
-        {
-            Id = "Tool.Props",
-            Title = T(DemoKeys.ToolProperties),
-            Context = new Views.Tools.PropertyToolView { DataContext = this },
         };
         _logTool = new Tool
         {
@@ -510,15 +505,6 @@ public partial class MainViewModel : ReactiveObject
             Dock = DockMode.Left,
             Proportion = 0.16,
         };
-        var propDock = new ToolDock
-        {
-            Id = "Dock.Props",
-            ActiveDockable = _propTool,
-            VisibleDockables = _dockFactory.CreateList<IDockable>(_propTool),
-            Dock = DockMode.Right,
-            Proportion = 0.17,
-            MinWidth = 220,
-        };
         var logDock = new ToolDock
         {
             Id = "Dock.Log",
@@ -533,7 +519,7 @@ public partial class MainViewModel : ReactiveObject
             Id = "Dock.Docs",
             VisibleDockables = _dockFactory.CreateList<IDockable>(),
             CanCreateDocument = false,
-            Proportion = 0.67,
+            Proportion = 0.84,
             IsCollapsable = false,
         };
         _docDock.PropertyChanged += OnDocDockPropertyChanged;
@@ -546,9 +532,7 @@ public partial class MainViewModel : ReactiveObject
             VisibleDockables = _dockFactory.CreateList<IDockable>(
                 navDock,
                 new ProportionalDockSplitter(),
-                _docDock,
-                new ProportionalDockSplitter(),
-                propDock),
+                _docDock),
             ActiveDockable = _docDock,
         };
         var workspace = new ProportionalDock
@@ -585,7 +569,6 @@ public partial class MainViewModel : ReactiveObject
     private void SyncToolTitles()
     {
         if (_navTool is not null) _navTool.Title = T(DemoKeys.ToolNavigation);
-        if (_propTool is not null) _propTool.Title = T(DemoKeys.ToolProperties);
         if (_logTool is not null) _logTool.Title = T(DemoKeys.ToolLog);
     }
 
@@ -594,6 +577,16 @@ public partial class MainViewModel : ReactiveObject
     /// <summary>接管 Dock 侧文档关闭（页签 ✕），与 Documents/ActiveDocument 双向同步。</summary>
     private sealed class DemoDockFactory(MainViewModel owner) : Factory
     {
+        public override void InitLayout(IDockable layout)
+        {
+            // 为拖出文档提供原生浮动窗口，内容与文档内属性面板共同承载。
+            HostWindowLocator = new Dictionary<string, Func<IHostWindow?>>
+            {
+                [nameof(IDockWindow)] = () => new global::Dock.Avalonia.Controls.HostWindow(),
+            };
+            base.InitLayout(layout);
+        }
+
         public override void CloseDockable(IDockable dockable)
         {
             base.CloseDockable(dockable);
@@ -606,20 +599,20 @@ public partial class MainViewModel : ReactiveObject
 
     public void WriteSampleLogs()
     {
-        Logger.Info(L.Instance.GetResource("Demo.Shell.SampleInformationLog"));
-        Logger.Warn(L.Instance.GetResource("Demo.Shell.SampleWarningLog"));
-        Logger.Error(L.Instance.GetResource("Demo.Shell.SampleErrorLog"));
+        Logger.Info(L.Instance.GetResource(DemoResources.Shell.SampleInformationLog));
+        Logger.Warn(L.Instance.GetResource(DemoResources.Shell.SampleWarningLog));
+        Logger.Error(L.Instance.GetResource(DemoResources.Shell.SampleErrorLog));
     }
 
     public async Task<bool> RunSmokeAsync(CancellationToken cancellation)
     {
         // 冒烟：先写三类日志验证日志通道，再按信息架构逐页构建（含场景页步骤切换）。
         DemoBootstrapper.Initialize();
-        Logger.Info(L.Instance.GetResource("Demo.Content.Shell.RunSmokeAsync.SmokeStarted"));
+        Logger.Info(L.Instance.GetResource(DemoResources.Content.Shell.RunSmokeAsync.SmokeStarted));
         WriteSampleLogs();
         var overviewOk = await SmokeOverviewAsync(cancellation);
         var ok = await SmokeWalkCatalogAsync(cancellation);
-        Logger.Info(ok ? L.Instance.GetResource("Demo.Content.Shell.RunSmokeAsync.SmokePassed") : L.Instance.GetResource("Demo.Content.Shell.RunSmokeAsync.SmokeFailed"));
+        Logger.Info(ok ? L.Instance.GetResource(DemoResources.Content.Shell.RunSmokeAsync.SmokePassed) : L.Instance.GetResource(DemoResources.Content.Shell.RunSmokeAsync.SmokeFailed));
         await Logger.ShutdownAsync();
         return ok && overviewOk;
     }
@@ -633,7 +626,7 @@ public partial class MainViewModel : ReactiveObject
 
         Application.Current.RequestedThemeVariant = SelectedPalette.ResolveVariant(IsDarkMode);
         SyncGlobalItems();
-        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.Shell.ApplyAppearance.AppearanceFormat"), SelectedPalette.Title, (IsDarkMode ? L.Instance.GetResource("Demo.Content.Shell.ApplyAppearance.Dark") : L.Instance.GetResource("Demo.Content.Shell.ApplyAppearance.Light"))));
+        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource(DemoResources.Content.Shell.ApplyAppearance.AppearanceFormat), SelectedPalette.Title, (IsDarkMode ? L.Instance.GetResource(DemoResources.Content.Shell.ApplyAppearance.Dark) : L.Instance.GetResource(DemoResources.Content.Shell.ApplyAppearance.Light))));
     }
 
     private IReadOnlyList<PropertyItem> BuildGlobalProperties()
@@ -646,53 +639,53 @@ public partial class MainViewModel : ReactiveObject
             Options = [T(DemoKeys.ShellDensityComfort), T(DemoKeys.ShellDensityCompact)],
             Value = DensityLabel,
             DefaultValue = T(DemoKeys.ShellDensityComfort),
-            Description = T("Demo.Studio.DensityDescription"),
+            Description = T(DemoResources.Studio.DensityDescription),
         };
         _paletteItem = new PropertyItem
         {
             Id = "shell.palette",
-            Name = L.Instance.GetResource("Demo.Shell.GlobalSettings.PaletteLabel"),
+            Name = L.Instance.GetResource(DemoResources.Shell.GlobalSettings.PaletteLabel),
             Kind = PropertyItemKind.Choice,
             Options = Palettes.Select(p => p.Title).ToArray(),
             Value = Palettes[0].Title,
             DefaultValue = Palettes[0].Title,
-            Description = L.Instance.GetResource("Demo.Shell.GlobalSettings.PaletteDescription"),
+            Description = L.Instance.GetResource(DemoResources.Shell.GlobalSettings.PaletteDescription),
         };
         _modeItem = new PropertyItem
         {
             Id = "shell.mode",
-            Name = L.Instance.GetResource("Demo.Shell.GlobalSettings.ModeLabel"),
+            Name = L.Instance.GetResource(DemoResources.Shell.GlobalSettings.ModeLabel),
             Kind = PropertyItemKind.Radio,
-            Options = [L.Instance.GetResource("Demo.Shell.GlobalSettings.LightMode"), L.Instance.GetResource("Demo.Shell.GlobalSettings.DarkMode")],
-            Value = L.Instance.GetResource("Demo.Shell.GlobalSettings.DarkMode"),
-            DefaultValue = L.Instance.GetResource("Demo.Shell.GlobalSettings.DarkMode"),
-            Description = L.Instance.GetResource("Demo.Shell.GlobalSettings.ModeDescription"),
+            Options = [L.Instance.GetResource(DemoResources.Shell.GlobalSettings.LightMode), L.Instance.GetResource(DemoResources.Shell.GlobalSettings.DarkMode)],
+            Value = L.Instance.GetResource(DemoResources.Shell.GlobalSettings.DarkMode),
+            DefaultValue = L.Instance.GetResource(DemoResources.Shell.GlobalSettings.DarkMode),
+            Description = L.Instance.GetResource(DemoResources.Shell.GlobalSettings.ModeDescription),
         };
         _langItem = new PropertyItem
         {
             Id = "shell.lang",
-            Name = L.Instance.GetResource("Demo.Shell.GlobalSettings.LanguageLabel"),
+            Name = L.Instance.GetResource(DemoResources.Shell.GlobalSettings.LanguageLabel),
             Kind = PropertyItemKind.Choice,
             Options = Cultures.Select(c => c.DisplayName).ToArray(),
             Value = Cultures[0].DisplayName,
             DefaultValue = Cultures[0].DisplayName,
-            Description = L.Instance.GetResource("Demo.Shell.GlobalSettings.LanguageDescription"),
+            Description = L.Instance.GetResource(DemoResources.Shell.GlobalSettings.LanguageDescription),
         };
 
         var appearance = new PropertyItem
         {
             Id = "shell.appearance",
-            Name = L.Instance.GetResource("Demo.Shell.GlobalSettings.AppearanceGroup"),
+            Name = L.Instance.GetResource(DemoResources.Shell.GlobalSettings.AppearanceGroup),
             Kind = PropertyItemKind.Category,
-            Description = L.Instance.GetResource("Demo.Shell.GlobalSettings.AppearanceDescription"),
+            Description = L.Instance.GetResource(DemoResources.Shell.GlobalSettings.AppearanceDescription),
             Children = [_densityItem, _paletteItem, _modeItem],
         };
         var language = new PropertyItem
         {
             Id = "shell.language",
-            Name = L.Instance.GetResource("Demo.Shell.GlobalSettings.LanguageGroup"),
+            Name = L.Instance.GetResource(DemoResources.Shell.GlobalSettings.LanguageGroup),
             Kind = PropertyItemKind.Category,
-            Description = L.Instance.GetResource("Demo.Shell.GlobalSettings.LanguageGroupDescription"),
+            Description = L.Instance.GetResource(DemoResources.Shell.GlobalSettings.LanguageGroupDescription),
             Children = [_langItem],
         };
 
@@ -721,7 +714,7 @@ public partial class MainViewModel : ReactiveObject
                 SelectedPalette = Palettes.FirstOrDefault(p => p.Title == value) ?? SelectedPalette;
                 break;
             case "shell.mode" when value is not null:
-                IsDarkMode = value == L.Instance.GetResource("Demo.Content.Shell.OnGlobalPropertyCommitted.Dark");
+                IsDarkMode = value == L.Instance.GetResource(DemoResources.Content.Shell.OnGlobalPropertyCommitted.Dark);
                 break;
             case "shell.lang" when value is not null:
                 var culture = Cultures.FirstOrDefault(c => c.DisplayName == value);
@@ -749,7 +742,7 @@ public partial class MainViewModel : ReactiveObject
 
         Sync(_densityItem, DensityLabel);
         Sync(_paletteItem, SelectedPalette.Title);
-        Sync(_modeItem, IsDarkMode ? L.Instance.GetResource("Demo.Content.Shell.SyncGlobalItems.Dark") : L.Instance.GetResource("Demo.Content.Shell.SyncGlobalItems.Light"));
+        Sync(_modeItem, IsDarkMode ? L.Instance.GetResource(DemoResources.Content.Shell.SyncGlobalItems.Dark) : L.Instance.GetResource(DemoResources.Content.Shell.SyncGlobalItems.Light));
         Sync(_langItem, SelectedCulture.DisplayName);
     }
 }

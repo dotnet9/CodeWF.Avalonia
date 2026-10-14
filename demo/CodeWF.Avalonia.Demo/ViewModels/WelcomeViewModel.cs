@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using System.Windows.Input;
 using ReactiveUI;
@@ -7,7 +8,7 @@ namespace CodeWF.Avalonia.Demo.ViewModels;
 /// <summary>The overview uses the same Markdown renderer and grid enhancement as the full demos.</summary>
 public sealed class WelcomeViewModel : ReactiveObject
 {
-    private string _markdown = L.Instance.GetResource("Demo.Content.Welcome.markdown.GiveInterfacesExpressionBuildDesktopExperiencesWithCodeWF");
+    private string _markdown = L.Instance.GetResource(DemoResources.Content.Welcome.markdown.GiveInterfacesExpressionBuildDesktopExperiencesWithCodeWF);
     private string _copyStatus = string.Empty;
     private int _labIndex;
     private bool _experimentsExpanded;
@@ -20,7 +21,7 @@ public sealed class WelcomeViewModel : ReactiveObject
     }
 
     public IReadOnlyList<DemoGroupViewModel> CatalogGroups { get; } = DemoCatalog.CreateGroups()
-        .Where(group => group.TitleKey is not "Demo.Group.Home" and not "Demo.Group.Examples").ToArray();
+        .Where(group => group.TitleKey is not DemoResources.Group.Home and not DemoResources.Group.Examples).ToArray();
 
     public string Markdown { get => _markdown; set => this.RaiseAndSetIfChanged(ref _markdown, value); }
     public string CopyStatus { get => _copyStatus; set => this.RaiseAndSetIfChanged(ref _copyStatus, value); }
@@ -44,11 +45,11 @@ public sealed class WelcomeViewModel : ReactiveObject
         {
             if (CopyToClipboard is null) throw new InvalidOperationException("Clipboard unavailable");
             await CopyToClipboard(InstallCommand);
-            CopyStatus = global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource("Demo.Studio.Copied");
+            CopyStatus = global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource(DemoResources.Studio.Copied);
         }
         catch
         {
-            CopyStatus = global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource("Demo.Studio.CopyFailed");
+            CopyStatus = global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource(DemoResources.Studio.CopyFailed);
         }
     }
     public ICommand TogglePanelCommand { get; }
@@ -58,6 +59,6 @@ public sealed class WelcomeSortRow(string name, string module) : ReactiveObject
 {
     public string Name { get; } = name;
     public string Module { get; } = module;
-    public string Status => L.Instance.GetResource("Demo.Studio.SortReady");
+    public string Status => L.Instance.GetResource(DemoResources.Studio.SortReady);
     public void RefreshCulture() => this.RaisePropertyChanged(nameof(Status));
 }

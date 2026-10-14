@@ -34,7 +34,7 @@ XAML 中经 `MarkdownThemes`（Lite）或 `MarkdownFullThemes`（完整包）入
 
 ## 多语言
 
-控件内置 UI 文案（图片预览等）跟随国际化资源，资源键常量集中在 `MarkdownL` 类；语言 JSON 随包分发到 `I18n/CodeWF.Markdown/`，应用侧用国际化插件加载该目录即可。
+控件内置 UI 文案（图片预览、复制菜单等）由 Markdown.Lite 内嵌的中英日繁体 JSON 提供，资源键常量由 `I18n/Language.tt` 生成到 `MarkdownL`。宿主无需复制或注册库资源；已有 `CodeWF.Avalonia.Lang` 语言切换会自动生效，缺失文化回退英文。应用自己的 JSON 继续输出到 `I18n/`，可选用同名键替换默认文案；覆盖与缺键回退由 Lang 引擎统一处理。
 
 ## 导出
 

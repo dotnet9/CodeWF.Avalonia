@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia.Interactivity;
 using CodeWF.Avalonia.Demo.ViewModels;
@@ -7,9 +8,9 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class PropertyGridPage : DemoPageBase
 {
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.PropertyGrid.Source.Xaml");
+    public static string XamlSnippet => L.Instance.GetResource(DemoResources.Content.PropertyGrid.Source.Xaml);
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.PropertyGrid.Source.CSharp");
+    public static string CSharpSnippet => L.Instance.GetResource(DemoResources.Content.PropertyGrid.Source.CSharp);
 
     public PropertyPanelDemoViewModel ViewModel { get; } = new();
 
@@ -21,9 +22,9 @@ public partial class PropertyGridPage : DemoPageBase
 
     private PropertyGrid Grid => DemoGrid;
 
-    public override string TitleKey => "Demo.Page.PropertyGrid.Title";
+    public override string TitleKey => DemoResources.Page.PropertyGrid.Title;
 
-    public override string DescriptionKey => "Demo.Page.PropertyGrid.Desc";
+    public override string DescriptionKey => DemoResources.Page.PropertyGrid.Desc;
 
     public override string XamlCode => XamlSnippet;
 

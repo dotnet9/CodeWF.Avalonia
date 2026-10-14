@@ -1,4 +1,4 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 
 namespace CodeWF.Avalonia.Demo.Views;
@@ -27,7 +27,13 @@ public abstract class DemoPageBase : UserControl
     /// <summary>右侧 PropertyGrid 的属性定义（首次访问构建并缓存）。</summary>
     public IReadOnlyList<PropertyItem> Properties => _properties ??= BuildProperties();
 
-    public void RefreshProperties() => _properties = null;
+    public event EventHandler? PropertiesChanged;
+
+    public virtual void RefreshProperties()
+    {
+        _properties = null;
+        PropertiesChanged?.Invoke(this, EventArgs.Empty);
+    }
 
     /// <summary>构建右侧属性面板定义；仅调用一次。</summary>
     protected virtual IReadOnlyList<PropertyItem> BuildProperties() => [];

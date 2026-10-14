@@ -1,10 +1,22 @@
-<prism:PrismApplication xmlns="https://github.com/avaloniaui"
+﻿<prism:PrismApplication xmlns="https://github.com/avaloniaui"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:prism="http://prismlibrary.com"
+                        xmlns:dockmodel="using:Dock.Model.ReactiveUI.Controls"
                         xmlns:semi="https://irihi.tech/semi"
                         xmlns:codewf="https://codewf.com"
                         x:Class="CodeWF.Avalonia.Demo.App"
                         RequestedThemeVariant="Dark">
+  <!-- 文档模板放在应用级，主窗口与 Dock 浮动窗口共用。 -->
+  <Application.DataTemplates>
+    <!--  Dock 12.1 内容承载：Tool / Document 的正文由类型匹配的 DataTemplate 呈现
+          （IDockable.Context 只服务定位器与命令栏），这里把视图实例桥接到内容宿主。 -->
+    <DataTemplate DataType="dockmodel:Tool" x:DataType="dockmodel:Tool">
+      <ContentControl Content="{Binding Context}" />
+    </DataTemplate>
+    <DataTemplate DataType="dockmodel:Document" x:DataType="dockmodel:Document">
+      <ContentControl Content="{Binding Context}" />
+    </DataTemplate>
+  </Application.DataTemplates>
   <Application.Styles>
     <semi:SemiTheme Locale="zh-CN" />
     <codewf:ACSemiTheme />

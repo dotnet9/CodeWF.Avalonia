@@ -17,16 +17,7 @@
                      TitleBarHeight="52" FontSize="13" FontFamily="Segoe UI, Microsoft YaHei UI">
 
   <!--  外壳：CodeWFWindow 无边框窗口，标题栏即自我演示  -->
-  <Window.DataTemplates>
-    <!--  Dock 12.1 内容承载：Tool / Document 的正文由类型匹配的 DataTemplate 呈现
-          （IDockable.Context 只服务定位器与命令栏），这里把视图实例桥接到内容宿主。 -->
-    <DataTemplate DataType="dockmodel:Tool" x:DataType="dockmodel:Tool">
-      <ContentControl Content="{Binding Context}" />
-    </DataTemplate>
-    <DataTemplate DataType="dockmodel:Document" x:DataType="dockmodel:Document">
-      <ContentControl Content="{Binding Context}" />
-    </DataTemplate>
-  </Window.DataTemplates>
+
 
   <!--  外壳快捷键：命令面板 / 深浅 / 语言（与设计原型 Ctrl+K、Ctrl+D、Ctrl+L 一致）  -->
   <Window.KeyBindings>
@@ -93,21 +84,31 @@
     <!--  Ribbon 页签行：快捷工具栏 + 分类页签（双击页签折叠/展开命令区，不另设图钉按钮）  -->
     <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Height="42">
       <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="6,0,2,0">
-        <Button Classes="qk-btn" Content="◉" Margin="0,0,2,0"
+        <Button Classes="qk-btn ribbon-quick" Margin="0,0,2,0"
                 ToolTip.Tip="{codewf:I18n Demo.Shell.QuickGuide}"
-                Command="{Binding QuickGuideCommand}" />
-        <Button Classes="qk-btn" Content="▣" Margin="0,0,2,0"
+                Command="{Binding QuickGuideCommand}" >
+          <PathIcon Width="24" Height="24" Data="{DynamicResource SemiIconHelpCircle}" />
+        </Button>
+        <Button Classes="qk-btn ribbon-quick" Margin="0,0,2,0"
                 ToolTip.Tip="{codewf:I18n Demo.Shell.QuickSave}"
-                Command="{Binding QuickSaveCommand}" />
-        <Button Classes="qk-btn" Content="↺" Margin="0,0,2,0"
+                Command="{Binding QuickSaveCommand}" >
+          <PathIcon Width="24" Height="24" Data="{DynamicResource SemiIconSave}" />
+        </Button>
+        <Button Classes="qk-btn ribbon-quick" Margin="0,0,2,0"
                 ToolTip.Tip="{codewf:I18n Demo.Shell.Reset}"
-                Command="{Binding QuickResetCommand}" />
-        <Button Classes="qk-btn" Content="⚙" Margin="0,0,2,0"
+                Command="{Binding QuickResetCommand}" >
+          <PathIcon Width="24" Height="24" Data="{DynamicResource SemiIconRefresh}" />
+        </Button>
+        <Button Classes="qk-btn ribbon-quick" Margin="0,0,2,0"
                 ToolTip.Tip="{codewf:I18n Demo.Shell.QuickSettings}"
-                Command="{Binding QuickSettingsCommand}" />
-        <Button Classes="qk-btn" Content="⌘"
+                Command="{Binding QuickSettingsCommand}" >
+          <PathIcon Width="24" Height="24" Data="{DynamicResource SemiIconSetting}" />
+        </Button>
+        <Button Classes="qk-btn ribbon-quick"
                 ToolTip.Tip="{codewf:I18n Demo.Shell.Command}"
-                Command="{Binding ToggleCommandPaletteCommand}" />
+                Command="{Binding ToggleCommandPaletteCommand}" >
+          <PathIcon Width="24" Height="24" Data="{DynamicResource SemiIconCommand}" />
+        </Button>
       </StackPanel>
 
       <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
@@ -119,7 +120,6 @@
         <TabStrip.ItemTemplate>
           <DataTemplate x:DataType="vm:DemoGroupViewModel">
             <StackPanel Orientation="Horizontal" Spacing="6" Margin="12,4">
-              <TextBlock Text="{Binding Icon}" FontSize="14" VerticalAlignment="Center" />
               <TextBlock Text="{Binding Title}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
             </StackPanel>
           </DataTemplate>
@@ -141,7 +141,7 @@
               <Border BorderBrush="{DynamicResource StudioBorder}" BorderThickness="0,0,1,0" Padding="0,0,12,0" Margin="0,0,12,0">
                 <StackPanel Spacing="2">
                   <ItemsControl ItemsSource="{Binding Items}">
-                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel Orientation="Vertical" Height="62" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel Orientation="Vertical" Height="80" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                       <DataTemplate x:DataType="vm:DemoItemViewModel">
                         <Button Classes="rbn-cmd" Classes.selected="{Binding IsSelected}" Margin="0,0,4,0"
@@ -151,7 +151,7 @@
                                 Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenItemCommand}"
                                 CommandParameter="{Binding}" ToolTip.Tip="{Binding DisplayTitle}">
                           <StackPanel Classes="ribbon-content" Spacing="5">
-                            <TextBlock Classes="ribbon-icon" Text="{Binding Icon}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <PathIcon Classes="ribbon-icon" Width="32" Height="32" Data="{Binding RibbonIcon}" />
                             <TextBlock Text="{Binding DisplayTitle}" FontSize="11" HorizontalAlignment="Center"
                                        VerticalAlignment="Center" TextWrapping="NoWrap" TextAlignment="Center" />
                           </StackPanel>

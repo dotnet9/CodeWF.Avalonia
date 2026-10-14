@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace CodeWF.Avalonia.Demo.ViewModels;
 
-/// <summary>The prototype and native navigation share an embedded API catalog.</summary>
+/// <summary>原型与原生导航共用内嵌的 API 目录。</summary>
 public static partial class DemoCatalog
 {
     public static ObservableCollection<DemoGroupViewModel> CreateGroups()
@@ -16,14 +16,14 @@ public static partial class DemoCatalog
         return new(groups.Select(group =>
         {
             var items = group.Items.Select(entry => new DemoItemViewModel(entry.TitleKey,
-                () => CreatePage(entry.TitleKey), entry.Api, entry.Package, entry.PrototypeId, entry.SectionKey, entry.Icon));
+                () => CreatePage(entry.TitleKey), entry.Api, entry.Package, entry.PrototypeId, entry.SectionKey, entry.Icon, entry.IconKey));
             return new DemoGroupViewModel(group.TitleKey, group.Icon, items);
         }));
     }
 }
 
 internal sealed record CatalogGroup(string TitleKey, string Icon, CatalogItem[] Items);
-internal sealed record CatalogItem(string TitleKey, string Api, string Package, string PrototypeId, string Icon, string SectionKey = "");
+internal sealed record CatalogItem(string TitleKey, string Api, string Package, string PrototypeId, string Icon, string SectionKey = "", string IconKey = "SemiIconGridView");
 
 [JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true)]
 [JsonSerializable(typeof(CatalogGroup[]))]

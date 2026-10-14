@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:codewf="https://codewf.com"
              xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels.Pages"
@@ -6,12 +6,6 @@
              x:DataType="vm:DataGridPageViewModel"
              x:CompileBindings="True">
   <Grid RowDefinitions="Auto,Auto,*,Auto,*" Margin="12,10">
-
-    <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
-            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <TextBlock Text="{codewf:I18n Demo.Content.DataGrid.View.TopEnhancedDataGridWithThreeStateAndNatural}"
-                 TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
-    </Border>
 
     <TextBlock Grid.Row="1" Text="{codewf:I18n Demo.Content.DataGrid.View.EnhancedUseDefaults}" FontWeight="SemiBold" Margin="0,10,0,4" />
 

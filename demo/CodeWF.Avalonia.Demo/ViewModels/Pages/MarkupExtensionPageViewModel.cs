@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using ReactiveUI;
 
@@ -10,7 +11,7 @@ public class MarkupExtensionPageViewModel : ReactiveObject
     public bool ShowIf { get; }
     public bool ShowSwitch { get; }
     private bool _isBusy;
-    private string _state = L.Instance.GetResource("Demo.Content.MarkupExtension.state.Running");
+    private string _state = L.Instance.GetResource(DemoResources.Content.MarkupExtension.state.Running);
 
     public bool IsBusy
     {
@@ -24,5 +25,5 @@ public class MarkupExtensionPageViewModel : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _state, value);
     }
 
-    public string[] StateOptions { get; } = [L.Instance.GetResource("Demo.Content.MarkupExtension.StateOptions.Running"), L.Instance.GetResource("Demo.Content.MarkupExtension.StateOptions.Paused"), L.Instance.GetResource("Demo.Content.MarkupExtension.StateOptions.Maintenance"), L.Instance.GetResource("Demo.Content.MarkupExtension.StateOptions.Unknown")];
+    public string[] StateOptions { get; } = [L.Instance.GetResource(DemoResources.Content.MarkupExtension.StateOptions.Running), L.Instance.GetResource(DemoResources.Content.MarkupExtension.StateOptions.Paused), L.Instance.GetResource(DemoResources.Content.MarkupExtension.StateOptions.Maintenance), L.Instance.GetResource(DemoResources.Content.MarkupExtension.StateOptions.Unknown)];
 }

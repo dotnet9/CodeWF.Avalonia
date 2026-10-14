@@ -1,15 +1,9 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:codewf="https://codewf.com"
              x:Class="CodeWF.Avalonia.Demo.Views.Pages.MarkdownLiveEditorPage"
              x:CompileBindings="False">
   <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="12,10">
-
-    <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
-            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <TextBlock Text="{codewf:I18n Demo.Content.MarkdownLiveEditor.View.MarkdownLiveEditorViewEditsBlockModelsDirectlyHeadingsParagraphsLists}"
-                 TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
-    </Border>
 
     <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
       <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownLiveEditor.View.InsertText}" Click="OnInsert" />

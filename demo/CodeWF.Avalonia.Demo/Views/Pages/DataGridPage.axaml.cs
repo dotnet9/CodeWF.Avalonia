@@ -1,3 +1,4 @@
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia.Controls;
 using CodeWF.Avalonia.DataGrid;
@@ -8,9 +9,9 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class DataGridPage : DemoPageBase
 {
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.DataGrid.Source.Xaml");
+    public static string XamlSnippet => L.Instance.GetResource(DemoResources.Content.DataGrid.Source.Xaml);
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.DataGrid.Source.CSharp");
+    public static string CSharpSnippet => L.Instance.GetResource(DemoResources.Content.DataGrid.Source.CSharp);
 
     public DataGridPageViewModel ViewModel { get; } = new();
 
@@ -20,9 +21,9 @@ public partial class DataGridPage : DemoPageBase
         DataContext = ViewModel;
     }
 
-    public override string TitleKey => "Demo.Page.DataGrid.Title";
+    public override string TitleKey => DemoResources.Page.DataGrid.Title;
 
-    public override string DescriptionKey => "Demo.Page.DataGrid.Desc";
+    public override string DescriptionKey => DemoResources.Page.DataGrid.Desc;
 
     public override string XamlCode => XamlSnippet;
 
