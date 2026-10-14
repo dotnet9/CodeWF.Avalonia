@@ -13,8 +13,8 @@
 | 反馈与引导 / Feedback & Guidance | `StatusBadge`、`StatusCard`、`Guide`、`LogNotifications` |
 | 数据展示 / Data Display | `DataGridEnhancement`、`ColumnDisplayEditor`、`TreeDataGridExtension`、`PropertyGrid`、`LogView` |
 | 布局与导航 / Layout & Navigation | `CodeWFWindow`、`CodeWFTitleBar`、`DockControl`、`TrapezoidShapedTabControl`、`WindowedStackPanel`、`LeftTop2RightBottomLine`、`ContentExpansionAnimator` |
-| Markdown / Markdown | `MarkdownViewer`、`Lite.MarkdownViewer`、`MarkdownEditorView`、`MarkdownLiveEditorView` |
-| 开发工具 / Developer Tools | `If`、`Switch`、`I18nManager`、`MarkdownDocumentExporter` |
+| Markdown / Markdown | `MarkdownViewer`、`Lite.MarkdownViewer`、`MarkdownEditorView`、`MarkdownLiveEditorView`、`MarkdownDocumentExporter` |
+| 开发工具 / Developer Tools | `If`、`Switch`、`I18nManager` |
 | 综合示例 / Examples | `Markdown 工作流`、`数据工作流`、`多文档工作流`、`应用级引导示例` |
 
 共 8 个分类、32 个页面。文档区默认完整展示功能演示；源码面板由“查看源码”打开，只提供有内容的 XAML / C# 标签。页面标题展示 API 名、NuGet 包与功能说明。
@@ -61,3 +61,14 @@
 默认文档优先展示真实控件、可操作参数及结果。源码按需打开，右侧仅放当前页面参数或全局设置；多个方法和状态放在同页，避免为了增加页面数量拆散一个控件。Markdown 块编辑、平面表格增强和展开动画采用各自实际支持的交互模型。
 
 还原检查包括首屏可见、选中状态、裁切、深浅主题、中英文、紧凑窗口，以及输入后结果是否变化。按钮和控件继续使用 Semi 模板；浏览器原型与原生字体、Markdown 渲染和窗口行为存在平台差异，不以所有像素相同作为验收承诺。
+
+
+## 排版与 Ribbon 校准
+
+保留 8 个一级分类，在命令区显示明确的功能子组；每个菜单仍对应单个 API。超过 7 项的分类使用双行命令，保留完整 API 名，窗口较窄时横向滚动。分类标题 12px、命令 11px、子组标题 10px；标题栏 52px、分类行 42px、命令区约 86px。页头标题 19px、说明 12px，导航叶子 11.5px。
+
+原型对照时裁掉 HTML 的装饰性桌面背景，使用 1440×860 和 1120×640 两种窗口尺寸、中英文 64 个 Ribbon 状态。原生继续使用 Semi / Dock 模板；窗口按钮、PropertyGrid 编辑器和平台字体的几何不做 HTML 仿制。不能把路由检查或截图数量当作全状态逐像素相同的证明。
+
+Markdown 导出归到 Markdown。阅读器、Lite 和编辑器的原型样例从原生双语资源生成；默认 Basic 排版正文 16px、一级标题 32px、二级标题 24px。任务勾选会写回原型输入，编辑器和块编辑器展示同一份文档。
+
+属性栏有页面参数时只显示该页参数，否则回退全局外观与语言设置；不额外堆放空参数和状态统计。全局标签、密度选项和配色名称也从原生语言资源生成。

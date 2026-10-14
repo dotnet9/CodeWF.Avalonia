@@ -71,7 +71,8 @@ public partial class MainViewModel
             "Demo.Item.ContentExpansionAnimator", "Demo.Item.StatusBadge", "Demo.Item.StatusCard", "Demo.Item.TitleBar", "Demo.Item.TreeDataGrid", "Demo.Item.If", "Demo.Item.Switch" })
         {
             overview.Overview.NavigateCommand.Execute(key);
-            await Task.Delay(500);
+            await WaitForDocumentAsync();
+            await Task.Delay(250);
             window.UpdateLayout();
             Save(key.Split('.').Last());
             if (ActiveDocument?.Page is Views.Pages.ContentExpansionPage expansion)
@@ -89,6 +90,56 @@ public partial class MainViewModel
                     }
                 }
                 expansion.ViewModel.Milliseconds = 300;
+            }
+        }
+
+
+        async Task WaitForDocumentAsync()
+        {
+            var documentReadyBy = DateTime.UtcNow.AddSeconds(10);
+            while (ActiveDocument?.Page is not { } page || !page.GetVisualAncestors().Contains(window) || page.Bounds.Width <= 0 || page.Bounds.Height <= 0)
+            {
+                if (DateTime.UtcNow >= documentReadyBy)
+                    throw new TimeoutException("Dock document did not load: " + ActiveDocument?.TitleKey);
+                window.UpdateLayout();
+                await Task.Delay(50);
+            }
+        }
+
+        foreach (var item in Groups.SelectMany(group => group.Items).Where(item => item.PrototypeId != "welcome"))
+        {
+            OpenItem(item);
+            var catalogReadyBy = DateTime.UtcNow.AddSeconds(10);
+            while (ActiveDocument?.Page is not { } page || !page.GetVisualAncestors().Contains(window) || page.Bounds.Width <= 0 || page.Bounds.Height <= 0)
+            {
+                if (DateTime.UtcNow >= catalogReadyBy) throw new TimeoutException("Catalog page did not load: " + item.TitleKey);
+                window.UpdateLayout();
+                await Task.Delay(50);
+            }
+            await Task.Delay(250);
+            window.UpdateLayout();
+            Save("catalog-" + item.PrototypeId);
+            CloseDocument(ActiveDocument!);
+        }
+        OpenItem(Groups[0].Items[0]);
+        foreach (var culture in Cultures)
+        {
+            SelectedCulture = culture;
+            foreach (var size in new[] { new Size(1440, 860), new Size(1120, 640) })
+            {
+                window.Width = size.Width;
+                window.Height = size.Height;
+                foreach (var group in Groups)
+                {
+                    SelectedGroup = group;
+                    await Task.Delay(200);
+                    window.UpdateLayout();
+                    var commands = window.FindControl<ScrollViewer>("RibbonCommands")!.GetVisualDescendants()
+                        .OfType<Button>().Select(button => button.DataContext).OfType<DemoItemViewModel>().ToArray();
+                    if (commands.Length != group.Items.Count || !commands.SequenceEqual(group.Items))
+                        throw new InvalidOperationException("Ribbon commands do not match the catalog: " + group.TitleKey);
+                    Save($"ribbon-{group.TitleKey.Split('.').Last()}-{(int)size.Width}-{culture.Name}");
+                }
             }
         }
 

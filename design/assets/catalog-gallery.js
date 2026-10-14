@@ -20,8 +20,57 @@
   });
   renderRBody = function () {
     var group = CATALOG.find(function (item) { return item.id === curTab; });
-    $("rBody").innerHTML = group ? '<div class="grp"><div class="cmds">'+group.items.map(cmdBtn).join("")+'</div></div>' : "";
+    var source = data.find(function(item) { return item.id === curTab; });
+    var sections = new Map();
+    if (source) source.items.forEach(function(entry) {
+      var key = entry.sectionKey || source.titleKey;
+      if (!sections.has(key)) sections.set(key, []);
+      sections.get(key).push(entry);
+    });
+    $("rBody").innerHTML = Array.from(sections, function(pair) {
+      var key = pair[0], items = pair[1], caption = key === source.titleKey ? title(source) : text(key.split('.').pop());
+      return '<div class="grp'+(source.items.length > 7 || items.length > 3 ? ' ribbon-small' : '')+'"><div class="cmds">'+items.map(function(entry) { return cmdBtn({id:entry.prototypeId}); }).join('')+'</div><div class="gname">'+esc(caption)+'</div></div>';
+    }).join('');
     $("rBody").querySelectorAll(".cbtn").forEach(function (button) { button.onclick = function () { openDoc(button.dataset.p); }; });
+  };
+  // Reuse the native language resources and show either page parameters or global settings.
+  var originalPropertyGrid = renderPGrid;
+  var densityValues = SELF_PROPS[0].options.slice();
+  var paletteValues = SELF_PROPS[1].options.slice();
+  var paletteKeys = ["DotNet", "Aurora", "Ember", "Default", "Aquatic", "Desert", "Dusk", "NightSky", "HighContrast"];
+  renderPGrid = function(id) {
+    originalPropertyGrid(id);
+    var settings = window.CodeWFPrototypeSettings[LANG], panel = $("pGrid");
+    var pageProps = (id && PROTO[id] && PROTO[id].props) || [], categories = panel.querySelectorAll(".cat");
+    function removeSection(start, end) {
+      for (var child = start; child && child !== end;) {
+        var next = child.nextElementSibling; child.remove(); child = next;
+      }
+    }
+    if (pageProps.length) removeSection(categories[0], categories[1]);
+    else removeSection(categories[1], categories[2]);
+    removeSection(categories[2], null);
+    if (!pageProps.length && categories[0]) categories[0].textContent = settings.group;
+    var labels = [settings.shell.Density, settings.shell.Palette, settings.shell.Dark, settings.language];
+    SELF_PROPS.forEach(function(property, index) {
+      var control = panel.querySelector('[data-id="' + property.id + '"]');
+      if (!control) return;
+      var label = control.closest(".rw").querySelector("label,.nm");
+      label.textContent = labels[index]; label.title = labels[index];
+      if (index === 0 || index === 1) Array.from(control.options).forEach(function(option) {
+        var value = option.value; option.value = value;
+        option.textContent = index === 0
+          ? (value === densityValues[1] ? settings.shell.DensityCompact : settings.shell.DensityComfort)
+          : settings.palettes[paletteKeys[paletteValues.indexOf(value)]];
+      });
+    });
+    var paletteSelect = $("palSel");
+    Array.from(paletteSelect.options).forEach(function(option, index) { option.textContent = settings.palettes[paletteKeys[index]]; });
+    paletteSelect.setAttribute("aria-label", settings.shell.Palette);
+    $("palDots").querySelectorAll("button").forEach(function(button, index) {
+      button.title = settings.palettes[paletteKeys[index]]; button.setAttribute("aria-label", button.title);
+    });
+    if ($("pgCnt")) $("pgCnt").textContent = "(" + (pageProps.length || SELF_PROPS.length) + ")";
   };
   var originalOpenDoc = openDoc;
   openDoc = function (id) {
@@ -101,6 +150,7 @@
     var pg=PROTO[id],entry=entries[id];if(!pg||!entry)return;
     var hasSource = Boolean(pg.xaml || pg.cs || entry.code);
     var head=id==='welcome'?'':'<header class="catalog-header"><div><h1>'+esc(pt(id))+'</h1><p>'+esc(entry.package||text('AboutDesc'))+'</p><p class="catalog-description">'+esc(description(entry))+'</p></div>'+(hasSource?'<button class="btn" id="catalog-source-toggle">'+esc(text('Source'))+'</button>':'')+'</header>';
+    $('dBody').dataset.page=id;
     $('dBody').innerHTML=head+'<div id="seg-'+id+'"></div>'+(id==='welcome'?'':'<div class="catalog-source" hidden><div class="smt"><button data-source="xaml">XAML</button><button data-source="cs">C#</button></div><pre></pre></div>');
     renderInto(id,$('seg-'+id));
     if(pg.after)guard(function(){pg.after();},'after:'+id);

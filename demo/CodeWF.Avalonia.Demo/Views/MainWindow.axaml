@@ -14,7 +14,7 @@
                      MinWidth="1120" MinHeight="640"
                      Background="{DynamicResource StudioBackground}"
                      Foreground="{DynamicResource StudioText}"
-                     TitleBarHeight="48">
+                     TitleBarHeight="52" FontSize="13" FontFamily="Segoe UI, Microsoft YaHei UI">
 
   <!--  外壳：CodeWFWindow 无边框窗口，标题栏即自我演示  -->
   <Window.DataTemplates>
@@ -39,8 +39,8 @@
 
   <codewf:CodeWFWindow.LeftContent>
     <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-      <Image Source="/Assets/logo.png" Width="18" Height="18" VerticalAlignment="Center" />
-      <TextBlock Text="CodeWF.Avalonia" FontWeight="Bold" VerticalAlignment="Center" />
+      <Image Source="/Assets/logo.png" Width="28" Height="28" VerticalAlignment="Center" />
+      <TextBlock Text="CodeWF.Avalonia" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
       <TextBlock x:Name="VersionText" Text="Demo" Opacity="0.7" FontSize="11" VerticalAlignment="Center" />
       <TextBlock Text="INTERFACE STUDIO" FontFamily="Consolas" FontSize="10" LetterSpacing="1.5" Opacity="0.6" VerticalAlignment="Center" Margin="8,0,0,0" />
     </StackPanel>
@@ -90,8 +90,8 @@
 
   <Grid RowDefinitions="Auto,Auto,*,Auto">
 
-    <!--  Ribbon 页签行：快捷工具栏 + 7 页签（双击页签折叠/展开命令区，不另设图钉按钮）  -->
-    <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
+    <!--  Ribbon 页签行：快捷工具栏 + 分类页签（双击页签折叠/展开命令区，不另设图钉按钮）  -->
+    <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Height="42">
       <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="6,0,2,0">
         <Button Classes="qk-btn" Content="◉" Margin="0,0,2,0"
                 ToolTip.Tip="{codewf:I18n Demo.Shell.QuickGuide}"
@@ -118,9 +118,9 @@
                 DoubleTapped="OnRibbonTabStripDoubleTapped">
         <TabStrip.ItemTemplate>
           <DataTemplate x:DataType="vm:DemoGroupViewModel">
-            <StackPanel Orientation="Horizontal" Spacing="6" Margin="14,4">
+            <StackPanel Orientation="Horizontal" Spacing="6" Margin="12,4">
               <TextBlock Text="{Binding Icon}" FontSize="14" VerticalAlignment="Center" />
-              <TextBlock Text="{Binding Title}" FontWeight="SemiBold" VerticalAlignment="Center" />
+              <TextBlock Text="{Binding Title}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
             </StackPanel>
           </DataTemplate>
         </TabStrip.ItemTemplate>
@@ -128,36 +128,44 @@
       </ScrollViewer>
     </Grid>
 
-    <!--  Ribbon 命令区：当前页签的演示命令（图标 + 名称），底部组名；紧凑密度下整体收窄  -->
+    <!--  Ribbon 命令区：当前页签的演示命令（图标 + 名称），底部组名；按功能分组，密集命令使用双行  -->
     <Border Grid.Row="1" IsVisible="{Binding RibbonExpanded}"
             Background="{DynamicResource StudioSurface}" ClipToBounds="True" Padding="12,4,12,2"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
             BorderThickness="0,1,0,1">
-      <StackPanel Spacing="4">
-        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-        <ItemsControl ItemsSource="{Binding RibbonItems}">
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <StackPanel Orientation="Horizontal" />
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
+      <ScrollViewer x:Name="RibbonCommands" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+        <ItemsControl ItemsSource="{Binding RibbonSections}">
+          <ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="vm:DemoItemViewModel">
-              <Button Classes="rbn-cmd" Classes.selected="{Binding IsSelected}" Margin="0,0,8,0"
-                      Classes.compact="{Binding $parent[Window].((vm:MainViewModel)DataContext).IsCompactDensity}"
-                      Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenItemCommand}"
-                      CommandParameter="{Binding}" ToolTip.Tip="{Binding DisplayTitle}">
-                <StackPanel Orientation="Vertical" Spacing="5">
-                  <TextBlock Text="{Binding Icon}" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                  <TextBlock Text="{Binding DisplayTitle}" FontSize="11" MaxWidth="160" HorizontalAlignment="Center"
-                             VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
+            <DataTemplate x:DataType="vm:DemoRibbonSection">
+              <Border BorderBrush="{DynamicResource StudioBorder}" BorderThickness="0,0,1,0" Padding="0,0,12,0" Margin="0,0,12,0">
+                <StackPanel Spacing="2">
+                  <ItemsControl ItemsSource="{Binding Items}">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel Orientation="Vertical" Height="62" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="vm:DemoItemViewModel">
+                        <Button Classes="rbn-cmd" Classes.selected="{Binding IsSelected}" Margin="0,0,4,0"
+                                Classes.small="{Binding $parent[ItemsControl].((vm:DemoRibbonSection)DataContext).UseSmallCommands}"
+                                Height="{Binding $parent[ItemsControl].((vm:DemoRibbonSection)DataContext).CommandHeight}"
+                                Classes.compact="{Binding $parent[Window].((vm:MainViewModel)DataContext).IsCompactDensity}"
+                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenItemCommand}"
+                                CommandParameter="{Binding}" ToolTip.Tip="{Binding DisplayTitle}">
+                          <StackPanel Classes="ribbon-content" Spacing="5">
+                            <TextBlock Classes="ribbon-icon" Text="{Binding Icon}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding DisplayTitle}" FontSize="11" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" TextWrapping="NoWrap" TextAlignment="Center" />
+                          </StackPanel>
+                        </Button>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  <TextBlock Text="{Binding Title}" FontSize="10" Foreground="{DynamicResource StudioMuted}" HorizontalAlignment="Center" />
                 </StackPanel>
-              </Button>
+              </Border>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
-        </ScrollViewer>
-      </StackPanel>
+      </ScrollViewer>
     </Border>
 
     <!--  中央 Dock 工作区：导航树 / 文档区 / 属性 / 日志均为可停靠面板（Context 直接承载控件实例）

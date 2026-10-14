@@ -70,7 +70,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "status-badge",
         "titleZh": "StatusBadge",
         "titleEn": "StatusBadge",
-        "description": "StatusBadge"
+        "description": "StatusBadge",
+        "sectionKey": "Demo.Catalog.SectionStatuses"
       },
       {
         "titleKey": "Demo.Item.StatusCard",
@@ -80,7 +81,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "status-card",
         "titleZh": "StatusCard",
         "titleEn": "StatusCard",
-        "description": "StatusCard"
+        "description": "StatusCard",
+        "sectionKey": "Demo.Catalog.SectionStatuses"
       },
       {
         "titleKey": "Demo.Item.Guide",
@@ -90,7 +92,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "guide",
         "titleZh": "Guide",
         "titleEn": "Guide",
-        "description": "Guide"
+        "description": "Guide",
+        "sectionKey": "Demo.Catalog.SectionGuidance"
       },
       {
         "titleKey": "Demo.Item.Notifications",
@@ -100,7 +103,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "notifications",
         "titleZh": "LogNotifications",
         "titleEn": "LogNotifications",
-        "description": "LogNotifications"
+        "description": "LogNotifications",
+        "sectionKey": "Demo.Catalog.SectionNotifications"
       }
     ]
   },
@@ -118,7 +122,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "datagrid",
         "titleZh": "DataGridEnhancement",
         "titleEn": "DataGridEnhancement",
-        "description": "DataGridEnhancement"
+        "description": "DataGridEnhancement",
+        "sectionKey": "Demo.Catalog.SectionGrids"
       },
       {
         "titleKey": "Demo.Item.ColumnDisplayEditor",
@@ -128,7 +133,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "colde",
         "titleZh": "ColumnDisplayEditor",
         "titleEn": "ColumnDisplayEditor",
-        "description": "ColumnDisplayEditor"
+        "description": "ColumnDisplayEditor",
+        "sectionKey": "Demo.Catalog.SectionGrids"
       },
       {
         "titleKey": "Demo.Item.TreeDataGrid",
@@ -138,7 +144,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "treegrid",
         "titleZh": "TreeDataGridExtension",
         "titleEn": "TreeDataGridExtension",
-        "description": "TreeDataGridExtension"
+        "description": "TreeDataGridExtension",
+        "sectionKey": "Demo.Catalog.SectionGrids"
       },
       {
         "titleKey": "Demo.Item.PropertyGrid",
@@ -148,7 +155,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "propgrid",
         "titleZh": "PropertyGrid",
         "titleEn": "PropertyGrid",
-        "description": "PropertyGrid"
+        "description": "PropertyGrid",
+        "sectionKey": "Demo.Catalog.SectionProperties"
       },
       {
         "titleKey": "Demo.Item.Log",
@@ -158,7 +166,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "log",
         "titleZh": "LogView",
         "titleEn": "LogView",
-        "description": "LogView"
+        "description": "LogView",
+        "sectionKey": "Demo.Catalog.SectionLogs"
       }
     ]
   },
@@ -176,7 +185,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "codewfwindow",
         "titleZh": "CodeWFWindow",
         "titleEn": "CodeWFWindow",
-        "description": "CodeWFWindow"
+        "description": "CodeWFWindow",
+        "sectionKey": "Demo.Catalog.SectionWindows"
       },
       {
         "titleKey": "Demo.Item.TitleBar",
@@ -186,7 +196,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "titlebar",
         "titleZh": "CodeWFTitleBar",
         "titleEn": "CodeWFTitleBar",
-        "description": "CodeWFTitleBar"
+        "description": "CodeWFTitleBar",
+        "sectionKey": "Demo.Catalog.SectionWindows"
       },
       {
         "titleKey": "Demo.Item.Dock",
@@ -196,7 +207,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "dock",
         "titleZh": "DockControl",
         "titleEn": "DockControl",
-        "description": "DockControl"
+        "description": "DockControl",
+        "sectionKey": "Demo.Catalog.SectionNavigation"
       },
       {
         "titleKey": "Demo.Item.TrapezoidTab",
@@ -206,7 +218,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "trapezoid",
         "titleZh": "TrapezoidShapedTabControl",
         "titleEn": "TrapezoidShapedTabControl",
-        "description": "TrapezoidShapedTabControl"
+        "description": "TrapezoidShapedTabControl",
+        "sectionKey": "Demo.Catalog.SectionNavigation"
       },
       {
         "titleKey": "Demo.Item.WindowedStackPanel",
@@ -216,7 +229,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "wsp",
         "titleZh": "WindowedStackPanel",
         "titleEn": "WindowedStackPanel",
-        "description": "WindowedStackPanel"
+        "description": "WindowedStackPanel",
+        "sectionKey": "Demo.Catalog.SectionLayout"
       },
       {
         "titleKey": "Demo.Item.DiagonalLine",
@@ -226,7 +240,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "diagonal-line",
         "titleZh": "LeftTop2RightBottomLine",
         "titleEn": "LeftTop2RightBottomLine",
-        "description": "LeftTop2RightBottomLine"
+        "description": "LeftTop2RightBottomLine",
+        "sectionKey": "Demo.Catalog.SectionLayout"
       },
       {
         "titleKey": "Demo.Item.ContentExpansionAnimator",
@@ -236,7 +251,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "expansion",
         "titleZh": "ContentExpansionAnimator",
         "titleEn": "ContentExpansionAnimator",
-        "description": "ContentExpansionAnimator"
+        "description": "ContentExpansionAnimator",
+        "sectionKey": "Demo.Catalog.SectionLayout"
       }
     ]
   },
@@ -254,7 +270,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "md-viewer",
         "titleZh": "MarkdownViewer",
         "titleEn": "MarkdownViewer",
-        "description": "MarkdownViewer"
+        "description": "MarkdownViewer",
+        "sectionKey": "Demo.Catalog.SectionReading"
       },
       {
         "titleKey": "Demo.Item.MarkdownLite",
@@ -264,7 +281,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "md-lite",
         "titleZh": "Lite.MarkdownViewer",
         "titleEn": "Lite.MarkdownViewer",
-        "description": "Lite.MarkdownViewer"
+        "description": "Lite.MarkdownViewer",
+        "sectionKey": "Demo.Catalog.SectionReading"
       },
       {
         "titleKey": "Demo.Item.MarkdownEditor",
@@ -274,7 +292,8 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "md-editor",
         "titleZh": "MarkdownEditorView",
         "titleEn": "MarkdownEditorView",
-        "description": "MarkdownEditorView"
+        "description": "MarkdownEditorView",
+        "sectionKey": "Demo.Catalog.SectionEditing"
       },
       {
         "titleKey": "Demo.Item.MarkdownLiveEditor",
@@ -284,7 +303,19 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "md-live",
         "titleZh": "MarkdownLiveEditorView",
         "titleEn": "MarkdownLiveEditorView",
-        "description": "MarkdownLiveEditorView"
+        "description": "MarkdownLiveEditorView",
+        "sectionKey": "Demo.Catalog.SectionEditing"
+      },
+      {
+        "titleKey": "Demo.Item.MarkdownExport",
+        "page": "MarkdownExportPage",
+        "api": "MarkdownDocumentExporter",
+        "package": "CodeWF.Avalonia.Markdown",
+        "prototypeId": "md-export",
+        "titleZh": "MarkdownDocumentExporter",
+        "titleEn": "MarkdownDocumentExporter",
+        "description": "MarkdownDocumentExporter",
+        "sectionKey": "Demo.Catalog.SectionExport"
       }
     ]
   },
@@ -323,16 +354,6 @@ window.CodeWFDemoCatalog = [
         "titleZh": "I18nManager",
         "titleEn": "I18nManager",
         "description": "I18nManager"
-      },
-      {
-        "titleKey": "Demo.Item.MarkdownExport",
-        "page": "MarkdownExportPage",
-        "api": "MarkdownDocumentExporter",
-        "package": "CodeWF.Avalonia.Markdown",
-        "prototypeId": "md-export",
-        "titleZh": "MarkdownDocumentExporter",
-        "titleEn": "MarkdownDocumentExporter",
-        "description": "MarkdownDocumentExporter"
       }
     ]
   },
@@ -423,7 +444,19 @@ window.CodeWFCatalogText = {
     "StatusSampleInfo": "服务已就绪",
     "StatusSampleWarn": "磁盘空间不足",
     "StatusSampleError": "下游服务超时",
-    "StatusSampleFatal": "数据库连接失败"
+    "StatusSampleFatal": "数据库连接失败",
+    "SectionStatuses": "状态显示",
+    "SectionGuidance": "引导",
+    "SectionNotifications": "通知",
+    "SectionGrids": "表格",
+    "SectionProperties": "属性编辑",
+    "SectionLogs": "日志",
+    "SectionWindows": "窗口",
+    "SectionNavigation": "停靠与页签",
+    "SectionLayout": "布局与动效",
+    "SectionReading": "阅读",
+    "SectionEditing": "编辑",
+    "SectionExport": "导出"
   },
   "en-US": {
     "Title": "Control catalog",
@@ -462,7 +495,19 @@ window.CodeWFCatalogText = {
     "StatusSampleInfo": "Service ready",
     "StatusSampleWarn": "Disk space low",
     "StatusSampleError": "Service timeout",
-    "StatusSampleFatal": "Database offline"
+    "StatusSampleFatal": "Database offline",
+    "SectionStatuses": "Status",
+    "SectionGuidance": "Guidance",
+    "SectionNotifications": "Notifications",
+    "SectionGrids": "Grids",
+    "SectionProperties": "Properties",
+    "SectionLogs": "Logs",
+    "SectionWindows": "Windows",
+    "SectionNavigation": "Dock & Tabs",
+    "SectionLayout": "Layout & Motion",
+    "SectionReading": "Reading",
+    "SectionEditing": "Editing",
+    "SectionExport": "Export"
   }
 };
 window.CodeWFCatalogDescriptions = {
@@ -637,5 +682,271 @@ window.CodeWFCatalogDescriptions = {
     "ContentExpansionAnimator": {
       "Desc": "Expand, collapse and reverse horizontal or vertical layout animations with a single progress value."
     }
+  }
+};
+window.CodeWFPrototypeSettings = {
+  "zh-CN": {
+    "shell": {
+      "Palette": "色板",
+      "Dark": "深色",
+      "Light": "浅色",
+      "Properties": "属性",
+      "Log": "日志",
+      "Navigation": "导航",
+      "WriteLogs": "写入三类日志",
+      "Ready": "就绪",
+      "Reset": "重置",
+      "DemoShell": "演示台",
+      "QuickSave": "保存布局",
+      "QuickSettings": "设置",
+      "QuickGuide": "打开引导（应用级）",
+      "PinRibbon": "展开/折叠命令区",
+      "Group": "外壳",
+      "Command": "命令面板",
+      "CommandPlaceholder": "搜索页面或命令（↑↓ 选择，Enter 执行，Esc 关闭）",
+      "CommandHint": "Ctrl+K 开关命令面板 · Ctrl+D 深浅 · Ctrl+L 语言",
+      "CommandEmpty": "没有匹配的页面或命令",
+      "Density": "密度",
+      "DensityLabel": "切换密度：舒适 / 紧凑",
+      "DensityCompact": "紧凑",
+      "DensityComfort": "舒适",
+      "LayoutSaved": "布局已保存",
+      "LayoutSaveFailed": "保存布局失败",
+      "LayoutLoaded": "已恢复上次布局",
+      "ResetRenames": "恢复原名",
+      "ResetRenamesHint": "清除全部就地重命名",
+      "Rename": "重命名",
+      "RenameHint": "双击或点铅笔就地重命名，回车提交 / Esc 取消",
+      "Notification": "通知",
+      "NotificationClear": "清空通知",
+      "NotificationDismiss": "关闭该通知",
+      "NotifyDemo": "发送示例通知",
+      "NotifyDemoHint": "演示通知中心：卡片 6 秒后自动消失，最多保留 4 条。",
+      "NavFilter": "过滤页面…",
+      "NavEmpty": "没有匹配的页面",
+      "Account": "账户"
+    },
+    "palettes": {
+      "Default": "默认",
+      "Aquatic": "水生",
+      "Desert": "沙漠",
+      "Dusk": "黄昏",
+      "NightSky": "夜空",
+      "HighContrast": "高对比",
+      "DotNet": ".NET 紫",
+      "Aurora": "AI 极光",
+      "Ember": "AI 暖陶"
+    },
+    "language": "语言",
+    "group": "外观"
+  },
+  "en-US": {
+    "shell": {
+      "Palette": "Palette",
+      "Dark": "Dark",
+      "Light": "Light",
+      "Properties": "Props",
+      "Log": "Log",
+      "Navigation": "Navigation",
+      "WriteLogs": "Write sample logs",
+      "Ready": "Ready",
+      "Reset": "Reset",
+      "DemoShell": "Demo Shell",
+      "QuickSave": "Save layout",
+      "QuickSettings": "Settings",
+      "QuickGuide": "Open guidance (app-wide)",
+      "PinRibbon": "Expand / collapse commands",
+      "Group": "Shell",
+      "Command": "Command palette",
+      "CommandPlaceholder": "Search pages or commands (↑↓ select, Enter run, Esc close)",
+      "CommandHint": "Ctrl+K palette · Ctrl+D theme · Ctrl+L language",
+      "CommandEmpty": "No matching page or command",
+      "Density": "Density",
+      "DensityLabel": "Toggle density: cozy / compact",
+      "DensityCompact": "Compact",
+      "DensityComfort": "Cozy",
+      "LayoutSaved": "Layout saved",
+      "LayoutSaveFailed": "Saving layout failed",
+      "LayoutLoaded": "Restored the previous layout",
+      "ResetRenames": "Restore names",
+      "ResetRenamesHint": "Clear every in-place rename",
+      "Rename": "Rename",
+      "RenameHint": "Double-click or press the pencil to rename in place; Enter commits, Esc cancels",
+      "Notification": "Notifications",
+      "NotificationClear": "Clear notifications",
+      "NotificationDismiss": "Dismiss this notification",
+      "NotifyDemo": "Send a sample notification",
+      "NotifyDemoHint": "Notification centre demo: cards auto-dismiss after 6 seconds, at most 4 kept.",
+      "NavFilter": "Filter pages…",
+      "NavEmpty": "No matching page",
+      "Account": "Account"
+    },
+    "palettes": {
+      "Default": "Default",
+      "Aquatic": "Aquatic",
+      "Desert": "Desert",
+      "Dusk": "Dusk",
+      "NightSky": "NightSky",
+      "HighContrast": "High Contrast",
+      "DotNet": ".NET Purple",
+      "Aurora": "AI Aurora",
+      "Ember": "AI Ember"
+    },
+    "language": "Language",
+    "group": "Appearance"
+  }
+};
+window.CodeWFMarkdownSamples = {
+  "zh-CN": {
+    "viewer": "# MarkdownViewer 演示\r\n\r\n完整渲染管线：**Markdig 解析** → 块级模型 → `WindowedStackPanel` 虚拟化呈现。\r\n\r\n## 任务回写\r\n勾选下面的任务，Markdown 源文本会同步更新（TaskWriteBackRequested）：\r\n\r\n- [x] 解析 Markdown 文本\r\n- [ ] 调整排版主题（右侧属性面板）\r\n- [ ] 展开输入参数，修改源文本后点击「应用」，观察增量渲染耗时\r\n\r\n## 表格与代码\r\n\r\n| 能力 | 说明 |\r\n| --- | --- |\r\n| 增量渲染 | 只重排变更块 |\r\n| 虚拟化 | 超过阈值后按窗口实现块 |\r\n\r\n```csharp\r\nvar viewer = new MarkdownViewer { Markdown = \"# 你好\" };\r\n```\r\n\r\n> 提示：右侧 PropertyGrid 即本控件的兄弟实例——属性面板自身也是一次自我演示。",
+    "lite": "# Markdown Lite 渲染范围\r\n\r\n本页内容刻意只使用 **Lite 支持的元素**：标题、**加粗**、*斜体*、`行内代码`、[链接](https://codewf.com)、列表、表格与代码块。\r\n\r\n## 列表\r\n- 基础块级元素\r\n- 表格与引用\r\n- 任务列表勾选回写同样可用\r\n\r\n> 引用块：Lite 与完整包共用同一渲染管线。\r\n\r\n## 降级演示（完整包能力在 Lite 中的表现）\r\n\r\n| 元素 | Lite 行为 |\r\n| --- | --- |\r\n| 图片 | 显示替代文本 |\r\n| 数学公式 | 显示 LaTeX 原文 |\r\n| 代码高亮 | 单色渲染 |\r\n\r\n```csharp\r\n// 代码块单色渲染（完整包为 TextMate 高亮）\r\nConsole.WriteLine(\"Hello, Markdown Lite!\");\r\n```\r\n\r\n- [x] 使用 Lite 渲染\r\n- [ ] 切换排版主题（右侧属性面板）",
+    "editor": "# MarkdownEditorView\r\n\r\nAvaloniaEdit 驱动的 Markdown 源码编辑器。\r\n\r\n## 内置能力\r\n- TextMate 语法着色\r\n- 标题 / 列表 / 表格 / 任务列表 / 代码块 / 数学块等约 40 项动作\r\n- 查找替换、自动配对、行号、字号\r\n\r\n```csharp\r\nvar editor = new MarkdownEditorView();\r\n```\r\n\r\n> 用上方按钮或快捷键体验编辑动作；修改会实时反映在状态栏。",
+    "live": "# 所见即所得\r\n\r\n直接在块上编辑：标题、段落、列表、表格都是可编辑块。\r\n\r\n## 列表\r\n- 块级建模（MarkdownBlockModel）\r\n- 编辑即渲染\r\n- 无左右分栏\r\n\r\n> 点击任意块开始编辑；顶部按钮演示插入与聚焦。\r\n\r\n| 能力 | 说明 |\r\n| --- | --- |\r\n| FocusBlock | 聚焦指定块 |\r\n| ApplyExternalEdit | 外部回写 |",
+    "apply": "应用",
+    "append": "追加段落（增量）",
+    "reset": "重置示例",
+    "themeLabel": "排版主题",
+    "sizeLabel": "排版尺寸",
+    "virtualizationLabel": "虚拟化",
+    "thresholdLabel": "虚拟化阈值"
+  },
+  "en-US": {
+    "viewer": "# MarkdownViewer\n\n**Markdig** → block models → windowed rendering.\n\n## Features\n- [x] Incremental rendering\n- [ ] Task write-back\n\n| Component | Purpose |\n| --- | --- |\n| Viewer | Render Markdown |\n| Editor | Edit source |\n\n```csharp\nviewer.Markdown = source;\n```\n\n> Try changing the typography theme.",
+    "lite": "# Markdown Lite\n\nHeadings, **bold**, *italic*, `inline code`, lists, quotes, tables, links, and code blocks.\n\n- Smaller dependency set\n- 18 typography themes\n\n| Feature | Supported |\n| --- | --- |\n| Common Markdown | Yes |\n| Export | Use full package |\n\n```csharp\nviewer.Markdown = source;\n```\n\n> A focused rendering package.",
+    "editor": "# MarkdownEditorView\n\nMarkdown source editing with AvaloniaEdit.\n\n## Built-in actions\n- Bold and italic\n- Headings and tables\n- Task lists and code\n\n```csharp\nawait editor.ExecuteAsync(MarkdownEditorAction.Bold);\n```",
+    "live": "# Live editing\n\nEdit headings, paragraphs, lists, and tables directly.\n\n## List\n- Block models\n- Incremental rendering\n\n```csharp\nvar editor = new MarkdownLiveEditorView();\n```\n\n| Feature | State |\n| --- | --- |\n| Editing | Ready |",
+    "apply": "Apply",
+    "append": "Append paragraph (incremental)",
+    "reset": "Reset sample",
+    "themeLabel": "Typography theme",
+    "sizeLabel": "Typography size",
+    "virtualizationLabel": "Virtualization",
+    "thresholdLabel": "Virtualization threshold"
+  }
+};
+window.CodeWFMarkdownTypography = {
+  "Common": {
+    "CodeWFMarkdownParagraphFontSize": 16.0,
+    "CodeWFMarkdownParagraphLineHeight": 28.0,
+    "CodeWFMarkdownHeading1FontSize": 30.0,
+    "CodeWFMarkdownHeading2FontSize": 26.0,
+    "CodeWFMarkdownHeading3FontSize": 22.0,
+    "CodeWFMarkdownHeading4FontSize": 20.0,
+    "CodeWFMarkdownHeading5FontSize": 18.0,
+    "CodeWFMarkdownHeading6FontSize": 16.0,
+    "CodeWFMarkdownBlockSpacing": 8.0,
+    "CodeWFMarkdownDocumentBottomPadding": 72.0,
+    "CodeWFMarkdownCodeBlockFontSize": 13.0,
+    "CodeWFMarkdownCodeBlockLineHeight": 20.0,
+    "CodeWFMarkdownCodeLanguageFontSize": 12.0,
+    "CodeWFMarkdownCodeBlockSpacing": 8.0,
+    "CodeWFMarkdownCodeBlockHeaderSpacing": 8.0,
+    "CodeWFMarkdownCopyButtonMinWidth": 54.0,
+    "CodeWFMarkdownCopyButtonHeight": 28.0,
+    "CodeWFMarkdownListSpacing": 6.0,
+    "CodeWFMarkdownListItemContentSpacing": 4.0,
+    "CodeWFMarkdownUnorderedListMarkerWidth": 24.0,
+    "CodeWFMarkdownOrderedListMarkerMinWidth": 28.0,
+    "CodeWFMarkdownOrderedListMarkerCharacterWidth": 9.0,
+    "CodeWFMarkdownOrderedListMarkerExtraWidth": 6.0,
+    "CodeWFMarkdownQuoteContentSpacing": 4.0,
+    "CodeWFMarkdownThematicBreakHeight": 1.0,
+    "CodeWFMarkdownTableCellMinHeight": 38.0,
+    "CodeWFMarkdownTableCellContentSpacing": 4.0,
+    "CodeWFMarkdownImageMaxWidth": 900.0,
+    "CodeWFMarkdownImageMaxHeight": 520.0,
+    "CodeWFMarkdownImageFallbackOpacity": 0.72,
+    "CodeWFMarkdownImagePreviewWidth": 1120.0,
+    "CodeWFMarkdownImagePreviewHeight": 760.0,
+    "CodeWFMarkdownImagePreviewMinWidth": 720.0,
+    "CodeWFMarkdownImagePreviewMinHeight": 480.0,
+    "CodeWFMarkdownImagePreviewToolbarSpacing": 8.0,
+    "CodeWFMarkdownImagePreviewZoomTextMinWidth": 58.0
+  },
+  "Basic": {
+    "CodeWFMarkdownParagraphFontSize": 16.0,
+    "CodeWFMarkdownParagraphLineHeight": 26.0,
+    "CodeWFMarkdownHeading1FontSize": 32.0,
+    "CodeWFMarkdownHeading2FontSize": 24.0,
+    "CodeWFMarkdownHeading3FontSize": 20.0,
+    "CodeWFMarkdownHeading4FontSize": 18.0,
+    "CodeWFMarkdownHeading5FontSize": 16.0,
+    "CodeWFMarkdownHeading6FontSize": 16.0,
+    "CodeWFMarkdownTableCellMinHeight": 34.0,
+    "CodeWFMarkdownTableCellContentSpacing": 0.0
+  },
+  "OrangeHeart": {},
+  "InkBlack": {
+    "CodeWFMarkdownHeading1FontSize": 29.0
+  },
+  "ColorfulPurple": {
+    "CodeWFMarkdownHeading1FontSize": 32.0,
+    "CodeWFMarkdownParagraphLineHeight": 29.0
+  },
+  "TenderGreen": {},
+  "Verdant": {},
+  "RedScarlet": {
+    "CodeWFMarkdownHeading1FontSize": 31.0
+  },
+  "BlueGlow": {},
+  "TechnologyBlue": {
+    "CodeWFMarkdownParagraphLineHeight": 29.0
+  },
+  "LanQing": {},
+  "Yamabuki": {
+    "CodeWFMarkdownHeading1FontSize": 31.0
+  },
+  "FrontendPeak": {
+    "CodeWFMarkdownParagraphLineHeight": 30.0,
+    "CodeWFMarkdownHeading1FontSize": 33.0
+  },
+  "GeekBlack": {},
+  "Simple": {
+    "CodeWFMarkdownParagraphLineHeight": 27.0
+  },
+  "RosePurple": {},
+  "CuteGreen": {
+    "CodeWFMarkdownParagraphFontSize": 16.5,
+    "CodeWFMarkdownParagraphLineHeight": 30.0
+  },
+  "FullStackBlue": {
+    "CodeWFMarkdownHeading1FontSize": 32.0
+  },
+  "WeChatFormat": {
+    "CodeWFMarkdownParagraphFontSize": 16.0,
+    "CodeWFMarkdownParagraphLineHeight": 26.0,
+    "CodeWFMarkdownHeading2FontSize": 22.4,
+    "CodeWFMarkdownHeading3FontSize": 19.2,
+    "CodeWFMarkdownQuoteContentSpacing": 0.0
+  },
+  "CompactTypographyResources": {
+    "CodeWFMarkdownParagraphFontSize": 14.0,
+    "CodeWFMarkdownParagraphLineHeight": 22.0,
+    "CodeWFMarkdownHeading1FontSize": 26.0,
+    "CodeWFMarkdownHeading2FontSize": 22.0,
+    "CodeWFMarkdownHeading3FontSize": 19.0,
+    "CodeWFMarkdownHeading4FontSize": 17.0,
+    "CodeWFMarkdownHeading5FontSize": 15.0,
+    "CodeWFMarkdownHeading6FontSize": 14.0,
+    "CodeWFMarkdownBlockSpacing": 4.0,
+    "CodeWFMarkdownDocumentBottomPadding": 40.0,
+    "CodeWFMarkdownCodeBlockFontSize": 12.0,
+    "CodeWFMarkdownCodeBlockLineHeight": 18.0,
+    "CodeWFMarkdownCodeLanguageFontSize": 11.0,
+    "CodeWFMarkdownCodeBlockSpacing": 4.0,
+    "CodeWFMarkdownCodeBlockHeaderSpacing": 6.0,
+    "CodeWFMarkdownCopyButtonMinWidth": 48.0,
+    "CodeWFMarkdownCopyButtonHeight": 24.0,
+    "CodeWFMarkdownListSpacing": 3.0,
+    "CodeWFMarkdownListItemContentSpacing": 2.0,
+    "CodeWFMarkdownUnorderedListMarkerWidth": 20.0,
+    "CodeWFMarkdownOrderedListMarkerMinWidth": 24.0,
+    "CodeWFMarkdownOrderedListMarkerCharacterWidth": 8.0,
+    "CodeWFMarkdownOrderedListMarkerExtraWidth": 4.0,
+    "CodeWFMarkdownQuoteContentSpacing": 3.0,
+    "CodeWFMarkdownTableCellMinHeight": 28.0,
+    "CodeWFMarkdownTableCellContentSpacing": 2.0,
+    "CodeWFMarkdownImagePreviewToolbarSpacing": 6.0,
+    "CodeWFMarkdownImagePreviewZoomTextMinWidth": 52.0
   }
 };

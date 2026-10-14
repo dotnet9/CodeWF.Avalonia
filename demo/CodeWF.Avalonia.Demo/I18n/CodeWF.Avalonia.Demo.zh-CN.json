@@ -298,7 +298,7 @@
       "PackageCount": "9 个包",
       "HeroLead": "让桌面界面，",
       "HeroAccent": "拥有表现力。",
-      "PageCount": "31 个演示页面",
+      "PageCount": "32 个演示页面",
       "SortName": "名称",
       "SortModule": "模块",
       "SortStatus": "状态",
@@ -746,7 +746,7 @@
         "UpdateState004": "无"
       },
       "MarkdownViewerPageViewModel": {
-        "SampleMarkdown001": "# MarkdownViewer 演示\r\n\r\n完整渲染管线：**Markdig 解析** → 块级模型 → `WindowedStackPanel` 虚拟化呈现。\r\n\r\n## 任务回写\r\n勾选下面的任务，Markdown 源文本会同步更新（TaskWriteBackRequested）：\r\n\r\n- [x] 解析 Markdown 文本\r\n- [ ] 调整排版主题（右侧属性面板）\r\n- [ ] 编辑左侧源文本后点击「应用」，观察增量渲染耗时\r\n\r\n## 表格与代码\r\n\r\n| 能力 | 说明 |\r\n| --- | --- |\r\n| 增量渲染 | 只重排变更块 |\r\n| 虚拟化 | 超过阈值后按窗口实现块 |\r\n\r\n```csharp\r\nvar viewer = new MarkdownViewer { Markdown = \"# 你好\" };\r\n```\r\n\r\n> 提示：右侧 PropertyGrid 即本控件的兄弟实例——属性面板自身也是一次自我演示。",
+        "SampleMarkdown001": "# MarkdownViewer 演示\r\n\r\n完整渲染管线：**Markdig 解析** → 块级模型 → `WindowedStackPanel` 虚拟化呈现。\r\n\r\n## 任务回写\r\n勾选下面的任务，Markdown 源文本会同步更新（TaskWriteBackRequested）：\r\n\r\n- [x] 解析 Markdown 文本\r\n- [ ] 调整排版主题（右侧属性面板）\r\n- [ ] 展开输入参数，修改源文本后点击「应用」，观察增量渲染耗时\r\n\r\n## 表格与代码\r\n\r\n| 能力 | 说明 |\r\n| --- | --- |\r\n| 增量渲染 | 只重排变更块 |\r\n| 虚拟化 | 超过阈值后按窗口实现块 |\r\n\r\n```csharp\r\nvar viewer = new MarkdownViewer { Markdown = \"# 你好\" };\r\n```\r\n\r\n> 提示：右侧 PropertyGrid 即本控件的兄弟实例——属性面板自身也是一次自我演示。",
         "AppendParagraph002": "\n\n新增段落：增量渲染只解析与重排变更块（"
       },
       "StatusComponentsPageaxaml": {
@@ -1180,7 +1180,19 @@
       "StatusSampleInfo": "服务已就绪",
       "StatusSampleWarn": "磁盘空间不足",
       "StatusSampleError": "下游服务超时",
-      "StatusSampleFatal": "数据库连接失败"
+      "StatusSampleFatal": "数据库连接失败",
+      "SectionStatuses": "状态显示",
+      "SectionGuidance": "引导",
+      "SectionNotifications": "通知",
+      "SectionGrids": "表格",
+      "SectionProperties": "属性编辑",
+      "SectionLogs": "日志",
+      "SectionWindows": "窗口",
+      "SectionNavigation": "停靠与页签",
+      "SectionLayout": "布局与动效",
+      "SectionReading": "阅读",
+      "SectionEditing": "编辑",
+      "SectionExport": "导出"
     }
   }
 }

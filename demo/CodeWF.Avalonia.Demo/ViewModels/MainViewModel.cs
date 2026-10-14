@@ -103,6 +103,8 @@ public partial class MainViewModel : ReactiveObject
     }
 
     /// <summary>Ribbon 分组（左树镜像同一集合）。</summary>
+    public IReadOnlyList<DemoRibbonSection> RibbonSections => SelectedGroup?.RibbonSections ?? [];
+
     public IReadOnlyList<DemoItemViewModel> RibbonItems => SelectedGroup?.Items.ToArray() ?? [];
 
 
@@ -146,9 +148,11 @@ public partial class MainViewModel : ReactiveObject
         get => _selectedGroup;
         set
         {
+            if (ReferenceEquals(_selectedGroup, value)) return;
             this.RaiseAndSetIfChanged(ref _selectedGroup, value);
             if (value is not null) value.IsExpanded = true;
             this.RaisePropertyChanged(nameof(RibbonItems));
+            this.RaisePropertyChanged(nameof(RibbonSections));
         }
     }
 
@@ -295,6 +299,7 @@ public partial class MainViewModel : ReactiveObject
 
             this.RaiseAndSetIfChanged(ref _selectedCulture, value);
             I18nManager.Instance.Culture = new CultureInfo(value.Name);
+            this.RaisePropertyChanged(nameof(RibbonSections));
             SyncToolTitles();
             foreach (var palette in Palettes) palette.RefreshTitle();
             GlobalProperties = BuildGlobalProperties();
@@ -350,11 +355,11 @@ public partial class MainViewModel : ReactiveObject
         document.DockDocument = dockDocument;
 
         Documents.Add(document);
-        if (_docDock is not null)
+        if (_docDock is not null && _dockFactory is not null)
         {
-            _docDock.VisibleDockables ??= _dockFactory?.CreateList<IDockable>() ?? new AvaloniaList<IDockable>();
-            _docDock.VisibleDockables.Add(dockDocument);
-            _docDock.ActiveDockable = dockDocument;
+            _dockFactory.AddDockable(_docDock, dockDocument);
+            _dockFactory.SetActiveDockable(dockDocument);
+            _dockFactory.SetFocusedDockable(_docDock, dockDocument);
         }
 
         ActiveDocument = document;
@@ -390,9 +395,11 @@ public partial class MainViewModel : ReactiveObject
     /// <summary>激活已打开文档（Dock 页签点击 / 重复打开命令）。</summary>
     private void ActivateDocument(DemoDocumentViewModel document)
     {
-        if (_docDock is not null && document.DockDocument is not null)
+        if (_dockFactory is not null && document.DockDocument is { } dockDocument)
         {
-            _docDock.ActiveDockable = document.DockDocument;
+            _dockFactory.SetActiveDockable(dockDocument);
+            if (dockDocument.Owner is IDock owner)
+                _dockFactory.SetFocusedDockable(owner, dockDocument);
         }
 
         ActiveDocument = document;
@@ -568,7 +575,7 @@ public partial class MainViewModel : ReactiveObject
     {
         if (e.PropertyName == nameof(IDock.ActiveDockable) && _docDock is not null)
         {
-            ActiveDocument = (_docDock.ActiveDockable as Document)?.Context as DemoDocumentViewModel;
+            ActiveDocument = Documents.FirstOrDefault(document => ReferenceEquals(document.DockDocument, _docDock.ActiveDockable));
         }
     }
 
@@ -587,8 +594,7 @@ public partial class MainViewModel : ReactiveObject
         public override void CloseDockable(IDockable dockable)
         {
             base.CloseDockable(dockable);
-            if (dockable is Document { Context: Views.DemoDocumentView view }
-                && view.DataContext is DemoDocumentViewModel document)
+            if (dockable is Document { Context: Views.DemoDocumentView { DataContext: DemoDocumentViewModel document } })
             {
                 owner.SyncDocumentClosed(document);
             }

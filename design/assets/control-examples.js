@@ -6,12 +6,79 @@
     var entry = window.CodeWFDemoCatalog.flatMap(function(g){return g.items;}).find(function(e){return e.prototypeId===id;});
     options.zh = {t:entry.titleZh,d:entry.package,f:[]};
     options.en = {t:entry.titleEn,d:entry.package,f:[]};
-    options.props = [];
+    options.props = options.props || [];
     REG(id, options);
   }
   ['if','switch'].forEach(function(id){
     PROTO[id].xaml = window.CodeWFCatalogDescriptions[LANG][id === 'if' ? 'If' : 'Switch'].Xaml;
   });
+  function samples() { return window.CodeWFMarkdownSamples[LANG]; }
+  function applyTypography(id) {
+    var page = document.querySelector('#seg-'+id+' .catalog-markdown-basic');
+    if(!page)return;
+    var props=PROTO[id].props, theme=props.find(function(p){return p.id==='typography-theme';}), size=props.find(function(p){return p.id==='typography-size';});
+    var tokens=window.CodeWFMarkdownTypography;
+    var metrics=Object.assign({},tokens.Common,tokens[theme.value],size.value==='Small'?tokens.CompactTypographyResources:{});
+    page.style.fontSize=metrics.CodeWFMarkdownParagraphFontSize+'px';
+    page.style.lineHeight=metrics.CodeWFMarkdownParagraphLineHeight+'px';
+    page.style.gap=metrics.CodeWFMarkdownBlockSpacing+'px';
+    page.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach(function(heading){heading.style.fontSize=metrics['CodeWFMarkdownHeading'+heading.tagName.slice(1)+'FontSize']+'px';});
+    page.querySelectorAll('pre').forEach(function(code){code.style.fontSize=metrics.CodeWFMarkdownCodeBlockFontSize+'px';code.style.lineHeight=metrics.CodeWFMarkdownCodeBlockLineHeight+'px';});
+  }
+  function typographyProperties(id, themes) {
+    return [
+      {id:'typography-theme',get label(){return samples().themeLabel;},type:'combo',options:themes,value:'Basic',apply:function(){applyTypography(id);}},
+      {id:'typography-size',get label(){return samples().sizeLabel;},type:'combo',options:['Normal','Small'],value:'Normal',apply:function(){applyTypography(id);}}
+    ];
+  }
+  // Browser rendering covers the elements in the shared examples; the native page runs Markdig.
+  function renderSample(source) {
+    var lines = source.replace(/\r\n/g, '\n').split('\n'), output = [], fence = false, code = [], list = false, table = false;
+    function inline(value) { return esc(value).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*([^*]+)\*/g, '<em>$1</em>').replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2">$1</a>'); }
+    lines.forEach(function(line, index) {
+      if (line.startsWith('```')) { if (fence) { output.push('<pre>'+esc(code.join('\n'))+'</pre>'); code=[]; } fence=!fence; return; }
+      if (fence) { code.push(line); return; }
+      if (!line.startsWith('- ') && list) { output.push('</ul>'); list=false; }
+      if (!line.startsWith('|') && table) { output.push('</tbody></table>'); table=false; }
+      var heading = line.match(/^(#{1,6}) (.+)/);
+      if (heading) { var level=heading[1].length; output.push('<h'+level+'>'+inline(heading[2])+'</h'+level+'>'); }
+      else if (line.startsWith('- ')) {
+        if (!list) { output.push('<ul>'); list=true; }
+        var task=line.match(/^- \[([ xX])\] (.*)/);
+        output.push('<li'+(task?' class="markdown-task"':'')+'>'+(task?'<label><input type="checkbox" data-task-line="'+index+'" '+(task[1].trim()?'checked':'')+'> '+inline(task[2])+'</label>':inline(line.slice(2)))+'</li>');
+      } else if (line.startsWith('> ')) output.push('<blockquote>'+inline(line.slice(2))+'</blockquote>');
+      else if (line.startsWith('|') && !line.includes('---')) {
+        var header=!table;
+        if(header){output.push('<table><thead>');table=true;}
+        output.push('<tr>'+line.split('|').slice(1,-1).map(function(cell){var tag=header?'th':'td';return '<'+tag+'>'+inline(cell.trim())+'</'+tag+'>';}).join('')+'</tr>');
+        if(header)output.push('</thead><tbody>');
+      }
+      else if (line.trim() && !line.startsWith('|')) output.push('<p>'+inline(line)+'</p>');
+    });
+    if(list)output.push('</ul>');
+    if(table)output.push('</tbody></table>');
+    return output.join('');
+  }
+  register('md-viewer', {props:typographyProperties('md-viewer',MD_THEMES),xaml:'<codewf:MarkdownViewer Markdown="{Binding AppliedMarkdown}"\n  TypographyTheme="{Binding Theme}" TypographySize="{Binding Size}" />', render:function(el) {
+    var source=samples().viewer;
+    el.classList.add('catalog-markdown-page');
+    el.innerHTML='<details class="catalog-markdown-input"><summary>'+esc(text('Input'))+'</summary><textarea class="catalog-input"></textarea><div class="row">'+['apply','append','reset'].map(function(action){return '<button class="btn" data-markdown-action="'+action+'">'+esc(samples()[action])+'</button>';}).join('')+'</div></details><div class="catalog-markdown-basic"></div>';
+    var input=el.querySelector('textarea'), viewer=el.querySelector('.catalog-markdown-basic'); input.value=source;
+    function paint(){
+      viewer.innerHTML=renderSample(source);
+      applyTypography('md-viewer');
+      viewer.querySelectorAll('[data-task-line]').forEach(function(task){task.onchange=function(){var lines=source.replace(/\r\n/g,'\n').split('\n');lines[task.dataset.taskLine]=lines[task.dataset.taskLine].replace(/\[[ xX]\]/,task.checked?'[x]':'[ ]');source=lines.join('\n');input.value=source;markDirty('md-viewer');};});
+    }
+    el.querySelectorAll('[data-markdown-action]').forEach(function(button){button.onclick=function(){var action=button.dataset.markdownAction;source=action==='reset'?samples().viewer:action==='append'?source+'\n\n'+text('LiveParagraph'):input.value;input.value=source;paint();};});
+    paint();
+  }});
+  register('md-lite', {props:typographyProperties('md-lite',['Basic','Simple','GeekBlack','WeChatFormat']),xaml:'<codewf:MarkdownViewer Markdown="{Binding SampleMarkdown}" />', render:function(el) {el.innerHTML='<div class="catalog-markdown-basic">'+renderSample(samples().lite)+'</div>';applyTypography('md-lite');}});
+  var originalEditorRender = PROTO['md-editor'].render;
+  PROTO['md-editor'].render = function(el) {
+    el.innerHTML = originalEditorRender(el);
+    var input = el.querySelector('#edTa');
+    if (input) { input.value = samples().editor; input.style.fontSize = '15px'; input.style.height = '300px'; }
+  };
   register('status-card',{xaml:'<codewf:StatusCard Width="180" Height="80" Kind="Info" TopText="INFO"\n  BottomText="{codewf:I18n Demo.Catalog.StatusSampleInfo}" />',render:function(el){
     var levels=['Debug','Info','Warn','Error','Fatal'];
     el.innerHTML='<div class="demo"><h4>StatusCard</h4><div class="row catalog-status-row">'+levels.map(function(level){return '<div class="catalog-status card" data-level="'+level+'"><strong>'+level.toUpperCase()+'</strong><span>'+esc(text('StatusSample'+level))+'</span></div>';}).join('')+'</div></div><div class="demo"><h4>Kind / IconWidth</h4><select>'+levels.map(function(l){return '<option'+(l==='Info'?' selected':'')+'>'+l+'</option>';}).join('')+'</select><div class="catalog-status card catalog-driven" data-level="Info"><strong>DRIVEN</strong><span>'+esc(text('StatusDriven'))+'</span></div></div>';
@@ -37,13 +104,10 @@
     el.querySelectorAll('input').forEach(function(input){input.oninput=update;});update();
   }});
   register('md-live',{xaml:'<codewf:MarkdownLiveEditorView Markdown="{Binding Doc}" />',cs:'liveEditor.FocusBlock(0);\nawait liveEditor.ExecuteAsync(MarkdownEditorAction.Table);',render:function(el){
-    var blocks=['# MarkdownLiveEditorView',text('LiveParagraph'),'- Markdown\n- FocusBlock\n- ExecuteAsync'], active=-1;
+    var blocks=samples().live.replace(/\r\n/g,'\n').split(/\n\n+/), active=-1;
     el.innerHTML='<div class="demo"><p>'+esc(text('LiveHint'))+'</p><div class="row"><button class="btn" data-insert>'+esc(text('LiveInsert'))+'</button><button class="btn" data-focus>'+esc(text('LiveFocus'))+'</button><button class="btn" data-table>'+esc(text('LiveTable'))+'</button></div><div class="catalog-live mdr"></div></div>';
     function renderBlock(s){
-      if(s.startsWith('# '))return '<h2>'+esc(s.slice(2))+'</h2>';
-      if(s.startsWith('- '))return '<ul>'+s.split('\n').map(function(l){return '<li>'+esc(l.slice(2))+'</li>';}).join('')+'</ul>';
-      if(s.startsWith('|'))return '<table>'+s.split('\n').filter(function(l){return !l.includes('---');}).map(function(l){return '<tr>'+l.split('|').slice(1,-1).map(function(c){return '<td>'+esc(c.trim())+'</td>';}).join('')+'</tr>';}).join('')+'</table>';
-      return '<p>'+esc(s)+'</p>';
+      return renderSample(s);
     }
     function paint(focus){
       el.querySelector('.catalog-live').innerHTML=blocks.map(function(s,i){return '<div class="catalog-block" tabindex="0" data-block="'+i+'">'+(i===active?'<textarea>'+esc(s)+'</textarea>':renderBlock(s))+'</div>';}).join('');
@@ -58,5 +122,13 @@
     el.querySelector('[data-table]').onclick=function(){blocks.push('| Name | Value |\n| --- | --- |\n| CodeWF | 42 |');active=blocks.length-1;paint(true);};
     paint();
   }});
+  var originalPropertyGrid = renderPGrid;
+  renderPGrid = function(id) {
+    originalPropertyGrid(id);
+    if(id!=='md-viewer' && id!=='md-lite')return;
+    var panel=$('pGrid');
+    if($('pgCnt'))$('pgCnt').textContent='('+PROTO[id].props.length+')';
+    var note=document.createElement('p');note.className='hint';note.textContent=text('Preview');panel.appendChild(note);
+  };
   if(ACTIVE_DOC) renderDoc(ACTIVE_DOC);
 })();

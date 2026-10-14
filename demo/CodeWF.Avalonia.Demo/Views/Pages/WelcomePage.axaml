@@ -2,7 +2,7 @@
  xmlns:codewf="https://codewf.com" xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels" xmlns:pages="using:CodeWF.Avalonia.Demo.Views.Pages"
  x:Class="CodeWF.Avalonia.Demo.Views.Pages.WelcomePage" x:DataType="vm:WelcomeViewModel" x:CompileBindings="True" Classes="studio-page">
  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-  <StackPanel Margin="24,20" Spacing="18" MaxWidth="1180">
+  <StackPanel Margin="28,24" Spacing="18" MaxWidth="1180">
    <TextBlock Text="CODEWF / INTERFACE STUDIO" Classes="studio-kicker" />
    <Border Classes="studio-hero">
     <Grid ColumnDefinitions="*,126">
@@ -36,7 +36,7 @@
       <DataTemplate x:DataType="vm:DemoGroupViewModel">
        <Border Classes="studio-card" Margin="0,4" Padding="14,10">
         <StackPanel Spacing="8">
-         <TextBlock Text="{Binding Title}" FontWeight="SemiBold" Foreground="{DynamicResource StudioAccent}" />
+         <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource StudioAccent}" />
          <ItemsControl ItemsSource="{Binding Items}">
           <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>

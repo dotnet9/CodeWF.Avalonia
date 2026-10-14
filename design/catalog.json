@@ -69,7 +69,8 @@
         "prototypeId": "status-badge",
         "titleZh": "StatusBadge",
         "titleEn": "StatusBadge",
-        "description": "StatusBadge"
+        "description": "StatusBadge",
+        "sectionKey": "Demo.Catalog.SectionStatuses"
       },
       {
         "titleKey": "Demo.Item.StatusCard",
@@ -79,7 +80,8 @@
         "prototypeId": "status-card",
         "titleZh": "StatusCard",
         "titleEn": "StatusCard",
-        "description": "StatusCard"
+        "description": "StatusCard",
+        "sectionKey": "Demo.Catalog.SectionStatuses"
       },
       {
         "titleKey": "Demo.Item.Guide",
@@ -89,7 +91,8 @@
         "prototypeId": "guide",
         "titleZh": "Guide",
         "titleEn": "Guide",
-        "description": "Guide"
+        "description": "Guide",
+        "sectionKey": "Demo.Catalog.SectionGuidance"
       },
       {
         "titleKey": "Demo.Item.Notifications",
@@ -99,7 +102,8 @@
         "prototypeId": "notifications",
         "titleZh": "LogNotifications",
         "titleEn": "LogNotifications",
-        "description": "LogNotifications"
+        "description": "LogNotifications",
+        "sectionKey": "Demo.Catalog.SectionNotifications"
       }
     ]
   },
@@ -117,7 +121,8 @@
         "prototypeId": "datagrid",
         "titleZh": "DataGridEnhancement",
         "titleEn": "DataGridEnhancement",
-        "description": "DataGridEnhancement"
+        "description": "DataGridEnhancement",
+        "sectionKey": "Demo.Catalog.SectionGrids"
       },
       {
         "titleKey": "Demo.Item.ColumnDisplayEditor",
@@ -127,7 +132,8 @@
         "prototypeId": "colde",
         "titleZh": "ColumnDisplayEditor",
         "titleEn": "ColumnDisplayEditor",
-        "description": "ColumnDisplayEditor"
+        "description": "ColumnDisplayEditor",
+        "sectionKey": "Demo.Catalog.SectionGrids"
       },
       {
         "titleKey": "Demo.Item.TreeDataGrid",
@@ -137,7 +143,8 @@
         "prototypeId": "treegrid",
         "titleZh": "TreeDataGridExtension",
         "titleEn": "TreeDataGridExtension",
-        "description": "TreeDataGridExtension"
+        "description": "TreeDataGridExtension",
+        "sectionKey": "Demo.Catalog.SectionGrids"
       },
       {
         "titleKey": "Demo.Item.PropertyGrid",
@@ -147,7 +154,8 @@
         "prototypeId": "propgrid",
         "titleZh": "PropertyGrid",
         "titleEn": "PropertyGrid",
-        "description": "PropertyGrid"
+        "description": "PropertyGrid",
+        "sectionKey": "Demo.Catalog.SectionProperties"
       },
       {
         "titleKey": "Demo.Item.Log",
@@ -157,7 +165,8 @@
         "prototypeId": "log",
         "titleZh": "LogView",
         "titleEn": "LogView",
-        "description": "LogView"
+        "description": "LogView",
+        "sectionKey": "Demo.Catalog.SectionLogs"
       }
     ]
   },
@@ -175,7 +184,8 @@
         "prototypeId": "codewfwindow",
         "titleZh": "CodeWFWindow",
         "titleEn": "CodeWFWindow",
-        "description": "CodeWFWindow"
+        "description": "CodeWFWindow",
+        "sectionKey": "Demo.Catalog.SectionWindows"
       },
       {
         "titleKey": "Demo.Item.TitleBar",
@@ -185,7 +195,8 @@
         "prototypeId": "titlebar",
         "titleZh": "CodeWFTitleBar",
         "titleEn": "CodeWFTitleBar",
-        "description": "CodeWFTitleBar"
+        "description": "CodeWFTitleBar",
+        "sectionKey": "Demo.Catalog.SectionWindows"
       },
       {
         "titleKey": "Demo.Item.Dock",
@@ -195,7 +206,8 @@
         "prototypeId": "dock",
         "titleZh": "DockControl",
         "titleEn": "DockControl",
-        "description": "DockControl"
+        "description": "DockControl",
+        "sectionKey": "Demo.Catalog.SectionNavigation"
       },
       {
         "titleKey": "Demo.Item.TrapezoidTab",
@@ -205,7 +217,8 @@
         "prototypeId": "trapezoid",
         "titleZh": "TrapezoidShapedTabControl",
         "titleEn": "TrapezoidShapedTabControl",
-        "description": "TrapezoidShapedTabControl"
+        "description": "TrapezoidShapedTabControl",
+        "sectionKey": "Demo.Catalog.SectionNavigation"
       },
       {
         "titleKey": "Demo.Item.WindowedStackPanel",
@@ -215,7 +228,8 @@
         "prototypeId": "wsp",
         "titleZh": "WindowedStackPanel",
         "titleEn": "WindowedStackPanel",
-        "description": "WindowedStackPanel"
+        "description": "WindowedStackPanel",
+        "sectionKey": "Demo.Catalog.SectionLayout"
       },
       {
         "titleKey": "Demo.Item.DiagonalLine",
@@ -225,7 +239,8 @@
         "prototypeId": "diagonal-line",
         "titleZh": "LeftTop2RightBottomLine",
         "titleEn": "LeftTop2RightBottomLine",
-        "description": "LeftTop2RightBottomLine"
+        "description": "LeftTop2RightBottomLine",
+        "sectionKey": "Demo.Catalog.SectionLayout"
       },
       {
         "titleKey": "Demo.Item.ContentExpansionAnimator",
@@ -235,7 +250,8 @@
         "prototypeId": "expansion",
         "titleZh": "ContentExpansionAnimator",
         "titleEn": "ContentExpansionAnimator",
-        "description": "ContentExpansionAnimator"
+        "description": "ContentExpansionAnimator",
+        "sectionKey": "Demo.Catalog.SectionLayout"
       }
     ]
   },
@@ -253,7 +269,8 @@
         "prototypeId": "md-viewer",
         "titleZh": "MarkdownViewer",
         "titleEn": "MarkdownViewer",
-        "description": "MarkdownViewer"
+        "description": "MarkdownViewer",
+        "sectionKey": "Demo.Catalog.SectionReading"
       },
       {
         "titleKey": "Demo.Item.MarkdownLite",
@@ -263,7 +280,8 @@
         "prototypeId": "md-lite",
         "titleZh": "Lite.MarkdownViewer",
         "titleEn": "Lite.MarkdownViewer",
-        "description": "Lite.MarkdownViewer"
+        "description": "Lite.MarkdownViewer",
+        "sectionKey": "Demo.Catalog.SectionReading"
       },
       {
         "titleKey": "Demo.Item.MarkdownEditor",
@@ -273,7 +291,8 @@
         "prototypeId": "md-editor",
         "titleZh": "MarkdownEditorView",
         "titleEn": "MarkdownEditorView",
-        "description": "MarkdownEditorView"
+        "description": "MarkdownEditorView",
+        "sectionKey": "Demo.Catalog.SectionEditing"
       },
       {
         "titleKey": "Demo.Item.MarkdownLiveEditor",
@@ -283,7 +302,19 @@
         "prototypeId": "md-live",
         "titleZh": "MarkdownLiveEditorView",
         "titleEn": "MarkdownLiveEditorView",
-        "description": "MarkdownLiveEditorView"
+        "description": "MarkdownLiveEditorView",
+        "sectionKey": "Demo.Catalog.SectionEditing"
+      },
+      {
+        "titleKey": "Demo.Item.MarkdownExport",
+        "page": "MarkdownExportPage",
+        "api": "MarkdownDocumentExporter",
+        "package": "CodeWF.Avalonia.Markdown",
+        "prototypeId": "md-export",
+        "titleZh": "MarkdownDocumentExporter",
+        "titleEn": "MarkdownDocumentExporter",
+        "description": "MarkdownDocumentExporter",
+        "sectionKey": "Demo.Catalog.SectionExport"
       }
     ]
   },
@@ -322,16 +353,6 @@
         "titleZh": "I18nManager",
         "titleEn": "I18nManager",
         "description": "I18nManager"
-      },
-      {
-        "titleKey": "Demo.Item.MarkdownExport",
-        "page": "MarkdownExportPage",
-        "api": "MarkdownDocumentExporter",
-        "package": "CodeWF.Avalonia.Markdown",
-        "prototypeId": "md-export",
-        "titleZh": "MarkdownDocumentExporter",
-        "titleEn": "MarkdownDocumentExporter",
-        "description": "MarkdownDocumentExporter"
       }
     ]
   },

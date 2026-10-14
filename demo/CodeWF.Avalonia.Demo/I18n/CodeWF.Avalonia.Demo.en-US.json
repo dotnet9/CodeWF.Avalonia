@@ -298,7 +298,7 @@
       "PackageCount": "9 PACKAGES",
       "HeroLead": "Give desktop interfaces",
       "HeroAccent": "a little more possibility.",
-      "PageCount": "31 demo pages",
+      "PageCount": "32 demo pages",
       "SortName": "Name",
       "SortModule": "Module",
       "SortStatus": "Status",
@@ -1180,7 +1180,19 @@
       "StatusSampleInfo": "Service ready",
       "StatusSampleWarn": "Disk space low",
       "StatusSampleError": "Service timeout",
-      "StatusSampleFatal": "Database offline"
+      "StatusSampleFatal": "Database offline",
+      "SectionStatuses": "Status",
+      "SectionGuidance": "Guidance",
+      "SectionNotifications": "Notifications",
+      "SectionGrids": "Grids",
+      "SectionProperties": "Properties",
+      "SectionLogs": "Logs",
+      "SectionWindows": "Windows",
+      "SectionNavigation": "Dock & Tabs",
+      "SectionLayout": "Layout & Motion",
+      "SectionReading": "Reading",
+      "SectionEditing": "Editing",
+      "SectionExport": "Export"
     }
   }
 }

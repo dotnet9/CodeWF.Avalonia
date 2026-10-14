@@ -16,7 +16,7 @@
               Command="{Binding ResetRenamesCommand}" />
     </Grid>
 
-    <ScrollViewer Grid.Row="1">
+    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
       <StackPanel Margin="4,0,4,6">
         <ItemsControl ItemsSource="{Binding FilteredGroups}">
           <ItemsControl.ItemTemplate>
@@ -28,7 +28,7 @@
                               IsChecked="{Binding IsExpanded, Mode=TwoWay}">
                   <Grid ColumnDefinitions="Auto,Auto,*,Auto">
                     <TextBlock Text="{Binding Icon}" FontSize="12" VerticalAlignment="Center" />
-                    <TextBlock Grid.Column="1" Text="{Binding Title}" FontWeight="SemiBold" FontSize="11.5"
+                    <TextBlock Grid.Column="1" Text="{Binding Title}" FontWeight="SemiBold" FontSize="11"
                                Margin="6,0,0,0" VerticalAlignment="Center" />
                     <TextBlock Grid.Column="3" Text="{Binding Items.Count}" FontSize="10" Opacity="0.55"
                                VerticalAlignment="Center" />
@@ -39,14 +39,14 @@
                   <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="vm:DemoItemViewModel">
                       <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding !IsFilteredOut}">
-                        <Button Classes="nav-leaf" Classes.selected="{Binding IsSelected}"
+                        <Button Classes="nav-leaf" Classes.selected="{Binding IsSelected}" ToolTip.Tip="{Binding DisplayTitle}"
                                 IsVisible="{Binding !IsRenaming}"
                                 DoubleTapped="OnLeafDoubleTapped"
                                 Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).SelectNavItemCommand}"
                                 CommandParameter="{Binding}">
                           <Grid ColumnDefinitions="Auto,*,Auto">
                             <TextBlock Text="{Binding Icon}" FontSize="11" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="1" Text="{Binding DisplayTitle}" FontSize="12"
+                            <TextBlock Grid.Column="1" Text="{Binding DisplayTitle}" FontSize="11.5"
                                        Margin="6,0,0,0" VerticalAlignment="Center"
                                        TextTrimming="CharacterEllipsis" />
                             <TextBlock Grid.Column="2" Text="✎" FontSize="10" VerticalAlignment="Center"

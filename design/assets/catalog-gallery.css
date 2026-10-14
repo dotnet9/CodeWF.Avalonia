@@ -25,3 +25,26 @@
 @media(prefers-reduced-motion:reduce){.catalog-expand{transition:none!important}}
 
 .catalog-status-row{flex-wrap:wrap}.catalog-status.card{box-sizing:border-box;width:180px;min-height:80px;flex:0 0 180px;gap:0;padding:8px 8px 8px 48px;text-align:left}.catalog-status.card strong{padding:0;font-size:12px}.catalog-status.card span{padding:8px 0 0;font-size:16px}.catalog-status.catalog-driven{width:100%;margin-top:12px}
+
+/* Desktop metrics shared with the native shell; commands keep complete API names. */
+body{font-family:"Segoe UI","Microsoft YaHei UI",sans-serif}
+.rbn{height:86px;padding:4px 12px 2px;display:flex;gap:12px;align-items:flex-start}
+.grp{flex:none;padding-right:12px;margin-right:0}.grp .cmds{display:grid;grid-auto-flow:column;grid-template-rows:62px;gap:0 4px}
+.cbtn{min-width:95px;max-width:none;padding:3px 8px;height:62px}.cbtn .lb{max-width:none;white-space:nowrap;overflow-wrap:normal}
+.ribbon-small .cmds{grid-template-rows:repeat(2,31px)}.ribbon-small .cbtn{height:31px;flex-direction:row;justify-content:flex-start}.ribbon-small .cbtn .ic svg{width:14px;height:14px}
+.grp .gname{height:18px;padding-top:2px;font-size:10px;letter-spacing:0}
+.p-nav{width:16%;min-width:164px}.p-props{width:17%;min-width:220px}.p-log{height:14%;min-height:60px}
+.tree .lf{font-size:11.5px;height:30px}.tree .nd .hd{height:31px;font-size:11px}
+.dbody:not([data-page="welcome"]){padding:0}.catalog-header{padding:10px 16px;gap:12px}.catalog-header h1{line-height:1.35}.catalog-header .catalog-description{margin-top:3px;line-height:1.5}
+.dbody:not([data-page="welcome"])>[id^="seg-"]{padding:14px 16px}.demo{border-radius:10px}
+[data-density="compact"] .cbtn{min-width:80px;padding:3px 4px}
+.catalog-markdown-basic{display:flex;flex-direction:column;gap:8px;font-size:16px;line-height:26px;color:var(--tx)}
+.catalog-markdown-basic h1{font-size:32px;line-height:1.2;margin:18px 0 10px;font-weight:700}
+.catalog-markdown-basic h2{font-size:24px;line-height:1.2;margin:18px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--bd);font-weight:700}
+.catalog-markdown-basic h3{font-size:20px;margin:18px 0 10px}.catalog-markdown-basic p{margin:4px 0 10px}
+.catalog-markdown-basic ul{display:flex;flex-direction:column;gap:6px;padding-left:24px;margin:2px 0 8px}.catalog-markdown-basic li{margin:2px 0}.catalog-markdown-basic .markdown-task{list-style:none;margin-left:-16px}.catalog-markdown-basic input{vertical-align:middle;width:16px;height:16px;margin-right:8px;accent-color:var(--pri)}
+.catalog-markdown-basic code{font:13px Consolas,monospace}.catalog-markdown-basic pre{padding:12px;background:var(--bg2);border:1px solid var(--bd);border-radius:8px;margin:8px 0 12px;white-space:pre-wrap;font:13px/20px Consolas,monospace}
+.catalog-markdown-basic table{border-collapse:collapse;margin:10px 0 16px;width:100%}.catalog-markdown-basic td,.catalog-markdown-basic th{border:1px solid var(--bd);padding:8px 10px;text-align:left}
+.catalog-markdown-basic blockquote{border-left:4px solid var(--pri);border-radius:6px;padding:8px 12px;margin:6px 0 12px;background:var(--bg2)}
+.catalog-markdown-input summary{padding:14px 16px;border-bottom:1px solid var(--bd2);cursor:pointer;font-size:13px;font-weight:600}.catalog-markdown-input textarea{height:96px;margin-top:8px}
+.dbody:not([data-page="welcome"])>.catalog-markdown-page{padding:10px 12px}.catalog-live{font-size:15px;line-height:26px}

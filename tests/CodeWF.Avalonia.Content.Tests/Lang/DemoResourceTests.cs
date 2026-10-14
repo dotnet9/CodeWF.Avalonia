@@ -124,6 +124,11 @@ public sealed class DemoResourceTests
             Assert.True(JsonElement.DeepEquals(group, prototypeGroup), "Prototype catalog is out of date.");
             foreach (var item in group.GetProperty("items").EnumerateArray())
             {
+                if (item.TryGetProperty("sectionKey", out var section))
+                {
+                    Assert.True(chinese.ContainsKey(section.GetString()!), "Missing Chinese Ribbon section.");
+                    Assert.True(english.ContainsKey(section.GetString()!), "Missing English Ribbon section.");
+                }
                 var key = item.GetProperty("titleKey").GetString()!;
                 Assert.True(keys.Add(key), "Duplicate menu key: " + key);
                 Assert.True(routes.Add(item.GetProperty("prototypeId").GetString()!), "Duplicate prototype route: " + key);
