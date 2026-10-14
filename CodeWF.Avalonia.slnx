@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/MindView/CodeWF.Avalonia.MindView/CodeWF.Avalonia.MindView.csproj" />
     <Project Path="src/Controls/CodeWF.Avalonia.Controls/CodeWF.Avalonia.Controls.csproj" />
     <Project Path="src/DataGrid/CodeWF.Avalonia.DataGrid/CodeWF.Avalonia.DataGrid.csproj" />
     <Project Path="src/TreeDataGrid/CodeWF.Avalonia.TreeDataGrid/CodeWF.Avalonia.TreeDataGrid.csproj" />

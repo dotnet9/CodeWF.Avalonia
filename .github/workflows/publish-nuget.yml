@@ -51,8 +51,9 @@ jobs:
       - name: Pack
         shell: pwsh
         run: |
-          # 仅打包 9 个库项目（tests / demo 不参与）
+          # 仅打包 10 个库项目（tests / demo 不参与）
           $projects = @(
+            'src/MindView/CodeWF.Avalonia.MindView/CodeWF.Avalonia.MindView.csproj',
             'src/Controls/CodeWF.Avalonia.Controls/CodeWF.Avalonia.Controls.csproj',
             'src/DataGrid/CodeWF.Avalonia.DataGrid/CodeWF.Avalonia.DataGrid.csproj',
             'src/TreeDataGrid/CodeWF.Avalonia.TreeDataGrid/CodeWF.Avalonia.TreeDataGrid.csproj',

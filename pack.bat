@@ -8,7 +8,7 @@ if "%CONFIGURATION%"=="" set "CONFIGURATION=Release"
 
 set "PACKAGE_DIR=%ROOT%artifacts\packages"
 
-set "PROJECTS=%ROOT%src\Controls\CodeWF.Avalonia.Controls\CodeWF.Avalonia.Controls.csproj;%ROOT%src\DataGrid\CodeWF.Avalonia.DataGrid\CodeWF.Avalonia.DataGrid.csproj;%ROOT%src\TreeDataGrid\CodeWF.Avalonia.TreeDataGrid\CodeWF.Avalonia.TreeDataGrid.csproj;%ROOT%src\Dock\CodeWF.Avalonia.Dock\CodeWF.Avalonia.Dock.csproj;%ROOT%src\Markdown\CodeWF.Avalonia.Markdown\CodeWF.Avalonia.Markdown.csproj;%ROOT%src\Markdown\CodeWF.Avalonia.Markdown.Lite\CodeWF.Avalonia.Markdown.Lite.csproj;%ROOT%src\Log\CodeWF.Avalonia.Log\CodeWF.Avalonia.Log.csproj;%ROOT%src\Lang\CodeWF.Avalonia.Lang\CodeWF.Avalonia.Lang.csproj;%ROOT%src\Lang\CodeWF.Avalonia.Lang.Generator\CodeWF.Avalonia.Lang.Generator.csproj"
+set "PROJECTS=%ROOT%src\MindView\CodeWF.Avalonia.MindView\CodeWF.Avalonia.MindView.csproj;%ROOT%src\Controls\CodeWF.Avalonia.Controls\CodeWF.Avalonia.Controls.csproj;%ROOT%src\DataGrid\CodeWF.Avalonia.DataGrid\CodeWF.Avalonia.DataGrid.csproj;%ROOT%src\TreeDataGrid\CodeWF.Avalonia.TreeDataGrid\CodeWF.Avalonia.TreeDataGrid.csproj;%ROOT%src\Dock\CodeWF.Avalonia.Dock\CodeWF.Avalonia.Dock.csproj;%ROOT%src\Markdown\CodeWF.Avalonia.Markdown\CodeWF.Avalonia.Markdown.csproj;%ROOT%src\Markdown\CodeWF.Avalonia.Markdown.Lite\CodeWF.Avalonia.Markdown.Lite.csproj;%ROOT%src\Log\CodeWF.Avalonia.Log\CodeWF.Avalonia.Log.csproj;%ROOT%src\Lang\CodeWF.Avalonia.Lang\CodeWF.Avalonia.Lang.csproj;%ROOT%src\Lang\CodeWF.Avalonia.Lang.Generator\CodeWF.Avalonia.Lang.Generator.csproj"
 
 echo [CodeWF.Avalonia] Restore solution...
 dotnet restore "%SOLUTION%"

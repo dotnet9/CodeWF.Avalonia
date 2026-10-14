@@ -1,11 +1,11 @@
-﻿# CodeWF.Avalonia
+# CodeWF.Avalonia
 
 [![CI](https://github.com/dotnet9/CodeWF.Avalonia/actions/workflows/ci.yml/badge.svg)](https://github.com/dotnet9/CodeWF.Avalonia/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/CodeWF.Avalonia.Controls?label=nuget)](https://www.nuget.org/packages/CodeWF.Avalonia.Controls)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Target](https://img.shields.io/badge/target-net10.0-512bd4)](https://learn.microsoft.com/dotnet/core/whats-new/dotnet-10)
 
-面向 Avalonia 12 的 UI 控件与能力库合集：基础自定义控件、表格增强、Dock 布局、Markdown 渲染与编辑、国际化、日志查看，均以 `CodeWF.Avalonia.*` 前缀发布，XAML 命名空间统一挂 `https://codewf.com`。
+面向 Avalonia 12 的 UI 控件与能力库合集：基础自定义控件、表格增强、Dock 布局、Markdown 渲染与编辑、思维导图、国际化、日志查看，均以 `CodeWF.Avalonia.*` 前缀发布，XAML 命名空间统一挂 `https://codewf.com`。
 
 A suite of UI control and capability libraries for Avalonia 12, published with the `CodeWF.Avalonia.*` prefix and a unified XAML namespace `https://codewf.com`.
 
@@ -37,6 +37,7 @@ A suite of UI control and capability libraries for Avalonia 12, published with t
 | [CodeWF.Avalonia.Dock](https://www.nuget.org/packages/CodeWF.Avalonia.Dock) | 基于 Dock.Avalonia 的布局扩展与 Semi 风格主题，含中英文本地化 | Dock.Avalonia、Dock.Avalonia.Themes.Simple、**Semi.Avalonia** |
 | [CodeWF.Avalonia.Markdown.Lite](https://www.nuget.org/packages/CodeWF.Avalonia.Markdown.Lite) | Markdown 渲染引擎（常规元素）+ 18 套排版主题 | Avalonia、Markdig、CodeWF.Avalonia.Controls\*、CodeWF.Avalonia.Lang\* |
 | [CodeWF.Avalonia.Markdown](https://www.nuget.org/packages/CodeWF.Avalonia.Markdown) | 完整包：图片/公式/Mermaid/代码高亮/多格式导出/源码与所见即所得编辑器 | Avalonia.AvaloniaEdit、AnimatedImage.Avalonia、Mermaider、SkiaSharp、Svg.Skia、Svg.Controls.Skia.Avalonia、Sylinko.CSharpMath.Avalonia、TextMateSharp(.Grammars)、CodeWF.Avalonia.Markdown.Lite、CodeWF.Avalonia.Controls\*、CodeWF.Avalonia.Lang\* |
+| [CodeWF.Avalonia.MindView](https://www.nuget.org/packages/CodeWF.Avalonia.MindView) | 脑图编辑、缩略图、导入导出、只读 Markdown 结构图，内含浅深色主题与主题色 API | Avalonia、Markdig、CodeWF.Avalonia.Lang |
 | [CodeWF.Avalonia.Log](https://www.nuget.org/packages/CodeWF.Avalonia.Log) | 日志查看控件与桌面通知（配合 CodeWF.Toolkit.Logging） | Avalonia、Xaml.Behaviors、CodeWF.Toolkit.Logging |
 | [CodeWF.Avalonia.Lang](https://www.nuget.org/packages/CodeWF.Avalonia.Lang) | I18n 标记扩展、转换器与兼容接口；Json/Xml/Resx 解析使用共享 BCL 引擎 | Avalonia、CodeWF.Toolkit.Lang |
 | [CodeWF.Avalonia.Lang.Generator](https://www.nuget.org/packages/CodeWF.Avalonia.Lang.Generator) | 编译期源生成器：从语言资源生成强类型 Key | Roslyn（`PrivateAssets=all`，netstandard2.0） |
@@ -212,3 +213,7 @@ dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0 -- --smoke
 ## 许可与贡献 / License and contributing
 
 [MIT](LICENSE)。Issue 与 PR 都欢迎，提交前请确保 `dotnet build CodeWF.Avalonia.slnx -c Release` 与 `dotnet test` 通过。
+
+## 思维导图接入
+
+`CodeWF.Avalonia.MindView` 的控件和主题合并为一个包，版本随本仓统一版本。宿主可使用 Semi、Ursa 或其它 Avalonia 主题。编辑型脑图使用 `MindMapEditor` / `MindMapMiniMap`，只读 Markdown 导图使用 `MarkdownMindMapView`。详细 API 和接入例子见 [MindView README](src/MindView/CodeWF.Avalonia.MindView/README.md)。
