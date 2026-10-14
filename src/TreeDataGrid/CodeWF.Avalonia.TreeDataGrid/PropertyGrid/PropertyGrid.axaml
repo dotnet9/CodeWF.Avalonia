@@ -58,10 +58,26 @@
       <Setter Property="Width" Value="32" />
       <Setter Property="Height" Value="30" />
       <Setter Property="Padding" Value="0" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="4" />
       <Setter Property="Foreground" Value="{DynamicResource PgSecondaryForeground}" />
     </Style>
-    <Style Selector="ToggleButton.pg-view:checked">
+    <!-- 模板层使用属性面板令牌，避免主题按钮的实心选中色覆盖宿主外观。 -->
+    <Style Selector="ToggleButton.pg-view /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Foreground" Value="{DynamicResource PgSecondaryForeground}" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="ToggleButton.pg-view:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource PgHover}" />
+    </Style>
+    <Style Selector="ToggleButton.pg-view:checked /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Foreground" Value="{DynamicResource PgAccent}" />
+      <Setter Property="Background" Value="{DynamicResource PgSelectedSoft}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource PgAccent}" />
+    </Style>
+    <Style Selector="ToggleButton.pg-view:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource PgHover}" />
     </Style>
     <Style Selector="Border.pg-searchbox">
       <Setter Property="Height" Value="28" />
@@ -232,10 +248,10 @@
     <!-- 分类与字母排序，下一行搜索 -->    <Border Grid.Row="0" Classes="pg-toolbar" IsVisible="{Binding ShowToolBar, ElementName=Root}">
       <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,*,Auto">
         <ToggleButton Grid.Column="0" x:Name="CategorizedButton" Classes="pg-view" Click="OnCategorizedClick">
-          <PathIcon Width="18" Height="18" Data="{DynamicResource SemiIconListView}" />
+          <PathIcon Width="16" Height="16" Data="{DynamicResource SemiIconListView}" />
         </ToggleButton>
         <ToggleButton Grid.Column="1" x:Name="AlphabetButton" Classes="pg-view" Click="OnAlphabetClick">
-          <PathIcon Width="18" Height="18" Data="{DynamicResource SemiIconSort}" />
+          <PathIcon Width="16" Height="16" Data="{DynamicResource SemiIconSort}" />
         </ToggleButton>
 
         <Border Grid.Row="1" Grid.ColumnSpan="4" Classes="pg-searchbox">
