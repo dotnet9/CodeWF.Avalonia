@@ -434,3 +434,6 @@ FodyWeavers.xsd
 
 # 发布 profile 需入库（publish.bat 六 RID 依赖），反排除 pubxml 忽略规则
 !demo/CodeWF.Avalonia.Demo/Properties/PublishProfiles/*.pubxml
+
+# Browser prototype audit output
+design/tests/artifacts/

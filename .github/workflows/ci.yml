@@ -45,3 +45,31 @@ jobs:
       # 因此冒烟按退出码阻塞流水线。
       - name: 运行冒烟演示
         run: artifacts\publish\win-x64\CodeWF.Avalonia.Demo\CodeWF.Avalonia.Demo.exe --smoke
+
+  prototype-audit:
+    name: 原型路由与语言审计
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: design/tests/package-lock.json
+      - name: 验证目录生成物
+        shell: pwsh
+        run: ./scripts/sync_design_catalog.ps1 -Check
+      - name: 安装审计依赖
+        working-directory: design/tests
+        run: npm ci
+      - name: 安装 Chromium
+        working-directory: design/tests
+        run: npx playwright install --with-deps chromium
+      - name: 检查路由、语言和导航
+        working-directory: design/tests
+        run: npm test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: prototype-audit-failure
+          path: design/tests/artifacts/

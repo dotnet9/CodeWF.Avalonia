@@ -136,7 +136,7 @@ public class MyMarkdownThemes : MarkdownThemes
 
 | 情形 | 宿主需要做什么 |
 |---|---|
-| Dock | `DockSemiTheme` 以 Dock 官方的 `Dock.Avalonia.Themes.Simple` 为基座，并自带 `{x:Type Button}` / `{x:Type Window}` 基类主题（Semi.Avalonia 12.x 不再提供这两个基类主题），因此**不需要**再引入 `FluentTheme`；但 Semi 基础主题仍需引入。 |
+| Dock | `DockSemiTheme` 以 Dock 官方的 `Dock.Avalonia.Themes.Simple` 为基座，并自带 `{x:Type Button}` / `{x:Type Window}` 基类主题（Semi.Avalonia 12.x 不再提供这两个基类主题），因此**不需要**再引入 `FluentTheme`；但 Semi 基础主题仍需引入。保留开源主题的原因与 `Semi.Avalonia.Dock` 的依赖、许可区别见 [Dock 文档](docs/CodeWF.Avalonia.Dock%20说明文档.md)。 |
 | AvaloniaEdit（Markdown 完整包） | 编辑器需要宿主提供字体令牌（`FontSizeNormal` 等，通常来自所引用的主题包）。缺少时编辑器字号会回退到默认值，不影响功能。 |
 | Markdown 语言资源 | 语言 JSON 随包分发到输出目录 `I18n/CodeWF.Markdown/`，用 `CodeWF.Avalonia.Lang` 的 Json 加载器指向该目录即可完成本地化。 |
 | 日志控件 | 需先初始化 `CodeWF.Toolkit.Logging` 的 `Logger`，控件订阅其 UI 日志事件流；回调在后台线程，界面订阅方自行调度到 UI 线程。 |

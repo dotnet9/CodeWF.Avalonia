@@ -112,3 +112,11 @@ Markdown 导出归入 Markdown，控件的多个状态与方法保留在同页�
 逐页检查发现并修复两个库缺陷：`SwitchBinding` 现在解析绑定形式的 `When` 分支键，键和结果变化都会重新求值；梯形 TabControl / TabStrip 模板恢复内边距、最小高度和选中形状。新增回归测试，最终原生截图也确认运行中分支与梯形页签正确显示。
 
 README 的 PNG 与 GIF 已替换为本轮原生 EXE 截图。字体度量、Dock 页签、PropertyGrid 编辑器和原生窗口行为仍取决于 Semi / Dock 与平台，HTML 也不运行 Markdig，不承诺所有扩展语法及像素完全一致。第三方 Prism 默认对话框及旧运行时 XAML 加载器存在兼容性分析警告，本轮验收覆盖 Demo 实际调用路径。
+
+## 目录和本地化维护门禁（2026-10-14 补充）
+
+页面工厂、导航常量和原生/浏览器图标统一由 `design/catalog.json` 管理；`scripts/sync_design_catalog.ps1 -Check` 会拒绝过期的 C# 与 JavaScript 生成物。该 JSON 是 Demo 构建输入，生成文件随源码提交。
+
+全部历史编号资源键改为固定语义键，保留原有翻译内容；切换语言重建属性行时保留提交与浏览命令实例，运行冒烟覆盖这条路径。UTF-8 检查接受有或无 BOM，不把 BOM 视为防止错误转码的保证。
+
+本次单元测试 291 项通过；可复跑的 Chromium 审计执行 128 次路由/语言/窗口宽度检查，覆盖实际 Ribbon 和导航点击、内容非空、源码面板及被原型 guard 捕获的脚本异常。审计命令和维护步骤见 [设计目录](../design/README.md)。

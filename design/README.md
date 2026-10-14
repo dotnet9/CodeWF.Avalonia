@@ -27,13 +27,13 @@
 
 ## 维护
 
-1. 在 `catalog.json` 维护分类、API、NuGet 包、页面工厂说明和原型路由。
-2. 在 Demo 的 `I18n/` 配置中维护双语标题与 `Demo.Api.*.Desc` 功能说明。
-3. 为原生 `DemoCatalog` 添加显式页面工厂，为原型注册对应演示。
-4. 执行 `pwsh scripts/sync_design_catalog.ps1` 更新浏览器目录与文案。
-5. 执行目录一致性测试与 Demo 冒烟检查。
+1. 在 `catalog.json` 维护分类、API、包名、页面构造表达式、路由与图标。`icon` 是原生字形，`prototypeIcon` 是浏览器 SVG 内容，两者均由目录管理。
+2. 在 Demo 的 `I18n/` JSON 中维护中英文标题和说明。资源键使用稳定的业务语义，例如 `Demo.Shell.GlobalSettings.PaletteLabel`；不要使用方法名加位置编号，修改文案时保留原键。
+3. 实现原生页面，并为原型注册交互演示。执行 `pwsh scripts/sync_design_catalog.ps1`，同步浏览器数据与 `DemoCatalog.g.cs`。页面标识 `DemoPages` 和显式工厂由脚本生成，无需手工维护 switch 或图标字典。
+4. 执行 `pwsh scripts/sync_design_catalog.ps1 -Check`、目录一致性测试和原生 Demo 冒烟。生成文件需要提交，正常 `dotnet build` 不依赖 PowerShell 或 Node.js。
+5. 执行 `npm ci --prefix design/tests`，在 `design/tests` 运行 `npx playwright install chromium` 和 `npm test`。浏览器门禁遍历全部路由 × 中英文 × 1440/1120 两种宽度，检查实际 Ribbon/导航点击、页面内容、源码面板和脚本错误。失败截图保存在 `design/tests/artifacts/`；CI 使用同一脚本。
 
-`assets/catalog-data.js` 是生成文件；`catalog-gallery.js` 和 `catalog-gallery.css` 负责目录布局与浏览器预览。各仓库独立携带所有原型资源。
+`design/catalog.json` 是 Demo 的嵌入式构建输入，属于仓库源码，不能当草稿删除。`assets/catalog-data.js` 与 `DemoCatalog.g.cs` 是生成文件；`catalog-gallery.js/css` 负责浏览器布局。每个仓库独立携带全部资源。资源文件采用 UTF-8，允许有或无 BOM；测试检查无效字节和替换字符，但不能识别所有已经被错误转码的合法文字。
 
 ## 实现与验证边界
 
