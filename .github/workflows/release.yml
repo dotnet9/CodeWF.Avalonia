@@ -2,7 +2,7 @@ name: release
 
 # 推送 v* 标签发布 CodeWF.Avalonia 演示应用全平台包（6 个 RID）：
 # 全平台 NativeAOT（完整反射元数据保全 Prism/DryIoc）；
-# win 出 Inno Setup 安装向导（x64）与便携 zip，linux 出 deb，macOS 出 dmg/pkg，均附 sha256。
+# win 出 Inno Setup 安装向导（x64）与便携 zip，linux 出 deb，macOS 出 dmg，均附 sha256。
 on:
   push:
     tags:
@@ -12,6 +12,10 @@ on:
       version:
         description: '版本号（不含 v），例如 12.1.4.4'
         required: true
+        type: string
+      source_ref:
+        description: '恢复发布时使用的源码标签或提交；留空使用所选分支'
+        required: false
         type: string
 
 permissions:
@@ -35,11 +39,14 @@ jobs:
           - rid: osx-x64
             os: macos-14
           - rid: osx-arm64
-            os: macos-14
+            # Intel 运行器提供 14 GB 内存，为完整元数据的 ARM64 交叉编译增加余量。
+            os: macos-15-intel
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_ref || github.ref }}
 
       - name: 安装 .NET SDK
         uses: actions/setup-dotnet@v4
@@ -70,6 +77,11 @@ jobs:
       - name: 发布（PublishProfile + NativeAOT）
         shell: pwsh
         run: pwsh scripts/publish_avalonia_demo.ps1 -RuntimeIdentifier '${{ matrix.rid }}' -Version $env:APP_VERSION
+
+      - name: 校验 macOS ARM64 二进制
+        if: matrix.rid == 'osx-arm64'
+        shell: bash
+        run: lipo -verify_arch arm64 artifacts/publish/osx-arm64/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo
 
       - name: 打包便携 zip + sha256
         shell: pwsh
@@ -134,6 +146,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ inputs.source_ref || github.ref }}
 
       - name: 下载构建产物
         uses: actions/download-artifact@v4
