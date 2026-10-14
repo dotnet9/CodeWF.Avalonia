@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <!-- 版本：前三位跟随 Avalonia 版本（当前 12.1.4），第 4 位为我们自己的修订 -->
-    <Version>12.1.4.8</Version>
+    <Version>12.1.4.9</Version>
     <Authors>沙漠尽头的狼</Authors>
     <Company>https://codewf.com</Company>
     <Copyright>Copyright © https://codewf.com</Copyright>
