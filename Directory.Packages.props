@@ -60,7 +60,8 @@
 
     <!-- 源生成器 -->
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
+    <!-- Source generators must load in the compiler shipped with the minimum .NET 10 SDK. -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
     <PackageVersion Include="System.Text.Json" Version="10.0.12" />
 
     <!-- 平台补充 -->
