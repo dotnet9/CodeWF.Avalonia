@@ -205,8 +205,8 @@
     <Setter Property="ToolTip.ShowDelay" Value="400" />
   </Style>
   <Style Selector="PathIcon.ribbon-quick-icon">
-    <Setter Property="Width" Value="18" />
-    <Setter Property="Height" Value="18" />
+    <Setter Property="Width" Value="16" />
+    <Setter Property="Height" Value="16" />
   </Style>
   <Style Selector="Button.ribbon-quick /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Foreground" Value="{DynamicResource StudioMuted}" />

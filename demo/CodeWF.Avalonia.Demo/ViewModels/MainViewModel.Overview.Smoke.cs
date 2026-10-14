@@ -149,8 +149,8 @@ public partial class MainViewModel
                         throw new InvalidOperationException("Ribbon quick buttons must retain a 30 by 30 pixel hit area: " +
                             string.Join(", ", quickButtons.Select(button => button.Bounds.Size)));
                     var quickIcons = quickButtons.Select(button => button.Content).OfType<PathIcon>().ToArray();
-                    if (quickIcons.Length != 5 || quickIcons.Any(icon => icon.Data is null || icon.Bounds.Width != 18 || icon.Bounds.Height != 18))
-                        throw new InvalidOperationException("Ribbon quick icons must occupy 18 by 18 pixels.");
+                    if (quickIcons.Length != 5 || quickIcons.Any(icon => icon.Data is null || icon.Bounds.Width != 16 || icon.Bounds.Height != 16))
+                        throw new InvalidOperationException("Ribbon quick icons must occupy 16 by 16 pixels.");
                     Save($"ribbon-{group.TitleKey.Split('.').Last()}-{(int)size.Width}-{culture.Name}");
                 }
             }
