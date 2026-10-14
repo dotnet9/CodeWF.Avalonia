@@ -20,7 +20,7 @@ public partial class WelcomePage : DemoPageBase
             : Task.FromException(new InvalidOperationException("Clipboard unavailable"));
     }
 
-    public override string TitleKey => DemoKeys.ItemWelcome;
+    public override string TitleKey => DemoPages.Welcome;
     public override string DescriptionKey => "Demo.Page.Welcome.Desc";
     public override string XamlCode => "<codewf:StudioTheme />";
     public override string CSharpCode => "Application.Current.RequestedThemeVariant = StudioTheme.DotNetDark;";

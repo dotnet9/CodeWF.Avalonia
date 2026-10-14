@@ -10,11 +10,11 @@ public partial class MarkdownLitePage : DemoPageBase
     private const string IdTheme = "lite.theme";
     private const string IdSize = "lite.size";
 
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.MarkdownLitePageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.MarkdownLite.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.MarkdownLitePageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.MarkdownLite.Source.CSharp");
 
-    public static string SampleMarkdown { get; } = L.Instance.GetResource("Demo.Text.MarkdownLitePageaxaml.SampleMarkdown003");
+    public static string SampleMarkdown { get; } = L.Instance.GetResource("Demo.Content.MarkdownLite.Samples.Markdown");
 
     private string _theme = MarkdownTypographyThemes.Basic;
     private string _size = MarkdownTypographySizes.Normal;
@@ -54,7 +54,7 @@ public partial class MarkdownLitePage : DemoPageBase
         var theme = new PropertyItem
         {
             Id = IdTheme,
-            Name = L.Instance.GetResource("Demo.Text.MarkdownLitePageaxaml.BuildProperties004"),
+            Name = L.Instance.GetResource("Demo.Content.MarkdownLite.Properties.TypographyTheme"),
             Kind = PropertyItemKind.Choice,
             Options =
             [
@@ -65,12 +65,12 @@ public partial class MarkdownLitePage : DemoPageBase
             ],
             Value = _theme,
             DefaultValue = MarkdownTypographyThemes.Basic,
-            Description = L.Instance.GetResource("Demo.Text.MarkdownLitePageaxaml.BuildProperties005"),
+            Description = L.Instance.GetResource("Demo.Content.MarkdownLite.Properties.LiteIncludesTheSame18TypographyThemesFour"),
         };
         var size = new PropertyItem
         {
             Id = IdSize,
-            Name = L.Instance.GetResource("Demo.Text.MarkdownLitePageaxaml.BuildProperties006"),
+            Name = L.Instance.GetResource("Demo.Content.MarkdownLite.Properties.TypographySize"),
             Kind = PropertyItemKind.Choice,
             Options = [MarkdownTypographySizes.Normal, MarkdownTypographySizes.Small],
             Value = _size,

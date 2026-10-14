@@ -8,16 +8,16 @@
 
     <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <TextBlock Text="{codewf:I18n Demo.Text.MarkdownExportPage.View001}"
+      <TextBlock Text="{codewf:I18n Demo.Content.MarkdownExport.View.ExportMarkdownAsPNGPDFWordOrHTML}"
                  TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
     </Border>
 
     <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
-      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownExportPage.View002}" Command="{Binding ExportCommand}" CommandParameter="{x:Static md:ExportKind.Png}" />
-      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownExportPage.View003}" Command="{Binding ExportCommand}" CommandParameter="{x:Static md:ExportKind.Pdf}" />
-      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownExportPage.View004}" Command="{Binding ExportCommand}" CommandParameter="{x:Static md:ExportKind.Word}" />
-      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownExportPage.View005}" Command="{Binding ExportCommand}" CommandParameter="{x:Static md:ExportKind.Html}" />
-      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownExportPage.View006}" Command="{Binding CopyCommand}" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownExport.View.ExportPNG}" Command="{Binding ExportCommand}" CommandParameter="{x:Static md:ExportKind.Png}" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownExport.View.ExportPDF}" Command="{Binding ExportCommand}" CommandParameter="{x:Static md:ExportKind.Pdf}" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownExport.View.ExportWord}" Command="{Binding ExportCommand}" CommandParameter="{x:Static md:ExportKind.Word}" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownExport.View.ExportHTML}" Command="{Binding ExportCommand}" CommandParameter="{x:Static md:ExportKind.Html}" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownExport.View.CopyPublishingHTML}" Command="{Binding CopyCommand}" />
     </StackPanel>
 
     <TextBox Grid.Row="2" x:Name="SourceBox" Margin="0,8,0,0"

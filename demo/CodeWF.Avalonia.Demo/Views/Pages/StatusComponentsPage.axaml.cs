@@ -7,9 +7,9 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class StatusComponentsPage : DemoPageBase
 {
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.StatusComponentsPageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.StatusComponents.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.StatusComponentsPageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.StatusComponents.Source.CSharp");
 
     public CodeWF.Avalonia.Demo.ViewModels.Pages.StatusComponentsPageViewModel ViewModel { get; }
     private readonly string _control;

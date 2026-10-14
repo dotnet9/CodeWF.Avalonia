@@ -14,10 +14,10 @@
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
             BorderThickness="1,0,0,0" Padding="12,0,0,0">
       <Grid RowDefinitions="Auto,Auto,Auto,Auto,*">
-        <TextBlock Grid.Row="0" Text="{codewf:I18n Demo.Text.SearchListBoxPage.View001}" FontWeight="Bold" Margin="0,0,0,6" />
+        <TextBlock Grid.Row="0" Text="{codewf:I18n Demo.Content.SearchListBox.View.InteractionLog}" FontWeight="Bold" Margin="0,0,0,6" />
         <TextBlock Grid.Row="1" x:Name="CountText" FontSize="11" Opacity="0.75" Margin="0,0,0,6" />
-        <TextBlock Grid.Row="2" Text="{codewf:I18n Demo.Text.SearchListBoxPage.View002}" FontWeight="Bold" Margin="0,4,0,2" />
-        <TextBlock Grid.Row="3" Text="{codewf:I18n Demo.Text.SearchListBoxPage.View003}"
+        <TextBlock Grid.Row="2" Text="{codewf:I18n Demo.Content.SearchListBox.View.Hint}" FontWeight="Bold" Margin="0,4,0,2" />
+        <TextBlock Grid.Row="3" Text="{codewf:I18n Demo.Content.SearchListBox.View.SearchHasA400msDebounceUseCtrlShift}"
                    TextWrapping="Wrap" FontSize="11" Opacity="0.65" Margin="0,0,0,6" />
         <ListBox Grid.Row="4" ItemsSource="{Binding EventLog}" FontSize="11" />
       </Grid>

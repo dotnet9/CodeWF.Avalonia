@@ -18,9 +18,9 @@ public partial class WindowedStackPanelPage : DemoPageBase
     private const string IdSpacing = "wsp.spacing";
     private const int BlockCount = 5000;
 
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.WindowedStackPanel.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.WindowedStackPanel.Source.CSharp");
 
     private readonly DispatcherTimer _metricsTimer;
 
@@ -67,46 +67,46 @@ public partial class WindowedStackPanelPage : DemoPageBase
         var virtualization = new PropertyItem
         {
             Id = IdVirtualization,
-            Name = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties003"),
+            Name = L.Instance.GetResource("Demo.Content.WindowedStackPanel.Properties.Virtualization"),
             Kind = PropertyItemKind.Boolean,
             Value = true,
             DefaultValue = true,
-            Description = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties004"),
+            Description = L.Instance.GetResource("Demo.Content.WindowedStackPanel.Properties.KeepAllBlocksInTheVisualTreeWhen"),
         };
         var threshold = new PropertyItem
         {
             Id = IdThreshold,
-            Name = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties005"),
+            Name = L.Instance.GetResource("Demo.Content.WindowedStackPanel.Properties.VirtualizationThreshold"),
             Kind = PropertyItemKind.Number,
             Value = 40m,
             DefaultValue = 40m,
             Minimum = 1,
             Maximum = 5000,
-            Description = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties006"),
+            Description = L.Instance.GetResource("Demo.Content.WindowedStackPanel.Properties.EnableWindowedRealizationAboveThisBlockCount"),
         };
         var overscan = new PropertyItem
         {
             Id = IdOverscan,
-            Name = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties007"),
+            Name = L.Instance.GetResource("Demo.Content.WindowedStackPanel.Properties.Overscan"),
             Kind = PropertyItemKind.Number,
             Value = 2m,
             DefaultValue = 2m,
             Minimum = 0,
             Maximum = 10,
             Format = "0",
-            Description = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties008"),
+            Description = L.Instance.GetResource("Demo.Content.WindowedStackPanel.Properties.ExtraViewportBuffersAboveAndBelowTheVisible"),
         };
         var spacing = new PropertyItem
         {
             Id = IdSpacing,
-            Name = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties009"),
+            Name = L.Instance.GetResource("Demo.Content.WindowedStackPanel.Properties.BlockSpacing"),
             Kind = PropertyItemKind.Number,
             Value = 8m,
             DefaultValue = 0m,
             Minimum = 0,
             Maximum = 32,
             Unit = "px",
-            Description = L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.BuildProperties010"),
+            Description = L.Instance.GetResource("Demo.Content.WindowedStackPanel.Properties.SpacingBetweenAdjacentBlocks"),
         };
 
         return [virtualization, threshold, overscan, spacing];
@@ -125,13 +125,13 @@ public partial class WindowedStackPanelPage : DemoPageBase
                 Padding = new Thickness(12, 0),
                 Child = new TextBlock
                 {
-                    Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.OnGenerate011"), i, BlockCount),
+                    Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.WindowedStackPanel.OnGenerate.BlockFormat"), i, BlockCount),
                     VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
                 },
             });
         }
 
-        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.OnGenerate012"), BlockCount));
+        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.WindowedStackPanel.OnGenerate.WindowedStackPanelGeneratedBlocksFormat"), BlockCount));
         UpdateMetrics();
     }
 
@@ -144,6 +144,6 @@ public partial class WindowedStackPanelPage : DemoPageBase
     private void UpdateMetrics()
     {
         MetricsText.Text =
-            string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.UpdateMetrics015"), BlocksPanel.ItemCount, BlocksPanel.RealizedItemCount, (BlocksPanel.IsVirtualizing ? L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.UpdateMetrics013") : L.Instance.GetResource("Demo.Text.WindowedStackPanelPageaxaml.UpdateMetrics014")));
+            string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.WindowedStackPanel.UpdateMetrics.BlocksRealizedVirtualizingFormat"), BlocksPanel.ItemCount, BlocksPanel.RealizedItemCount, (BlocksPanel.IsVirtualizing ? L.Instance.GetResource("Demo.Content.WindowedStackPanel.UpdateMetrics.Yes") : L.Instance.GetResource("Demo.Content.WindowedStackPanel.UpdateMetrics.No")));
     }
 }

@@ -67,7 +67,7 @@ public partial class MainViewModel
         Save("compact-window");
         window.Width = 1440;
         window.Height = 860;
-        foreach (var key in new[] { DemoKeys.ItemMarkdownViewer, DemoKeys.ItemMarkdownEditor, DemoKeys.ItemMarkdownLiveEditor, DemoKeys.ItemMarkdownExport, DemoKeys.ItemPropertyGrid, DemoKeys.ItemLang,
+        foreach (var key in new[] { DemoPages.MarkdownViewer, DemoPages.MarkdownEditor, DemoPages.MarkdownLiveEditor, DemoPages.MarkdownExport, DemoPages.PropertyGrid, DemoPages.Lang,
             "Demo.Item.ContentExpansionAnimator", "Demo.Item.StatusBadge", "Demo.Item.StatusCard", "Demo.Item.TitleBar", "Demo.Item.TreeDataGrid", "Demo.Item.If", "Demo.Item.Switch" })
         {
             overview.Overview.NavigateCommand.Execute(key);
@@ -185,17 +185,17 @@ public partial class MainViewModel
             overview.Overview.Markdown = "# Hello, CodeWF\n\n- **Live preview** Markdown\n- Explore `DataGrid` and Dock";
             overview.Overview.ExperimentsExpanded = false;
             await SmokeMarkdownExportsAsync(cancellation);
-            foreach (var key in new[] { DemoKeys.ItemMarkdownFlow, DemoKeys.ItemDataFlow, DemoKeys.ItemDocsFlow, DemoKeys.ItemTransfer, DemoKeys.ItemGuide, DemoKeys.ItemLog })
+            foreach (var key in new[] { DemoPages.MarkdownFlow, DemoPages.DataFlow, DemoPages.DocsFlow, DemoPages.Transfer, DemoPages.Guide, DemoPages.Log })
             {
                 overview.Overview.NavigateCommand.Execute(key);
                 if (ActiveDocument?.TitleKey != key) throw new InvalidOperationException("Overview navigation failed: " + key);
             }
-            overview.Overview.NavigateCommand.Execute(DemoKeys.ItemWelcome);
+            overview.Overview.NavigateCommand.Execute(DemoPages.Welcome);
             foreach (var culture in Cultures)
             {
                 SelectedCulture = culture;
                 await Task.Delay(30, cancellation);
-                if (ActiveDocument?.DockDocument?.Title != global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource(DemoKeys.ItemWelcome))
+                if (ActiveDocument?.DockDocument?.Title != global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource(DemoPages.Welcome))
                     throw new InvalidOperationException("Dock title was not localized: " + culture.Name);
             }
             SelectedCulture = Cultures[0];

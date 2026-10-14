@@ -24,10 +24,10 @@ public class DataGridPageViewModel : ReactiveObject
     {
         var names = new[]
         {
-            ("item2", 28, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows001")), ("item10", 35, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows002")), ("item1", 41, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows003")),
-            ("item22", 19, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows004")), ("item3", 33, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows005")), ("alpha", 25, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows006")),
-            ("beta", 30, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows007")), ("gamma", 45, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows008")), ("delta", 22, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows009")),
-            ("item100", 38, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows010")),
+            ("item2", 28, L.Instance.GetResource("Demo.Content.DataGrid.CreateRows.Hangzhou")), ("item10", 35, L.Instance.GetResource("Demo.Content.DataGrid.CreateRows.Beijing")), ("item1", 41, L.Instance.GetResource("Demo.Content.DataGrid.CreateRows.Seattle")),
+            ("item22", 19, L.Instance.GetResource("Demo.Content.DataGrid.CreateRows.Chengdu")), ("item3", 33, L.Instance.GetResource("Demo.Content.DataGrid.CreateRows.Berlin")), ("alpha", 25, L.Instance.GetResource("Demo.Content.DataGrid.CreateRows.Shanghai")),
+            ("beta", 30, L.Instance.GetResource("Demo.Content.DataGrid.CreateRows.Shenzhen")), ("gamma", 45, L.Instance.GetResource("Demo.Content.DataGrid.CreateRows.Guangzhou")), ("delta", 22, L.Instance.GetResource("Demo.Content.DataGrid.CreateRows.Nanjing")),
+            ("item100", 38, L.Instance.GetResource("Demo.Content.DataGrid.CreateRows.Tokyo")),
         };
 
         var rows = new ObservableCollection<DataGridRowModel>();
@@ -38,8 +38,8 @@ public class DataGridPageViewModel : ReactiveObject
                 name,
                 age,
                 city,
-                string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows011"), name, i + 1) +
-                L.Instance.GetResource("Demo.Text.DataGridPageViewModel.CreateRows012")));
+                string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.DataGrid.CreateRows.NoteThisTextIsDeliberatelyLongAndClipsFormat"), name, i + 1) +
+                L.Instance.GetResource("Demo.Content.DataGrid.CreateRows.SmartToolTipRevealsClippedContentOnHoverFully")));
         }
 
         return rows;
@@ -62,23 +62,23 @@ public class DataGridPageViewModel : ReactiveObject
         var useDefaults = new PropertyItem
         {
             Id = IdUseDefaults,
-            Name = L.Instance.GetResource("Demo.Text.DataGridPageaxaml.BuildProperties003"),
+            Name = L.Instance.GetResource("Demo.Content.DataGrid.Properties.EnableDefaults"),
             Kind = PropertyItemKind.Boolean,
             Value = UseDefaults,
             DefaultValue = true,
-            Description = L.Instance.GetResource("Demo.Text.DataGridPageaxaml.BuildProperties004"),
+            Description = L.Instance.GetResource("Demo.Content.DataGrid.Properties.UseDefaultsEnablesThreeStateAndNaturalSortingSmart"),
         };
         var rowHeight = new PropertyItem
         {
             Id = IdRowHeight,
-            Name = L.Instance.GetResource("Demo.Text.DataGridPageaxaml.BuildProperties005"),
+            Name = L.Instance.GetResource("Demo.Content.DataGrid.Properties.RowHeight"),
             Kind = PropertyItemKind.Number,
             Value = (decimal)RowHeight,
             DefaultValue = 32m,
             Minimum = 24,
             Maximum = 64,
             Unit = "px",
-            Description = L.Instance.GetResource("Demo.Text.DataGridPageaxaml.BuildProperties006"),
+            Description = L.Instance.GetResource("Demo.Content.DataGrid.Properties.RowHeightOfTheEnhancedGrid"),
         };
 
         return [useDefaults, rowHeight];

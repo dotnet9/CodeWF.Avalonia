@@ -16,7 +16,7 @@
                       OffContent="IsBusy = false" />
         <TextBlock FontSize="15">
           <TextBlock.Text>
-            <codewf:If Condition="{Binding IsBusy}" True="{codewf:I18n Demo.Text.MarkupExtensionPage.View002}" False="{codewf:I18n Demo.Text.MarkupExtensionPage.View003}" />
+            <codewf:If Condition="{Binding IsBusy}" True="{codewf:I18n Demo.Content.MarkupExtension.View.TaskRunningPleaseWait}" False="{codewf:I18n Demo.Content.MarkupExtension.View.SystemIdle}" />
           </TextBlock.Text>
         </TextBlock>
       </StackPanel>
@@ -29,10 +29,10 @@
         <ComboBox MinWidth="160" ItemsSource="{Binding StateOptions}" SelectedItem="{Binding State}" />
         <TextBlock FontSize="15">
           <TextBlock.Text>
-            <codewf:Switch Value="{Binding State}" Default="{codewf:I18n Demo.Text.MarkupExtensionPage.View004}">
-              <codewf:SwitchCase When="{codewf:I18n Demo.Text.MarkupExtensionPage.View005}" Then="{codewf:I18n Demo.Text.MarkupExtensionPage.View006}" />
-              <codewf:SwitchCase When="{codewf:I18n Demo.Text.MarkupExtensionPage.View007}" Then="{codewf:I18n Demo.Text.MarkupExtensionPage.View008}" />
-              <codewf:SwitchCase When="{codewf:I18n Demo.Text.MarkupExtensionPage.View009}" Then="{codewf:I18n Demo.Text.MarkupExtensionPage.View010}" />
+            <codewf:Switch Value="{Binding State}" Default="{codewf:I18n Demo.Content.MarkupExtension.View.UnknownState}">
+              <codewf:SwitchCase When="{codewf:I18n Demo.Content.MarkupExtension.View.Running}" Then="{codewf:I18n Demo.Content.MarkupExtension.View.ServiceRunning}" />
+              <codewf:SwitchCase When="{codewf:I18n Demo.Content.MarkupExtension.View.Paused}" Then="{codewf:I18n Demo.Content.MarkupExtension.View.ServicePaused}" />
+              <codewf:SwitchCase When="{codewf:I18n Demo.Content.MarkupExtension.View.Maintenance}" Then="{codewf:I18n Demo.Content.MarkupExtension.View.MaintenanceWindowOpen}" />
             </codewf:Switch>
           </TextBlock.Text>
         </TextBlock>

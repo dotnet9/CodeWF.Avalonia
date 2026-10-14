@@ -209,7 +209,7 @@ public partial class MainViewModel
     private void OpenGuidanceDemo()
     {
         var item = Groups.SelectMany(g => g.Items)
-            .FirstOrDefault(i => i.TitleKey == DemoKeys.ItemAppGuide);
+            .FirstOrDefault(i => i.TitleKey == DemoPages.AppGuide);
         if (item is not null)
         {
             OpenItem(item);

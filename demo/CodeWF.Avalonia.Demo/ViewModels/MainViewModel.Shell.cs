@@ -386,8 +386,8 @@ public partial class MainViewModel
         var text = RenameText.Trim();
         target.CustomTitle = text.Length == 0 || text == target.Title ? null : text;
         Logger.Info(string.IsNullOrEmpty(target.CustomTitle)
-            ? string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.MainViewModelShell.CommitRename001"), target.Title)
-            : string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.MainViewModelShell.CommitRename002"), target.Title, target.CustomTitle));
+            ? string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.Shell.CommitRename.RestoredOriginalNameFormat"), target.Title)
+            : string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.Shell.CommitRename.RenamedFormat"), target.Title, target.CustomTitle));
         RenameTarget = null;
         this.RaisePropertyChanged(nameof(HasRenames));
         RefreshDocumentTitles();
@@ -492,7 +492,7 @@ public partial class MainViewModel
         }
         catch (Exception ex)
         {
-            Logger.Warn(L.Instance.GetResource("Demo.Text.MainViewModelShell.SaveLayoutTo003") + ex.Message);
+            Logger.Warn(L.Instance.GetResource("Demo.Content.Shell.SaveLayoutTo.FailedToSaveLayout") + ex.Message);
             return false;
         }
     }
@@ -568,12 +568,12 @@ public partial class MainViewModel
             SetPanelVisible(_logTool, state.LogVisible);
 
             this.RaisePropertyChanged(nameof(HasRenames));
-            Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModelShell.LoadLayoutFrom004") + path);
+            Logger.Info(L.Instance.GetResource("Demo.Content.Shell.LoadLayoutFrom.LayoutRestored") + path);
             return true;
         }
         catch (Exception ex)
         {
-            Logger.Warn(L.Instance.GetResource("Demo.Text.MainViewModelShell.LoadLayoutFrom005") + ex.Message);
+            Logger.Warn(L.Instance.GetResource("Demo.Content.Shell.LoadLayoutFrom.FailedToRestoreLayout") + ex.Message);
             return false;
         }
     }
@@ -629,7 +629,7 @@ public sealed class DemoCommandEntry(string icon, string title, string group, bo
     /// <summary>是否指向一个演示文档（用于「文档 / 命令」标记）。</summary>
     public bool Document { get; } = document;
 
-    public string KindLabel => Document ? L.Instance.GetResource("Demo.Text.MainViewModelShell.KindLabel006") : L.Instance.GetResource("Demo.Text.MainViewModelShell.KindLabel007");
+    public string KindLabel => Document ? L.Instance.GetResource("Demo.Content.Shell.KindLabel.Documents") : L.Instance.GetResource("Demo.Content.Shell.KindLabel.Commands");
 
     public void Run() => run();
 }

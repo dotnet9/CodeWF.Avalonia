@@ -10,12 +10,12 @@
     <Grid Grid.Column="0" RowDefinitions="Auto,*">
       <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1" Margin="0,0,0,8"
               BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-        <TextBlock Text="{codewf:I18n Demo.Text.TransferPage.View001}"
+        <TextBlock Text="{codewf:I18n Demo.Content.Transfer.View.MoveSelectedItemsBetweenTwoSearchableListsUsing}"
                    TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
       </Border>
       <codewf:Transfer Grid.Row="1" x:Name="TransferList"
-                       LeftHeader="{codewf:I18n Demo.Text.TransferPage.View002}"
-                       RightHeader="{codewf:I18n Demo.Text.TransferPage.View003}"
+                       LeftHeader="{codewf:I18n Demo.Content.Transfer.View.FeatureBacklogAvailable}"
+                       RightHeader="{codewf:I18n Demo.Content.Transfer.View.CurrentDeliverySelected}"
                        LeftItemsSource="{Binding Available}"
                        RightItemsSource="{Binding Selected}" />
     </Grid>
@@ -24,17 +24,17 @@
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
             BorderThickness="1,0,0,0" Padding="12,0,0,0">
       <Grid RowDefinitions="Auto,Auto,Auto,Auto,*">
-        <TextBlock Grid.Row="0" Text="{codewf:I18n Demo.Text.TransferPage.View004}" FontWeight="Bold" Margin="0,0,0,6" />
+        <TextBlock Grid.Row="0" Text="{codewf:I18n Demo.Content.Transfer.View.LiveCounts}" FontWeight="Bold" Margin="0,0,0,6" />
         <StackPanel Grid.Row="1" Margin="0,0,0,8">
           <TextBlock FontSize="12" Opacity="0.8">
-            <Run Text="{codewf:I18n Demo.Text.TransferPage.View005}" /><Run Text="{Binding Available.Count, Mode=OneWay}" />
+            <Run Text="{codewf:I18n Demo.Content.Transfer.View.Available}" /><Run Text="{Binding Available.Count, Mode=OneWay}" />
           </TextBlock>
           <TextBlock FontSize="12" Opacity="0.8">
-            <Run Text="{codewf:I18n Demo.Text.TransferPage.View006}" /><Run Text="{Binding Selected.Count, Mode=OneWay}" />
+            <Run Text="{codewf:I18n Demo.Content.Transfer.View.Selected}" /><Run Text="{Binding Selected.Count, Mode=OneWay}" />
           </TextBlock>
         </StackPanel>
-        <TextBlock Grid.Row="2" Text="{codewf:I18n Demo.Text.TransferPage.View007}" FontWeight="Bold" Margin="0,4,0,6" />
-        <TextBlock Grid.Row="3" Text="{codewf:I18n Demo.Text.TransferPage.View008}"
+        <TextBlock Grid.Row="2" Text="{codewf:I18n Demo.Content.Transfer.View.OperationLog}" FontWeight="Bold" Margin="0,4,0,6" />
+        <TextBlock Grid.Row="3" Text="{codewf:I18n Demo.Content.Transfer.View.TheControlMovesItemsBetweenSourceCollectionsAnd}"
                    TextWrapping="Wrap" FontSize="11" Opacity="0.65" Margin="0,0,0,6" />
         <ListBox Grid.Row="4" ItemsSource="{Binding MoveLog}" FontSize="11" />
       </Grid>

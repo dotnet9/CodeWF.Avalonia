@@ -14,16 +14,16 @@ public class TransferPageViewModel : ReactiveObject
 {
     public ObservableCollection<FeatureItem> Available { get; } = new(
     [
-        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available001"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available002")),
-        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available003"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available004")),
-        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available005"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available006")),
-        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available007"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available008")),
-        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available009"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available010")),
-        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available011"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available012")),
-        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available013"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available014")),
-        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available015"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available016")),
-        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available017"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available018")),
-        new FeatureItem(L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available019"), L.Instance.GetResource("Demo.Text.TransferPageViewModel.Available020")),
+        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.IncrementalRendering"), L.Instance.GetResource("Demo.Content.Transfer.Available.Completed")),
+        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.BlockVirtualization"), L.Instance.GetResource("Demo.Content.Transfer.Available.Completed")),
+        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.18TypographyThemes"), L.Instance.GetResource("Demo.Content.Transfer.Available.Completed")),
+        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.PDFExport"), L.Instance.GetResource("Demo.Content.Transfer.Available.Completed")),
+        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.WordExport"), L.Instance.GetResource("Demo.Content.Transfer.Available.Completed")),
+        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.RichTextPublishing"), L.Instance.GetResource("Demo.Content.Transfer.Available.Completed")),
+        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.CollaborativeAnnotations"), L.Instance.GetResource("Demo.Content.Transfer.Available.Planned")),
+        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.VersionComparison"), L.Instance.GetResource("Demo.Content.Transfer.Available.Planned")),
+        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.AISummaries"), L.Instance.GetResource("Demo.Content.Transfer.Available.Planned")),
+        new FeatureItem(L.Instance.GetResource("Demo.Content.Transfer.Available.HandwrittenFormulaRecognition"), L.Instance.GetResource("Demo.Content.Transfer.Available.Planned")),
     ]);
 
     public ObservableCollection<FeatureItem> Selected { get; } = new();

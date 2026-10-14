@@ -6,7 +6,7 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class MarkupExtensionPage : DemoPageBase
 {
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.MarkupExtensionPageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.MarkupExtension.Source.Xaml");
 
     private readonly string _extension;
     public MarkupExtensionPage() : this("") { }
@@ -29,17 +29,17 @@ public partial class MarkupExtensionPage : DemoPageBase
         _ => XamlSnippet,
     };
 
-    public override string CSharpCode => L.Instance.GetResource("Demo.Text.MarkupExtensionPageaxaml.CSharpCode002");
+    public override string CSharpCode => L.Instance.GetResource("Demo.Content.MarkupExtension.CSharpCode.SwitchBindingIfConverterIfConditionConverterSwitchConverterEnumToBooleanConverterIsCollectionEmptyConverter");
 
     protected override IReadOnlyList<PropertyItem> BuildProperties()
     {
         var note = new PropertyItem
         {
             Id = "mx.note",
-            Name = L.Instance.GetResource("Demo.Text.MarkupExtensionPageaxaml.BuildProperties003"),
+            Name = L.Instance.GetResource("Demo.Content.MarkupExtension.Properties.UseCases"),
             Kind = PropertyItemKind.ReadOnly,
-            Value = L.Instance.GetResource("Demo.Text.MarkupExtensionPageaxaml.BuildProperties004"),
-            Description = L.Instance.GetResource("Demo.Text.MarkupExtensionPageaxaml.BuildProperties005"),
+            Value = L.Instance.GetResource("Demo.Content.MarkupExtension.Properties.ConditionalDisplayTextAndIcons"),
+            Description = L.Instance.GetResource("Demo.Content.MarkupExtension.Properties.IfSwitchChooseDisplayValuesKeepMultiProperty"),
         };
 
         return [note];

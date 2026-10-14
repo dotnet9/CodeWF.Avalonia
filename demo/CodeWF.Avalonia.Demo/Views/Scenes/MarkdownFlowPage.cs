@@ -25,7 +25,7 @@ public class MarkdownFlowPage : ScenePageBase
 
     protected override string SummaryKey => "Demo.Scene.Summary.Markdown";
 
-    public override string XamlCode => L.Instance.GetResource("Demo.Text.MarkdownFlowPage.XamlCode001");
+    public override string XamlCode => L.Instance.GetResource("Demo.Content.MarkdownFlow.XamlCode.CodewfMarkdownViewerMarkdownTypographyThemeCodewfMarkdownEditorViewMarkdownShowLineNumbers");
 
-    public override string CSharpCode => L.Instance.GetResource("Demo.Text.MarkdownFlowPage.CSharpCode002");
+    public override string CSharpCode => L.Instance.GetResource("Demo.Content.MarkdownFlow.CSharpCode.AddStepDemoSceneStepOpenNewMarkdownViewerPageAddStep");
 }

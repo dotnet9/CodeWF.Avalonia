@@ -10,7 +10,7 @@
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
       <StackPanel Spacing="6">
         <TextBlock Text="Markdown Lite" FontWeight="Bold" />
-        <TextBlock Text="{codewf:I18n Demo.Text.MarkdownLitePage.View001}"
+        <TextBlock Text="{codewf:I18n Demo.Content.MarkdownLite.View.MarkdownLiteUsesMarkdigAndASmallerRendering}"
                    TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
       </StackPanel>
     </Border>

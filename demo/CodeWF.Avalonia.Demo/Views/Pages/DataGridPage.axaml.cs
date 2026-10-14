@@ -8,9 +8,9 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class DataGridPage : DemoPageBase
 {
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.DataGridPageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.DataGrid.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.DataGridPageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.DataGrid.Source.CSharp");
 
     public DataGridPageViewModel ViewModel { get; } = new();
 

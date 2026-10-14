@@ -15,7 +15,7 @@ public sealed class MarkdownExportPageViewModel : ReactiveObject
     private string _theme = MarkdownTypographyThemes.WeChatFormat;
     private string _size = MarkdownTypographySizes.Normal;
     private CopyKind _copyKind = CopyKind.Wechat;
-    private string _markdown = L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.SampleMarkdown004");
+    private string _markdown = L.Instance.GetResource("Demo.Content.MarkdownExport.Samples.Markdown");
     private string _status = string.Empty;
 
     public MarkdownExportPageViewModel()
@@ -40,8 +40,8 @@ public sealed class MarkdownExportPageViewModel : ReactiveObject
                 _size = size;
                 break;
             case IdCopyKind when change.NewValue is string kind:
-                _copyKind = kind == L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.BuildProperties011") ? CopyKind.Zhihu
-                    : kind == L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.BuildProperties012") ? CopyKind.Juejin : CopyKind.Wechat;
+                _copyKind = kind == L.Instance.GetResource("Demo.Content.MarkdownExport.Properties.Zhihu") ? CopyKind.Zhihu
+                    : kind == L.Instance.GetResource("Demo.Content.MarkdownExport.Properties.Juejin") ? CopyKind.Juejin : CopyKind.Wechat;
                 break;
         }
     }
@@ -51,7 +51,7 @@ public sealed class MarkdownExportPageViewModel : ReactiveObject
         var theme = new PropertyItem
         {
             Id = IdTheme,
-            Name = L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.BuildProperties005"),
+            Name = L.Instance.GetResource("Demo.Content.MarkdownExport.Properties.ExportTheme"),
             Kind = PropertyItemKind.Choice,
             Options =
             [
@@ -62,27 +62,27 @@ public sealed class MarkdownExportPageViewModel : ReactiveObject
             ],
             Value = _theme,
             DefaultValue = MarkdownTypographyThemes.WeChatFormat,
-            Description = L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.BuildProperties006"),
+            Description = L.Instance.GetResource("Demo.Content.MarkdownExport.Properties.TypographyThemeOfTheExportedDocument"),
         };
         var size = new PropertyItem
         {
             Id = IdSize,
-            Name = L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.BuildProperties007"),
+            Name = L.Instance.GetResource("Demo.Content.MarkdownExport.Properties.TypographySize"),
             Kind = PropertyItemKind.Choice,
             Options = [MarkdownTypographySizes.Normal, MarkdownTypographySizes.Small],
             Value = _size,
             DefaultValue = MarkdownTypographySizes.Normal,
-            Description = L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.BuildProperties008"),
+            Description = L.Instance.GetResource("Demo.Content.MarkdownExport.Properties.TypographySizeOfTheExportedDocument"),
         };
         var copyKind = new PropertyItem
         {
             Id = IdCopyKind,
-            Name = L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.BuildProperties009"),
+            Name = L.Instance.GetResource("Demo.Content.MarkdownExport.Properties.CopyDestination"),
             Kind = PropertyItemKind.Radio,
-            Options = [L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.BuildProperties010"), L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.BuildProperties011"), L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.BuildProperties012")],
+            Options = [L.Instance.GetResource("Demo.Content.MarkdownExport.Properties.WeChat"), L.Instance.GetResource("Demo.Content.MarkdownExport.Properties.Zhihu"), L.Instance.GetResource("Demo.Content.MarkdownExport.Properties.Juejin")],
             Value = CopyTitle,
-            DefaultValue = L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.BuildProperties013"),
-            Description = L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.BuildProperties014"),
+            DefaultValue = L.Instance.GetResource("Demo.Content.MarkdownExport.Properties.WeChat"),
+            Description = L.Instance.GetResource("Demo.Content.MarkdownExport.Properties.DestinationPlatformForRichText"),
         };
 
         return [theme, size, copyKind];
@@ -91,9 +91,9 @@ public sealed class MarkdownExportPageViewModel : ReactiveObject
 
     private string CopyTitle => L.Instance.GetResource(_copyKind switch
     {
-        CopyKind.Zhihu => "Demo.Text.MarkdownExportPageaxaml.BuildProperties011",
-        CopyKind.Juejin => "Demo.Text.MarkdownExportPageaxaml.BuildProperties012",
-        _ => "Demo.Text.MarkdownExportPageaxaml.BuildProperties010",
+        CopyKind.Zhihu => "Demo.Content.MarkdownExport.Properties.Zhihu",
+        CopyKind.Juejin => "Demo.Content.MarkdownExport.Properties.Juejin",
+        _ => "Demo.Content.MarkdownExport.Properties.WeChat",
     });
 
     private async Task CopyAsync()
@@ -101,9 +101,9 @@ public sealed class MarkdownExportPageViewModel : ReactiveObject
         try
         {
             await MarkdownHtmlClipboard.SetHtmlAsync(Markdown, _copyKind, _theme, _size);
-            Status = string.Format(L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.OnCopyWechat021"), CopyTitle);
+            Status = string.Format(L.Instance.GetResource("Demo.Content.MarkdownExport.OnCopyWechat.CopiedRichTextPasteItIntoTheEditorFormat"), CopyTitle);
         }
-        catch (Exception ex) { Status = L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.OnCopyWechat022") + ex.Message; }
+        catch (Exception ex) { Status = L.Instance.GetResource("Demo.Content.MarkdownExport.OnCopyWechat.CopyFailed") + ex.Message; }
     }
 
     private async Task ExportAsync(ExportKind kind)
@@ -113,20 +113,20 @@ public sealed class MarkdownExportPageViewModel : ReactiveObject
             var extension = kind switch { ExportKind.Png => ".png", ExportKind.Pdf => ".pdf", ExportKind.Word => ".docx", _ => ".html" };
             var titleKey = kind switch
             {
-                ExportKind.Png => "Demo.Text.MarkdownExportPageaxaml.OnExportPng015",
-                ExportKind.Pdf => "Demo.Text.MarkdownExportPageaxaml.OnExportPdf016",
-                ExportKind.Word => "Demo.Text.MarkdownExportPageaxaml.OnExportWord017",
-                _ => "Demo.Text.MarkdownExportPageaxaml.OnExportHtml018",
+                ExportKind.Png => "Demo.Content.MarkdownExport.OnExportPng.ExportPNG",
+                ExportKind.Pdf => "Demo.Content.MarkdownExport.OnExportPdf.ExportPDF",
+                ExportKind.Word => "Demo.Content.MarkdownExport.OnExportWord.ExportWord",
+                _ => "Demo.Content.MarkdownExport.OnExportHtml.ExportHTML",
             };
             var path = SelectOutput is null ? null : await SelectOutput(L.Instance.GetResource(titleKey), extension);
             if (path is null) return;
             var markdown = Markdown;
             var theme = _theme;
             var size = _size;
-            Status = string.Format(L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.ExportAsync023"), kind, path);
+            Status = string.Format(L.Instance.GetResource("Demo.Content.MarkdownExport.ExportAsync.ExportingFormat"), kind, path);
             await Task.Run(() => MarkdownDocumentExporter.ExportMarkdown(markdown, kind, theme, path, size));
-            Status = string.Format(L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.ExportAsync024"), path);
+            Status = string.Format(L.Instance.GetResource("Demo.Content.MarkdownExport.ExportAsync.ExportCompleteFormat"), path);
         }
-        catch (Exception ex) { Status = string.Format(L.Instance.GetResource("Demo.Text.MarkdownExportPageaxaml.ExportAsync025"), ex.Message); }
+        catch (Exception ex) { Status = string.Format(L.Instance.GetResource("Demo.Content.MarkdownExport.ExportAsync.ExportFailedFormat"), ex.Message); }
     }
 }

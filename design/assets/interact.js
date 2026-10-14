@@ -144,15 +144,15 @@ var MD_THEMES = ["Basic", "OrangeHeart", "InkBlack", "ColorfulPurple", "TenderGr
 /* 字号由排版主题决定（验证「外观字号令牌被排版主题接管」） */
 var MD_THEME_FS = { Basic: "13px", GeekBlack: "12.5px", TechnologyBlue: "13.5px", WeChatFormat: "15px" };
 
-/* ═══ 演示目录：7 个 Ribbon 页签 / 24 页（3 个场景页 + 21 个组件页） ═══ */
+/* Navigation is generated from the API catalog. */
 var CATALOG = window.CodeWFDemoCatalog.map(function (group) {
- return { id:group.id, icon:"◆", items:group.items.map(function (entry) { return {id:entry.prototypeId}; }) };
+ return { id:group.id, icon:group.icon, items:group.items.map(function (entry) { return {id:entry.prototypeId}; }) };
 });
 window.CodeWFDemoCatalog.forEach(function (group) {
  I18N["zh-CN"]["tabs."+group.id]=group.titleZh;
  I18N["en-US"]["tabs."+group.id]=group.titleEn;
 });
-/* 页面短名：中文 ≤ 4 字，保证 Ribbon 按钮与树条目都放得下 */
+/* Legacy labels used by nested example previews. Main navigation uses the catalog. */
 var PAGE_NAME = {
  "welcome": "欢迎", "flow-write": "写作流程", "flow-data": "数据流程", "flow-docs": "文档流程",
  "md-viewer": "阅读器", "md-lite": "轻量渲染", "md-editor": "源码编辑", "md-live": "实时编辑", "md-export": "导出复制",
@@ -174,43 +174,10 @@ var PAGE_ALIAS = {
 function svg(view, extra) {
  return '<svg class="svgic ' + (extra || "s20") + '" viewBox="0 0 24 24" aria-hidden="true">' + view + "</svg>";
 }
-var TAB_ICON = {
- "welcome": '<path d="M4.5 10.8L12 4l7.5 6.8"/><path d="M6.5 10v9.5h11V10"/><path d="M10.5 19.5v-4.8h3v4.8"/>',
- "flow-write": '<circle cx="12" cy="12" r="8.5"/><path d="M14.6 9.4l-1.7 3.8-3.8 1.7 1.7-3.8z"/>',
- "flow-data": '<path d="M4 19.5V4.5"/><path d="M4 19.5h15.5"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7.5" width="3" height="9.5"/><rect x="17" y="14" width="3" height="3"/>',
- "flow-docs": '<rect x="3.5" y="7" width="10" height="12.5" rx="1.6"/><path d="M7.5 7V4.5h11a1.5 1.5 0 0 1 1.5 1.5v11a1.5 1.5 0 0 1-1.5 1.5H17"/>',
- "md-viewer": '<path d="M13.5 3.5H7a1.6 1.6 0 0 0-1.6 1.6v13.8A1.6 1.6 0 0 0 7 20.5h10a1.6 1.6 0 0 0 1.6-1.6V8.6z"/><path d="M13.5 3.5v5.1h5.1"/><path d="M9 13.5h6M9 16.8h4"/>',
- "md-lite": '<path d="M4.5 5.5h15v13h-15z"/><path d="M7.5 15.5l2-6 2.5 4.5 1.8-3 1.7 4.5"/>',
- "md-editor": '<path d="M4.5 19.5l.9-3.6L16 5.3l2.7 2.7L8.1 18.6z"/><path d="M14.6 6.7l2.7 2.7"/><path d="M4.5 12.5V4.5h8"/>',
- "md-live": '<path d="M13 3.5L5.5 13.5H11l-.6 7L18 10.5h-5.4z"/>',
- "md-export": '<path d="M12 3.5v10.5"/><path d="M8.5 7L12 3.5 15.5 7"/><path d="M5 13.5v5.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5v-5.5"/>',
- "datagrid": '<rect x="3.5" y="4.5" width="17" height="15" rx="1.7"/><path d="M3.5 9.5h17M3.5 14.5h17M9.5 9.5v10M15 9.5v10"/>',
- "propgrid": '<path d="M4 6.5h9M17.5 6.5H20"/><circle cx="15" cy="6.5" r="2.1"/><path d="M4 17.5h3.5M11 17.5h9"/><circle cx="9" cy="17.5" r="2.1"/><path d="M4 12h6M13.5 12H20"/><circle cx="11.5" cy="12" r="2.1"/>',
- "dock": '<rect x="3.5" y="4.5" width="17" height="15" rx="1.7"/><path d="M10 4.5v15"/><path d="M13.5 9.5h4"/>',
- "trapezoid": '<path d="M7.5 6.5h9l3 11h-15z"/><path d="M9.5 10h5"/>',
- "searchlist": '<rect x="3.5" y="4.5" width="17" height="15" rx="1.7"/><path d="M6.5 9.5h11M6.5 13.5h7"/><circle cx="16.5" cy="15.8" r="2.3"/><path d="M18.3 17.6l2.2 2.2"/>',
- "transfer": '<path d="M4 6.5h10l-2.5-2.5M20 17.5H10l2.5 2.5"/><path d="M17.5 6.5H20"/><path d="M4 17.5h2.5"/>',
- "markup": '<path d="M9 7.5L4.5 12 9 16.5"/><path d="M15 7.5L19.5 12 15 16.5"/><path d="M13.2 5.5l-2.4 13"/>',
- "status": '<path d="M4.5 5.5h15v10l-3.5 3.5h-11z"/><path d="M15.6 19.2v-3.7h3.7"/><path d="M8 10h8M8 13h5"/>',
- "guide": '<circle cx="12" cy="12" r="8.5"/><path d="M14.8 9.2l-1.9 4.1-4.1 1.9 1.9-4.1z"/>',
- "appguide": '<circle cx="9" cy="9" r="5"/><path d="M12.8 12.8L20 20"/><path d="M9 6.5a2.5 2.5 0 0 0-2.5 2.5"/>',
- "wsp": '<path d="M12 3.5L21 8.5 12 13.5 3 8.5z"/><path d="M3 12.8L12 17.8l9-5"/><path d="M3 16.8L12 21.8l9-5"/>',
- "colde": '<path d="M4 7.5h4M4 12h4M4 16.5h4"/><rect x="10" y="5.5" width="10" height="4" rx="1.2"/><rect x="10" y="10" width="10" height="4" rx="1.2"/><rect x="10" y="14.5" width="10" height="4" rx="1.2"/>',
- "log": '<path d="M5.5 4.5h13v15h-13z"/><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4"/>',
- "lang": '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.4 2.4 3.6 5.3 3.6 8.5S14.4 18.1 12 20.5C9.6 18.1 8.4 15.2 8.4 12S9.6 5.9 12 3.5z"/>',
- "codewfwindow": '<rect x="3.5" y="4.5" width="17" height="15" rx="1.7"/><path d="M3.5 9h17"/><path d="M6.5 6.7h.01M9 6.7h.01"/>'
-};
+var TAB_ICON = Object.fromEntries(window.CodeWFDemoCatalog.flatMap(function(g){return g.items;}).map(function(i){return [i.prototypeId,i.prototypeIcon];}));
 function iconSvg(id, extra) { return svg(TAB_ICON[id] || TAB_ICON["welcome"], extra || "s20"); }
 /* 页签图标（Ribbon 页签行的极简小图标） */
-var TAB_TAB_ICON = {
- home: '<path d="M4.5 10.8L12 4l7.5 6.8"/><path d="M6.5 10v9.5h11V10"/>',
- write: '<path d="M4.5 19.5l.9-3.6L16 5.3l2.7 2.7L8.1 18.6z"/>',
- data: '<path d="M4 19.5V4.5M4 19.5h15.5"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7.5" width="3" height="9.5"/><rect x="17" y="14" width="3" height="3"/>',
- docs: '<rect x="3.5" y="7" width="10" height="12.5" rx="1.6"/><path d="M7.5 7V4.5h11a1.5 1.5 0 0 1 1.5 1.5v11a1.5 1.5 0 0 1-1.5 1.5H17"/>',
- input: '<rect x="3.5" y="4.5" width="17" height="15" rx="1.7"/><path d="M6.5 9.5h11M6.5 13.5h7"/><circle cx="16.5" cy="15.8" r="2.3"/><path d="M18.3 17.6l2.2 2.2"/>',
- present: '<path d="M4.5 5.5h15v10l-3.5 3.5h-11z"/><path d="M8 10h8M8 13h5"/>',
- infra: '<path d="M5.5 4.5h13v15h-13z"/><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4"/>'
-};
+var TAB_TAB_ICON = Object.fromEntries(window.CodeWFDemoCatalog.map(function(g){return [g.id,g.prototypeIcon];}));
 function tabIconSvg(id) { return svg(TAB_TAB_ICON[id] || TAB_TAB_ICON["home"], "s14"); }
 function tabName(id) { return tt("tabs." + id); }
 function pt(id) { return PAGE_NAME[id] || id; }

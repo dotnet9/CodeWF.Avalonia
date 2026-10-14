@@ -1,5 +1,18 @@
-param()
+param([switch] $Check)
 $ErrorActionPreference = 'Stop'
+
+# Generated files are checked in; a normal dotnet build does not require PowerShell.
+function Write-GeneratedFile([string] $Path, [string] $Content) {
+    if ($Check) {
+        if (-not (Test-Path -LiteralPath $Path) -or
+            [IO.File]::ReadAllText($Path).ReplaceLineEndings("`n") -cne $Content.ReplaceLineEndings("`n")) {
+            throw "Generated catalog file is stale: $Path. Run scripts/sync_design_catalog.ps1."
+        }
+    } else {
+        [IO.File]::WriteAllText($Path, $Content, [Text.UTF8Encoding]::new($false))
+    }
+}
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $catalogPath = Join-Path $repoRoot 'design/catalog.json'
 $catalog = Get-Content -LiteralPath $catalogPath -Raw -Encoding utf8 | ConvertFrom-Json
@@ -9,27 +22,27 @@ $samples = [ordered]@{}
 $settings = [ordered]@{}
 foreach ($culture in @('zh-CN','en-US')) {
     $path = Join-Path $repoRoot ('demo/CodeWF.Avalonia.Demo/I18n/CodeWF.Avalonia.Demo.' + $culture + '.json')
-    $resources = (Get-Content -LiteralPath $path -Raw -Encoding utf8 | ConvertFrom-Json).Demo
+    $resources = (Get-Content -LiteralPath $path -Raw -Encoding utf8 | ConvertFrom-Json -AsHashtable).Demo
     $translations[$culture] = $resources.Catalog
     $descriptions[$culture] = $resources.Api
     $settings[$culture] = [ordered]@{
         shell = $resources.Shell
         palettes = $resources.Palette
-        language = $resources.Text.MainViewModel.BuildGlobalProperties025
-        group = $resources.Text.MainViewModel.BuildGlobalProperties027
+        language = $resources.Shell.GlobalSettings.LanguageLabel
+        group = $resources.Shell.GlobalSettings.AppearanceGroup
     }
     $samples[$culture] = [ordered]@{
-        viewer = $resources.Text.MarkdownViewerPageViewModel.SampleMarkdown001
-        lite = $resources.Text.MarkdownLitePageaxaml.SampleMarkdown003
-        editor = $resources.Text.MarkdownEditorPageaxaml.SampleMarkdown011
-        live = $resources.Text.MarkdownLiveEditorPageaxaml.SampleMarkdown009
-        apply = $resources.Text.MarkdownViewerPage.View002
-        append = $resources.Text.MarkdownViewerPage.View003
-        reset = $resources.Text.MarkdownViewerPage.View004
-        themeLabel = $resources.Text.MarkdownViewerPageaxaml.BuildProperties003
-        sizeLabel = $resources.Text.MarkdownViewerPageaxaml.BuildProperties005
-        virtualizationLabel = $resources.Text.MarkdownViewerPageaxaml.BuildProperties007
-        thresholdLabel = $resources.Text.MarkdownViewerPageaxaml.BuildProperties009
+        viewer = $resources.Content.MarkdownViewer.Samples.Markdown
+        lite = $resources.Content.MarkdownLite.Samples.Markdown
+        editor = $resources.Content.MarkdownEditor.Samples.Markdown
+        live = $resources.Content.MarkdownLiveEditor.Samples.Markdown
+        apply = $resources.Content.MarkdownViewer.View.Apply
+        append = $resources.Content.MarkdownViewer.View.AppendParagraphIncremental
+        reset = $resources.Content.MarkdownViewer.View.ResetSample
+        themeLabel = $resources.Content.MarkdownViewer.Properties.TypographyTheme
+        sizeLabel = $resources.Content.MarkdownViewer.Properties.TypographySize
+        virtualizationLabel = $resources.Content.MarkdownViewer.Properties.Virtualization
+        thresholdLabel = $resources.Content.MarkdownViewer.Properties.VirtualizationThreshold
     }
 }
 $typography = [ordered]@{}
@@ -53,4 +66,46 @@ $content += "window.CodeWFCatalogDescriptions = " + (ConvertTo-Json -InputObject
 $content += "window.CodeWFPrototypeSettings = " + (ConvertTo-Json -InputObject $settings -Depth 10) + ";`n"
 $content += "window.CodeWFMarkdownSamples = " + (ConvertTo-Json -InputObject $samples -Depth 10) + ";`n"
 $content += "window.CodeWFMarkdownTypography = " + (ConvertTo-Json -InputObject $typography -Depth 10) + ";`n"
-[System.IO.File]::WriteAllText((Join-Path $repoRoot 'design/assets/catalog-data.js'), $content, [System.Text.UTF8Encoding]::new($false))
+Write-GeneratedFile (Join-Path $repoRoot 'design/assets/catalog-data.js') $content
+
+$items = @($catalog | ForEach-Object { $_.items })
+$keys = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+$routes = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+$constants = [Collections.Generic.List[string]]::new()
+$factories = [Collections.Generic.List[string]]::new()
+foreach ($item in $items) {
+    $name = ($item.titleKey -split '\.')[ -1 ]
+    if ($name -cnotmatch '^[A-Za-z][A-Za-z0-9]*$' -or -not $keys.Add($item.titleKey) -or -not $routes.Add($item.prototypeId)) { throw "Invalid or duplicate catalog item: $($item.titleKey)" }
+    if ([string]::IsNullOrWhiteSpace($item.icon) -or [string]::IsNullOrWhiteSpace($item.prototypeIcon)) { throw "Missing catalog icon: $name" }
+    $expression = [string] $item.page
+    if ($expression -cnotmatch '^[A-Za-z][A-Za-z0-9]*(\(.*\))?$' -or $expression -match '[;{}\r\n]') { throw "Invalid page expression: $name" }
+    if (-not $expression.EndsWith(')')) { $expression += '()' }
+    $constants.Add('    public const string ' + $name + ' = "' + $item.titleKey + '";')
+    $factories.Add('        DemoPages.' + $name + ' => new ' + $expression + ',')
+}
+$code = @"
+// <auto-generated />
+// Source: design/catalog.json. Run scripts/sync_design_catalog.ps1 to update.
+using CodeWF.Avalonia.Demo.Views;
+using CodeWF.Avalonia.Demo.Views.Pages;
+using CodeWF.Avalonia.Demo.Views.Scenes;
+using CodeWF.Avalonia.Demo.ViewModels.Pages;
+
+namespace CodeWF.Avalonia.Demo.ViewModels;
+
+public static class DemoPages
+{
+$($constants -join "`n")
+}
+
+public static partial class DemoCatalog
+{
+    private static DemoPageBase CreatePage(string key) => key switch
+    {
+$($factories -join "`n")
+        _ => throw new ArgumentOutOfRangeException(nameof(key), key, "Unknown catalog API.")
+    };
+}
+"@ + "`n"
+Write-GeneratedFile (Join-Path $repoRoot 'demo/CodeWF.Avalonia.Demo/ViewModels/DemoCatalog.g.cs') $code
+Write-Host "Catalog synchronized: $($catalog.Count) groups, $($items.Count) pages."

@@ -8,61 +8,61 @@
 
       <Border Padding="10" CornerRadius="6" BorderThickness="1"
               BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-        <TextBlock Text="{codewf:I18n Demo.Text.CodeWFWindowPage.View001}"
+        <TextBlock Text="{codewf:I18n Demo.Content.CodeWFWindow.View.BorderlessCodeWFWindowWithDWMCornersACustomTitle}"
                    TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
       </Border>
 
       <StackPanel Orientation="Horizontal" Spacing="8">
-        <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.CodeWFWindowPage.View002}" Click="OnOpenDefault" />
-        <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.CodeWFWindowPage.View003}" Click="OnOpenCustom" />
-        <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.CodeWFWindowPage.View004}" Click="OnOpenExtends" />
+        <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.CodeWFWindow.View.OpenDefaultConfiguration}" Click="OnOpenDefault" />
+        <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.CodeWFWindow.View.OpenMinimalButtonsAndCustomTitleBar}" Click="OnOpenCustom" />
+        <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.CodeWFWindow.View.OpenExtendContentIntoTitleBar}" Click="OnOpenExtends" />
       </StackPanel>
 
       <WrapPanel>
         <Border Width="380" Margin="0,0,12,12" Padding="12" CornerRadius="8"
                 BorderThickness="1" BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
           <StackPanel Spacing="8">
-            <TextBlock Text="{codewf:I18n Demo.Text.CodeWFWindowPage.View005}" FontSize="12" Opacity="0.7" />
+            <TextBlock Text="{codewf:I18n Demo.Content.CodeWFWindow.View.Example1DefaultTitleBar}" FontSize="12" Opacity="0.7" />
             <Border BorderThickness="1" CornerRadius="6"
                     BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-              <codewf:CodeWFTitleBar Title="{codewf:I18n Demo.Text.CodeWFWindowPage.View006}" Height="36" />
+              <codewf:CodeWFTitleBar Title="{codewf:I18n Demo.Content.CodeWFWindow.View.BorderlessCustomTitleBar}" Height="36" />
             </Border>
-            <TextBlock Text="{codewf:I18n Demo.Text.CodeWFWindowPage.View007}" FontSize="11" Opacity="0.6" />
+            <TextBlock Text="{codewf:I18n Demo.Content.CodeWFWindow.View.TitleBarHeight36WithMinimizeRestoreCloseButtons}" FontSize="11" Opacity="0.6" />
           </StackPanel>
         </Border>
 
         <Border Width="380" Margin="0,0,12,12" Padding="12" CornerRadius="8"
                 BorderThickness="1" BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
           <StackPanel Spacing="8">
-            <TextBlock Text="{codewf:I18n Demo.Text.CodeWFWindowPage.View008}" FontSize="12" Opacity="0.7" />
+            <TextBlock Text="{codewf:I18n Demo.Content.CodeWFWindow.View.Example2CustomLeftRightContent}" FontSize="12" Opacity="0.7" />
             <Border BorderThickness="1" CornerRadius="6"
                     BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-              <codewf:CodeWFTitleBar Title="{codewf:I18n Demo.Text.CodeWFWindowPage.View009}" Height="36">
+              <codewf:CodeWFTitleBar Title="{codewf:I18n Demo.Content.CodeWFWindow.View.DocumentDesignNotes}" Height="36">
                 <codewf:CodeWFTitleBar.LeftContent>
                   <TextBlock Text="◆" Foreground="DodgerBlue" VerticalAlignment="Center" Margin="10,0,0,0" />
                 </codewf:CodeWFTitleBar.LeftContent>
                 <codewf:CodeWFTitleBar.RightContent>
-                  <TextBox Width="140" Height="24" PlaceholderText="{codewf:I18n Demo.Text.CodeWFWindowPage.View010}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                  <TextBox Width="140" Height="24" PlaceholderText="{codewf:I18n Demo.Content.CodeWFWindow.View.Search}" VerticalAlignment="Center" Margin="0,0,10,0" />
                 </codewf:CodeWFTitleBar.RightContent>
               </codewf:CodeWFTitleBar>
             </Border>
-            <TextBlock Text="{codewf:I18n Demo.Text.CodeWFWindowPage.View011}" FontSize="11" Opacity="0.6" />
+            <TextBlock Text="{codewf:I18n Demo.Content.CodeWFWindow.View.LeftContentRightContentAcceptArbitraryContent}" FontSize="11" Opacity="0.6" />
           </StackPanel>
         </Border>
 
         <Border Width="380" Padding="12" CornerRadius="8"
                 BorderThickness="1" BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
           <StackPanel Spacing="8">
-            <TextBlock Text="{codewf:I18n Demo.Text.CodeWFWindowPage.View012}" FontSize="12" Opacity="0.7" />
+            <TextBlock Text="{codewf:I18n Demo.Content.CodeWFWindow.View.Example3CenteredContent}" FontSize="12" Opacity="0.7" />
             <Border BorderThickness="1" CornerRadius="6"
                     BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-              <codewf:CodeWFTitleBar Title="{codewf:I18n Demo.Text.CodeWFWindowPage.View013}" Height="36">
+              <codewf:CodeWFTitleBar Title="{codewf:I18n Demo.Content.CodeWFWindow.View.Left}" Height="36">
                 <codewf:CodeWFTitleBar.CenterContent>
-                  <TextBlock Text="{codewf:I18n Demo.Text.CodeWFWindowPage.View014}" Opacity="0.8" VerticalAlignment="Center" FontSize="12" />
+                  <TextBlock Text="{codewf:I18n Demo.Content.CodeWFWindow.View.CenteredTitleCenterContent}" Opacity="0.8" VerticalAlignment="Center" FontSize="12" />
                 </codewf:CodeWFTitleBar.CenterContent>
               </codewf:CodeWFTitleBar>
             </Border>
-            <TextBlock Text="{codewf:I18n Demo.Text.CodeWFWindowPage.View015}" FontSize="11" Opacity="0.6" />
+            <TextBlock Text="{codewf:I18n Demo.Content.CodeWFWindow.View.ArrangeCenterContentAndTheTitleToAvoidOverlap}" FontSize="11" Opacity="0.6" />
           </StackPanel>
         </Border>
       </WrapPanel>

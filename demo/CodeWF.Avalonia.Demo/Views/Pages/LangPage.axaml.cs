@@ -13,9 +13,9 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class LangPage : DemoPageBase
 {
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.LangPageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.Lang.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.LangPageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.Lang.Source.CSharp");
 
     public CodeWF.Avalonia.Demo.ViewModels.Pages.LangPageViewModel ViewModel { get; } = new();
 

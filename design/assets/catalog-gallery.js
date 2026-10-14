@@ -9,7 +9,7 @@
     return ((window.CodeWFCatalogDescriptions || {})[LANG] || {})[key]?.Desc || "";
   }
   CATALOG = data.map(function (group) {
-    return { id:group.id, icon:"◆", items:group.items.map(function (entry) { entries[entry.prototypeId] = entry; return { id:entry.prototypeId }; }) };
+    return { id:group.id, icon:group.icon, items:group.items.map(function (entry) { entries[entry.prototypeId] = entry; return { id:entry.prototypeId }; }) };
   });
   tabName = function (id) { var group = data.find(function (item) { return item.id === id; }); return group ? title(group) : id; };
   pt = function (id) { return entries[id] ? title(entries[id]) : id; };

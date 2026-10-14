@@ -10,12 +10,12 @@
     <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
       <StackPanel Spacing="6">
-        <TextBlock Text="{codewf:I18n Demo.Text.PropertyGridPage.View001}"
+        <TextBlock Text="{codewf:I18n Demo.Content.PropertyGrid.View.PropertyGridDisplaysACompleteValvePropertyTreeTry}"
                    TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
         <StackPanel Orientation="Horizontal" Spacing="6">
-          <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.PropertyGridPage.View002}" Click="OnExpandAll" />
-          <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.PropertyGridPage.View003}" Click="OnCollapseAll" />
-          <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.PropertyGridPage.View004}" Click="OnResetAll" />
+          <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.PropertyGrid.View.ExpandAll}" Click="OnExpandAll" />
+          <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.PropertyGrid.View.CollapseAll}" Click="OnCollapseAll" />
+          <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.PropertyGrid.View.ResetAllChanges}" Click="OnResetAll" />
         </StackPanel>
       </StackPanel>
     </Border>
@@ -34,9 +34,9 @@
       <Border Grid.Column="1" BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
               BorderThickness="1,0,0,0" Padding="10,0,0,0">
         <Grid RowDefinitions="Auto,*,Auto,*">
-          <TextBlock Grid.Row="0" Text="{codewf:I18n Demo.Text.PropertyGridPage.View005}" FontWeight="Bold" Margin="0,0,0,4" />
+          <TextBlock Grid.Row="0" Text="{codewf:I18n Demo.Content.PropertyGrid.View.ValueChanges}" FontWeight="Bold" Margin="0,0,0,4" />
           <ListBox Grid.Row="1" ItemsSource="{Binding ChangeLog}" FontSize="11" />
-          <TextBlock Grid.Row="2" Text="{codewf:I18n Demo.Text.PropertyGridPage.View006}" FontWeight="Bold" Margin="0,8,0,4" />
+          <TextBlock Grid.Row="2" Text="{codewf:I18n Demo.Content.PropertyGrid.View.BrowseRequests}" FontWeight="Bold" Margin="0,8,0,4" />
           <ListBox Grid.Row="3" ItemsSource="{Binding BrowseLog}" FontSize="11" />
         </Grid>
       </Border>

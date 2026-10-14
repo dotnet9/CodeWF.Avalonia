@@ -7,9 +7,9 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class PropertyGridPage : DemoPageBase
 {
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.PropertyGridPageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.PropertyGrid.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.PropertyGridPageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.PropertyGrid.Source.CSharp");
 
     public PropertyPanelDemoViewModel ViewModel { get; } = new();
 

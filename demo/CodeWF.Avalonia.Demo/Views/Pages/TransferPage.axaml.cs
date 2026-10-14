@@ -10,9 +10,9 @@ public partial class TransferPage : DemoPageBase
     private const string IdLeftCount = "tr.left";
     private const string IdRightCount = "tr.right";
 
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.TransferPageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.Transfer.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.TransferPageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.Transfer.Source.CSharp");
 
     public TransferPage()
     {
@@ -43,18 +43,18 @@ public partial class TransferPage : DemoPageBase
         var left = new PropertyItem
         {
             Id = IdLeftCount,
-            Name = L.Instance.GetResource("Demo.Text.TransferPageaxaml.BuildProperties003"),
+            Name = L.Instance.GetResource("Demo.Content.Transfer.Properties.AvailableCount"),
             Kind = PropertyItemKind.ReadOnly,
             Value = 0,
-            Description = L.Instance.GetResource("Demo.Text.TransferPageaxaml.BuildProperties004"),
+            Description = L.Instance.GetResource("Demo.Content.Transfer.Properties.NumberOfAvailableItemsOnTheLeft"),
         };
         var right = new PropertyItem
         {
             Id = IdRightCount,
-            Name = L.Instance.GetResource("Demo.Text.TransferPageaxaml.BuildProperties005"),
+            Name = L.Instance.GetResource("Demo.Content.Transfer.Properties.SelectedCount"),
             Kind = PropertyItemKind.ReadOnly,
             Value = 0,
-            Description = L.Instance.GetResource("Demo.Text.TransferPageaxaml.BuildProperties006"),
+            Description = L.Instance.GetResource("Demo.Content.Transfer.Properties.NumberOfSelectedItemsOnTheRight"),
         };
 
         return [left, right];
@@ -69,14 +69,14 @@ public partial class TransferPage : DemoPageBase
 
         var action = e.Action switch
         {
-            NotifyCollectionChangedAction.Add => L.Instance.GetResource("Demo.Text.TransferPageaxaml.OnCollectionChanged007"),
-            NotifyCollectionChangedAction.Remove => L.Instance.GetResource("Demo.Text.TransferPageaxaml.OnCollectionChanged008"),
+            NotifyCollectionChangedAction.Add => L.Instance.GetResource("Demo.Content.Transfer.OnCollectionChanged.MoveIn"),
+            NotifyCollectionChangedAction.Remove => L.Instance.GetResource("Demo.Content.Transfer.OnCollectionChanged.MoveOut"),
             _ => e.Action.ToString(),
         };
 
         if (e.Action is NotifyCollectionChangedAction.Add or NotifyCollectionChangedAction.Remove)
         {
-            vm.Log(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.TransferPageaxaml.OnCollectionChanged009"), action, DescribeItems(e.NewItems ?? e.OldItems), vm.Available.Count, vm.Selected.Count));
+            vm.Log(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.Transfer.OnCollectionChanged.AvailableSelectedFormat"), action, DescribeItems(e.NewItems ?? e.OldItems), vm.Available.Count, vm.Selected.Count));
         }
 
         UpdateMetrics();

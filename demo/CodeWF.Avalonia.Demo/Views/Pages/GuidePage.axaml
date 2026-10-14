@@ -9,8 +9,8 @@
       <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
               BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
         <StackPanel Orientation="Horizontal" Spacing="8">
-          <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.GuidePage.View001}" Click="OnStartGuide" />
-          <TextBlock Text="{codewf:I18n Demo.Text.GuidePage.View002}"
+          <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.Guide.View.StartGuide13Placements}" Click="OnStartGuide" />
+          <TextBlock Text="{codewf:I18n Demo.Content.Guide.View.HighlightTheTargetIn13PlacementsWithEnter}"
                      TextWrapping="Wrap" Opacity="0.75" FontSize="12" VerticalAlignment="Center" />
         </StackPanel>
       </Border>
@@ -30,36 +30,36 @@
 
     <!--  引导步骤：目标用元素名绑定；步骤切换 / 完成事件在代码中记录  -->
     <codewf:Guide x:Name="Guide" IsArrowVisible="True" Completed="OnGuideCompleted">
-      <codewf:GuideStep Title="{codewf:I18n Demo.Text.GuidePage.View003}"
-                        Description="{codewf:I18n Demo.Text.GuidePage.View004}"
+      <codewf:GuideStep Title="{codewf:I18n Demo.Content.Guide.View.Step1Center}"
+                        Description="{codewf:I18n Demo.Content.Guide.View.IsPointAtCenterTrueOrNoTargetHighlightsTheScreen}"
                         Target="{Binding #TargetCenter}"
                         Placement="Center" IsPointAtCenter="True" />
-      <codewf:GuideStep Title="{codewf:I18n Demo.Text.GuidePage.View005}"
-                        Description="{codewf:I18n Demo.Text.GuidePage.View006}"
+      <codewf:GuideStep Title="{codewf:I18n Demo.Content.Guide.View.Step2TopLeft}"
+                        Description="{codewf:I18n Demo.Content.Guide.View.TheBubbleAppearsAtTheUpperLeftOf}"
                         Target="{Binding #TargetTopLeft}"
                         Placement="TopLeft" />
-      <codewf:GuideStep Title="{codewf:I18n Demo.Text.GuidePage.View007}"
-                        Description="{codewf:I18n Demo.Text.GuidePage.View008}"
+      <codewf:GuideStep Title="{codewf:I18n Demo.Content.Guide.View.Step3TopRight}"
+                        Description="{codewf:I18n Demo.Content.Guide.View.TheBubbleAppearsAtTheUpperRightOf}"
                         Target="{Binding #TargetTopRight}"
                         Placement="TopRight" />
-      <codewf:GuideStep Title="{codewf:I18n Demo.Text.GuidePage.View009}"
-                        Description="{codewf:I18n Demo.Text.GuidePage.View010}"
+      <codewf:GuideStep Title="{codewf:I18n Demo.Content.Guide.View.Step4Right}"
+                        Description="{codewf:I18n Demo.Content.Guide.View.TheBubbleAppearsToTheRightOfThe}"
                         Target="{Binding #TargetRight}"
                         Placement="Right" />
-      <codewf:GuideStep Title="{codewf:I18n Demo.Text.GuidePage.View011}"
-                        Description="{codewf:I18n Demo.Text.GuidePage.View012}"
+      <codewf:GuideStep Title="{codewf:I18n Demo.Content.Guide.View.Step5Bottom}"
+                        Description="{codewf:I18n Demo.Content.Guide.View.TheBubbleAppearsBelowTheTarget}"
                         Target="{Binding #TargetBottom}"
                         Placement="Bottom" />
-      <codewf:GuideStep Title="{codewf:I18n Demo.Text.GuidePage.View013}"
-                        Description="{codewf:I18n Demo.Text.GuidePage.View014}"
+      <codewf:GuideStep Title="{codewf:I18n Demo.Content.Guide.View.Step6LeftBottom}"
+                        Description="{codewf:I18n Demo.Content.Guide.View.TheBubbleAppearsAtTheLowerLeftWith}"
                         Target="{Binding #TargetBottomLeft}"
                         Placement="LeftBottom" StyleType="Primary" />
-      <codewf:GuideStep Title="{codewf:I18n Demo.Text.GuidePage.View015}"
-                        Description="{codewf:I18n Demo.Text.GuidePage.View016}"
+      <codewf:GuideStep Title="{codewf:I18n Demo.Content.Guide.View.Step7CustomMaskColor}"
+                        Description="{codewf:I18n Demo.Content.Guide.View.ThisStepDemonstratesATranslucentRedMaskColor}"
                         Target="{Binding #TargetTop}"
                         Placement="Top" MaskColor="#66B3261E" />
-      <codewf:GuideStep Title="{codewf:I18n Demo.Text.GuidePage.View017}"
-                        Description="{codewf:I18n Demo.Text.GuidePage.View018}"
+      <codewf:GuideStep Title="{codewf:I18n Demo.Content.Guide.View.Step8Complete}"
+                        Description="{codewf:I18n Demo.Content.Guide.View.FinalStepPressEnterOrClickFinishTo}"
                         Target="{Binding #TargetBottomRight}"
                         Placement="BottomRight" />
     </codewf:Guide>

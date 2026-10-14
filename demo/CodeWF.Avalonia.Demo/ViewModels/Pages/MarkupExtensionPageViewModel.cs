@@ -10,7 +10,7 @@ public class MarkupExtensionPageViewModel : ReactiveObject
     public bool ShowIf { get; }
     public bool ShowSwitch { get; }
     private bool _isBusy;
-    private string _state = L.Instance.GetResource("Demo.Text.MarkupExtensionPageViewModel.state001");
+    private string _state = L.Instance.GetResource("Demo.Content.MarkupExtension.state.Running");
 
     public bool IsBusy
     {
@@ -24,5 +24,5 @@ public class MarkupExtensionPageViewModel : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _state, value);
     }
 
-    public string[] StateOptions { get; } = [L.Instance.GetResource("Demo.Text.MarkupExtensionPageViewModel.StateOptions002"), L.Instance.GetResource("Demo.Text.MarkupExtensionPageViewModel.StateOptions003"), L.Instance.GetResource("Demo.Text.MarkupExtensionPageViewModel.StateOptions004"), L.Instance.GetResource("Demo.Text.MarkupExtensionPageViewModel.StateOptions005")];
+    public string[] StateOptions { get; } = [L.Instance.GetResource("Demo.Content.MarkupExtension.StateOptions.Running"), L.Instance.GetResource("Demo.Content.MarkupExtension.StateOptions.Paused"), L.Instance.GetResource("Demo.Content.MarkupExtension.StateOptions.Maintenance"), L.Instance.GetResource("Demo.Content.MarkupExtension.StateOptions.Unknown")];
 }

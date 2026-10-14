@@ -10,11 +10,11 @@
     <Expander Grid.Row="0" Header="{codewf:I18n Demo.Catalog.Input}" IsExpanded="False" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
       <StackPanel Spacing="8">
         <TextBox Text="{Binding Source}" Height="96" AcceptsReturn="True"
-                 TextWrapping="Wrap" PlaceholderText="{codewf:I18n Demo.Text.MarkdownViewerPage.View001}" />
+                 TextWrapping="Wrap" PlaceholderText="{codewf:I18n Demo.Content.MarkdownViewer.View.EditMarkdownSource}" />
         <StackPanel Orientation="Horizontal" Spacing="8">
-          <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownViewerPage.View002}" Command="{Binding ApplyCommand}" />
-          <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownViewerPage.View003}" Command="{Binding AppendCommand}" />
-          <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownViewerPage.View004}" Command="{Binding ResetCommand}" />
+          <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownViewer.View.Apply}" Command="{Binding ApplyCommand}" />
+          <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownViewer.View.AppendParagraphIncremental}" Command="{Binding AppendCommand}" />
+          <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownViewer.View.ResetSample}" Command="{Binding ResetCommand}" />
         </StackPanel>
       </StackPanel>
     </Expander>

@@ -7,7 +7,7 @@ namespace CodeWF.Avalonia.Demo.ViewModels;
 /// <summary>The overview uses the same Markdown renderer and grid enhancement as the full demos.</summary>
 public sealed class WelcomeViewModel : ReactiveObject
 {
-    private string _markdown = L.Instance.GetResource("Demo.Text.WelcomeViewModel.markdown001");
+    private string _markdown = L.Instance.GetResource("Demo.Content.Welcome.markdown.GiveInterfacesExpressionBuildDesktopExperiencesWithCodeWF");
     private string _copyStatus = string.Empty;
     private int _labIndex;
     private bool _experimentsExpanded;

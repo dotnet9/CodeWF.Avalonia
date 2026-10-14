@@ -7,37 +7,37 @@
 
     <Border Padding="10" CornerRadius="6" BorderThickness="1"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View001}"
+      <TextBlock Text="{codewf:I18n Demo.Content.TrapezoidTab.View.TrapezoidControlThemeAdaptsTheFirstMiddleAndFinal}"
                  TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
     </Border>
 
-    <TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View002}" FontWeight="Bold" />
+    <TextBlock Text="{codewf:I18n Demo.Content.TrapezoidTab.View.TabControlTrapezoidTheme}" FontWeight="Bold" />
     <TabControl Theme="{StaticResource TrapezoidShapedTabControl}" Height="180">
-      <TabItem Header="{codewf:I18n Demo.Text.TrapezoidTabPage.View003}">
-        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View004}" /></Border>
+      <TabItem Header="{codewf:I18n Demo.Content.TrapezoidTab.View.Home}">
+        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Content.TrapezoidTab.View.FirstTabFlushLeftEdgeAndSlantedRight}" /></Border>
       </TabItem>
-      <TabItem Header="{codewf:I18n Demo.Text.TrapezoidTabPage.View005}">
-        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View006}" /></Border>
+      <TabItem Header="{codewf:I18n Demo.Content.TrapezoidTab.View.Design}">
+        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Content.TrapezoidTab.View.MiddleTabTwoSlantedEdgesDiagonalFilletRatioSetsThe}" /></Border>
       </TabItem>
-      <TabItem Header="{codewf:I18n Demo.Text.TrapezoidTabPage.View007}">
-        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View008}" /></Border>
+      <TabItem Header="{codewf:I18n Demo.Content.TrapezoidTab.View.Development}">
+        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Content.TrapezoidTab.View.MiddleTabHighlightedOutlineWhenSelected}" /></Border>
       </TabItem>
-      <TabItem Header="{codewf:I18n Demo.Text.TrapezoidTabPage.View009}">
-        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View010}" /></Border>
+      <TabItem Header="{codewf:I18n Demo.Content.TrapezoidTab.View.Release}">
+        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Content.TrapezoidTab.View.MiddleTabHoverAndPressedFeedback}" /></Border>
       </TabItem>
-      <TabItem Header="{codewf:I18n Demo.Text.TrapezoidTabPage.View011}">
-        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View012}" /></Border>
+      <TabItem Header="{codewf:I18n Demo.Content.TrapezoidTab.View.About}">
+        <Border Padding="12"><TextBlock Text="{codewf:I18n Demo.Content.TrapezoidTab.View.LastTabFlushRightEdgeAndSlantedLeft}" /></Border>
       </TabItem>
     </TabControl>
 
-    <TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View013}" FontWeight="Bold" />
+    <TextBlock Text="{codewf:I18n Demo.Content.TrapezoidTab.View.TabStripStandalone}" FontWeight="Bold" />
     <TabStrip Theme="{StaticResource TrapezoidShapedTabStrip}" SelectedIndex="1">
-      <TabStripItem Content="{codewf:I18n Demo.Text.TrapezoidTabPage.View014}" Padding="16,6" />
-      <TabStripItem Content="{codewf:I18n Demo.Text.TrapezoidTabPage.View015}" Padding="16,6" />
-      <TabStripItem Content="{codewf:I18n Demo.Text.TrapezoidTabPage.View016}" Padding="16,6" />
+      <TabStripItem Content="{codewf:I18n Demo.Content.TrapezoidTab.View.Overview}" Padding="16,6" />
+      <TabStripItem Content="{codewf:I18n Demo.Content.TrapezoidTab.View.Details}" Padding="16,6" />
+      <TabStripItem Content="{codewf:I18n Demo.Content.TrapezoidTab.View.Statistics}" Padding="16,6" />
     </TabStrip>
     <Panel Height="72">
-      <TextBlock Text="{codewf:I18n Demo.Text.TrapezoidTabPage.View017}"
+      <TextBlock Text="{codewf:I18n Demo.Content.TrapezoidTab.View.TabStripManagesSelectionTheHostSuppliesTheAssociated}"
                  Opacity="0.7" FontSize="12" />
     </Panel>
   </StackPanel>

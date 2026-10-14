@@ -13,9 +13,9 @@ public partial class MarkdownEditorPage : DemoPageBase
     private const string IdLineNumbers = "mde.linenums";
     private const string IdAutoPair = "mde.autopair";
 
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.MarkdownEditorPageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.MarkdownEditor.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.MarkdownEditorPageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.MarkdownEditor.Source.CSharp");
 
     private readonly MarkdownEditorView _editor;
 
@@ -79,32 +79,32 @@ public partial class MarkdownEditorPage : DemoPageBase
         var fontSize = new PropertyItem
         {
             Id = IdFontSize,
-            Name = L.Instance.GetResource("Demo.Text.MarkdownEditorPageaxaml.BuildProperties003"),
+            Name = L.Instance.GetResource("Demo.Content.MarkdownEditor.Properties.EditorFontSize"),
             Kind = PropertyItemKind.Number,
             Value = 15m,
             DefaultValue = 15m,
             Minimum = 10,
             Maximum = 28,
             Unit = "px",
-            Description = L.Instance.GetResource("Demo.Text.MarkdownEditorPageaxaml.BuildProperties004"),
+            Description = L.Instance.GetResource("Demo.Content.MarkdownEditor.Properties.EditorTextFontSize"),
         };
         var lineNumbers = new PropertyItem
         {
             Id = IdLineNumbers,
-            Name = L.Instance.GetResource("Demo.Text.MarkdownEditorPageaxaml.BuildProperties005"),
+            Name = L.Instance.GetResource("Demo.Content.MarkdownEditor.Properties.ShowLineNumbers"),
             Kind = PropertyItemKind.Boolean,
             Value = true,
             DefaultValue = true,
-            Description = L.Instance.GetResource("Demo.Text.MarkdownEditorPageaxaml.BuildProperties006"),
+            Description = L.Instance.GetResource("Demo.Content.MarkdownEditor.Properties.ShowLineNumbersToTheLeftOfThe"),
         };
         var autoPair = new PropertyItem
         {
             Id = IdAutoPair,
-            Name = L.Instance.GetResource("Demo.Text.MarkdownEditorPageaxaml.BuildProperties007"),
+            Name = L.Instance.GetResource("Demo.Content.MarkdownEditor.Properties.AutoPairing"),
             Kind = PropertyItemKind.Boolean,
             Value = true,
             DefaultValue = true,
-            Description = L.Instance.GetResource("Demo.Text.MarkdownEditorPageaxaml.BuildProperties008"),
+            Description = L.Instance.GetResource("Demo.Content.MarkdownEditor.Properties.AutomaticallyCompletePairedMarkersSuchAsAndBackticks"),
         };
 
         return [fontSize, lineNumbers, autoPair];
@@ -123,7 +123,7 @@ public partial class MarkdownEditorPage : DemoPageBase
         _ = _editor.ExecuteAsync(MarkdownEditorAction.Heading2);
 
     private void OnTable(object? sender, RoutedEventArgs e) =>
-        _editor.InsertTable(L.Instance.GetResource("Demo.Text.MarkdownEditorPageaxaml.OnTable009"));
+        _editor.InsertTable(L.Instance.GetResource("Demo.Content.MarkdownEditor.OnTable.Column1Column2AB"));
 
     private void OnTaskList(object? sender, RoutedEventArgs e) =>
         _ = _editor.ExecuteAsync(MarkdownEditorAction.TaskList);
@@ -137,8 +137,8 @@ public partial class MarkdownEditorPage : DemoPageBase
     private void UpdateStatus()
     {
         var caret = _editor.CaretPosition;
-        StatusText.Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.MarkdownEditorPageaxaml.UpdateStatus010"), caret.Line, caret.Column, caret.LineCount, (_editor.Text?.Length ?? 0));
+        StatusText.Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.MarkdownEditor.UpdateStatus.LineColumnLinesCharactersFormat"), caret.Line, caret.Column, caret.LineCount, (_editor.Text?.Length ?? 0));
     }
 
-    private static string SampleMarkdown => L.Instance.GetResource("Demo.Text.MarkdownEditorPageaxaml.SampleMarkdown011");
+    private static string SampleMarkdown => L.Instance.GetResource("Demo.Content.MarkdownEditor.Samples.Markdown");
 }

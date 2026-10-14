@@ -14,9 +14,9 @@ public partial class CodeWFWindowPage : DemoPageBase
     private const string IdCornerRadius = "cw.cornerRadius";
     private const string IdExtends = "cw.extends";
 
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.CodeWFWindow.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.CodeWFWindow.Source.CSharp");
 
     private double _titleBarHeight = 36d;
     private double _cornerRadius = 8d;
@@ -56,55 +56,55 @@ public partial class CodeWFWindowPage : DemoPageBase
         var titleHeight = new PropertyItem
         {
             Id = IdTitleHeight,
-            Name = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.BuildProperties003"),
+            Name = L.Instance.GetResource("Demo.Content.CodeWFWindow.Properties.TitleBarHeight"),
             Kind = PropertyItemKind.Number,
             Value = (decimal)_titleBarHeight,
             DefaultValue = 32m,
             Minimum = 24,
             Maximum = 64,
             Unit = "px",
-            Description = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.BuildProperties004"),
+            Description = L.Instance.GetResource("Demo.Content.CodeWFWindow.Properties.TitleBarHeightForTheNextExampleWindow"),
         };
         var cornerRadius = new PropertyItem
         {
             Id = IdCornerRadius,
-            Name = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.BuildProperties005"),
+            Name = L.Instance.GetResource("Demo.Content.CodeWFWindow.Properties.WindowCornerRadius"),
             Kind = PropertyItemKind.Number,
             Value = (decimal)_cornerRadius,
             DefaultValue = 4m,
             Minimum = 0,
             Maximum = 24,
             Unit = "px",
-            Description = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.BuildProperties006"),
+            Description = L.Instance.GetResource("Demo.Content.CodeWFWindow.Properties.WindowCornerRadiusWindowsDWM"),
         };
         var extends = new PropertyItem
         {
             Id = IdExtends,
-            Name = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.BuildProperties007"),
+            Name = L.Instance.GetResource("Demo.Content.CodeWFWindow.Properties.ExtendContentIntoTitleBar"),
             Kind = PropertyItemKind.Boolean,
             Value = _extends,
             DefaultValue = false,
-            Description = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.BuildProperties008"),
+            Description = L.Instance.GetResource("Demo.Content.CodeWFWindow.Properties.ExtendTheWindowContentUnderneathTheTitleBar"),
         };
 
         return [titleHeight, cornerRadius, extends];
     }
 
     private void OnOpenDefault(object? sender, RoutedEventArgs e) =>
-        ShowSample(L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.OnOpenDefault009"), extends: false, fullScreenButton: false, customTitleContent: false);
+        ShowSample(L.Instance.GetResource("Demo.Content.CodeWFWindow.OnOpenDefault.DefaultConfiguration"), extends: false, fullScreenButton: false, customTitleContent: false);
 
     private void OnOpenCustom(object? sender, RoutedEventArgs e) =>
-        ShowSample(L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.OnOpenCustom010"), extends: false, fullScreenButton: false, customTitleContent: true);
+        ShowSample(L.Instance.GetResource("Demo.Content.CodeWFWindow.OnOpenCustom.MinimalButtonsAndCustomTitleBar"), extends: false, fullScreenButton: false, customTitleContent: true);
 
     private void OnOpenExtends(object? sender, RoutedEventArgs e) =>
-        ShowSample(L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.OnOpenExtends011"), extends: true, fullScreenButton: true, customTitleContent: false);
+        ShowSample(L.Instance.GetResource("Demo.Content.CodeWFWindow.OnOpenExtends.ExtendContentIntoTitleBar"), extends: true, fullScreenButton: true, customTitleContent: false);
 
     private void ShowSample(string name, bool extends, bool fullScreenButton, bool customTitleContent)
     {
         var owner = TopLevel.GetTopLevel(this) as Window;
         var window = new CodeWFWindow
         {
-            Title = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.ShowSample012"), name),
+            Title = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.CodeWFWindow.ShowSample.CodeWFWindowExampleFormat"), name),
             Width = 640,
             Height = 420,
             TitleBarHeight = _titleBarHeight,
@@ -122,7 +122,7 @@ public partial class CodeWFWindowPage : DemoPageBase
                 VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
                 Margin = new Thickness(10, 0, 0, 0),
             };
-            var search = new TextBox { Width = 160, Height = 26, Watermark = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.ShowSample013") };
+            var search = new TextBox { Width = 160, Height = 26, Watermark = L.Instance.GetResource("Demo.Content.CodeWFWindow.ShowSample.Search") };
             DockPanel.SetDock(search, global::Avalonia.Controls.Dock.Right);
             window.RightContent = search;
         }
@@ -137,7 +137,7 @@ public partial class CodeWFWindowPage : DemoPageBase
                 Opacity = 0.85,
                 Child = new TextBlock
                 {
-                    Text = L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.ShowSample014"),
+                    Text = L.Instance.GetResource("Demo.Content.CodeWFWindow.ShowSample.ThisContentExtendsIntoTheTitleBarContentExtendsIntoTitleBar"),
                     Foreground = Brushes.White,
                     VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
                     HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center,
@@ -148,7 +148,7 @@ public partial class CodeWFWindowPage : DemoPageBase
 
         contentPanel.Children.Add(new TextBlock
         {
-            Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.CodeWFWindowPageaxaml.ShowSample015"), name),
+            Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.CodeWFWindow.ShowSample.ConfigurationCloseThisWindowToTryAnotherConfigurationFormat"), name),
             HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center,
             VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
             TextAlignment = TextAlignment.Center,

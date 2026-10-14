@@ -15,6 +15,24 @@ public partial class MainViewModel
     {
         var ok = true;
 
+        ok &= Check("Language changes preserve property command identity", () =>
+        {
+            var originalCulture = SelectedCulture;
+            var commit = GlobalValueCommittedCommand;
+            var browse = GlobalBrowseRequestedCommand;
+            try
+            {
+                foreach (var culture in Cultures)
+                {
+                    SelectedCulture = culture;
+                    Expect(ReferenceEquals(commit, GlobalValueCommittedCommand), "Commit command stays bound");
+                    Expect(ReferenceEquals(browse, GlobalBrowseRequestedCommand), "Browse command stays bound");
+                    Expect(GlobalProperties.Count > 0, "Translated settings remain available");
+                }
+            }
+            finally { SelectedCulture = originalCulture; }
+        });
+
         ok &= Check("Active document selection follows Dock activation", () =>
         {
             var items = Groups.SelectMany(group => group.Items).Take(3).ToArray();

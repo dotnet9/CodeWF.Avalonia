@@ -8,9 +8,9 @@
     <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
       <StackPanel Orientation="Horizontal" Spacing="8">
-        <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.WindowedStackPanelPage.View001}" Click="OnGenerate" />
-        <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.WindowedStackPanelPage.View002}" Click="OnClear" />
-        <TextBlock Text="{codewf:I18n Demo.Text.WindowedStackPanelPage.View003}"
+        <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.WindowedStackPanel.View.Generate5000Blocks}" Click="OnGenerate" />
+        <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.WindowedStackPanel.View.Clear}" Click="OnClear" />
+        <TextBlock Text="{codewf:I18n Demo.Content.WindowedStackPanel.View.WindowedStackPanelRealizesBlocksNearTheViewportWithOverscan}"
                    TextWrapping="Wrap" Opacity="0.75" FontSize="12" VerticalAlignment="Center" />
       </StackPanel>
     </Border>

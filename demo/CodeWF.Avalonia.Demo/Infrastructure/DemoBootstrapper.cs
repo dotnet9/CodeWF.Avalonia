@@ -41,6 +41,6 @@ public static class DemoBootstrapper
             File = new FileLogOptions { DirectoryPath = LogFolder },
         });
 
-        Logger.Info(L.Instance.GetResource("Demo.Text.DemoBootstrapper.Initialize001") + LogFolder);
+        Logger.Info(L.Instance.GetResource("Demo.Content.DemoBootstrapper.Initialize.CodeWFAvaloniaStartedLogDirectory") + LogFolder);
     }
 }

@@ -14,7 +14,7 @@ public class DemoItemViewModel : ReactiveObject
     private bool _isSelected;
     private bool _isFilteredOut;
 
-    public DemoItemViewModel(string titleKey, Func<DemoPageBase> pageFactory, string api = "", string package = "", string prototypeId = "", string sectionKey = "")
+    public DemoItemViewModel(string titleKey, Func<DemoPageBase> pageFactory, string api = "", string package = "", string prototypeId = "", string sectionKey = "", string icon = "◆")
     {
         TitleKey = titleKey;
         PageFactory = pageFactory;
@@ -22,6 +22,7 @@ public class DemoItemViewModel : ReactiveObject
         Package = package;
         PrototypeId = prototypeId;
         SectionKey = sectionKey;
+        Icon = icon;
 
         I18nManager.Instance.CultureChanged += (_, _) =>
         {
@@ -84,7 +85,7 @@ public class DemoItemViewModel : ReactiveObject
     }
 
     /// <summary>目录图标（与设计原型一致）。</summary>
-    public string Icon => DemoIcons.ResolveItem(TitleKey);
+    public string Icon { get; }
 
     public override string ToString() => DisplayTitle;
 }
@@ -95,9 +96,10 @@ public class DemoGroupViewModel : ReactiveObject
     private bool _isExpanded;
     private bool _isFilteredOut;
 
-    public DemoGroupViewModel(string titleKey, IEnumerable<DemoItemViewModel> items)
+    public DemoGroupViewModel(string titleKey, string icon, IEnumerable<DemoItemViewModel> items)
     {
         TitleKey = titleKey;
+        Icon = icon;
         Items = new ObservableCollection<DemoItemViewModel>(items);
         RibbonSections = Items.GroupBy(item => string.IsNullOrEmpty(item.SectionKey) ? TitleKey : item.SectionKey)
             .Select(section => new DemoRibbonSection(section.Key, section.ToArray(), Items.Count > 7 || section.Count() > 3)).ToArray();
@@ -111,7 +113,7 @@ public class DemoGroupViewModel : ReactiveObject
     public string Title => I18nManager.Instance.GetResource(TitleKey);
 
     /// <summary>分组图标（导航树组节点）。</summary>
-    public string Icon => DemoIcons.ResolveGroup(TitleKey);
+    public string Icon { get; }
 
     public ObservableCollection<DemoItemViewModel> Items { get; }
 

@@ -1,4 +1,4 @@
-﻿using CodeWF.Avalonia.Lang;
+using CodeWF.Avalonia.Lang;
 using ReactiveUI;
 using ReactiveUI.Primitives;
 

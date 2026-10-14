@@ -16,28 +16,28 @@
 
       <TextBlock IsVisible="{Binding ShowBadges}" Text="StatusBadge" FontWeight="Bold" />
       <WrapPanel IsVisible="{Binding ShowBadges}">
-        <codewf:StatusBadge Classes="Debug" LeftText="Debug" RightText="{codewf:I18n Demo.Text.StatusComponentsPage.View002}" Margin="0,0,8,8" />
-        <codewf:StatusBadge Classes="Info" LeftText="Info" RightText="{codewf:I18n Demo.Text.StatusComponentsPage.View003}" Margin="0,0,8,8" />
-        <codewf:StatusBadge Classes="Warn" LeftText="Warn" RightText="{codewf:I18n Demo.Text.StatusComponentsPage.View004}" Margin="0,0,8,8" />
-        <codewf:StatusBadge Classes="Error" LeftText="Error" RightText="{codewf:I18n Demo.Text.StatusComponentsPage.View005}" Margin="0,0,8,8" />
-        <codewf:StatusBadge Classes="Fatal" LeftText="Fatal" RightText="{codewf:I18n Demo.Text.StatusComponentsPage.View006}" Margin="0,0,8,8" />
+        <codewf:StatusBadge Classes="Debug" LeftText="Debug" RightText="{codewf:I18n Demo.Content.StatusComponents.View.Debug}" Margin="0,0,8,8" />
+        <codewf:StatusBadge Classes="Info" LeftText="Info" RightText="{codewf:I18n Demo.Content.StatusComponents.View.Information}" Margin="0,0,8,8" />
+        <codewf:StatusBadge Classes="Warn" LeftText="Warn" RightText="{codewf:I18n Demo.Content.StatusComponents.View.Warning}" Margin="0,0,8,8" />
+        <codewf:StatusBadge Classes="Error" LeftText="Error" RightText="{codewf:I18n Demo.Content.StatusComponents.View.Error}" Margin="0,0,8,8" />
+        <codewf:StatusBadge Classes="Fatal" LeftText="Fatal" RightText="{codewf:I18n Demo.Content.StatusComponents.View.Critical}" Margin="0,0,8,8" />
       </WrapPanel>
 
       <TextBlock IsVisible="{Binding ShowCards}" Text="StatusCard" FontWeight="Bold" />
       <WrapPanel IsVisible="{Binding ShowCards}">
-        <codewf:StatusCard Width="180" Height="80" Kind="Debug" TopText="DEBUG" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View007}" Margin="0,0,8,8" />
-        <codewf:StatusCard Width="180" Height="80" Kind="Info" TopText="INFO" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View008}" Margin="0,0,8,8" />
-        <codewf:StatusCard Width="180" Height="80" Kind="Warn" TopText="WARN" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View009}" Margin="0,0,8,8" />
-        <codewf:StatusCard Width="180" Height="80" Kind="Error" TopText="ERROR" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View010}" Margin="0,0,8,8" />
-        <codewf:StatusCard Width="180" Height="80" Kind="Fatal" TopText="FATAL" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View011}" Margin="0,0,8,8" />
+        <codewf:StatusCard Width="180" Height="80" Kind="Debug" TopText="DEBUG" BottomText="{codewf:I18n Demo.Content.StatusComponents.View.Debugging}" Margin="0,0,8,8" />
+        <codewf:StatusCard Width="180" Height="80" Kind="Info" TopText="INFO" BottomText="{codewf:I18n Demo.Content.StatusComponents.View.ServiceReady}" Margin="0,0,8,8" />
+        <codewf:StatusCard Width="180" Height="80" Kind="Warn" TopText="WARN" BottomText="{codewf:I18n Demo.Content.StatusComponents.View.DiskSpaceLow}" Margin="0,0,8,8" />
+        <codewf:StatusCard Width="180" Height="80" Kind="Error" TopText="ERROR" BottomText="{codewf:I18n Demo.Content.StatusComponents.View.ServiceTimeout}" Margin="0,0,8,8" />
+        <codewf:StatusCard Width="180" Height="80" Kind="Fatal" TopText="FATAL" BottomText="{codewf:I18n Demo.Content.StatusComponents.View.DatabaseOffline}" Margin="0,0,8,8" />
       </WrapPanel>
 
-      <TextBlock Text="{codewf:I18n Demo.Text.StatusComponentsPage.View012}" FontWeight="Bold" />
+      <TextBlock Text="{codewf:I18n Demo.Content.StatusComponents.View.DrivenByPropertyPanel}" FontWeight="Bold" />
       <codewf:StatusBadge IsVisible="{Binding ShowBadges}" LeftText="{Binding BadgeKind}" RightText="{Binding BadgeText}"
                           Classes.Debug="{Binding BadgeDebug}" Classes.Info="{Binding BadgeInfo}" Classes.Warn="{Binding BadgeWarn}"
                           Classes.Error="{Binding BadgeError}" Classes.Fatal="{Binding BadgeFatal}" HorizontalAlignment="Left" />
       <codewf:StatusCard IsVisible="{Binding ShowCards}" x:Name="DrivenCard" Kind="{Binding Kind}"
-                         TopText="DRIVEN" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View013}" IconWidth="{Binding IconWidth}" />
+                         TopText="DRIVEN" BottomText="{codewf:I18n Demo.Content.StatusComponents.View.ChangeTheStatusAndIconWidthInThe}" IconWidth="{Binding IconWidth}" />
     </StackPanel>
   </ScrollViewer>
 </UserControl>

@@ -5,9 +5,9 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class TrapezoidTabPage : DemoPageBase
 {
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.TrapezoidTabPageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.TrapezoidTab.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.TrapezoidTabPageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.TrapezoidTab.Source.CSharp");
 
     public TrapezoidTabPage()
     {
@@ -27,10 +27,10 @@ public partial class TrapezoidTabPage : DemoPageBase
         var note = new PropertyItem
         {
             Id = "tt.note",
-            Name = L.Instance.GetResource("Demo.Text.TrapezoidTabPageaxaml.BuildProperties003"),
+            Name = L.Instance.GetResource("Demo.Content.TrapezoidTab.Properties.ThemeKeys"),
             Kind = PropertyItemKind.ReadOnly,
             Value = "TrapezoidShapedTabControl / TrapezoidShapedTabStrip / TrapezoidShapedTabItem",
-            Description = L.Instance.GetResource("Demo.Text.TrapezoidTabPageaxaml.BuildProperties004"),
+            Description = L.Instance.GetResource("Demo.Content.TrapezoidTab.Properties.ACSemiThemeInjectsTheResourceKeysForUseWith"),
         };
 
         return [note];

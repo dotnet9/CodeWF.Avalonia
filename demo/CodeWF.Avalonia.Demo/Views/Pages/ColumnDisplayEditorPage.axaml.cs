@@ -6,9 +6,9 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class ColumnDisplayEditorPage : DemoPageBase
 {
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.Source.CSharp");
 
     public ColumnDisplayEditorPage()
     {
@@ -29,10 +29,10 @@ public partial class ColumnDisplayEditorPage : DemoPageBase
         var note = new PropertyItem
         {
             Id = "cde.note",
-            Name = L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageaxaml.BuildProperties003"),
+            Name = L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.Properties.DataContract"),
             Kind = PropertyItemKind.ReadOnly,
             Value = "IList<ColumnDisplayItem>（Key / DisplayText / Visible）",
-            Description = L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageaxaml.BuildProperties004"),
+            Description = L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.Properties.TheEditorRequiresIListItemsSourceDraggingReordersIt"),
         };
 
         return [note];

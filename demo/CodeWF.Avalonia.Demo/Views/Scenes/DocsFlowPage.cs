@@ -24,7 +24,7 @@ public class DocsFlowPage : ScenePageBase
 
     protected override string SummaryKey => "Demo.Scene.Summary.Docs";
 
-    public override string XamlCode => L.Instance.GetResource("Demo.Text.DocsFlowPage.XamlCode001");
+    public override string XamlCode => L.Instance.GetResource("Demo.Content.DocsFlow.XamlCode.DockDockControlLayoutDockControlDataTemplatesDataTemplateDataTypeVm");
 
-    public override string CSharpCode => L.Instance.GetResource("Demo.Text.DocsFlowPage.CSharpCode002");
+    public override string CSharpCode => L.Instance.GetResource("Demo.Content.DocsFlow.CSharpCode.VarDocNewDocumentFactoryHideDockableToolFactory");
 }

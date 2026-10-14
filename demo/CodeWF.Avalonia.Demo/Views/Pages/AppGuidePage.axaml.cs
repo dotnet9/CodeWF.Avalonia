@@ -11,9 +11,9 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class AppGuidePage : DemoPageBase
 {
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.AppGuide.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.AppGuide.Source.CSharp");
 
     public AppGuidePage()
     {
@@ -55,24 +55,24 @@ public partial class AppGuidePage : DemoPageBase
             AppGuide.Steps.Add(new GuideStep
             {
                 Title = title,
-                Description = target is null ? description + L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.OnStartGuide003") : description,
+                Description = target is null ? description + L.Instance.GetResource("Demo.Content.AppGuide.OnStartGuide.TargetLookupFailedUsingTheDefaultBehavior") : description,
                 Target = target,
                 Placement = placement,
             });
         }
 
-        AddStep(L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.OnStartGuide004"), L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.OnStartGuide005"), "RibbonRoot", GuidePlacementMode.Bottom);
-        AddStep(L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.OnStartGuide006"), L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.OnStartGuide007"), "NavTree", GuidePlacementMode.Right);
-        AddStep(L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.OnStartGuide008"), L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.OnStartGuide009"), "DocumentTabs", GuidePlacementMode.Top);
-        AddStep("④ PropertyGrid", L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.OnStartGuide010"), "PropertyPanelHost", GuidePlacementMode.Left);
-        AddStep(L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.OnStartGuide011"), L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.OnStartGuide012"), "LogPanelHost", GuidePlacementMode.Top);
+        AddStep(L.Instance.GetResource("Demo.Content.AppGuide.OnStartGuide.RibbonCommands"), L.Instance.GetResource("Demo.Content.AppGuide.OnStartGuide.EightRibbonGroupsContainTheDemoCommandsDouble"), "RibbonRoot", GuidePlacementMode.Bottom);
+        AddStep(L.Instance.GetResource("Demo.Content.AppGuide.OnStartGuide.Navigation"), L.Instance.GetResource("Demo.Content.AppGuide.OnStartGuide.MirrorsRibbonGroupsClickAnItemToOpen"), "NavTree", GuidePlacementMode.Right);
+        AddStep(L.Instance.GetResource("Demo.Content.AppGuide.OnStartGuide.Documents"), L.Instance.GetResource("Demo.Content.AppGuide.OnStartGuide.EachComponentHasADemoDocumentWithDemo"), "DocumentTabs", GuidePlacementMode.Top);
+        AddStep("④ PropertyGrid", L.Instance.GetResource("Demo.Content.AppGuide.OnStartGuide.ThePropertyPanelConfiguresTheActiveDemoThe"), "PropertyPanelHost", GuidePlacementMode.Left);
+        AddStep(L.Instance.GetResource("Demo.Content.AppGuide.OnStartGuide.Logs"), L.Instance.GetResource("Demo.Content.AppGuide.OnStartGuide.LiveLoggerEventsWithFilteringCopyClearAnd"), "LogPanelHost", GuidePlacementMode.Top);
 
-        Logger.Info(L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.OnStartGuide013"));
+        Logger.Info(L.Instance.GetResource("Demo.Content.AppGuide.OnStartGuide.AppGuideStartingWorkspaceTour"));
         AppGuide.Show();
     }
 
     private void OnStepOpened(object? sender, GuideStepEventArgs e) =>
-        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.OnStepOpened014"), e.Index + 1, AppGuide.StepCount, AppGuide.CurrentTitle));
+        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.AppGuide.OnStepOpened.AppGuideStepFormat"), e.Index + 1, AppGuide.StepCount, AppGuide.CurrentTitle));
 
     private static Control? FindDescendant(object root, string name)
     {
@@ -98,10 +98,10 @@ public partial class AppGuidePage : DemoPageBase
         var note = new PropertyItem
         {
             Id = "appguide.note",
-            Name = L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.BuildProperties015"),
+            Name = L.Instance.GetResource("Demo.Content.AppGuide.Properties.TargetLookup"),
             Kind = PropertyItemKind.ReadOnly,
             Value = "RibbonRoot / NavTree / DocumentTabs / PropertyPanelHost / LogPanelHost",
-            Description = L.Instance.GetResource("Demo.Text.AppGuidePageaxaml.BuildProperties016"),
+            Description = L.Instance.GetResource("Demo.Content.AppGuide.Properties.NamesOfTheFiveWorkspaceRegionsResolvedControls"),
         };
 
         return [note];

@@ -6,9 +6,9 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class MarkdownViewerPage : DemoPageBase
 {
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.MarkdownViewerPageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.MarkdownViewer.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.MarkdownViewerPageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.MarkdownViewer.Source.CSharp");
 
     public MarkdownViewerPageViewModel ViewModel { get; } = new();
 

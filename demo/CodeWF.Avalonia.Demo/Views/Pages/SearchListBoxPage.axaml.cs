@@ -12,9 +12,9 @@ public partial class SearchListBoxPage : DemoPageBase
     private const string IdSearchCount = "slb.searchCount";
     private const string IdSelectedCount = "slb.selectedCount";
 
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.SearchListBox.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.SearchListBox.Source.CSharp");
 
     public SearchListBoxPage()
     {
@@ -26,14 +26,14 @@ public partial class SearchListBoxPage : DemoPageBase
         {
             if (DataContext is SearchListBoxPageViewModel vm)
             {
-                vm.Log(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.Content003"), item));
+                vm.Log(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.SearchListBox.Content.DoubleClickFormat"), item));
             }
         };
         list.ListSelectionChanged += (_, args) =>
         {
             if (DataContext is SearchListBoxPageViewModel vm)
             {
-                vm.Log(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.Content004"), (args.Source as SearchListBox)?.SelectedItems?.Count ?? 0));
+                vm.Log(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.SearchListBox.Content.SelectionChangedItemsFormat"), (args.Source as SearchListBox)?.SelectedItems?.Count ?? 0));
             }
 
             UpdateMetrics();
@@ -63,26 +63,26 @@ public partial class SearchListBoxPage : DemoPageBase
         var total = new PropertyItem
         {
             Id = IdTotal,
-            Name = L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.BuildProperties005"),
+            Name = L.Instance.GetResource("Demo.Content.SearchListBox.Properties.Total"),
             Kind = PropertyItemKind.ReadOnly,
             Value = List.TotalCount,
-            Description = L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.BuildProperties006"),
+            Description = L.Instance.GetResource("Demo.Content.SearchListBox.Properties.NumberOfSourceItemsTotalCount"),
         };
         var searchCount = new PropertyItem
         {
             Id = IdSearchCount,
-            Name = L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.BuildProperties007"),
+            Name = L.Instance.GetResource("Demo.Content.SearchListBox.Properties.Filtered"),
             Kind = PropertyItemKind.ReadOnly,
             Value = List.SearchCount,
-            Description = L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.BuildProperties008"),
+            Description = L.Instance.GetResource("Demo.Content.SearchListBox.Properties.MatchingItemsSearchCountWithABuiltIn400ms"),
         };
         var selectedCount = new PropertyItem
         {
             Id = IdSelectedCount,
-            Name = L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.BuildProperties009"),
+            Name = L.Instance.GetResource("Demo.Content.SearchListBox.Properties.SelectedItems"),
             Kind = PropertyItemKind.ReadOnly,
             Value = List.SelectedItems?.Count ?? 0,
-            Description = L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.BuildProperties010"),
+            Description = L.Instance.GetResource("Demo.Content.SearchListBox.Properties.NumberOfSelectedItemsSupportsCtrlShiftSelection"),
         };
 
         return [total, searchCount, selectedCount];
@@ -90,7 +90,7 @@ public partial class SearchListBoxPage : DemoPageBase
 
     private void UpdateMetrics()
     {
-        CountText.Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.SearchListBoxPageaxaml.UpdateMetrics011"), List.TotalCount, List.SearchCount, List.SelectedItems?.Count ?? 0);
+        CountText.Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.SearchListBox.UpdateMetrics.TotalFilteredSelectedFormat"), List.TotalCount, List.SearchCount, List.SelectedItems?.Count ?? 0);
 
         foreach (var item in Properties)
         {

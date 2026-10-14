@@ -86,7 +86,7 @@ public abstract class ScenePageBase : DemoPageBase
         RefreshSummary();
         _pageHost.Content = ActiveScenePage;
         ActiveScenePage?.OnDocumentOpened();
-        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.ScenePageBase.GoToStep001"), index + 1, _pages.Count, I18nManager.Instance.GetResource(_stepKeys[index])));
+        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.ScenePageBase.GoToStep.WorkflowStepFormat"), index + 1, _pages.Count, I18nManager.Instance.GetResource(_stepKeys[index])));
     }
 
     public override void OnDocumentOpened()

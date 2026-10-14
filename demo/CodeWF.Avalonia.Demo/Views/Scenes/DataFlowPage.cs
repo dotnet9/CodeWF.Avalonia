@@ -24,7 +24,7 @@ public class DataFlowPage : ScenePageBase
 
     protected override string SummaryKey => "Demo.Scene.Summary.Data";
 
-    public override string XamlCode => L.Instance.GetResource("Demo.Text.DataFlowPage.XamlCode001");
+    public override string XamlCode => L.Instance.GetResource("Demo.Content.DataFlow.XamlCode.DataGridCodewfDataGridEnhancementUseDefaultsTrueItemsSourceCodewfColumnDisplayEditor");
 
-    public override string CSharpCode => L.Instance.GetResource("Demo.Text.DataFlowPage.CSharpCode002");
+    public override string CSharpCode => L.Instance.GetResource("Demo.Content.DataFlow.CSharpCode.DataGridEnableDefaultsItemsSourceColumnsMoveOldIndexNewIndexDataGrid");
 }

@@ -14,8 +14,8 @@ public partial class LogPage : DemoPageBase
     }
     public override string TitleKey => "Demo.Page.Log.Title";
     public override string DescriptionKey => "Demo.Page.Log.Desc";
-    public override string XamlCode => I18nManager.Instance.GetResource("Demo.Text.LogPageaxaml.XamlSnippet001");
-    public override string CSharpCode => I18nManager.Instance.GetResource("Demo.Text.LogPageaxaml.CSharpSnippet002");
+    public override string XamlCode => I18nManager.Instance.GetResource("Demo.Content.Log.Source.Xaml");
+    public override string CSharpCode => I18nManager.Instance.GetResource("Demo.Content.Log.Source.CSharp");
     protected override IReadOnlyList<PropertyItem> BuildProperties() => ViewModel.BuildProperties();
     public override void OnPropertyCommitted(PropertyValueChange change) => ViewModel.Commit(change);
 }

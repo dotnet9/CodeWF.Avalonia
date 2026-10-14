@@ -8,9 +8,9 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class GuidePage : DemoPageBase
 {
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.GuidePageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.Guide.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.GuidePageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.Guide.Source.CSharp");
 
     public GuidePage()
     {
@@ -29,26 +29,26 @@ public partial class GuidePage : DemoPageBase
 
     private void OnStartGuide(object? sender, RoutedEventArgs e)
     {
-        Logger.Info(L.Instance.GetResource("Demo.Text.GuidePageaxaml.OnStartGuide003"));
+        Logger.Info(L.Instance.GetResource("Demo.Content.Guide.OnStartGuide.GuideStartingTour"));
         Guide.ResetState();
         Guide.Show();
     }
 
     private void OnStepOpened(object? sender, GuideStepEventArgs e) =>
-        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.GuidePageaxaml.OnStepOpened004"), e.Index + 1, Guide.StepCount, Guide.CurrentTitle));
+        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.Guide.OnStepOpened.GuideStepFormat"), e.Index + 1, Guide.StepCount, Guide.CurrentTitle));
 
     private void OnGuideCompleted(object? sender, System.EventArgs e) =>
-        Logger.Info(L.Instance.GetResource("Demo.Text.GuidePageaxaml.OnGuideCompleted005"));
+        Logger.Info(L.Instance.GetResource("Demo.Content.Guide.OnGuideCompleted.GuideTourCompleted"));
 
     protected override IReadOnlyList<PropertyItem> BuildProperties()
     {
         var placement = new PropertyItem
         {
             Id = "guide.info",
-            Name = L.Instance.GetResource("Demo.Text.GuidePageaxaml.BuildProperties006"),
+            Name = L.Instance.GetResource("Demo.Content.Guide.Properties.PlacementDetails"),
             Kind = PropertyItemKind.ReadOnly,
             Value = "Center / Top / TopLeft / TopRight / Left / LeftTop / LeftBottom / Right / RightTop / RightBottom / Bottom / BottomLeft / BottomRight",
-            Description = L.Instance.GetResource("Demo.Text.GuidePageaxaml.BuildProperties007"),
+            Description = L.Instance.GetResource("Demo.Content.Guide.Properties.EachStepSetsPlacement13PositionsCoverThe"),
         };
 
         return [placement];

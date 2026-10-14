@@ -7,7 +7,7 @@
 
     <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <TextBlock Text="{codewf:I18n Demo.Text.LogPage.View001}"
+      <TextBlock Text="{codewf:I18n Demo.Content.Log.View.LogViewSubscribesToLoggerSLiveEventsWith}"
                  TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
     </Border>
 
@@ -18,7 +18,7 @@
       <Button Classes="demo-action" Content="Warning" Command="{Binding WriteCommand}" CommandParameter="Warning" />
       <Button Classes="demo-action" Content="Error" Command="{Binding WriteCommand}" CommandParameter="Error" />
       <Button Classes="demo-action" Content="Critical" Command="{Binding WriteCommand}" CommandParameter="Critical" />
-      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.LogPage.View002}" Command="{Binding BurstCommand}" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.Log.View.WriteBatchEventStreamLoadTest}" Command="{Binding BurstCommand}" />
     </StackPanel>
 
     <codewf:LogView Grid.Row="2" x:Name="LogViewControl" Margin="0,8,0,0" MaxDisplayCount="{Binding MaxDisplayCount}" MinimumLevel="{Binding MinimumLevel}" />

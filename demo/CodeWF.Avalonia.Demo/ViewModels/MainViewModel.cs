@@ -76,10 +76,13 @@ public partial class MainViewModel : ReactiveObject
 
         Cultures = new ObservableCollection<CultureOption>
         {
-            new("zh-CN", L.Instance.GetResource("Demo.Text.MainViewModel.Content001")),
+            new("zh-CN", L.Instance.GetResource("Demo.Shell.LanguageChinese")),
             new("en-US", "English"),
         };
         _selectedCulture = Cultures[0];
+
+        GlobalValueCommittedCommand = ReactiveCommand.Create<PropertyValueChange>(OnGlobalPropertyCommitted);
+        GlobalBrowseRequestedCommand = ReactiveCommand.Create<PropertyItem>(_ => { });
 
         GlobalProperties = BuildGlobalProperties();
         ApplyAppearance();
@@ -92,7 +95,7 @@ public partial class MainViewModel : ReactiveObject
         // 启动即打开欢迎文档，避免空文档区。
         OpenItem(Groups[0].Items[0]);
 
-        // 澶栧３瀹炰綋鍖栦欢锛氶€氱煡涓績 / 鍛戒护闈㈡澘 / 瀵嗗害 / 甯冨眬璁板繂 / 灏卞湴閲嶅懡鍚嶃€?
+        // Initialize notifications, commands, density and persisted layout state.
         InitializeShellServices();
         InitializeShellCommands();
         InitializeNavServices();
@@ -199,9 +202,9 @@ public partial class MainViewModel : ReactiveObject
     /// <summary>无文档打开时的全局设置属性（外观 / 语言），由 PropertyGrid 直接驱动 Shell。</summary>
     public IReadOnlyList<PropertyItem> GlobalProperties { get; private set; }
 
-    public ReactiveCommand<PropertyValueChange, RxVoid> GlobalValueCommittedCommand { get; private set; } = null!;
+    public ReactiveCommand<PropertyValueChange, RxVoid> GlobalValueCommittedCommand { get; }
 
-    public ReactiveCommand<PropertyItem, RxVoid> GlobalBrowseRequestedCommand { get; private set; } = null!;
+    public ReactiveCommand<PropertyItem, RxVoid> GlobalBrowseRequestedCommand { get; }
 
     public ReactiveCommand<DemoItemViewModel, RxVoid> OpenItemCommand { get; }
 
@@ -321,7 +324,7 @@ public partial class MainViewModel : ReactiveObject
             this.RaisePropertyChanged(nameof(NotificationDismissHint));
             RaiseCommandState();
             StatusText = I18nManager.Instance.GetResource("Demo.Shell.Ready");
-            Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.SelectedCulture002") + value.Name);
+            Logger.Info(L.Instance.GetResource("Demo.Shell.LanguageChanged") + value.Name);
         }
     }
 
@@ -374,7 +377,7 @@ public partial class MainViewModel : ReactiveObject
         }
 
         StatusText = I18nManager.Instance.GetResource(DemoKeys.ShellReady);
-        Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.OpenItem003") + item.Title);
+        Logger.Info(L.Instance.GetResource("Demo.Shell.DocumentOpened") + item.Title);
     }
 
     public void CloseDocument(DemoDocumentViewModel document)
@@ -416,7 +419,7 @@ public partial class MainViewModel : ReactiveObject
         }
 
         StatusText = I18nManager.Instance.GetResource(DemoKeys.ShellReady);
-        Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.SyncDocumentClosed004") + document.Title);
+        Logger.Info(L.Instance.GetResource("Demo.Shell.DocumentClosed") + document.Title);
     }
 
     /// <summary>面板显隐切换：隐藏 = 移入 RootDock 隐藏集合，恢复 = 按 Id 取回。</summary>
@@ -452,12 +455,12 @@ public partial class MainViewModel : ReactiveObject
         if (hidden)
         {
             _dockFactory.RestoreDockable(tool.Id);
-            Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.ToggleTool005") + title);
+            Logger.Info(L.Instance.GetResource("Demo.Shell.PanelShown") + title);
         }
         else
         {
             _dockFactory.HideDockable(tool);
-            Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.ToggleTool006") + title);
+            Logger.Info(L.Instance.GetResource("Demo.Shell.PanelHidden") + title);
         }
     }
 
@@ -469,7 +472,7 @@ public partial class MainViewModel : ReactiveObject
         _selectedNavItem = null;
         BuildLayout();
         OpenItem(Groups[0].Items[0]);
-        Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.ResetLayout007"));
+        Logger.Info(L.Instance.GetResource("Demo.Shell.LayoutReset"));
     }
 
     /// <summary>
@@ -603,20 +606,20 @@ public partial class MainViewModel : ReactiveObject
 
     public void WriteSampleLogs()
     {
-        Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.WriteSampleLogs008"));
-        Logger.Warn(L.Instance.GetResource("Demo.Text.MainViewModel.WriteSampleLogs009"));
-        Logger.Error(L.Instance.GetResource("Demo.Text.MainViewModel.WriteSampleLogs010"));
+        Logger.Info(L.Instance.GetResource("Demo.Shell.SampleInformationLog"));
+        Logger.Warn(L.Instance.GetResource("Demo.Shell.SampleWarningLog"));
+        Logger.Error(L.Instance.GetResource("Demo.Shell.SampleErrorLog"));
     }
 
     public async Task<bool> RunSmokeAsync(CancellationToken cancellation)
     {
         // 冒烟：先写三类日志验证日志通道，再按信息架构逐页构建（含场景页步骤切换）。
         DemoBootstrapper.Initialize();
-        Logger.Info(L.Instance.GetResource("Demo.Text.MainViewModel.RunSmokeAsync011"));
+        Logger.Info(L.Instance.GetResource("Demo.Content.Shell.RunSmokeAsync.SmokeStarted"));
         WriteSampleLogs();
         var overviewOk = await SmokeOverviewAsync(cancellation);
         var ok = await SmokeWalkCatalogAsync(cancellation);
-        Logger.Info(ok ? L.Instance.GetResource("Demo.Text.MainViewModel.RunSmokeAsync012") : L.Instance.GetResource("Demo.Text.MainViewModel.RunSmokeAsync013"));
+        Logger.Info(ok ? L.Instance.GetResource("Demo.Content.Shell.RunSmokeAsync.SmokePassed") : L.Instance.GetResource("Demo.Content.Shell.RunSmokeAsync.SmokeFailed"));
         await Logger.ShutdownAsync();
         return ok && overviewOk;
     }
@@ -630,14 +633,11 @@ public partial class MainViewModel : ReactiveObject
 
         Application.Current.RequestedThemeVariant = SelectedPalette.ResolveVariant(IsDarkMode);
         SyncGlobalItems();
-        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.MainViewModel.ApplyAppearance016"), SelectedPalette.Title, (IsDarkMode ? L.Instance.GetResource("Demo.Text.MainViewModel.ApplyAppearance014") : L.Instance.GetResource("Demo.Text.MainViewModel.ApplyAppearance015"))));
+        Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.Shell.ApplyAppearance.AppearanceFormat"), SelectedPalette.Title, (IsDarkMode ? L.Instance.GetResource("Demo.Content.Shell.ApplyAppearance.Dark") : L.Instance.GetResource("Demo.Content.Shell.ApplyAppearance.Light"))));
     }
 
     private IReadOnlyList<PropertyItem> BuildGlobalProperties()
     {
-        GlobalValueCommittedCommand = ReactiveCommand.Create<PropertyValueChange>(OnGlobalPropertyCommitted);
-        GlobalBrowseRequestedCommand = ReactiveCommand.Create<PropertyItem>(_ => { });
-
         _densityItem = new PropertyItem
         {
             Id = "shell.density",
@@ -651,48 +651,48 @@ public partial class MainViewModel : ReactiveObject
         _paletteItem = new PropertyItem
         {
             Id = "shell.palette",
-            Name = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties017"),
+            Name = L.Instance.GetResource("Demo.Shell.GlobalSettings.PaletteLabel"),
             Kind = PropertyItemKind.Choice,
             Options = Palettes.Select(p => p.Title).ToArray(),
             Value = Palettes[0].Title,
             DefaultValue = Palettes[0].Title,
-            Description = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties018"),
+            Description = L.Instance.GetResource("Demo.Shell.GlobalSettings.PaletteDescription"),
         };
         _modeItem = new PropertyItem
         {
             Id = "shell.mode",
-            Name = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties019"),
+            Name = L.Instance.GetResource("Demo.Shell.GlobalSettings.ModeLabel"),
             Kind = PropertyItemKind.Radio,
-            Options = [L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties020"), L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties021")],
-            Value = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties022"),
-            DefaultValue = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties023"),
-            Description = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties024"),
+            Options = [L.Instance.GetResource("Demo.Shell.GlobalSettings.LightMode"), L.Instance.GetResource("Demo.Shell.GlobalSettings.DarkMode")],
+            Value = L.Instance.GetResource("Demo.Shell.GlobalSettings.DarkMode"),
+            DefaultValue = L.Instance.GetResource("Demo.Shell.GlobalSettings.DarkMode"),
+            Description = L.Instance.GetResource("Demo.Shell.GlobalSettings.ModeDescription"),
         };
         _langItem = new PropertyItem
         {
             Id = "shell.lang",
-            Name = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties025"),
+            Name = L.Instance.GetResource("Demo.Shell.GlobalSettings.LanguageLabel"),
             Kind = PropertyItemKind.Choice,
             Options = Cultures.Select(c => c.DisplayName).ToArray(),
             Value = Cultures[0].DisplayName,
             DefaultValue = Cultures[0].DisplayName,
-            Description = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties026"),
+            Description = L.Instance.GetResource("Demo.Shell.GlobalSettings.LanguageDescription"),
         };
 
         var appearance = new PropertyItem
         {
             Id = "shell.appearance",
-            Name = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties027"),
+            Name = L.Instance.GetResource("Demo.Shell.GlobalSettings.AppearanceGroup"),
             Kind = PropertyItemKind.Category,
-            Description = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties028"),
+            Description = L.Instance.GetResource("Demo.Shell.GlobalSettings.AppearanceDescription"),
             Children = [_densityItem, _paletteItem, _modeItem],
         };
         var language = new PropertyItem
         {
             Id = "shell.language",
-            Name = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties029"),
+            Name = L.Instance.GetResource("Demo.Shell.GlobalSettings.LanguageGroup"),
             Kind = PropertyItemKind.Category,
-            Description = L.Instance.GetResource("Demo.Text.MainViewModel.BuildGlobalProperties030"),
+            Description = L.Instance.GetResource("Demo.Shell.GlobalSettings.LanguageGroupDescription"),
             Children = [_langItem],
         };
 
@@ -721,7 +721,7 @@ public partial class MainViewModel : ReactiveObject
                 SelectedPalette = Palettes.FirstOrDefault(p => p.Title == value) ?? SelectedPalette;
                 break;
             case "shell.mode" when value is not null:
-                IsDarkMode = value == L.Instance.GetResource("Demo.Text.MainViewModel.OnGlobalPropertyCommitted031");
+                IsDarkMode = value == L.Instance.GetResource("Demo.Content.Shell.OnGlobalPropertyCommitted.Dark");
                 break;
             case "shell.lang" when value is not null:
                 var culture = Cultures.FirstOrDefault(c => c.DisplayName == value);
@@ -749,7 +749,7 @@ public partial class MainViewModel : ReactiveObject
 
         Sync(_densityItem, DensityLabel);
         Sync(_paletteItem, SelectedPalette.Title);
-        Sync(_modeItem, IsDarkMode ? L.Instance.GetResource("Demo.Text.MainViewModel.SyncGlobalItems032") : L.Instance.GetResource("Demo.Text.MainViewModel.SyncGlobalItems033"));
+        Sync(_modeItem, IsDarkMode ? L.Instance.GetResource("Demo.Content.Shell.SyncGlobalItems.Dark") : L.Instance.GetResource("Demo.Content.Shell.SyncGlobalItems.Light"));
         Sync(_langItem, SelectedCulture.DisplayName);
     }
 }

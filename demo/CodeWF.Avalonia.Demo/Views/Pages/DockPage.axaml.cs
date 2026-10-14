@@ -6,9 +6,9 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class DockPage : DemoPageBase
 {
-    public static string XamlSnippet => L.Instance.GetResource("Demo.Text.DockPageaxaml.XamlSnippet001");
+    public static string XamlSnippet => L.Instance.GetResource("Demo.Content.Dock.Source.Xaml");
 
-    public static string CSharpSnippet => L.Instance.GetResource("Demo.Text.DockPageaxaml.CSharpSnippet002");
+    public static string CSharpSnippet => L.Instance.GetResource("Demo.Content.Dock.Source.CSharp");
 
     public DockPage()
     {
@@ -29,10 +29,10 @@ public partial class DockPage : DemoPageBase
         var note = new PropertyItem
         {
             Id = "dock.note",
-            Name = L.Instance.GetResource("Demo.Text.DockPageaxaml.BuildProperties003"),
+            Name = L.Instance.GetResource("Demo.Content.Dock.Properties.Composition"),
             Kind = PropertyItemKind.ReadOnly,
             Value = "Dock.Avalonia 12.1 + Dock.Model.ReactiveUI + CodeWF DockSemiTheme",
-            Description = L.Instance.GetResource("Demo.Text.DockPageaxaml.BuildProperties004"),
+            Description = L.Instance.GetResource("Demo.Content.Dock.Properties.CodeWFAvaloniaDockSuppliesTheSemiAppearanceTrapezoid"),
         };
 
         return [note];

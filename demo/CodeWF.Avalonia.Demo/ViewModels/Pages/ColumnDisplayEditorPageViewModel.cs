@@ -42,18 +42,18 @@ public class ColumnDisplayEditorPageViewModel : ReactiveObject
             column.PropertyChanged += OnColumnPropertyChanged;
         }
 
-        ChangeLog.Insert(0, string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.Reset001"), DateTime.Now));
+        ChangeLog.Insert(0, string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.Reset.RestoredDefaultColumnsFormat"), DateTime.Now));
     }
 
     private static ObservableCollection<ColumnDisplayItem> CreateDefaultColumns() =>
         new(
         [
-            new ColumnDisplayItem("name", L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.CreateDefaultColumns002")),
-            new ColumnDisplayItem("kind", L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.CreateDefaultColumns003")),
-            new ColumnDisplayItem("status", L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.CreateDefaultColumns004")),
-            new ColumnDisplayItem("owner", L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.CreateDefaultColumns005")),
-            new ColumnDisplayItem("updated", L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.CreateDefaultColumns006")),
-            new ColumnDisplayItem("remark", L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.CreateDefaultColumns007"), visible: false),
+            new ColumnDisplayItem("name", L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.CreateDefaultColumns.Name")),
+            new ColumnDisplayItem("kind", L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.CreateDefaultColumns.Type")),
+            new ColumnDisplayItem("status", L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.CreateDefaultColumns.Status")),
+            new ColumnDisplayItem("owner", L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.CreateDefaultColumns.Owner")),
+            new ColumnDisplayItem("updated", L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.CreateDefaultColumns.UpdatedAt")),
+            new ColumnDisplayItem("remark", L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.CreateDefaultColumns.Notes"), visible: false),
         ]);
 
     private void OnColumnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -61,7 +61,7 @@ public class ColumnDisplayEditorPageViewModel : ReactiveObject
         if (e.PropertyName == nameof(ColumnDisplayItem.Visible)
             && sender is ColumnDisplayItem column)
         {
-            ChangeLog.Insert(0, string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.OnColumnPropertyChanged010"), DateTime.Now, column.DisplayText, (column.Visible ? L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.OnColumnPropertyChanged008") : L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.OnColumnPropertyChanged009"))));
+            ChangeLog.Insert(0, string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.OnColumnPropertyChanged.VisibilityOfFormat"), DateTime.Now, column.DisplayText, (column.Visible ? L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.OnColumnPropertyChanged.Visible") : L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.OnColumnPropertyChanged.Hidden"))));
         }
     }
 
@@ -71,7 +71,7 @@ public class ColumnDisplayEditorPageViewModel : ReactiveObject
         {
             var moved = e.NewItems?.Cast<ColumnDisplayItem>().FirstOrDefault();
             ChangeLog.Insert(0,
-                string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Text.ColumnDisplayEditorPageViewModel.OnColumnsCollectionChanged011"), DateTime.Now, moved?.DisplayText, e.NewStartingIndex + 1));
+                string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource("Demo.Content.ColumnDisplayEditor.OnColumnsCollectionChanged.MovedToPositionFormat"), DateTime.Now, moved?.DisplayText, e.NewStartingIndex + 1));
         }
     }
 }

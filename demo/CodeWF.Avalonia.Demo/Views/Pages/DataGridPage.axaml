@@ -9,11 +9,11 @@
 
     <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <TextBlock Text="{codewf:I18n Demo.Text.DataGridPage.View001}"
+      <TextBlock Text="{codewf:I18n Demo.Content.DataGrid.View.TopEnhancedDataGridWithThreeStateAndNatural}"
                  TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
     </Border>
 
-    <TextBlock Grid.Row="1" Text="{codewf:I18n Demo.Text.DataGridPage.View002}" FontWeight="SemiBold" Margin="0,10,0,4" />
+    <TextBlock Grid.Row="1" Text="{codewf:I18n Demo.Content.DataGrid.View.EnhancedUseDefaults}" FontWeight="SemiBold" Margin="0,10,0,4" />
 
     <DataGrid Grid.Row="2" x:Name="EnhancedGrid" RowHeight="{Binding RowHeight}"
               codewf:DataGridEnhancement.UseDefaults="{Binding UseDefaults}"
@@ -22,14 +22,14 @@
               IsReadOnly="True" HeadersVisibility="Column"
               GridLinesVisibility="Horizontal" BorderThickness="1">
       <DataGrid.Columns>
-        <DataGridTextColumn Header="{codewf:I18n Demo.Text.DataGridPage.View003}" Binding="{Binding Name}" Width="140" />
-        <DataGridTextColumn Header="{codewf:I18n Demo.Text.DataGridPage.View004}" Binding="{Binding Age}" Width="90" />
-        <DataGridTextColumn Header="{codewf:I18n Demo.Text.DataGridPage.View005}" Binding="{Binding City}" Width="140" />
-        <DataGridTextColumn Header="{codewf:I18n Demo.Text.DataGridPage.View006}" Binding="{Binding Comment}" Width="*" />
+        <DataGridTextColumn Header="{codewf:I18n Demo.Content.DataGrid.View.Name}" Binding="{Binding Name}" Width="140" />
+        <DataGridTextColumn Header="{codewf:I18n Demo.Content.DataGrid.View.Age}" Binding="{Binding Age}" Width="90" />
+        <DataGridTextColumn Header="{codewf:I18n Demo.Content.DataGrid.View.City}" Binding="{Binding City}" Width="140" />
+        <DataGridTextColumn Header="{codewf:I18n Demo.Content.DataGrid.View.NotesHoverToTrySmartToolTip}" Binding="{Binding Comment}" Width="*" />
       </DataGrid.Columns>
     </DataGrid>
 
-    <TextBlock Grid.Row="3" Text="{codewf:I18n Demo.Text.DataGridPage.View007}" FontWeight="SemiBold" Margin="0,10,0,4" />
+    <TextBlock Grid.Row="3" Text="{codewf:I18n Demo.Content.DataGrid.View.NativeComparison}" FontWeight="SemiBold" Margin="0,10,0,4" />
 
     <DataGrid Grid.Row="4"
               ItemsSource="{Binding Rows}"
@@ -37,10 +37,10 @@
               IsReadOnly="True" HeadersVisibility="Column"
               GridLinesVisibility="Horizontal" BorderThickness="1">
       <DataGrid.Columns>
-        <DataGridTextColumn Header="{codewf:I18n Demo.Text.DataGridPage.View008}" Binding="{Binding Name}" Width="140" />
-        <DataGridTextColumn Header="{codewf:I18n Demo.Text.DataGridPage.View009}" Binding="{Binding Age}" Width="90" />
-        <DataGridTextColumn Header="{codewf:I18n Demo.Text.DataGridPage.View010}" Binding="{Binding City}" Width="140" />
-        <DataGridTextColumn Header="{codewf:I18n Demo.Text.DataGridPage.View011}" Binding="{Binding Comment}" Width="*" />
+        <DataGridTextColumn Header="{codewf:I18n Demo.Content.DataGrid.View.Name}" Binding="{Binding Name}" Width="140" />
+        <DataGridTextColumn Header="{codewf:I18n Demo.Content.DataGrid.View.Age}" Binding="{Binding Age}" Width="90" />
+        <DataGridTextColumn Header="{codewf:I18n Demo.Content.DataGrid.View.City}" Binding="{Binding City}" Width="140" />
+        <DataGridTextColumn Header="{codewf:I18n Demo.Content.DataGrid.View.Notes}" Binding="{Binding Comment}" Width="*" />
       </DataGrid.Columns>
     </DataGrid>
   </Grid>

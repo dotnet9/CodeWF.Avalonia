@@ -8,14 +8,14 @@
 
       <Border Padding="10" CornerRadius="6" BorderThickness="1"
               BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-        <TextBlock Text="{codewf:I18n Demo.Text.AppGuidePage.View001}"
+        <TextBlock Text="{codewf:I18n Demo.Content.AppGuide.View.TourTheRibbonNavigationDocumentsPropertiesAndLogs}"
                    TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
       </Border>
 
-      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.AppGuidePage.View002}" Click="OnStartGuide" HorizontalAlignment="Left" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.AppGuide.View.StartWorkspaceTour}" Click="OnStartGuide" HorizontalAlignment="Left" />
 
-      <TextBlock Text="{codewf:I18n Demo.Text.AppGuidePage.View003}" FontWeight="Bold" />
-      <TextBlock Text="{codewf:I18n Demo.Text.AppGuidePage.View004}"
+      <TextBlock Text="{codewf:I18n Demo.Content.AppGuide.View.TourRegions}" FontWeight="Bold" />
+      <TextBlock Text="{codewf:I18n Demo.Content.AppGuide.View.RibbonCommandsNavigationDocumentsWithDemoXAMLC}"
                  TextWrapping="Wrap" Opacity="0.8" LineHeight="22" />
     </StackPanel>
 

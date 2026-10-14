@@ -14,7 +14,9 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "welcome",
         "titleZh": "介绍",
         "titleEn": "Introduction",
-        "description": ""
+        "description": "",
+        "icon": "⌂",
+        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
       },
       {
         "titleKey": "Demo.Item.About",
@@ -24,9 +26,13 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "about",
         "titleZh": "关于",
         "titleEn": "About",
-        "description": ""
+        "description": "",
+        "icon": "ⓘ",
+        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
       }
-    ]
+    ],
+    "icon": "⌂",
+    "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/>"
   },
   {
     "titleKey": "Demo.Group.Input",
@@ -42,7 +48,9 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "searchlist",
         "titleZh": "SearchListBox",
         "titleEn": "SearchListBox",
-        "description": "SearchListBox"
+        "description": "SearchListBox",
+        "icon": "⌕",
+        "prototypeIcon": "<rect x=\"3.5\" y=\"4.5\" width=\"17\" height=\"15\" rx=\"1.7\"/><path d=\"M6.5 9.5h11M6.5 13.5h7\"/><circle cx=\"16.5\" cy=\"15.8\" r=\"2.3\"/><path d=\"M18.3 17.6l2.2 2.2\"/>"
       },
       {
         "titleKey": "Demo.Item.Transfer",
@@ -52,9 +60,13 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "transfer",
         "titleZh": "Transfer",
         "titleEn": "Transfer",
-        "description": "Transfer"
+        "description": "Transfer",
+        "icon": "⇄",
+        "prototypeIcon": "<path d=\"M4 6.5h10l-2.5-2.5M20 17.5H10l2.5 2.5\"/><path d=\"M17.5 6.5H20\"/><path d=\"M4 17.5h2.5\"/>"
       }
-    ]
+    ],
+    "icon": "⌕",
+    "prototypeIcon": "<rect x=\"3.5\" y=\"4.5\" width=\"17\" height=\"15\" rx=\"1.7\"/><path d=\"M6.5 9.5h11M6.5 13.5h7\"/><circle cx=\"16.5\" cy=\"15.8\" r=\"2.3\"/><path d=\"M18.3 17.6l2.2 2.2\"/>"
   },
   {
     "titleKey": "Demo.Group.Feedback",
@@ -71,7 +83,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "StatusBadge",
         "titleEn": "StatusBadge",
         "description": "StatusBadge",
-        "sectionKey": "Demo.Catalog.SectionStatuses"
+        "sectionKey": "Demo.Catalog.SectionStatuses",
+        "icon": "◈",
+        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
       },
       {
         "titleKey": "Demo.Item.StatusCard",
@@ -82,7 +96,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "StatusCard",
         "titleEn": "StatusCard",
         "description": "StatusCard",
-        "sectionKey": "Demo.Catalog.SectionStatuses"
+        "sectionKey": "Demo.Catalog.SectionStatuses",
+        "icon": "▣",
+        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
       },
       {
         "titleKey": "Demo.Item.Guide",
@@ -93,7 +109,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "Guide",
         "titleEn": "Guide",
         "description": "Guide",
-        "sectionKey": "Demo.Catalog.SectionGuidance"
+        "sectionKey": "Demo.Catalog.SectionGuidance",
+        "icon": "◉",
+        "prototypeIcon": "<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M14.8 9.2l-1.9 4.1-4.1 1.9 1.9-4.1z\"/>"
       },
       {
         "titleKey": "Demo.Item.Notifications",
@@ -104,9 +122,13 @@ window.CodeWFDemoCatalog = [
         "titleZh": "LogNotifications",
         "titleEn": "LogNotifications",
         "description": "LogNotifications",
-        "sectionKey": "Demo.Catalog.SectionNotifications"
+        "sectionKey": "Demo.Catalog.SectionNotifications",
+        "icon": "◉",
+        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
       }
-    ]
+    ],
+    "icon": "◈",
+    "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/>"
   },
   {
     "titleKey": "Demo.Group.Data",
@@ -123,7 +145,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "DataGridEnhancement",
         "titleEn": "DataGridEnhancement",
         "description": "DataGridEnhancement",
-        "sectionKey": "Demo.Catalog.SectionGrids"
+        "sectionKey": "Demo.Catalog.SectionGrids",
+        "icon": "▦",
+        "prototypeIcon": "<rect x=\"3.5\" y=\"4.5\" width=\"17\" height=\"15\" rx=\"1.7\"/><path d=\"M3.5 9.5h17M3.5 14.5h17M9.5 9.5v10M15 9.5v10\"/>"
       },
       {
         "titleKey": "Demo.Item.ColumnDisplayEditor",
@@ -134,7 +158,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "ColumnDisplayEditor",
         "titleEn": "ColumnDisplayEditor",
         "description": "ColumnDisplayEditor",
-        "sectionKey": "Demo.Catalog.SectionGrids"
+        "sectionKey": "Demo.Catalog.SectionGrids",
+        "icon": "▥",
+        "prototypeIcon": "<path d=\"M4 7.5h4M4 12h4M4 16.5h4\"/><rect x=\"10\" y=\"5.5\" width=\"10\" height=\"4\" rx=\"1.2\"/><rect x=\"10\" y=\"10\" width=\"10\" height=\"4\" rx=\"1.2\"/><rect x=\"10\" y=\"14.5\" width=\"10\" height=\"4\" rx=\"1.2\"/>"
       },
       {
         "titleKey": "Demo.Item.TreeDataGrid",
@@ -145,7 +171,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "TreeDataGridExtension",
         "titleEn": "TreeDataGridExtension",
         "description": "TreeDataGridExtension",
-        "sectionKey": "Demo.Catalog.SectionGrids"
+        "sectionKey": "Demo.Catalog.SectionGrids",
+        "icon": "▦",
+        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
       },
       {
         "titleKey": "Demo.Item.PropertyGrid",
@@ -156,7 +184,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "PropertyGrid",
         "titleEn": "PropertyGrid",
         "description": "PropertyGrid",
-        "sectionKey": "Demo.Catalog.SectionProperties"
+        "sectionKey": "Demo.Catalog.SectionProperties",
+        "icon": "☰",
+        "prototypeIcon": "<path d=\"M4 6.5h9M17.5 6.5H20\"/><circle cx=\"15\" cy=\"6.5\" r=\"2.1\"/><path d=\"M4 17.5h3.5M11 17.5h9\"/><circle cx=\"9\" cy=\"17.5\" r=\"2.1\"/><path d=\"M4 12h6M13.5 12H20\"/><circle cx=\"11.5\" cy=\"12\" r=\"2.1\"/>"
       },
       {
         "titleKey": "Demo.Item.Log",
@@ -167,9 +197,13 @@ window.CodeWFDemoCatalog = [
         "titleZh": "LogView",
         "titleEn": "LogView",
         "description": "LogView",
-        "sectionKey": "Demo.Catalog.SectionLogs"
+        "sectionKey": "Demo.Catalog.SectionLogs",
+        "icon": "☰",
+        "prototypeIcon": "<path d=\"M5.5 4.5h13v15h-13z\"/><path d=\"M8.5 9h7M8.5 12.5h7M8.5 16h4\"/>"
       }
-    ]
+    ],
+    "icon": "▦",
+    "prototypeIcon": "<path d=\"M4 19.5V4.5M4 19.5h15.5\"/><rect x=\"7\" y=\"11\" width=\"3\" height=\"6\"/><rect x=\"12\" y=\"7.5\" width=\"3\" height=\"9.5\"/><rect x=\"17\" y=\"14\" width=\"3\" height=\"3\"/>"
   },
   {
     "titleKey": "Demo.Group.Layout",
@@ -186,7 +220,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "CodeWFWindow",
         "titleEn": "CodeWFWindow",
         "description": "CodeWFWindow",
-        "sectionKey": "Demo.Catalog.SectionWindows"
+        "sectionKey": "Demo.Catalog.SectionWindows",
+        "icon": "▣",
+        "prototypeIcon": "<rect x=\"3.5\" y=\"4.5\" width=\"17\" height=\"15\" rx=\"1.7\"/><path d=\"M3.5 9h17\"/><path d=\"M6.5 6.7h.01M9 6.7h.01\"/>"
       },
       {
         "titleKey": "Demo.Item.TitleBar",
@@ -197,7 +233,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "CodeWFTitleBar",
         "titleEn": "CodeWFTitleBar",
         "description": "CodeWFTitleBar",
-        "sectionKey": "Demo.Catalog.SectionWindows"
+        "sectionKey": "Demo.Catalog.SectionWindows",
+        "icon": "▤",
+        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
       },
       {
         "titleKey": "Demo.Item.Dock",
@@ -208,7 +246,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "DockControl",
         "titleEn": "DockControl",
         "description": "DockControl",
-        "sectionKey": "Demo.Catalog.SectionNavigation"
+        "sectionKey": "Demo.Catalog.SectionNavigation",
+        "icon": "▣",
+        "prototypeIcon": "<rect x=\"3.5\" y=\"4.5\" width=\"17\" height=\"15\" rx=\"1.7\"/><path d=\"M10 4.5v15\"/><path d=\"M13.5 9.5h4\"/>"
       },
       {
         "titleKey": "Demo.Item.TrapezoidTab",
@@ -219,7 +259,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "TrapezoidShapedTabControl",
         "titleEn": "TrapezoidShapedTabControl",
         "description": "TrapezoidShapedTabControl",
-        "sectionKey": "Demo.Catalog.SectionNavigation"
+        "sectionKey": "Demo.Catalog.SectionNavigation",
+        "icon": "◤",
+        "prototypeIcon": "<path d=\"M7.5 6.5h9l3 11h-15z\"/><path d=\"M9.5 10h5\"/>"
       },
       {
         "titleKey": "Demo.Item.WindowedStackPanel",
@@ -230,7 +272,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "WindowedStackPanel",
         "titleEn": "WindowedStackPanel",
         "description": "WindowedStackPanel",
-        "sectionKey": "Demo.Catalog.SectionLayout"
+        "sectionKey": "Demo.Catalog.SectionLayout",
+        "icon": "▥",
+        "prototypeIcon": "<path d=\"M12 3.5L21 8.5 12 13.5 3 8.5z\"/><path d=\"M3 12.8L12 17.8l9-5\"/><path d=\"M3 16.8L12 21.8l9-5\"/>"
       },
       {
         "titleKey": "Demo.Item.DiagonalLine",
@@ -241,7 +285,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "LeftTop2RightBottomLine",
         "titleEn": "LeftTop2RightBottomLine",
         "description": "LeftTop2RightBottomLine",
-        "sectionKey": "Demo.Catalog.SectionLayout"
+        "sectionKey": "Demo.Catalog.SectionLayout",
+        "icon": "╲",
+        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
       },
       {
         "titleKey": "Demo.Item.ContentExpansionAnimator",
@@ -252,9 +298,13 @@ window.CodeWFDemoCatalog = [
         "titleZh": "ContentExpansionAnimator",
         "titleEn": "ContentExpansionAnimator",
         "description": "ContentExpansionAnimator",
-        "sectionKey": "Demo.Catalog.SectionLayout"
+        "sectionKey": "Demo.Catalog.SectionLayout",
+        "icon": "◆",
+        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
       }
-    ]
+    ],
+    "icon": "❐",
+    "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/>"
   },
   {
     "titleKey": "Demo.Group.Markdown",
@@ -271,7 +321,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "MarkdownViewer",
         "titleEn": "MarkdownViewer",
         "description": "MarkdownViewer",
-        "sectionKey": "Demo.Catalog.SectionReading"
+        "sectionKey": "Demo.Catalog.SectionReading",
+        "icon": "▤",
+        "prototypeIcon": "<path d=\"M13.5 3.5H7a1.6 1.6 0 0 0-1.6 1.6v13.8A1.6 1.6 0 0 0 7 20.5h10a1.6 1.6 0 0 0 1.6-1.6V8.6z\"/><path d=\"M13.5 3.5v5.1h5.1\"/><path d=\"M9 13.5h6M9 16.8h4\"/>"
       },
       {
         "titleKey": "Demo.Item.MarkdownLite",
@@ -282,7 +334,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "Lite.MarkdownViewer",
         "titleEn": "Lite.MarkdownViewer",
         "description": "Lite.MarkdownViewer",
-        "sectionKey": "Demo.Catalog.SectionReading"
+        "sectionKey": "Demo.Catalog.SectionReading",
+        "icon": "▭",
+        "prototypeIcon": "<path d=\"M4.5 5.5h15v13h-15z\"/><path d=\"M7.5 15.5l2-6 2.5 4.5 1.8-3 1.7 4.5\"/>"
       },
       {
         "titleKey": "Demo.Item.MarkdownEditor",
@@ -293,7 +347,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "MarkdownEditorView",
         "titleEn": "MarkdownEditorView",
         "description": "MarkdownEditorView",
-        "sectionKey": "Demo.Catalog.SectionEditing"
+        "sectionKey": "Demo.Catalog.SectionEditing",
+        "icon": "✎",
+        "prototypeIcon": "<path d=\"M4.5 19.5l.9-3.6L16 5.3l2.7 2.7L8.1 18.6z\"/><path d=\"M14.6 6.7l2.7 2.7\"/><path d=\"M4.5 12.5V4.5h8\"/>"
       },
       {
         "titleKey": "Demo.Item.MarkdownLiveEditor",
@@ -304,7 +360,9 @@ window.CodeWFDemoCatalog = [
         "titleZh": "MarkdownLiveEditorView",
         "titleEn": "MarkdownLiveEditorView",
         "description": "MarkdownLiveEditorView",
-        "sectionKey": "Demo.Catalog.SectionEditing"
+        "sectionKey": "Demo.Catalog.SectionEditing",
+        "icon": "⚡",
+        "prototypeIcon": "<path d=\"M13 3.5L5.5 13.5H11l-.6 7L18 10.5h-5.4z\"/>"
       },
       {
         "titleKey": "Demo.Item.MarkdownExport",
@@ -315,9 +373,13 @@ window.CodeWFDemoCatalog = [
         "titleZh": "MarkdownDocumentExporter",
         "titleEn": "MarkdownDocumentExporter",
         "description": "MarkdownDocumentExporter",
-        "sectionKey": "Demo.Catalog.SectionExport"
+        "sectionKey": "Demo.Catalog.SectionExport",
+        "icon": "⇪",
+        "prototypeIcon": "<path d=\"M12 3.5v10.5\"/><path d=\"M8.5 7L12 3.5 15.5 7\"/><path d=\"M5 13.5v5.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5v-5.5\"/>"
       }
-    ]
+    ],
+    "icon": "▤",
+    "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/>"
   },
   {
     "titleKey": "Demo.Group.Utilities",
@@ -333,7 +395,9 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "if",
         "titleZh": "If",
         "titleEn": "If",
-        "description": "If"
+        "description": "If",
+        "icon": "⟨⟩",
+        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
       },
       {
         "titleKey": "Demo.Item.Switch",
@@ -343,7 +407,9 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "switch",
         "titleZh": "Switch",
         "titleEn": "Switch",
-        "description": "Switch"
+        "description": "Switch",
+        "icon": "⇄",
+        "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/><path d=\"M10.5 19.5v-4.8h3v4.8\"/>"
       },
       {
         "titleKey": "Demo.Item.Lang",
@@ -353,9 +419,13 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "lang",
         "titleZh": "I18nManager",
         "titleEn": "I18nManager",
-        "description": "I18nManager"
+        "description": "I18nManager",
+        "icon": "⊕",
+        "prototypeIcon": "<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M3.5 12h17\"/><path d=\"M12 3.5c2.4 2.4 3.6 5.3 3.6 8.5S14.4 18.1 12 20.5C9.6 18.1 8.4 15.2 8.4 12S9.6 5.9 12 3.5z\"/>"
       }
-    ]
+    ],
+    "icon": "◆",
+    "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/>"
   },
   {
     "titleKey": "Demo.Group.Examples",
@@ -371,7 +441,9 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "flow-write",
         "titleZh": "Markdown 工作流",
         "titleEn": "Markdown workflow",
-        "description": ""
+        "description": "",
+        "icon": "▶",
+        "prototypeIcon": "<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M14.6 9.4l-1.7 3.8-3.8 1.7 1.7-3.8z\"/>"
       },
       {
         "titleKey": "Demo.Item.DataFlow",
@@ -381,7 +453,9 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "flow-data",
         "titleZh": "数据工作流",
         "titleEn": "Data workflow",
-        "description": ""
+        "description": "",
+        "icon": "▤",
+        "prototypeIcon": "<path d=\"M4 19.5V4.5\"/><path d=\"M4 19.5h15.5\"/><rect x=\"7\" y=\"11\" width=\"3\" height=\"6\"/><rect x=\"12\" y=\"7.5\" width=\"3\" height=\"9.5\"/><rect x=\"17\" y=\"14\" width=\"3\" height=\"3\"/>"
       },
       {
         "titleKey": "Demo.Item.DocsFlow",
@@ -391,7 +465,9 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "flow-docs",
         "titleZh": "多文档工作流",
         "titleEn": "Document workflow",
-        "description": ""
+        "description": "",
+        "icon": "❐",
+        "prototypeIcon": "<rect x=\"3.5\" y=\"7\" width=\"10\" height=\"12.5\" rx=\"1.6\"/><path d=\"M7.5 7V4.5h11a1.5 1.5 0 0 1 1.5 1.5v11a1.5 1.5 0 0 1-1.5 1.5H17\"/>"
       },
       {
         "titleKey": "Demo.Item.AppGuide",
@@ -401,9 +477,13 @@ window.CodeWFDemoCatalog = [
         "prototypeId": "appguide",
         "titleZh": "应用级引导示例",
         "titleEn": "Application guide",
-        "description": ""
+        "description": "",
+        "icon": "◎",
+        "prototypeIcon": "<circle cx=\"9\" cy=\"9\" r=\"5\"/><path d=\"M12.8 12.8L20 20\"/><path d=\"M9 6.5a2.5 2.5 0 0 0-2.5 2.5\"/>"
       }
-    ]
+    ],
+    "icon": "▶",
+    "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/>"
   }
 ];
 window.CodeWFCatalogText = {
@@ -724,7 +804,31 @@ window.CodeWFPrototypeSettings = {
       "NotifyDemoHint": "演示通知中心：卡片 6 秒后自动消失，最多保留 4 条。",
       "NavFilter": "过滤页面…",
       "NavEmpty": "没有匹配的页面",
-      "Account": "账户"
+      "Account": "账户",
+      "GlobalSettings": {
+        "PaletteLabel": "色板",
+        "PaletteDescription": "应用配色：.NET 紫 / AI 极光 / AI 暖陶，以及六套 Semi 配色。",
+        "ModeLabel": "界面模式",
+        "LightMode": "浅色",
+        "DarkMode": "深色",
+        "ModeDescription": "浅 / 深模式；固定配色的色板不随该模式变化。",
+        "LanguageLabel": "语言",
+        "LanguageDescription": "界面语言，切换即时生效。",
+        "AppearanceGroup": "外观",
+        "AppearanceDescription": "演示台外观设置。",
+        "LanguageGroup": "语言",
+        "LanguageGroupDescription": "演示台语言设置。"
+      },
+      "LanguageChinese": "简体中文",
+      "DocumentOpened": "打开文档：",
+      "LayoutReset": "重置工作区布局",
+      "LanguageChanged": "界面语言切换为 ",
+      "DocumentClosed": "关闭文档：",
+      "PanelShown": "显示面板：",
+      "PanelHidden": "隐藏面板：",
+      "SampleInformationLog": "演示：一条信息日志",
+      "SampleWarningLog": "演示：一条警告日志",
+      "SampleErrorLog": "演示：一条错误日志"
     },
     "palettes": {
       "Default": "默认",
@@ -779,7 +883,31 @@ window.CodeWFPrototypeSettings = {
       "NotifyDemoHint": "Notification centre demo: cards auto-dismiss after 6 seconds, at most 4 kept.",
       "NavFilter": "Filter pages…",
       "NavEmpty": "No matching page",
-      "Account": "Account"
+      "Account": "Account",
+      "GlobalSettings": {
+        "PaletteLabel": "Palette",
+        "PaletteDescription": "Palette: .NET Purple / AI Aurora / AI Ember, plus six Semi palettes.",
+        "ModeLabel": "Mode",
+        "LightMode": "Light",
+        "DarkMode": "Dark",
+        "ModeDescription": "Light / dark mode; fixed Semi palettes keep their own brightness.",
+        "LanguageLabel": "Language",
+        "LanguageDescription": "Application language; changes take effect immediately.",
+        "AppearanceGroup": "Appearance",
+        "AppearanceDescription": "Workspace appearance settings.",
+        "LanguageGroup": "Language",
+        "LanguageGroupDescription": "Workspace language settings."
+      },
+      "LanguageChinese": "简体中文",
+      "DocumentOpened": "Opened document: ",
+      "LayoutReset": "Reset workspace layout",
+      "LanguageChanged": "Language changed to ",
+      "DocumentClosed": "Closed document: ",
+      "PanelShown": "Showing panel: ",
+      "PanelHidden": "Hiding panel: ",
+      "SampleInformationLog": "Demo: information log",
+      "SampleWarningLog": "Demo: warning log",
+      "SampleErrorLog": "Demo: error log"
     },
     "palettes": {
       "Default": "Default",
