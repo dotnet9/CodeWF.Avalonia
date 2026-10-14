@@ -17,6 +17,10 @@
       <ContentControl Content="{Binding Context}" />
     </DataTemplate>
   </Application.DataTemplates>
+  <!-- 应用字体同样覆盖 Dock 浮动窗与弹出层，代码区仍用等宽字体。 -->
+  <Application.Resources>
+    <FontFamily x:Key="DefaultFontFamily">Segoe UI, Microsoft YaHei UI, PingFang SC, Noto Sans, sans-serif</FontFamily>
+  </Application.Resources>
   <Application.Styles>
     <semi:SemiTheme Locale="zh-CN" />
     <codewf:ACSemiTheme />

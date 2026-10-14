@@ -14,7 +14,7 @@
                      MinWidth="1120" MinHeight="640"
                      Background="{DynamicResource StudioBackground}"
                      Foreground="{DynamicResource StudioText}"
-                     TitleBarHeight="52" FontSize="13" FontFamily="Segoe UI, Microsoft YaHei UI">
+                     TitleBarHeight="52" FontSize="13" FontFamily="{DynamicResource DefaultFontFamily}">
 
   <!--  外壳：CodeWFWindow 无边框窗口，标题栏即自我演示  -->
 
@@ -61,15 +61,13 @@
                 ItemsSource="{Binding Cultures}" SelectedItem="{Binding SelectedCulture}" />
       <Button Classes="qk-btn" Command="{Binding ToggleDensityCommand}"
               ToolTip.Tip="{Binding DensityLabel}">
-        <PathIcon Width="13" Height="13"
-                  Data="M4,6 H16 M4,10 H16 M4,14 H16" />
+        <PathIcon Width="16" Height="16" Data="{DynamicResource SemiIconRowsStroked}" />
       </Button>
       <!--  通知中心入口：徽标显示当前卡片数  -->
       <Button Classes="qk-btn" Command="{Binding NotifyDemoCommand}"
               ToolTip.Tip="{codewf:I18n Demo.Shell.NotifyDemo}">
         <Panel>
-          <PathIcon Width="14" Height="14"
-                    Data="M12,3 A5,5 0 0 0 7,8 V11.5 L5.5,14.5 H18.5 L17,11.5 V8 A5,5 0 0 0 12,3 Z M10,17 A2,2 0 0 0 14,17" />
+          <PathIcon Width="16" Height="16" Data="{DynamicResource SemiIconBellStroked}" />
           <Border Width="14" Height="14" CornerRadius="7" Margin="0,-14,-12,0"
                   HorizontalAlignment="Right" VerticalAlignment="Top"
                   Background="{DynamicResource SemiColorDanger}"
@@ -85,46 +83,47 @@
   <Grid RowDefinitions="Auto,Auto,*,Auto">
 
     <!--  Ribbon 页签行：快捷工具栏 + 分类页签（双击页签折叠/展开命令区，不另设图钉按钮）  -->
-    <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Height="42">
-      <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="6,0,2,0">
-        <Button Classes="qk-btn ribbon-quick" Margin="0,0,2,0"
-                ToolTip.Tip="{codewf:I18n Demo.Shell.QuickGuide}"
-                Command="{Binding QuickGuideCommand}" >
-          <PathIcon Width="24" Height="24" Data="{DynamicResource SemiIconHelpCircle}" />
-        </Button>
-        <Button Classes="qk-btn ribbon-quick" Margin="0,0,2,0"
-                ToolTip.Tip="{codewf:I18n Demo.Shell.QuickSave}"
-                Command="{Binding QuickSaveCommand}" >
-          <PathIcon Width="24" Height="24" Data="{DynamicResource SemiIconSave}" />
-        </Button>
-        <Button Classes="qk-btn ribbon-quick" Margin="0,0,2,0"
-                ToolTip.Tip="{codewf:I18n Demo.Shell.Reset}"
-                Command="{Binding QuickResetCommand}" >
-          <PathIcon Width="24" Height="24" Data="{DynamicResource SemiIconRefresh}" />
-        </Button>
-        <Button Classes="qk-btn ribbon-quick" Margin="0,0,2,0"
-                ToolTip.Tip="{codewf:I18n Demo.Shell.QuickSettings}"
-                Command="{Binding QuickSettingsCommand}" >
-          <PathIcon Width="24" Height="24" Data="{DynamicResource SemiIconSetting}" />
-        </Button>
-        <Button Classes="qk-btn ribbon-quick"
-                ToolTip.Tip="{codewf:I18n Demo.Shell.Command}"
-                Command="{Binding ToggleCommandPaletteCommand}" >
-          <PathIcon Width="24" Height="24" Data="{DynamicResource SemiIconCommand}" />
-        </Button>
-      </StackPanel>
+    <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Height="42" Background="{DynamicResource StudioSurface}">
+      <Border Grid.Column="0" x:Name="RibbonQuickAccess" VerticalAlignment="Center"
+              BorderBrush="{DynamicResource StudioBorder}" BorderThickness="0,0,1,0" Padding="0,0,10,0" Margin="10,0,10,0">
+        <StackPanel Orientation="Horizontal" Spacing="2">
+          <Button Classes="qk-btn ribbon-quick"
+                  ToolTip.Tip="{codewf:I18n Demo.Shell.QuickGuide}"
+                  Command="{Binding QuickGuideCommand}" >
+            <PathIcon Classes="ribbon-quick-icon" Data="{DynamicResource SemiIconHelpCircleStroked}" />
+          </Button>
+          <Button Classes="qk-btn ribbon-quick"
+                  ToolTip.Tip="{codewf:I18n Demo.Shell.QuickSave}"
+                  Command="{Binding QuickSaveCommand}" >
+            <PathIcon Classes="ribbon-quick-icon" Data="{DynamicResource SemiIconSaveStroked}" />
+          </Button>
+          <Button Classes="qk-btn ribbon-quick"
+                  ToolTip.Tip="{codewf:I18n Demo.Shell.Reset}"
+                  Command="{Binding QuickResetCommand}" >
+            <PathIcon Classes="ribbon-quick-icon" Data="{DynamicResource SemiIconRefresh}" />
+          </Button>
+          <Button Classes="qk-btn ribbon-quick"
+                  ToolTip.Tip="{codewf:I18n Demo.Shell.QuickSettings}"
+                  Command="{Binding QuickSettingsCommand}" >
+            <PathIcon Classes="ribbon-quick-icon" Data="{DynamicResource SemiIconSettingStroked}" />
+          </Button>
+          <Button Classes="qk-btn ribbon-quick"
+                  ToolTip.Tip="{codewf:I18n Demo.Shell.Command}"
+                  Command="{Binding ToggleCommandPaletteCommand}" >
+            <PathIcon Classes="ribbon-quick-icon" Data="{DynamicResource SemiIconCommand}" />
+          </Button>
+        </StackPanel>
+      </Border>
 
       <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
       <TabStrip x:Name="RibbonTabStrip"
-                Theme="{StaticResource TrapezoidShapedTabStrip}"
+                Theme="{DynamicResource LineTabStrip}"
                 ItemsSource="{Binding Groups}"
                 SelectedItem="{Binding SelectedGroup}"
                 DoubleTapped="OnRibbonTabStripDoubleTapped">
         <TabStrip.ItemTemplate>
           <DataTemplate x:DataType="vm:DemoGroupViewModel">
-            <StackPanel Orientation="Horizontal" Spacing="6" Margin="12,4">
-              <TextBlock Text="{Binding Title}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
-            </StackPanel>
+            <TextBlock Text="{Binding Title}" FontSize="12" VerticalAlignment="Center" />
           </DataTemplate>
         </TabStrip.ItemTemplate>
       </TabStrip>
@@ -171,8 +170,7 @@
       </ScrollViewer>
     </Border>
 
-    <!--  中央 Dock 工作区：导航树 / 文档区 / 属性 / 日志均为可停靠面板（Context 直接承载控件实例）
-          同一格里叠放外壳浮层（命令面板 + 通知中心），浮层未展开时不拦截指针。  -->
+    <!-- 文档整体承载演示与属性；导航、日志独立停靠，外壳浮层按需显示。 -->
     <Grid Grid.Row="2">
       <dock:DockControl Layout="{Binding Layout}" Margin="10" />
       <views:ShellOverlay DataContext="{Binding}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />

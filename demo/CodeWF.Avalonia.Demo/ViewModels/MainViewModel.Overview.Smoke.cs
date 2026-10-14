@@ -143,10 +143,14 @@ public partial class MainViewModel
                         .OfType<PathIcon>().Where(icon => icon.Classes.Contains("ribbon-icon")).ToArray();
                     if (icons.Length != commands.Length || icons.Any(icon => icon.Data is null || icon.Bounds.Width != 32 || icon.Bounds.Height != 32))
                         throw new InvalidOperationException("Ribbon vector icons must occupy 32 by 32 pixels.");
-                    var quickIcons = window.GetVisualDescendants().OfType<Button>()
-                        .Where(button => button.Classes.Contains("ribbon-quick")).Select(button => button.Content).OfType<PathIcon>().ToArray();
-                    if (quickIcons.Length != 5 || quickIcons.Any(icon => icon.Data is null || icon.Bounds.Width != 24 || icon.Bounds.Height != 24))
-                        throw new InvalidOperationException("Ribbon quick icons must occupy 24 by 24 pixels.");
+                    var quickButtons = window.GetVisualDescendants().OfType<Button>()
+                        .Where(button => button.Classes.Contains("ribbon-quick")).ToArray();
+                    if (quickButtons.Any(button => button.Bounds.Width != 30 || button.Bounds.Height != 30))
+                        throw new InvalidOperationException("Ribbon quick buttons must retain a 30 by 30 pixel hit area: " +
+                            string.Join(", ", quickButtons.Select(button => button.Bounds.Size)));
+                    var quickIcons = quickButtons.Select(button => button.Content).OfType<PathIcon>().ToArray();
+                    if (quickIcons.Length != 5 || quickIcons.Any(icon => icon.Data is null || icon.Bounds.Width != 18 || icon.Bounds.Height != 18))
+                        throw new InvalidOperationException("Ribbon quick icons must occupy 18 by 18 pixels.");
                     Save($"ribbon-{group.TitleKey.Split('.').Last()}-{(int)size.Width}-{culture.Name}");
                 }
             }
