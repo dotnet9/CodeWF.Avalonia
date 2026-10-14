@@ -1,5 +1,13 @@
 # 更新日志
 
+## 12.1.4.11 (2026-10-14)
+
+- 国际化 BCL 引擎移至 `CodeWF.Toolkit.Lang 1.0.0.13`；Avalonia 包保留 XAML 标记扩展、转换器和旧接口兼容层，不再维护第二份解析器或语言状态。
+- 保留旧 `I18nManager`、`ILangPlugin`、`LocalizationLanguage` 和三个插件的使用方式，包括可修改的语言字典；Toolkit 发起的语言或资源变化可刷新现有 Avalonia 绑定。
+- 日志依赖升级至 `CodeWF.Toolkit.Logging 1.0.0.13`，与库级国际化共用同一语言状态。
+- Demo 语义资源与目录工厂统一生成，原型增加浏览器路由、语言及导航门禁；继续使用开源 Dock Simple 基础主题。
+- 验证：293 项测试通过，使用公开 NuGet 依赖重新还原和测试通过；旧版 12.1.4.10 编译的独立消费程序替换为新兼容层后运行成功；Windows x64 NativeAOT 发布和原生冒烟通过。
+
 ## 12.1.4.5 (2026-10-13)
 
 - 🐛[修复]-主题令牌在渲染期解析失败：Light / Dark 变体字典用 `StaticResource` 把 `SemiColor*`、`WindowDefaultBackground` 别名到自己变体里，而样式级静态查找看不到宿主应用级（Semi 主题包）提供的同名键，导致应用引导 / 文档流程等页面在测量排布时抛 `KeyNotFoundException`；现两个变体各增一份字面量令牌集（`Themes/Light/Tokens.axaml`、`Themes/Dark/Tokens.axaml`）并置于该变体 `_index` 的首位。
