@@ -1,4 +1,4 @@
-/* Shared visual language for the two CodeWF capability studios. */
+﻿/* Shared visual language for the two CodeWF capability studios. */
 :root {
   --brand:#512bd4; --glow:#8968ff; --secondary:#38cfc4;
   --pri:#512bd4; --pri-h:#6842ed; --pri-lt:rgba(81,43,212,.10); --sel:#eee8ff;
@@ -204,3 +204,6 @@ select, select option, .pgp .ctl select { text-align:left; text-align-last:left;
 .studio-ribbon-note span { font:10px Consolas,monospace; letter-spacing:1.5px; color:var(--pri); }
 .studio-ribbon-note small { font-size:10px; }
 @media(max-width:850px) { .studio-ribbon-note { display:none; } }
+
+/* 三态模式入口与配色分别选择，下拉文字保持左对齐。 */
+.cap .theme-mode { min-width:100px; text-align:left; text-align-last:left; }

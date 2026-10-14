@@ -1,4 +1,4 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using CodeWF.Avalonia.Controls.Controls;
 using CodeWF.Avalonia.Demo.ViewModels;
@@ -13,6 +13,7 @@ public partial class MainWindow : CodeWFWindow
     {
         InitializeComponent();
         DataContext = _viewModel;
+        Closed += (_, _) => _viewModel.Dispose();
         var version = typeof(MainWindow).Assembly.GetName().Version;
         if (version is not null)
         {

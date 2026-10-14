@@ -1,4 +1,4 @@
-/* The API catalog is generated from design/catalog.json; this is the browser prototype adapter. */
+﻿/* The API catalog is generated from design/catalog.json; this is the browser prototype adapter. */
 "use strict";
 (function () {
   var data = window.CodeWFDemoCatalog, entries = {}, toolkit = document.body.dataset.product === "toolkit";
@@ -37,7 +37,7 @@
   var originalPropertyGrid = renderPGrid;
   var densityValues = SELF_PROPS[0].options.slice();
   var paletteValues = SELF_PROPS[1].options.slice();
-  var paletteKeys = ["DotNet", "Aurora", "Ember", "Default", "Aquatic", "Desert", "Dusk", "NightSky", "HighContrast"];
+  var paletteKeys = ["DotNet", "Aurora", "Ember", "Default", "Aquatic", "Desert", "Dusk", "NightSky"];
   renderPGrid = function(id) {
     originalPropertyGrid(id);
     var settings = window.CodeWFPrototypeSettings[LANG], panel = $("pGrid");
@@ -51,19 +51,27 @@
     else removeSection(categories[1], categories[2]);
     removeSection(categories[2], null);
     if (!pageProps.length && id === 'welcome' && categories[0]) categories[0].textContent = settings.group;
-    var labels = [settings.shell.Density, settings.shell.Palette, settings.shell.Dark, settings.language];
+    var labels = [settings.shell.Density, settings.shell.Palette, settings.shell.GlobalSettings.ModeLabel, settings.language];
     SELF_PROPS.forEach(function(property, index) {
       var control = panel.querySelector('[data-id="' + property.id + '"]');
       if (!control) return;
       var label = control.closest(".rw").querySelector("label,.nm");
       label.textContent = labels[index]; label.title = labels[index];
-      if (index === 0 || index === 1) Array.from(control.options).forEach(function(option) {
+      if (index === 0 || index === 1 || index === 2) Array.from(control.options).forEach(function(option) {
         var value = option.value; option.value = value;
         option.textContent = index === 0
           ? (value === densityValues[1] ? settings.shell.DensityCompact : settings.shell.DensityComfort)
-          : settings.palettes[paletteKeys[paletteValues.indexOf(value)]];
+          : index === 1 ? settings.palettes[paletteKeys[paletteValues.indexOf(value)]]
+          : settings.shell.GlobalSettings[{system:"SystemMode",light:"LightMode",dark:"DarkMode"}[value]];
       });
     });
+    var modeSelect = $("themeModeSel");
+    if (modeSelect) {
+      modeSelect.setAttribute("aria-label", settings.shell.GlobalSettings.ModeLabel);
+      Array.from(modeSelect.options).forEach(function(option) {
+        option.textContent = settings.shell.GlobalSettings[{system:"SystemMode",light:"LightMode",dark:"DarkMode"}[option.value]];
+      });
+    }
     var paletteSelect = $("palSel");
     Array.from(paletteSelect.options).forEach(function(option, index) { option.textContent = settings.palettes[paletteKeys[index]]; });
     paletteSelect.setAttribute("aria-label", settings.shell.Palette);

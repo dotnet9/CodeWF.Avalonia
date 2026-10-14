@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════════════════════
    CodeWF.Avalonia.Demo 原型 · 交互脚本
    信息架构：具体 API 优先；综合示例放在最后一组。
    外壳：Ribbon（7 页签 / 双击折叠）+ Dock 工作区 + 属性面板 + 日志面板 + 状态栏
@@ -1301,7 +1301,7 @@ function togglePanel(which) {
 var LAYOUT_KEY = "codewf-avalonia-demo-layout";
 function saveLayout() {
  var st = {
-  palette: document.documentElement.dataset.palette, theme: document.documentElement.dataset.theme,
+  palette: document.documentElement.dataset.palette, theme: document.documentElement.dataset.themeMode || document.documentElement.dataset.theme,
   density: document.documentElement.dataset.density, lang: LANG, tab: curTab, densityLabel: SELF_PROPS[0].value,
   hideL: document.body.classList.contains("hideL"), hideR: document.body.classList.contains("hideR"),
   hideLog: document.body.classList.contains("hideLog"), docs: OPEN_DOCS.slice(0, 8), active: ACTIVE_DOC
@@ -1333,7 +1333,7 @@ function loadLayout() {
 window.layoutResetAsk = function () {
  confirmDlg(tt("dlg.reset.t"), tt("dlg.reset.d"), function () {
   document.body.classList.remove("hideL", "hideR", "hideLog", "rmn");
-  setDensity("cozy"); setPalette("dotnet"); setTheme("dark");
+  setDensity("cozy"); setPalette("dotnet"); setTheme("system");
   try { localStorage.removeItem(LAYOUT_KEY); } catch (e) { }
   notify("warn", tt("nc.warn"), tt("toast.reset"));
   log2both(tt("toast.reset"), "warn");

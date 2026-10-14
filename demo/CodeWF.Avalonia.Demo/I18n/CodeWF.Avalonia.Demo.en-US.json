@@ -1,4 +1,4 @@
-{
+﻿{
   "language": "English",
   "description": "CodeWF.Avalonia Demo English resources.",
   "cultureName": "en-US",
@@ -44,17 +44,18 @@
       "Account": "Account",
       "GlobalSettings": {
         "PaletteLabel": "Palette",
-        "PaletteDescription": "Palette: .NET Purple / AI Aurora / AI Ember, plus six Semi palettes.",
+        "PaletteDescription": "Eight palettes: .NET Purple, AI Aurora, AI Ember, Default, Aquatic, Desert, Dusk, and Night Sky.",
         "ModeLabel": "Mode",
         "LightMode": "Light",
         "DarkMode": "Dark",
-        "ModeDescription": "Light / dark mode; fixed Semi palettes keep their own brightness.",
+        "ModeDescription": "Light, dark, or system mode applies to every palette.",
         "LanguageLabel": "Language",
         "LanguageDescription": "Application language; changes take effect immediately.",
         "AppearanceGroup": "Appearance",
         "AppearanceDescription": "Workspace appearance settings.",
         "LanguageGroup": "Language",
-        "LanguageGroupDescription": "Workspace language settings."
+        "LanguageGroupDescription": "Workspace language settings.",
+        "SystemMode": "System"
       },
       "LanguageChinese": "简体中文",
       "DocumentOpened": "Opened document: ",

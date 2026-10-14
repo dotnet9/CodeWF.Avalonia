@@ -1,9 +1,9 @@
-/* Browser-only capability previews. Actual .NET examples remain in the original pages. */
+﻿/* Browser-only capability previews. Actual .NET examples remain in the original pages. */
 "use strict";
 (function () {
   var toolkit = document.body.dataset.product === "toolkit";
-  var paletteNames = { dotnet:".NET Purple", aurora:"AI Aurora", ember:"AI Ember", default:"默认蓝", aqua:"水生", desert:"沙漠", dusk:"黄昏", night:"夜空", contrast:"高对比" };
-  PAL_LIST = ["dotnet", "aurora", "ember", "default", "aqua", "desert", "dusk", "night", "contrast"];
+  var paletteNames = { dotnet:".NET Purple", aurora:"AI Aurora", ember:"AI Ember", default:"默认蓝", aqua:"水生", desert:"沙漠", dusk:"黄昏", night:"夜空" };
+  PAL_LIST = ["dotnet", "aurora", "ember", "default", "aqua", "desert", "dusk", "night"];
   Object.assign(PAL_COLOR, { dotnet:"#512bd4", aurora:"linear-gradient(135deg,#8968ff,#26d4cc)", ember:"#bd674d" });
   SELF_PROPS[1].options = PAL_LIST.map(function (p) { return paletteNames[p]; });
   SELF_PROPS[1].apply = function (name) { setPalette(PAL_LIST.find(function (p) { return paletteNames[p] === name; }) || "dotnet"); };
@@ -27,7 +27,28 @@
     log2both(tt("toast.palette") + paletteNames[p]);
   };
   var originalTheme = setTheme;
-  setTheme = function (theme) { originalTheme(theme); renderPGrid(ACTIVE_DOC); };
+  var systemTheme = matchMedia("(prefers-color-scheme: dark)");
+  var themeMode = "system";
+  try { themeMode = JSON.parse(localStorage.getItem(LAYOUT_KEY) || "null")?.theme || "system"; } catch (_) {}
+  var modeSelect = document.createElement("select");
+  modeSelect.id = "themeModeSel";
+  modeSelect.className = "theme-mode";
+  modeSelect.innerHTML = '<option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>';
+  $("darkBtn").hidden = true;
+  $("darkBtn").before(modeSelect);
+  SELF_PROPS[2].type = "combo";
+  SELF_PROPS[2].options = ["system", "light", "dark"];
+  SELF_PROPS[2].apply = function(mode) { setTheme(mode); };
+  setTheme = function (mode) {
+    themeMode = ["system", "light", "dark"].includes(mode) ? mode : "system";
+    document.documentElement.dataset.themeMode = themeMode;
+    originalTheme(themeMode === "system" ? (systemTheme.matches ? "dark" : "light") : themeMode);
+    SELF_PROPS[2].value = themeMode;
+    modeSelect.value = themeMode;
+    renderPGrid(ACTIVE_DOC);
+  };
+  modeSelect.onchange = function() { setTheme(modeSelect.value); };
+  systemTheme.addEventListener("change", function() { if (themeMode === "system") setTheme("system"); });
   var originalRender = renderDoc;
   renderDoc = function (id) {
     $("dBody").dataset.page = id;
@@ -202,7 +223,7 @@
   if (PAL_LIST.indexOf(current) < 0) current='dotnet';
   paletteSelect.value=current;
   SELF_PROPS[1].value=paletteNames[current];
-  SELF_PROPS[2].value=document.documentElement.dataset.theme === 'dark';
+  setTheme(themeMode);
   renderPalDots();
   renderRBody();
   renderPGrid(ACTIVE_DOC);

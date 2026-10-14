@@ -1,4 +1,5 @@
-﻿using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
+﻿using CodeWF.Avalonia.Controls.Themes;
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia;
 using Avalonia.Threading;
@@ -468,6 +469,7 @@ public partial class MainViewModel
         {
             Palette = SelectedPalette.TitleKey,
             Dark = IsDarkMode,
+            ThemeMode = _themeMode.ToString(),
             Density = Density.ToString(),
             Culture = SelectedCulture.Name,
             NavVisible = IsPanelVisible(_navTool),
@@ -521,7 +523,9 @@ public partial class MainViewModel
                 this.RaisePropertyChanged(nameof(SelectedPalette));
             }
 
-            _isDarkMode = state.Dark;
+            _themeMode = Enum.TryParse<StudioThemeMode>(state.ThemeMode, out var mode) && Enum.IsDefined(mode)
+                ? mode : state.Dark ? StudioThemeMode.Dark : StudioThemeMode.Light;
+            this.RaisePropertyChanged(nameof(ThemeModeIndex));
             this.RaisePropertyChanged(nameof(IsDarkMode));
             ApplyAppearance();
 
@@ -658,6 +662,8 @@ internal sealed class LayoutState
     public string? Palette { get; set; }
 
     public bool Dark { get; set; }
+
+    public string? ThemeMode { get; set; }
 
     public string? Density { get; set; }
 

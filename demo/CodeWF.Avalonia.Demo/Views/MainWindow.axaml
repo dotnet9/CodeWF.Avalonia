@@ -1,4 +1,4 @@
-<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui"
+﻿<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui"
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:codewf="https://codewf.com"
                      xmlns:dock="using:Dock.Avalonia.Controls"
@@ -52,8 +52,11 @@
                 ItemsSource="{Binding Palettes}" SelectedItem="{Binding SelectedPalette}">
         <ComboBox.ItemTemplate><DataTemplate x:DataType="vm:AppearanceOption"><TextBlock Text="{Binding Title}" /></DataTemplate></ComboBox.ItemTemplate>
       </ComboBox>
-      <ToggleButton Classes="qk-btn" Content="◐" IsChecked="{Binding IsDarkMode}"
-                    ToolTip.Tip="{codewf:I18n Demo.Shell.Dark}" FontSize="13" />
+      <ComboBox MinWidth="100" Height="30" FontSize="11.5"
+                x:Name="ThemeModeSelector" ItemsSource="{Binding ThemeModeOptions}" SelectedIndex="{Binding ThemeModeIndex}"
+                HorizontalContentAlignment="Left" ToolTip.Tip="{codewf:I18n Demo.Shell.GlobalSettings.ModeLabel}">
+        <ComboBox.ItemTemplate><DataTemplate x:DataType="vm:ThemeModeOption"><TextBlock Text="{Binding Title}" /></DataTemplate></ComboBox.ItemTemplate>
+      </ComboBox>
       <ComboBox MinWidth="96" Height="30" FontSize="11.5"
                 ItemsSource="{Binding Cultures}" SelectedItem="{Binding SelectedCulture}" />
       <Button Classes="qk-btn" Command="{Binding ToggleDensityCommand}"

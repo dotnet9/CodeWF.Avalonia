@@ -1,4 +1,4 @@
-const assert = require('node:assert/strict');
+﻿const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
@@ -10,7 +10,7 @@ const { chromium } = require('playwright');
   const catalog = JSON.parse(fs.readFileSync(path.join(design, 'catalog.json'), 'utf8'));
   const html = fs.readdirSync(design).find(name => /^CodeWF\..*Demo原型\.html$/.test(name));
   assert.ok(html, 'Prototype HTML is missing');
-  const output = path.join(__dirname, 'artifacts');
+  const output = process.env.CODEWF_AUDIT_OUTPUT || path.join(__dirname, 'artifacts');
   fs.mkdirSync(output, { recursive: true });
   const browser = await chromium.launch({ headless: true });
   const results = [];
@@ -31,6 +31,27 @@ const { chromium } = require('playwright');
             catch (error) { window.auditGuardErrors.push(tag + ': ' + error.message); }
           };
         });
+        // 验证八套配色与三态模式独立，以及系统主题动态变化。
+        assert.equal(await page.locator('#palSel option').count(), 8);
+        for (const palette of await page.locator('#palSel option').evaluateAll(items => items.map(item => item.value))) {
+          await page.selectOption('#palSel', palette);
+          for (const mode of ['light', 'dark']) {
+            await page.selectOption('#themeModeSel', mode);
+            assert.equal(await page.locator('html').getAttribute('data-theme'), mode);
+            assert.equal(await page.locator('html').getAttribute('data-palette'), palette);
+            assert.equal(await page.locator('html').getAttribute('data-theme-mode'), mode);
+          }
+        }
+        await page.selectOption('#themeModeSel', 'system');
+        for (const mode of ['light', 'dark']) {
+          await page.emulateMedia({ colorScheme: mode });
+          await page.waitForFunction(expected => document.documentElement.dataset.theme === expected, mode);
+          assert.equal(await page.locator('#themeModeSel').inputValue(), 'system');
+        }
+        await page.selectOption('#themeModeSel', 'light');
+        await page.emulateMedia({ colorScheme: 'dark' });
+        assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
+        await page.selectOption('#palSel', 'dotnet');
         for (const culture of ['zh-CN', 'en-US']) {
           await page.evaluate(language => setLang(language), culture);
           assert.equal(await page.locator('html').getAttribute('lang'), culture);

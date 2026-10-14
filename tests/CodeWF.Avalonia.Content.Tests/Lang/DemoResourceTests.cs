@@ -55,13 +55,17 @@ public sealed class DemoResourceTests
                 Assert.False(Regex.IsMatch(attribute.Value, "[\\u4e00-\\u9fff]"), Path.GetFileName(file) + ": " + attribute.Name);
     }
 
+    private static string SourceFile([System.Runtime.CompilerServices.CallerFilePath] string path = "") => path;
+
     private static string DemoDirectory
     {
         get
         {
-            for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
-                if (File.Exists(Path.Combine(directory.FullName, "CodeWF.Avalonia.slnx")))
-                    return Path.Combine(directory.FullName, "demo", "CodeWF.Avalonia.Demo");
+            // 允许将构建输出放到仓外临时目录，仍从测试启动目录定位源码。
+            foreach (var origin in new[] { AppContext.BaseDirectory, Directory.GetCurrentDirectory(), Path.GetDirectoryName(SourceFile())! })
+                for (var directory = new DirectoryInfo(origin); directory is not null; directory = directory.Parent)
+                    if (File.Exists(Path.Combine(directory.FullName, "CodeWF.Avalonia.slnx")))
+                        return Path.Combine(directory.FullName, "demo", "CodeWF.Avalonia.Demo");
             throw new DirectoryNotFoundException("Repository root not found");
         }
     }

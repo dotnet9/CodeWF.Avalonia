@@ -1,4 +1,4 @@
-using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
+﻿using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using Avalonia.Controls;
 using CodeWF.Toolkit.Logging;
 using System.Text.Json;
@@ -19,6 +19,7 @@ public partial class MainViewModel
         ok &= Check("Language changes preserve property command identity", () =>
         {
             var originalCulture = SelectedCulture;
+            var originalMode = ThemeModeIndex;
             var commit = GlobalValueCommittedCommand;
             var browse = GlobalBrowseRequestedCommand;
             try
@@ -29,9 +30,22 @@ public partial class MainViewModel
                     Expect(ReferenceEquals(commit, GlobalValueCommittedCommand), "Commit command stays bound");
                     Expect(ReferenceEquals(browse, GlobalBrowseRequestedCommand), "Browse command stays bound");
                     Expect(GlobalProperties.Count > 0, "Translated settings remain available");
+                    if (global::Avalonia.Application.Current?.ApplicationLifetime is global::Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+                        && desktop.MainWindow is { } window)
+                    {
+                        var selector = window.FindControl<global::Avalonia.Controls.ComboBox>("ThemeModeSelector")
+                            ?? throw new InvalidOperationException("Theme mode selector is missing.");
+                        for (var mode = 0; mode < ThemeModes.Count; mode++)
+                        {
+                            ThemeModeIndex = mode;
+                            window.UpdateLayout();
+                            Expect(selector.SelectedIndex == mode, "Theme mode selection survives language changes");
+                            Expect(selector.SelectedItem is ThemeModeOption option && option.Title == ThemeModes[mode], "Translated theme mode remains visible");
+                        }
+                    }
                 }
             }
-            finally { SelectedCulture = originalCulture; }
+            finally { SelectedCulture = originalCulture; ThemeModeIndex = originalMode; }
         });
 
         ok &= Check("Active document selection follows Dock activation", () =>

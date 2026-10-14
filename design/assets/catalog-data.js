@@ -839,17 +839,18 @@ window.CodeWFPrototypeSettings = {
       "Account": "账户",
       "GlobalSettings": {
         "PaletteLabel": "色板",
-        "PaletteDescription": "应用配色：.NET 紫 / AI 极光 / AI 暖陶，以及六套 Semi 配色。",
+        "PaletteDescription": "八套配色：.NET 紫、AI 极光、AI 赤陶、默认蓝、水生、沙漠、黄昏与夜空。",
         "ModeLabel": "界面模式",
         "LightMode": "浅色",
         "DarkMode": "深色",
-        "ModeDescription": "浅 / 深模式；固定配色的色板不随该模式变化。",
+        "ModeDescription": "浅色、深色或跟随系统，适用于每套配色。",
         "LanguageLabel": "语言",
         "LanguageDescription": "界面语言，切换即时生效。",
         "AppearanceGroup": "外观",
         "AppearanceDescription": "演示台外观设置。",
         "LanguageGroup": "语言",
-        "LanguageGroupDescription": "演示台语言设置。"
+        "LanguageGroupDescription": "演示台语言设置。",
+        "SystemMode": "跟随系统"
       },
       "LanguageChinese": "简体中文",
       "DocumentOpened": "打开文档：",
@@ -918,17 +919,18 @@ window.CodeWFPrototypeSettings = {
       "Account": "Account",
       "GlobalSettings": {
         "PaletteLabel": "Palette",
-        "PaletteDescription": "Palette: .NET Purple / AI Aurora / AI Ember, plus six Semi palettes.",
+        "PaletteDescription": "Eight palettes: .NET Purple, AI Aurora, AI Ember, Default, Aquatic, Desert, Dusk, and Night Sky.",
         "ModeLabel": "Mode",
         "LightMode": "Light",
         "DarkMode": "Dark",
-        "ModeDescription": "Light / dark mode; fixed Semi palettes keep their own brightness.",
+        "ModeDescription": "Light, dark, or system mode applies to every palette.",
         "LanguageLabel": "Language",
         "LanguageDescription": "Application language; changes take effect immediately.",
         "AppearanceGroup": "Appearance",
         "AppearanceDescription": "Workspace appearance settings.",
         "LanguageGroup": "Language",
-        "LanguageGroupDescription": "Workspace language settings."
+        "LanguageGroupDescription": "Workspace language settings.",
+        "SystemMode": "System"
       },
       "LanguageChinese": "简体中文",
       "DocumentOpened": "Opened document: ",

@@ -1482,6 +1482,7 @@ public static class ResourceKeys
             public const string @ModeLabel = "Demo.Shell.GlobalSettings.ModeLabel";
             public const string @PaletteDescription = "Demo.Shell.GlobalSettings.PaletteDescription";
             public const string @PaletteLabel = "Demo.Shell.GlobalSettings.PaletteLabel";
+            public const string @SystemMode = "Demo.Shell.GlobalSettings.SystemMode";
         }
         public const string @Group = "Demo.Shell.Group";
         public const string @LanguageChanged = "Demo.Shell.LanguageChanged";
