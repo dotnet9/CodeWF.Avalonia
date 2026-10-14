@@ -1,11 +1,14 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Layout;
+using Avalonia.Styling;
 
-using CodeWF.Avalonia.Controls.Animations;
 using CodeWF.Avalonia.Controls.Models;
 
 namespace CodeWF.Avalonia.Controls.Controls;
@@ -21,7 +24,9 @@ namespace CodeWF.Avalonia.Controls.Controls;
 public class ContentExpansionAnimator : Border
 {
     private static readonly StyledProperty<double> ProgressProperty =
-        AvaloniaProperty.Register<ContentExpansionAnimator, double>(nameof(Progress));
+        AvaloniaProperty.Register<ContentExpansionAnimator, double>(nameof(Progress), 1d);
+
+    private CancellationTokenSource? _animation;
 
     public static readonly StyledProperty<bool> IsExpandedProperty =
         AvaloniaProperty.Register<ContentExpansionAnimator, bool>(nameof(IsExpanded), true);
@@ -104,6 +109,24 @@ public class ContentExpansionAnimator : Border
             OrientationProperty);
         IsExpandedProperty.Changed.AddClassHandler<ContentExpansionAnimator>(
             (animator, _) => animator.OnIsExpandedChanged());
+        AnimateProperty.Changed.AddClassHandler<ContentExpansionAnimator>(
+            (animator, _) => animator.OnIsExpandedChanged());
+        DurationProperty.Changed.AddClassHandler<ContentExpansionAnimator>(
+            (animator, _) => animator.OnIsExpandedChanged());
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        SetCurrentValue(ProgressProperty, IsExpanded ? 1d : 0d);
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        _animation?.Cancel();
+        _animation = null;
+        SetCurrentValue(ProgressProperty, IsExpanded ? 1d : 0d);
+        base.OnDetachedFromVisualTree(e);
     }
 
     protected override Size MeasureOverride(Size availableSize)
@@ -144,22 +167,48 @@ public class ContentExpansionAnimator : Border
     private void Run(double target)
     {
         var from = Math.Clamp(Progress, 0d, 1d);
-        if (!Animate || Duration <= TimeSpan.Zero || Math.Abs(from - target) < 0.001d)
+        _animation?.Cancel();
+        _animation = null;
+        SetCurrentValue(ProgressProperty, from);
+        if (VisualRoot is null || !Animate || Duration <= TimeSpan.Zero || Math.Abs(from - target) < 0.001d)
         {
             SetCurrentValue(ProgressProperty, target);
             InvalidateMeasure();
             return;
         }
 
-        if (target < from)
+        var cancellation = new CancellationTokenSource();
+        _animation = cancellation;
+        var animation = new Animation
         {
-            // 收起方向先把进度拉回 0，再由动画推到目标，保证每帧都有尺寸变化可测。
-            SetCurrentValue(ProgressProperty, 0d);
-        }
+            Duration = Duration,
+            Easing = new CubicEaseInOut(),
+            FillMode = FillMode.None,
+            Children =
+            {
+                new KeyFrame { Cue = new Cue(0d), Setters = { new Setter(ProgressProperty, from) } },
+                new KeyFrame { Cue = new Cue(1d), Setters = { new Setter(ProgressProperty, target) } }
+            }
+        };
+        _ = AnimateAsync(animation, target, cancellation);
+    }
 
-        var animation = AwaitableAnimation.CreateProgressAnimation(Duration, ProgressProperty);
-        _ = AwaitableAnimation.RunAsync(this, animation)
-            .ContinueWith(_ => InvalidateMeasure(), TaskScheduler.FromCurrentSynchronizationContext());
+    private async Task AnimateAsync(Animation animation, double target, CancellationTokenSource cancellation)
+    {
+        try
+        {
+            await animation.RunAsync(this, cancellation.Token);
+            if (ReferenceEquals(_animation, cancellation))
+                SetCurrentValue(ProgressProperty, target);
+        }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+        {
+        }
+        finally
+        {
+            if (ReferenceEquals(_animation, cancellation)) _animation = null;
+            cancellation.Dispose();
+        }
     }
 
     private static double Interpolate(double from, double to, double progress) => from + (to - from) * progress;

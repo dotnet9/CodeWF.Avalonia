@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Controls\CodeWF.Avalonia.Controls\CodeWF.Avalonia.Controls.csproj" />
     <ProjectReference Include="..\..\src\Markdown\CodeWF.Avalonia.Markdown.Lite\CodeWF.Avalonia.Markdown.Lite.csproj" />
     <ProjectReference Include="..\..\src\Markdown\CodeWF.Avalonia.Markdown\CodeWF.Avalonia.Markdown.csproj" />
     <ProjectReference Include="..\..\src\TreeDataGrid\CodeWF.Avalonia.TreeDataGrid\CodeWF.Avalonia.TreeDataGrid.csproj" />

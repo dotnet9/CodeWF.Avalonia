@@ -24,6 +24,12 @@ public sealed class AvaloniaPlatformFixture
     /// <summary>在平台线程上执行并取回结果。</summary>
     public T Run<T>(Func<T> action) => Session.Dispatch(action, CancellationToken.None).GetAwaiter().GetResult();
 
+    public Task RunAsync(Func<Task> action) => Session.Dispatch(async () =>
+    {
+        await action();
+        return true;
+    }, CancellationToken.None);
+
     public sealed class TestEntryPoint
     {
         public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<Application>()
