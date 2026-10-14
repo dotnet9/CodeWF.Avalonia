@@ -15,6 +15,18 @@ public partial class MainViewModel
     {
         var ok = true;
 
+        ok &= Check("Active document selection follows Dock activation", () =>
+        {
+            var items = Groups.SelectMany(group => group.Items).Take(3).ToArray();
+            OpenItem(items[1]);
+            OpenItem(items[2]);
+            ActivateDocument(Documents.First(document => document.TitleKey == items[1].TitleKey));
+            Expect(items[1].IsSelected && !items[2].IsSelected, "Ribbon and navigation selection follow the active document");
+            Expect(Groups.SelectMany(group => group.Items).Count(item => item.IsSelected) == 1, "Exactly one item selected");
+            Expect(ActivePropertyItems.Count > 0, "Property panel always has meaningful settings");
+            OpenItem(items[0]);
+        });
+
         ok &= Check("Notification capacity and deduplication", () =>
         {
             ClearNotifications();

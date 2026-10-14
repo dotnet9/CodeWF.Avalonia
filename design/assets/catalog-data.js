@@ -30,8 +30,8 @@ window.CodeWFDemoCatalog = [
   },
   {
     "titleKey": "Demo.Group.Input",
-    "titleZh": "按钮与输入",
-    "titleEn": "Buttons & Inputs",
+    "titleZh": "输入与选择",
+    "titleEn": "Inputs & Selection",
     "id": "input",
     "items": [
       {
@@ -53,23 +53,13 @@ window.CodeWFDemoCatalog = [
         "titleZh": "Transfer",
         "titleEn": "Transfer",
         "description": "Transfer"
-      },
-      {
-        "titleKey": "Demo.Item.ColumnDisplayEditor",
-        "page": "ColumnDisplayEditorPage",
-        "api": "ColumnDisplayEditor",
-        "package": "CodeWF.Avalonia.Controls",
-        "prototypeId": "colde",
-        "titleZh": "ColumnDisplayEditor",
-        "titleEn": "ColumnDisplayEditor",
-        "description": "ColumnDisplayEditor"
       }
     ]
   },
   {
     "titleKey": "Demo.Group.Feedback",
-    "titleZh": "对话与反馈",
-    "titleEn": "Dialogs & Feedback",
+    "titleZh": "反馈与引导",
+    "titleEn": "Feedback & Guidance",
     "id": "feedback",
     "items": [
       {
@@ -129,6 +119,16 @@ window.CodeWFDemoCatalog = [
         "titleZh": "DataGridEnhancement",
         "titleEn": "DataGridEnhancement",
         "description": "DataGridEnhancement"
+      },
+      {
+        "titleKey": "Demo.Item.ColumnDisplayEditor",
+        "page": "ColumnDisplayEditorPage",
+        "api": "ColumnDisplayEditor",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "colde",
+        "titleZh": "ColumnDisplayEditor",
+        "titleEn": "ColumnDisplayEditor",
+        "description": "ColumnDisplayEditor"
       },
       {
         "titleKey": "Demo.Item.TreeDataGrid",
@@ -227,6 +227,16 @@ window.CodeWFDemoCatalog = [
         "titleZh": "LeftTop2RightBottomLine",
         "titleEn": "LeftTop2RightBottomLine",
         "description": "LeftTop2RightBottomLine"
+      },
+      {
+        "titleKey": "Demo.Item.ContentExpansionAnimator",
+        "page": "ContentExpansionPage",
+        "api": "ContentExpansionAnimator",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "expansion",
+        "titleZh": "ContentExpansionAnimator",
+        "titleEn": "ContentExpansionAnimator",
+        "description": "ContentExpansionAnimator"
       }
     ]
   },
@@ -393,7 +403,27 @@ window.CodeWFCatalogText = {
     "Notification": "由 LogNotifications 发出的日志通知。",
     "Notifications": "发送日志通知",
     "Preview": "浏览器交互示意；完整调用结果由 .NET Demo 产生。",
-    "WindowsOnly": "此帮助类目前仅支持 Windows。"
+    "WindowsOnly": "此帮助类目前仅支持 Windows。",
+    "ExpansionToggle": "展开 / 折叠",
+    "ExpansionAnimate": "启用动画",
+    "ExpansionHorizontal": "水平展开",
+    "ExpansionVertical": "垂直展开",
+    "ExpansionHint": "快速连续点击可在动画途中反向。关闭动画后立即到达终态；时长与展开尺寸可实时调整。",
+    "ExpansionContent": "同一控件驱动尺寸与透明度，适用于侧栏、折叠面板与导航。",
+    "TreeHints": "点击列头：升序 → 降序 → 原顺序。聚焦表格后按 Ctrl+A 全选；将鼠标悬停在截断文本上查看完整内容。增强适用于 FlatTreeDataGridSource。",
+    "TreeSelection": "已选 {0} / {1} 行",
+    "TreeLongText": "这是一段用于测试截断提示的较长文本，拖动列宽后可比较提示出现与消失的状态。",
+    "LiveHint": "点击任意块直接编辑，离开该块恢复渲染；支持标题、列表、表格与格式命令。",
+    "LiveFocus": "聚焦首块",
+    "LiveInsert": "插入段落",
+    "LiveTable": "插入表格",
+    "LiveParagraph": "直接编辑这段 Markdown。",
+    "StatusDriven": "在右侧属性面板切换状态与图标宽度",
+    "StatusSampleDebug": "断点调试进行中",
+    "StatusSampleInfo": "服务已就绪",
+    "StatusSampleWarn": "磁盘空间不足",
+    "StatusSampleError": "下游服务超时",
+    "StatusSampleFatal": "数据库连接失败"
   },
   "en-US": {
     "Title": "Control catalog",
@@ -412,7 +442,27 @@ window.CodeWFCatalogText = {
     "Notification": "A log notification presented by LogNotifications.",
     "Notifications": "Send log notification",
     "Preview": "Browser interaction preview; the .NET demo runs the complete API call.",
-    "WindowsOnly": "This helper currently supports Windows only."
+    "WindowsOnly": "This helper currently supports Windows only.",
+    "ExpansionToggle": "Expand / collapse",
+    "ExpansionAnimate": "Enable animation",
+    "ExpansionHorizontal": "Horizontal expansion",
+    "ExpansionVertical": "Vertical expansion",
+    "ExpansionHint": "Click rapidly to reverse mid-animation. Disable animation for an immediate transition. Adjust duration and size in place.",
+    "ExpansionContent": "One control animates layout size and opacity for sidebars, panels and navigation.",
+    "TreeHints": "Click a header: ascending → descending → original order. Focus the grid and press Ctrl+A; hover clipped text for its full value. Enhancements target FlatTreeDataGridSource.",
+    "TreeSelection": "Selected {0} / {1} rows",
+    "TreeLongText": "A deliberately long description for testing clipped-text tooltips; resize this column to compare clipped and fully visible text.",
+    "LiveHint": "Click a block to edit it directly; leave the block to render it again. Try headings, lists, tables and formatting commands.",
+    "LiveFocus": "Focus first block",
+    "LiveInsert": "Insert paragraph",
+    "LiveTable": "Insert table",
+    "LiveParagraph": "Edit this Markdown block directly.",
+    "StatusDriven": "Change the status and icon width in the property panel.",
+    "StatusSampleDebug": "Debugging",
+    "StatusSampleInfo": "Service ready",
+    "StatusSampleWarn": "Disk space low",
+    "StatusSampleError": "Service timeout",
+    "StatusSampleFatal": "Database offline"
   }
 };
 window.CodeWFCatalogDescriptions = {
@@ -497,6 +547,9 @@ window.CodeWFCatalogDescriptions = {
     },
     "MarkdownExport": {
       "Desc": "将 Markdown 导出为 PNG、PDF、Word 或 HTML。"
+    },
+    "ContentExpansionAnimator": {
+      "Desc": "展开、折叠、横纵布局与快速反向；尺寸和透明度由同一动画进度驱动。"
     }
   },
   "en-US": {
@@ -580,6 +633,9 @@ window.CodeWFCatalogDescriptions = {
     },
     "MarkdownExport": {
       "Desc": "Export Markdown to PNG, PDF, Word or HTML."
+    },
+    "ContentExpansionAnimator": {
+      "Desc": "Expand, collapse and reverse horizontal or vertical layout animations with a single progress value."
     }
   }
 };

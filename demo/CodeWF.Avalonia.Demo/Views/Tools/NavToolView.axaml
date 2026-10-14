@@ -39,7 +39,7 @@
                   <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="vm:DemoItemViewModel">
                       <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding !IsFilteredOut}">
-                        <Button Classes="nav-leaf"
+                        <Button Classes="nav-leaf" Classes.selected="{Binding IsSelected}"
                                 IsVisible="{Binding !IsRenaming}"
                                 DoubleTapped="OnLeafDoubleTapped"
                                 Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).SelectNavItemCommand}"

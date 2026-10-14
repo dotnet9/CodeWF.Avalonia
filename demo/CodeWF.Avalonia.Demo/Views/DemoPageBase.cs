@@ -8,6 +8,8 @@ namespace CodeWF.Avalonia.Demo.Views;
 /// </summary>
 public abstract class DemoPageBase : UserControl
 {
+    protected DemoPageBase() => Classes.Add("demo-page");
+
     private IReadOnlyList<PropertyItem>? _properties;
 
     /// <summary>标题的 Lang 键。</summary>

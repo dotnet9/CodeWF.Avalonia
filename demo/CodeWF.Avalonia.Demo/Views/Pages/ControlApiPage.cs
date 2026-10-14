@@ -49,12 +49,14 @@ public sealed class ControlApiPage : DemoPageBase
         {
             var grid = new global::Avalonia.Controls.TreeDataGrid { Source = ViewModel.Source, Height = 260 };
             grid.EnableDefaults(ViewModel.Source);
-            preview = grid;
-            input = Ui.Key("EnableDefaults: AddSorting / AddSelectAll / EnableSmartTooltips");
+            var summary = Ui.Sub("");
+            summary.Bind(TextBlock.TextProperty, new Binding(nameof(ViewModel.SelectionSummary)));
+            preview = new StackPanel { Spacing = 8, Children = { grid, summary } };
+            input = Ui.Hint("@Demo.Catalog.TreeHints");
         }
         else
         {
-            var button = new Button();
+            var button = new Button { Classes = { "demo-action" } };
             button.Bind(ContentControl.ContentProperty, new Lang.MarkupExtensions.I18nExtension("Demo.Catalog.Notifications").CreateBinding());
             button.Command = ViewModel.NotifyCommand;
             preview = button;

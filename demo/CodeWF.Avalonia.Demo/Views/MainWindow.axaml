@@ -143,7 +143,7 @@
           </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="vm:DemoItemViewModel">
-              <Button Classes="rbn-cmd" Margin="0,0,8,0"
+              <Button Classes="rbn-cmd" Classes.selected="{Binding IsSelected}" Margin="0,0,8,0"
                       Classes.compact="{Binding $parent[Window].((vm:MainViewModel)DataContext).IsCompactDensity}"
                       Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenItemCommand}"
                       CommandParameter="{Binding}" ToolTip.Tip="{Binding DisplayTitle}">

@@ -67,20 +67,29 @@ public partial class MainViewModel
         Save("compact-window");
         window.Width = 1440;
         window.Height = 860;
-        foreach (var key in new[] { DemoKeys.ItemMarkdownViewer, DemoKeys.ItemMarkdownEditor, DemoKeys.ItemMarkdownLiveEditor, DemoKeys.ItemMarkdownExport, DemoKeys.ItemPropertyGrid, DemoKeys.ItemLang })
+        foreach (var key in new[] { DemoKeys.ItemMarkdownViewer, DemoKeys.ItemMarkdownEditor, DemoKeys.ItemMarkdownLiveEditor, DemoKeys.ItemMarkdownExport, DemoKeys.ItemPropertyGrid, DemoKeys.ItemLang,
+            "Demo.Item.ContentExpansionAnimator", "Demo.Item.StatusBadge", "Demo.Item.StatusCard", "Demo.Item.TitleBar", "Demo.Item.TreeDataGrid", "Demo.Item.If", "Demo.Item.Switch" })
         {
             overview.Overview.NavigateCommand.Execute(key);
             await Task.Delay(500);
             window.UpdateLayout();
             Save(key.Split('.').Last());
-        }
-
-        foreach (var key in new[] { "Demo.Item.StatusBadge", "Demo.Item.StatusCard", "Demo.Item.TitleBar", "Demo.Item.TreeDataGrid", "Demo.Item.If", "Demo.Item.Switch" })
-        {
-            overview.Overview.NavigateCommand.Execute(key);
-            await Task.Delay(250);
-            window.UpdateLayout();
-            Save(key.Split('.').Last());
+            if (ActiveDocument?.Page is Views.Pages.ContentExpansionPage expansion)
+            {
+                var frame = 0;
+                expansion.ViewModel.Milliseconds = 600;
+                foreach (var expanded in new[] { false, true })
+                {
+                    expansion.ViewModel.IsExpanded = expanded;
+                    for (var tick = 0; tick < 16; tick++)
+                    {
+                        window.UpdateLayout();
+                        Save($"expansion-{frame++:D2}");
+                        await Task.Delay(40);
+                    }
+                }
+                expansion.ViewModel.Milliseconds = 300;
+            }
         }
 
         void Save(string name)

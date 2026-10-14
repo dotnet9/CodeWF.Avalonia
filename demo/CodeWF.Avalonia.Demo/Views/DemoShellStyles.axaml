@@ -16,7 +16,7 @@
   <!--  Ribbon 命令按钮：横向图标与名称、悬停轻抬  -->
   <Style Selector="Button.rbn-cmd">
     <Setter Property="MinWidth" Value="70" />
-    <Setter Property="MinHeight" Value="55" />
+    <Setter Property="MinHeight" Value="36" />
     <Setter Property="Padding" Value="5,3" />
     <Setter Property="CornerRadius" Value="7" />
     <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -118,8 +118,6 @@
     <Setter Property="Opacity" Value="0.75" />
   </Style>
 
-  <Style Selector="Button.nav-leaf"><Setter Property="MinHeight" Value="30" /><Setter Property="CornerRadius" Value="6" /></Style>
-  <Style Selector="Button.rbn-cmd"><Setter Property="Background" Value="Transparent" /><Setter Property="MinHeight" Value="36" /></Style>
   <Style Selector="Border.card"><Setter Property="Background" Value="{DynamicResource StudioSurface}" /><Setter Property="CornerRadius" Value="12" /><Setter Property="Padding" Value="18" /></Style>
 
   <Style Selector="ToggleButton.nav-group TextBlock">
@@ -134,5 +132,39 @@
   </Style>
   <Style Selector="TextBlock.studio-title">
     <Setter Property="FontSize" Value="26" />
+  </Style>
+  <Style Selector="Button.demo-action, Button.studio-button, Button.b">
+    <Setter Property="Theme" Value="{DynamicResource OutlineButton}" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="MinHeight" Value="30" />
+  </Style>
+  <Style Selector="Button.rbn-cmd,Button.nav-leaf">
+    <Setter Property="MinHeight" Value="30" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource StudioText}" />
+    <Setter Property="BorderThickness" Value="2,0,0,0" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
+  <Style Selector="Button.rbn-cmd /template/ ContentPresenter#PART_ContentPresenter, Button.nav-leaf /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource StudioText}" />
+  </Style>
+  <Style Selector="Button.rbn-cmd:pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.nav-leaf:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
+  </Style>
+  <Style Selector="Button.rbn-cmd.selected /template/ ContentPresenter#PART_ContentPresenter, Button.nav-leaf.selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource SemiColorPrimaryLight}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
+  </Style>
+  <Style Selector="Button.rbn-cmd:pressed /template/ ContentPresenter#PART_ContentPresenter, Button.nav-leaf:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource SemiColorPrimaryLightActive}" />
+  </Style>
+  <Style Selector="TabStrip#RibbonTabStrip TabStripItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource SemiColorPrimaryLight}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" />
+    <Setter Property="BorderThickness" Value="0,0,0,2" />
   </Style>
 </Styles>

@@ -12,7 +12,7 @@
                    TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
       </Border>
 
-      <Button Content="{codewf:I18n Demo.Text.AppGuidePage.View002}" Click="OnStartGuide" HorizontalAlignment="Left" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.AppGuidePage.View002}" Click="OnStartGuide" HorizontalAlignment="Left" />
 
       <TextBlock Text="{codewf:I18n Demo.Text.AppGuidePage.View003}" FontWeight="Bold" />
       <TextBlock Text="{codewf:I18n Demo.Text.AppGuidePage.View004}"

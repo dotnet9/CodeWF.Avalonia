@@ -29,8 +29,8 @@
   },
   {
     "titleKey": "Demo.Group.Input",
-    "titleZh": "按钮与输入",
-    "titleEn": "Buttons & Inputs",
+    "titleZh": "输入与选择",
+    "titleEn": "Inputs & Selection",
     "id": "input",
     "items": [
       {
@@ -52,23 +52,13 @@
         "titleZh": "Transfer",
         "titleEn": "Transfer",
         "description": "Transfer"
-      },
-      {
-        "titleKey": "Demo.Item.ColumnDisplayEditor",
-        "page": "ColumnDisplayEditorPage",
-        "api": "ColumnDisplayEditor",
-        "package": "CodeWF.Avalonia.Controls",
-        "prototypeId": "colde",
-        "titleZh": "ColumnDisplayEditor",
-        "titleEn": "ColumnDisplayEditor",
-        "description": "ColumnDisplayEditor"
       }
     ]
   },
   {
     "titleKey": "Demo.Group.Feedback",
-    "titleZh": "对话与反馈",
-    "titleEn": "Dialogs & Feedback",
+    "titleZh": "反馈与引导",
+    "titleEn": "Feedback & Guidance",
     "id": "feedback",
     "items": [
       {
@@ -128,6 +118,16 @@
         "titleZh": "DataGridEnhancement",
         "titleEn": "DataGridEnhancement",
         "description": "DataGridEnhancement"
+      },
+      {
+        "titleKey": "Demo.Item.ColumnDisplayEditor",
+        "page": "ColumnDisplayEditorPage",
+        "api": "ColumnDisplayEditor",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "colde",
+        "titleZh": "ColumnDisplayEditor",
+        "titleEn": "ColumnDisplayEditor",
+        "description": "ColumnDisplayEditor"
       },
       {
         "titleKey": "Demo.Item.TreeDataGrid",
@@ -226,6 +226,16 @@
         "titleZh": "LeftTop2RightBottomLine",
         "titleEn": "LeftTop2RightBottomLine",
         "description": "LeftTop2RightBottomLine"
+      },
+      {
+        "titleKey": "Demo.Item.ContentExpansionAnimator",
+        "page": "ContentExpansionPage",
+        "api": "ContentExpansionAnimator",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "expansion",
+        "titleZh": "ContentExpansionAnimator",
+        "titleEn": "ContentExpansionAnimator",
+        "description": "ContentExpansionAnimator"
       }
     ]
   },

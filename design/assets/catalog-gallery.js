@@ -58,7 +58,7 @@
         el.innerHTML = '<div class="demo"><h4>'+entries[id].api+'</h4><div class="row">'+["Debug","Info","Warn","Error","Fatal"].map(function(level){return '<div class="catalog-status '+(badge?'badge':'card')+'" data-level="'+level+'"><strong>'+level+'</strong><span>Ready</span></div>';}).join("")+'</div></div>';
       }});
     });
-    ["if","switch"].forEach(function(id) { var entry=entries[id]; REG(id,{zh:apiMeta(entry),xaml:'<codewf:'+entry.api+' />',props:[],render:function(el){
+    ["if","switch"].forEach(function(id) { var entry=entries[id]; REG(id,{zh:apiMeta(entry),xaml:window.CodeWFCatalogDescriptions[LANG][entry.api].Xaml,props:[],render:function(el){
       el.innerHTML='<div class="demo"><h4>'+entry.api+'</h4><select><option>Idle</option><option>Busy</option><option>Done</option></select><p class="catalog-result">Idle</p></div>';
       el.querySelector('select').onchange=function(event){el.querySelector('p').textContent=id==='if'?(event.target.value==='Busy'?'True':'False'):event.target.value;};
     }}); });

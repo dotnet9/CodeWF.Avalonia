@@ -12,13 +12,13 @@
     </Border>
 
     <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
-      <Button Content="Trace" Command="{Binding WriteCommand}" CommandParameter="Trace" />
-      <Button Content="Debug" Command="{Binding WriteCommand}" CommandParameter="Debug" />
-      <Button Content="Info" Command="{Binding WriteCommand}" CommandParameter="Info" />
-      <Button Content="Warning" Command="{Binding WriteCommand}" CommandParameter="Warning" />
-      <Button Content="Error" Command="{Binding WriteCommand}" CommandParameter="Error" />
-      <Button Content="Critical" Command="{Binding WriteCommand}" CommandParameter="Critical" />
-      <Button Content="{codewf:I18n Demo.Text.LogPage.View002}" Command="{Binding BurstCommand}" />
+      <Button Classes="demo-action" Content="Trace" Command="{Binding WriteCommand}" CommandParameter="Trace" />
+      <Button Classes="demo-action" Content="Debug" Command="{Binding WriteCommand}" CommandParameter="Debug" />
+      <Button Classes="demo-action" Content="Info" Command="{Binding WriteCommand}" CommandParameter="Info" />
+      <Button Classes="demo-action" Content="Warning" Command="{Binding WriteCommand}" CommandParameter="Warning" />
+      <Button Classes="demo-action" Content="Error" Command="{Binding WriteCommand}" CommandParameter="Error" />
+      <Button Classes="demo-action" Content="Critical" Command="{Binding WriteCommand}" CommandParameter="Critical" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.LogPage.View002}" Command="{Binding BurstCommand}" />
     </StackPanel>
 
     <codewf:LogView Grid.Row="2" x:Name="LogViewControl" Margin="0,8,0,0" MaxDisplayCount="{Binding MaxDisplayCount}" MinimumLevel="{Binding MinimumLevel}" />

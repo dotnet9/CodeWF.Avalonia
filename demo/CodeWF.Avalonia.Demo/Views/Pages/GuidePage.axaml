@@ -9,22 +9,22 @@
       <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
               BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
         <StackPanel Orientation="Horizontal" Spacing="8">
-          <Button Content="{codewf:I18n Demo.Text.GuidePage.View001}" Click="OnStartGuide" />
+          <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.GuidePage.View001}" Click="OnStartGuide" />
           <TextBlock Text="{codewf:I18n Demo.Text.GuidePage.View002}"
                      TextWrapping="Wrap" Opacity="0.75" FontSize="12" VerticalAlignment="Center" />
         </StackPanel>
       </Border>
 
       <UniformGrid Grid.Row="1" Rows="3" Columns="3" Margin="24">
-        <Button x:Name="TargetCenter" Content="Center" Height="64" Margin="8" />
-        <Button x:Name="TargetTopLeft" Content="TopLeft" Height="64" Margin="8" />
-        <Button x:Name="TargetTopRight" Content="TopRight" Height="64" Margin="8" />
-        <Button x:Name="TargetLeft" Content="Left" Height="64" Margin="8" />
-        <Button x:Name="TargetTop" Content="Top" Height="64" Margin="8" />
-        <Button x:Name="TargetRight" Content="Right" Height="64" Margin="8" />
-        <Button x:Name="TargetBottomLeft" Content="BottomLeft" Height="64" Margin="8" />
-        <Button x:Name="TargetBottom" Content="Bottom" Height="64" Margin="8" />
-        <Button x:Name="TargetBottomRight" Content="BottomRight" Height="64" Margin="8" />
+        <Button Classes="demo-action" x:Name="TargetCenter" Content="Center" Height="64" Margin="8" />
+        <Button Classes="demo-action" x:Name="TargetTopLeft" Content="TopLeft" Height="64" Margin="8" />
+        <Button Classes="demo-action" x:Name="TargetTopRight" Content="TopRight" Height="64" Margin="8" />
+        <Button Classes="demo-action" x:Name="TargetLeft" Content="Left" Height="64" Margin="8" />
+        <Button Classes="demo-action" x:Name="TargetTop" Content="Top" Height="64" Margin="8" />
+        <Button Classes="demo-action" x:Name="TargetRight" Content="Right" Height="64" Margin="8" />
+        <Button Classes="demo-action" x:Name="TargetBottomLeft" Content="BottomLeft" Height="64" Margin="8" />
+        <Button Classes="demo-action" x:Name="TargetBottom" Content="Bottom" Height="64" Margin="8" />
+        <Button Classes="demo-action" x:Name="TargetBottomRight" Content="BottomRight" Height="64" Margin="8" />
       </UniformGrid>
     </Grid>
 

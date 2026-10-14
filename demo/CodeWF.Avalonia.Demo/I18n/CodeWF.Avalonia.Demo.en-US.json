@@ -53,10 +53,10 @@
       "Markdown": "Markdown",
       "Data": "Data Display",
       "Docs": "Workspace",
-      "Input": "Buttons & Inputs",
+      "Input": "Inputs & Selection",
       "Present": "Lib · Present",
       "Infrastructure": "Lib · Infra",
-      "Feedback": "Dialogs & Feedback",
+      "Feedback": "Feedback & Guidance",
       "Layout": "Layout & Navigation",
       "Utilities": "Developer Tools",
       "Examples": "Examples"
@@ -94,7 +94,8 @@
       "TitleBar": "CodeWFTitleBar",
       "DiagonalLine": "LeftTop2RightBottomLine",
       "If": "If",
-      "Switch": "Switch"
+      "Switch": "Switch",
+      "ContentExpansionAnimator": "ContentExpansionAnimator"
     },
     "Segment": {
       "Demo": "Demo",
@@ -695,14 +696,14 @@
       "StatusComponentsPage": {
         "View001": "StatusBadge and StatusCard provide five semantic states and light/dark appearances. Configure the final card through the property panel.",
         "View004": "Warning",
-        "View010": "Downstream service timeout",
+        "View010": "Service timeout",
         "View012": "Driven by property panel",
-        "View011": "Database connection failed",
-        "View009": "Less than 10% free disk space",
+        "View011": "Database offline",
+        "View009": "Disk space low",
         "View005": "Error",
         "View013": "Change the status and icon width in the property panel.",
         "View008": "Service ready",
-        "View007": "Breakpoint debugging",
+        "View007": "Debugging",
         "View003": "Information",
         "View002": "Debug",
         "View006": "Critical"
@@ -1137,6 +1138,9 @@
       },
       "MarkdownExport": {
         "Desc": "Export Markdown to PNG, PDF, Word or HTML."
+      },
+      "ContentExpansionAnimator": {
+        "Desc": "Expand, collapse and reverse horizontal or vertical layout animations with a single progress value."
       }
     },
     "Catalog": {
@@ -1156,7 +1160,27 @@
       "Notification": "A log notification presented by LogNotifications.",
       "Notifications": "Send log notification",
       "Preview": "Browser interaction preview; the .NET demo runs the complete API call.",
-      "WindowsOnly": "This helper currently supports Windows only."
+      "WindowsOnly": "This helper currently supports Windows only.",
+      "ExpansionToggle": "Expand / collapse",
+      "ExpansionAnimate": "Enable animation",
+      "ExpansionHorizontal": "Horizontal expansion",
+      "ExpansionVertical": "Vertical expansion",
+      "ExpansionHint": "Click rapidly to reverse mid-animation. Disable animation for an immediate transition. Adjust duration and size in place.",
+      "ExpansionContent": "One control animates layout size and opacity for sidebars, panels and navigation.",
+      "TreeHints": "Click a header: ascending → descending → original order. Focus the grid and press Ctrl+A; hover clipped text for its full value. Enhancements target FlatTreeDataGridSource.",
+      "TreeSelection": "Selected {0} / {1} rows",
+      "TreeLongText": "A deliberately long description for testing clipped-text tooltips; resize this column to compare clipped and fully visible text.",
+      "LiveHint": "Click a block to edit it directly; leave the block to render it again. Try headings, lists, tables and formatting commands.",
+      "LiveFocus": "Focus first block",
+      "LiveInsert": "Insert paragraph",
+      "LiveTable": "Insert table",
+      "LiveParagraph": "Edit this Markdown block directly.",
+      "StatusDriven": "Change the status and icon width in the property panel.",
+      "StatusSampleDebug": "Debugging",
+      "StatusSampleInfo": "Service ready",
+      "StatusSampleWarn": "Disk space low",
+      "StatusSampleError": "Service timeout",
+      "StatusSampleFatal": "Database offline"
     }
   }
 }

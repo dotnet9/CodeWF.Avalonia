@@ -12,14 +12,14 @@
     </Border>
 
     <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
-      <Button Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View002}" Click="OnBold" />
-      <Button Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View003}" Click="OnItalic" />
-      <Button Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View004}" Click="OnInlineCode" />
-      <Button Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View005}" Click="OnHeading" />
-      <Button Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View006}" Click="OnTable" />
-      <Button Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View007}" Click="OnTaskList" />
-      <Button Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View008}" Click="OnCodeFence" />
-      <Button Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View009}" Click="OnQuote" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View002}" Click="OnBold" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View003}" Click="OnItalic" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View004}" Click="OnInlineCode" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View005}" Click="OnHeading" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View006}" Click="OnTable" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View007}" Click="OnTaskList" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View008}" Click="OnCodeFence" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownEditorPage.View009}" Click="OnQuote" />
     </StackPanel>
 
     <Border Grid.Row="2" x:Name="EditorHost" Margin="0,8,0,0"

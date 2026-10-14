@@ -25,11 +25,11 @@
 
       <TextBlock IsVisible="{Binding ShowCards}" Text="StatusCard" FontWeight="Bold" />
       <WrapPanel IsVisible="{Binding ShowCards}">
-        <codewf:StatusCard Kind="Debug" TopText="DEBUG" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View007}" Margin="0,0,8,8" />
-        <codewf:StatusCard Kind="Info" TopText="INFO" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View008}" Margin="0,0,8,8" />
-        <codewf:StatusCard Kind="Warn" TopText="WARN" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View009}" Margin="0,0,8,8" />
-        <codewf:StatusCard Kind="Error" TopText="ERROR" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View010}" Margin="0,0,8,8" />
-        <codewf:StatusCard Kind="Fatal" TopText="FATAL" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View011}" Margin="0,0,8,8" />
+        <codewf:StatusCard Width="180" Height="80" Kind="Debug" TopText="DEBUG" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View007}" Margin="0,0,8,8" />
+        <codewf:StatusCard Width="180" Height="80" Kind="Info" TopText="INFO" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View008}" Margin="0,0,8,8" />
+        <codewf:StatusCard Width="180" Height="80" Kind="Warn" TopText="WARN" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View009}" Margin="0,0,8,8" />
+        <codewf:StatusCard Width="180" Height="80" Kind="Error" TopText="ERROR" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View010}" Margin="0,0,8,8" />
+        <codewf:StatusCard Width="180" Height="80" Kind="Fatal" TopText="FATAL" BottomText="{codewf:I18n Demo.Text.StatusComponentsPage.View011}" Margin="0,0,8,8" />
       </WrapPanel>
 
       <TextBlock Text="{codewf:I18n Demo.Text.StatusComponentsPage.View012}" FontWeight="Bold" />

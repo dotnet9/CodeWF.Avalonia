@@ -41,7 +41,7 @@
           <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
            <DataTemplate x:DataType="vm:DemoItemViewModel">
-            <Button Content="{Binding Title}" Command="{Binding $parent[UserControl].((vm:WelcomeViewModel)DataContext).NavigateCommand}" CommandParameter="{Binding TitleKey}" Margin="0,0,6,6" Padding="10,5" />
+            <Button Classes="demo-action" Content="{Binding Title}" Command="{Binding $parent[UserControl].((vm:WelcomeViewModel)DataContext).NavigateCommand}" CommandParameter="{Binding TitleKey}" Margin="0,0,6,6" Padding="10,5" />
            </DataTemplate>
           </ItemsControl.ItemTemplate>
          </ItemsControl>
@@ -73,7 +73,7 @@
                                 ParagraphMargin="0,0,0,6" BlockSpacing="4" DocumentBottomPadding="8"
                                 InlineCodeBackgroundBrush="{DynamicResource StudioRaised}" Foreground="{DynamicResource StudioText}" />
         </Border>
-        <Button Grid.Row="2" Grid.ColumnSpan="2" Content="{codewf:I18n Demo.Studio.Open}" Command="{Binding NavigateCommand}" CommandParameter="Demo.Item.MarkdownViewer" Margin="0,10,0,0" HorizontalAlignment="Left" />
+        <Button Classes="demo-action" Grid.Row="2" Grid.ColumnSpan="2" Content="{codewf:I18n Demo.Studio.Open}" Command="{Binding NavigateCommand}" CommandParameter="Demo.Item.MarkdownViewer" Margin="0,10,0,0" HorizontalAlignment="Left" />
        </Grid>
       </TabItem>
       <TabItem Header="{codewf:I18n Demo.Studio.Sort}">
@@ -82,7 +82,7 @@
         <DataGrid Height="160" ItemsSource="{Binding Rows}" AutoGenerateColumns="False" IsReadOnly="True" CanUserSortColumns="True" codewf:DataGridEnhancement.UseDefaults="True">
          <DataGrid.Columns><DataGridTextColumn Header="{codewf:I18n Demo.Studio.SortName}" Binding="{Binding Name}" Width="*" /><DataGridTextColumn Header="{codewf:I18n Demo.Studio.SortModule}" Binding="{Binding Module}" Width="150" /><DataGridTextColumn Header="{codewf:I18n Demo.Studio.SortStatus}" Binding="{Binding Status}" Width="*" /></DataGrid.Columns>
         </DataGrid>
-        <Button Content="{codewf:I18n Demo.Studio.Open}" Command="{Binding NavigateCommand}" CommandParameter="Demo.Item.DataGrid" HorizontalAlignment="Left" />
+        <Button Classes="demo-action" Content="{codewf:I18n Demo.Studio.Open}" Command="{Binding NavigateCommand}" CommandParameter="Demo.Item.DataGrid" HorizontalAlignment="Left" />
        </StackPanel>
       </TabItem>
       <TabItem Header="{codewf:I18n Demo.Studio.Dock}">
@@ -90,10 +90,10 @@
         <TextBlock Text="{codewf:I18n Demo.Studio.PanelHint}" Classes="studio-muted" />
         <pages:DockPage Height="220" />
         <StackPanel Orientation="Horizontal" Spacing="8">
-         <Button Content="{codewf:I18n Demo.Studio.Nav}" Command="{Binding TogglePanelCommand}" CommandParameter="nav" />
-         <Button Content="{codewf:I18n Demo.Studio.Props}" Command="{Binding TogglePanelCommand}" CommandParameter="props" />
-         <Button Content="{codewf:I18n Demo.Studio.Logs}" Command="{Binding TogglePanelCommand}" CommandParameter="log" />
-         <Button Content="{codewf:I18n Demo.Studio.Open}" Command="{Binding NavigateCommand}" CommandParameter="Demo.Item.Dock" />
+         <Button Classes="demo-action" Content="{codewf:I18n Demo.Studio.Nav}" Command="{Binding TogglePanelCommand}" CommandParameter="nav" />
+         <Button Classes="demo-action" Content="{codewf:I18n Demo.Studio.Props}" Command="{Binding TogglePanelCommand}" CommandParameter="props" />
+         <Button Classes="demo-action" Content="{codewf:I18n Demo.Studio.Logs}" Command="{Binding TogglePanelCommand}" CommandParameter="log" />
+         <Button Classes="demo-action" Content="{codewf:I18n Demo.Studio.Open}" Command="{Binding NavigateCommand}" CommandParameter="Demo.Item.Dock" />
         </StackPanel>
        </StackPanel>
       </TabItem>
@@ -154,7 +154,7 @@
    <Border Classes="studio-card">
     <Grid ColumnDefinitions="*,Auto">
      <StackPanel Spacing="8"><TextBlock Text="{codewf:I18n Demo.Studio.QuickStart}" FontWeight="SemiBold" /><SelectableTextBlock Text="{Binding InstallCommand}" FontFamily="Consolas" FontSize="12" TextWrapping="Wrap" /><TextBlock Text="{Binding CopyStatus}" Classes="studio-muted" /></StackPanel>
-     <Button Grid.Column="1" Content="{codewf:I18n Demo.Studio.Copy}" Command="{Binding CopyInstallCommand}" Margin="12,0,0,0" VerticalAlignment="Center" />
+     <Button Classes="demo-action" Grid.Column="1" Content="{codewf:I18n Demo.Studio.Copy}" Command="{Binding CopyInstallCommand}" Margin="12,0,0,0" VerticalAlignment="Center" />
     </Grid>
    </Border>
     </StackPanel>

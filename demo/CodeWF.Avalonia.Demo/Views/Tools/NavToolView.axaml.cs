@@ -1,5 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
+using System.ComponentModel;
+using Avalonia.VisualTree;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using CodeWF.Avalonia.Demo.ViewModels;
@@ -11,10 +13,43 @@ namespace CodeWF.Avalonia.Demo.Views.Tools;
 /// </summary>
 public partial class NavToolView : UserControl
 {
+    private MainViewModel? _observedViewModel;
+
     public NavToolView()
     {
         InitializeComponent();
+        AttachedToVisualTree += (_, _) => ObserveSelection();
+        DetachedFromVisualTree += (_, _) => StopObservingSelection();
+        DataContextChanged += (_, _) => { if (IsLoaded) ObserveSelection(); };
     }
+
+    private void ObserveSelection()
+    {
+        StopObservingSelection();
+        _observedViewModel = ViewModel;
+        if (_observedViewModel is not null) _observedViewModel.PropertyChanged += OnSelectionChanged;
+        ScrollToSelection();
+    }
+
+    private void StopObservingSelection()
+    {
+        if (_observedViewModel is not null) _observedViewModel.PropertyChanged -= OnSelectionChanged;
+        _observedViewModel = null;
+    }
+
+    private void OnSelectionChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainViewModel.SelectedNavItem)) ScrollToSelection();
+    }
+
+    private void ScrollToSelection() => Dispatcher.UIThread.Post(() =>
+    {
+        if (!IsLoaded) return;
+        UpdateLayout();
+        this.GetVisualDescendants().OfType<Button>()
+            .FirstOrDefault(button => button.Classes.Contains("nav-leaf") && button.DataContext is DemoItemViewModel { IsSelected: true })
+            ?.BringIntoView();
+    }, DispatcherPriority.Background);
 
     private MainViewModel? ViewModel => DataContext as MainViewModel;
 

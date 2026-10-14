@@ -43,6 +43,7 @@ public static class DemoCatalog
         "Demo.Item.CodeWFWindow" => new CodeWFWindowPage(),
         "Demo.Item.TitleBar" => new ControlApiPage("CodeWFTitleBar"),
         "Demo.Item.Dock" => new DockPage(),
+        "Demo.Item.ContentExpansionAnimator" => new ContentExpansionPage(),
         "Demo.Item.TrapezoidTab" => new TrapezoidTabPage(),
         "Demo.Item.WindowedStackPanel" => new WindowedStackPanelPage(),
         "Demo.Item.DiagonalLine" => new ControlApiPage("LeftTop2RightBottomLine"),

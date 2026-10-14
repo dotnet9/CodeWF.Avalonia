@@ -53,10 +53,10 @@
       "Markdown": "Markdown",
       "Data": "数据展示",
       "Docs": "文档工作区",
-      "Input": "按钮与输入",
+      "Input": "输入与选择",
       "Present": "组件库·呈现",
       "Infrastructure": "组件库·基础设施",
-      "Feedback": "对话与反馈",
+      "Feedback": "反馈与引导",
       "Layout": "布局与导航",
       "Utilities": "开发工具",
       "Examples": "综合示例"
@@ -94,7 +94,8 @@
       "TitleBar": "CodeWFTitleBar",
       "DiagonalLine": "LeftTop2RightBottomLine",
       "If": "If",
-      "Switch": "Switch"
+      "Switch": "Switch",
+      "ContentExpansionAnimator": "ContentExpansionAnimator"
     },
     "Segment": {
       "Demo": "演示",
@@ -698,7 +699,7 @@
         "View010": "下游服务超时",
         "View012": "属性面板驱动",
         "View011": "数据库连接失败",
-        "View009": "磁盘空间不足 10%",
+        "View009": "磁盘空间不足",
         "View005": "错误",
         "View013": "在右侧属性面板切换状态与图标宽度",
         "View008": "服务已就绪",
@@ -1137,6 +1138,9 @@
       },
       "MarkdownExport": {
         "Desc": "将 Markdown 导出为 PNG、PDF、Word 或 HTML。"
+      },
+      "ContentExpansionAnimator": {
+        "Desc": "展开、折叠、横纵布局与快速反向；尺寸和透明度由同一动画进度驱动。"
       }
     },
     "Catalog": {
@@ -1156,7 +1160,27 @@
       "Notification": "由 LogNotifications 发出的日志通知。",
       "Notifications": "发送日志通知",
       "Preview": "浏览器交互示意；完整调用结果由 .NET Demo 产生。",
-      "WindowsOnly": "此帮助类目前仅支持 Windows。"
+      "WindowsOnly": "此帮助类目前仅支持 Windows。",
+      "ExpansionToggle": "展开 / 折叠",
+      "ExpansionAnimate": "启用动画",
+      "ExpansionHorizontal": "水平展开",
+      "ExpansionVertical": "垂直展开",
+      "ExpansionHint": "快速连续点击可在动画途中反向。关闭动画后立即到达终态；时长与展开尺寸可实时调整。",
+      "ExpansionContent": "同一控件驱动尺寸与透明度，适用于侧栏、折叠面板与导航。",
+      "TreeHints": "点击列头：升序 → 降序 → 原顺序。聚焦表格后按 Ctrl+A 全选；将鼠标悬停在截断文本上查看完整内容。增强适用于 FlatTreeDataGridSource。",
+      "TreeSelection": "已选 {0} / {1} 行",
+      "TreeLongText": "这是一段用于测试截断提示的较长文本，拖动列宽后可比较提示出现与消失的状态。",
+      "LiveHint": "点击任意块直接编辑，离开该块恢复渲染；支持标题、列表、表格与格式命令。",
+      "LiveFocus": "聚焦首块",
+      "LiveInsert": "插入段落",
+      "LiveTable": "插入表格",
+      "LiveParagraph": "直接编辑这段 Markdown。",
+      "StatusDriven": "在右侧属性面板切换状态与图标宽度",
+      "StatusSampleDebug": "断点调试进行中",
+      "StatusSampleInfo": "服务已就绪",
+      "StatusSampleWarn": "磁盘空间不足",
+      "StatusSampleError": "下游服务超时",
+      "StatusSampleFatal": "数据库连接失败"
     }
   }
 }

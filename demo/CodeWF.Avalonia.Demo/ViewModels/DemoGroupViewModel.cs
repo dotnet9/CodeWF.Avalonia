@@ -11,6 +11,7 @@ public class DemoItemViewModel : ReactiveObject
 {
     private string? _customTitle;
     private bool _isRenaming;
+    private bool _isSelected;
     private bool _isFilteredOut;
 
     public DemoItemViewModel(string titleKey, Func<DemoPageBase> pageFactory, string api = "", string package = "", string prototypeId = "")
@@ -30,6 +31,12 @@ public class DemoItemViewModel : ReactiveObject
 
     /// <summary>标题的 Lang 键，同时作为文档的唯一标识。</summary>
     public string TitleKey { get; }
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set => this.RaiseAndSetIfChanged(ref _isSelected, value);
+    }
+
     public string Api { get; }
     public string Package { get; }
     public string PrototypeId { get; }

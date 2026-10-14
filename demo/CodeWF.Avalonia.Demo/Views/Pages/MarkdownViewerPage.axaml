@@ -7,18 +7,17 @@
              x:CompileBindings="True">
   <Grid RowDefinitions="Auto,*,Auto" Margin="12,10">
 
-    <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
-            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
+    <Expander Grid.Row="0" Header="{codewf:I18n Demo.Catalog.Input}" IsExpanded="False" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
       <StackPanel Spacing="8">
         <TextBox Text="{Binding Source}" Height="96" AcceptsReturn="True"
                  TextWrapping="Wrap" PlaceholderText="{codewf:I18n Demo.Text.MarkdownViewerPage.View001}" />
         <StackPanel Orientation="Horizontal" Spacing="8">
-          <Button Content="{codewf:I18n Demo.Text.MarkdownViewerPage.View002}" Command="{Binding ApplyCommand}" />
-          <Button Content="{codewf:I18n Demo.Text.MarkdownViewerPage.View003}" Command="{Binding AppendCommand}" />
-          <Button Content="{codewf:I18n Demo.Text.MarkdownViewerPage.View004}" Command="{Binding ResetCommand}" />
+          <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownViewerPage.View002}" Command="{Binding ApplyCommand}" />
+          <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownViewerPage.View003}" Command="{Binding AppendCommand}" />
+          <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownViewerPage.View004}" Command="{Binding ResetCommand}" />
         </StackPanel>
       </StackPanel>
-    </Border>
+    </Expander>
 
     <codewf:MarkdownViewer Grid.Row="1" x:Name="Viewer" Margin="0,10,0,0"
                            Markdown="{Binding AppliedMarkdown}"

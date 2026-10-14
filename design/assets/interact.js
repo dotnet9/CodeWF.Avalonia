@@ -542,36 +542,6 @@ window.edTaPre = function (p) {
  markDirty("md-editor"); log2both("动作：插入 " + p);
 };
 
-REG("md-live", {
- zh: {
-  t: "实时编辑",
-  d: "分块所见即所得：点击块直接编辑，退出即渲染；FocusBlock 定位块。原型用左右分栏示意渲染结果。",
-  f: ["所见即所得", "块编辑"]
- },
- xaml: '<codewf:MarkdownLiveEditorView Markdown="{Binding Doc}" />',
- cs: 'liveEditor.FocusBlock(0);\nawait liveEditor.ExecuteAsync(MarkdownEditorAction.Table);',
- render: function () {
-  setTimeout(function () {
-   var src = $("lvSrc"), out = $("lvOut"); if (!src || !out) return;
-   var sync = function () {
-    out.innerHTML = src.value.split(/\n\n+/).map(function (p) {
-     if (p.indexOf("##") === 0) return "<h3>" + esc(p.replace(/^##\s*/, "")) + "</h3>";
-     if (p.indexOf("# ") === 0) return "<h2>" + esc(p.replace(/^#\s*/, "")) + "</h2>";
-     if (p.indexOf("- ") === 0) return "<ul>" + p.split("\n").map(function (l) { return "<li>" + esc(l.replace(/^-\s*/, "")) + "</li>"; }).join("") + "</ul>";
-     return "<p>" + esc(p) + "</p>";
-    }).join("");
-   };
-   src.oninput = function () { sync(); markDirty("md-live"); };
-   sync();
-  }, 0);
-  return '<div class="row" style="align-items:stretch">' +
-   '<div style="flex:1"><div class="hint" style="margin:0 0 4px">编辑（Markdown 源）</div>' +
-   '<textarea id="lvSrc" style="width:100%;height:220px;font-family:Consolas,monospace;font-size:12px;border:1px solid var(--bd);border-radius:6px;padding:10px;background:var(--bg);color:var(--tx)">## 实时编辑' + NL + NL + '左侧修改，右侧即时渲染。' + NL + NL + '- 块级编辑' + NL + '- 退出即渲染</textarea></div>' +
-   '<div style="flex:1"><div class="hint" style="margin:0 0 4px">预览</div>' +
-   '<div class="mdr" id="lvOut" style="height:220px;overflow:auto;border:1px solid var(--bd);border-radius:6px;padding:10px"></div></div></div>' +
-   '<div class="hint">FocusBlock(index) 可把光标定位到指定块；退出编辑即写回源文。</div>';
- }
-});
 
 REG("md-export", {
  zh: {

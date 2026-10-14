@@ -59,6 +59,7 @@ public partial class MainViewModel
 
                     if (host is not null)
                     {
+                        Logger.Info("Smoke: rendering " + item.TitleKey);
                         host.Content = page;
                         foreach (var variant in variants)
                         {
@@ -86,6 +87,38 @@ public partial class MainViewModel
                             }
                         }
 
+                        if (page is Views.Pages.ContentExpansionPage expansion)
+                        {
+                            var animators = global::Avalonia.VisualTree.VisualExtensions.GetVisualDescendants(expansion)
+                                .OfType<global::CodeWF.Avalonia.Controls.Controls.ContentExpansionAnimator>().ToArray();
+                            if (animators.Length != 2 || animators.Any(animator => animator.Progress != 1 || animator.Bounds.Width <= 0 || animator.Bounds.Height <= 0 || animator.Opacity <= 0))
+                                throw new InvalidOperationException("Expansion controls were not visible on first render.");
+                            expansion.ViewModel.Milliseconds = 200;
+                            expansion.ViewModel.IsExpanded = false;
+                            await Task.Delay(350, cancellation);
+                            if (animators.Length != 2 || animators.Any(animator => animator.IsExpanded || animator.Progress != 0))
+                                throw new InvalidOperationException("Expansion state binding did not reach both controls.");
+                            expansion.ViewModel.IsExpanded = true;
+                            await Task.Delay(350, cancellation);
+                            expansion.ViewModel.IsExpanded = false;
+                            await Task.Delay(80, cancellation);
+                            if (animators.Any(animator => animator.Progress <= 0 || animator.Progress >= 1))
+                                throw new InvalidOperationException("Expansion animation did not produce intermediate progress.");
+                            expansion.ViewModel.IsExpanded = true;
+                            await Task.Delay(350, cancellation);
+                            if (animators.Any(animator => !animator.IsExpanded || animator.Progress != 1))
+                                throw new InvalidOperationException("Reversed expansion animation did not reach its target.");
+                            expansion.ViewModel.Animate = false;
+                            expansion.ViewModel.IsExpanded = false;
+                            await Task.Delay(30, cancellation);
+                            if (animators.Any(animator => animator.Progress != 0))
+                                throw new InvalidOperationException("Disabled expansion animation did not collapse immediately.");
+                            expansion.ViewModel.IsExpanded = true;
+                            await Task.Delay(30, cancellation);
+                            if (animators.Any(animator => !animator.IsExpanded || animator.Progress != 1))
+                                throw new InvalidOperationException("Expansion controls did not return to the expanded state.");
+                            Logger.Info("Expansion smoke: first render, animated collapse/expand, reversal and disabled motion passed");
+                        }
                         host.Content = null;
                     }
 

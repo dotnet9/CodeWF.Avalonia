@@ -61,7 +61,7 @@ public sealed class StatusComponentsPageViewModel : ReactiveObject
         {
             Id = IdKind,
             Name = L.Instance.GetResource("Demo.Text.StatusComponentsPageaxaml.BuildProperties007"),
-            Kind = PropertyItemKind.Radio,
+            Kind = PropertyItemKind.Choice,
             Options = [L.Instance.GetResource("Demo.Text.StatusComponentsPageaxaml.BuildProperties008"), L.Instance.GetResource("Demo.Text.StatusComponentsPageaxaml.BuildProperties009"), L.Instance.GetResource("Demo.Text.StatusComponentsPageaxaml.BuildProperties010"), L.Instance.GetResource("Demo.Text.StatusComponentsPageaxaml.BuildProperties011"), L.Instance.GetResource("Demo.Text.StatusComponentsPageaxaml.BuildProperties012")],
             Value = L.Instance.GetResource("Demo.Text.StatusComponentsPageaxaml.BuildProperties013"),
             DefaultValue = L.Instance.GetResource("Demo.Text.StatusComponentsPageaxaml.BuildProperties014"),

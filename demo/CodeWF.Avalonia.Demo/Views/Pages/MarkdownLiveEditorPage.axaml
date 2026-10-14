@@ -12,10 +12,10 @@
     </Border>
 
     <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
-      <Button Content="{codewf:I18n Demo.Text.MarkdownLiveEditorPage.View002}" Click="OnInsert" />
-      <Button Content="{codewf:I18n Demo.Text.MarkdownLiveEditorPage.View003}" Click="OnFocusFirst" />
-      <Button Content="{codewf:I18n Demo.Text.MarkdownLiveEditorPage.View004}" Click="OnBold" />
-      <Button Content="{codewf:I18n Demo.Text.MarkdownLiveEditorPage.View005}" Click="OnTable" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownLiveEditorPage.View002}" Click="OnInsert" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownLiveEditorPage.View003}" Click="OnFocusFirst" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownLiveEditorPage.View004}" Click="OnBold" />
+      <Button Classes="demo-action" Content="{codewf:I18n Demo.Text.MarkdownLiveEditorPage.View005}" Click="OnTable" />
     </StackPanel>
 
     <Border Grid.Row="2" x:Name="EditorHost" Margin="0,8,0,0"
