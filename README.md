@@ -25,6 +25,8 @@ A suite of UI control and capability libraries for Avalonia 12, published with t
 
 「依赖」列只列第三方与本仓包依赖；所有包均面向 `net10.0`（`Lang.Generator` 为 `netstandard2.0`）。**只有 4 个包直接依赖 Semi.Avalonia**。
 
+从 `12.1.4.11` 起，国际化的 JSON/XML/RESX 解析、文化回退与全局状态由 NuGet 包 `CodeWF.Toolkit.Lang` 提供，无需获取另一个仓库源码。`CodeWF.Avalonia.Lang` 保留 XAML 绑定和旧接口兼容层，两种命名空间的管理器共用同一状态；已有应用可继续使用原来的插件、自定义 `ILangPlugin` 和语言下拉框类型。控制台、服务及基础库直接安装 `CodeWF.Toolkit.Lang`，无需引入 Avalonia。
+
 | 包 | 说明 | 依赖 |
 |---|---|---|
 | [CodeWF.Avalonia.Controls](https://www.nuget.org/packages/CodeWF.Avalonia.Controls) | 基础自定义控件 + Semi 主题：Guide 引导、Transfer/SearchListBox、StatusBadge/StatusCard、CodeWFWindow/标题栏、WindowedStackPanel、梯形页签、If/Switch 标记扩展与转换器 | Avalonia、**Semi.Avalonia**、CodeWF.Avalonia.Lang |
@@ -34,7 +36,7 @@ A suite of UI control and capability libraries for Avalonia 12, published with t
 | [CodeWF.Avalonia.Markdown.Lite](https://www.nuget.org/packages/CodeWF.Avalonia.Markdown.Lite) | Markdown 渲染引擎（常规元素）+ 18 套排版主题 | Avalonia、Markdig、CodeWF.Avalonia.Controls\*、CodeWF.Avalonia.Lang\* |
 | [CodeWF.Avalonia.Markdown](https://www.nuget.org/packages/CodeWF.Avalonia.Markdown) | 完整包：图片/公式/Mermaid/代码高亮/多格式导出/源码与所见即所得编辑器 | Avalonia.AvaloniaEdit、AnimatedImage.Avalonia、Mermaider、SkiaSharp、Svg.Skia、Svg.Controls.Skia.Avalonia、Sylinko.CSharpMath.Avalonia、TextMateSharp(.Grammars)、CodeWF.Avalonia.Markdown.Lite、CodeWF.Avalonia.Controls\*、CodeWF.Avalonia.Lang\* |
 | [CodeWF.Avalonia.Log](https://www.nuget.org/packages/CodeWF.Avalonia.Log) | 日志查看控件与桌面通知（配合 CodeWF.Toolkit.Logging） | Avalonia、Xaml.Behaviors、CodeWF.Toolkit.Logging |
-| [CodeWF.Avalonia.Lang](https://www.nuget.org/packages/CodeWF.Avalonia.Lang) | 插件化国际化：I18n 标记扩展 + 内置 Json/Xml/Resx 加载器 | Avalonia |
+| [CodeWF.Avalonia.Lang](https://www.nuget.org/packages/CodeWF.Avalonia.Lang) | I18n 标记扩展、转换器与兼容接口；Json/Xml/Resx 解析使用共享 BCL 引擎 | Avalonia、CodeWF.Toolkit.Lang |
 | [CodeWF.Avalonia.Lang.Generator](https://www.nuget.org/packages/CodeWF.Avalonia.Lang.Generator) | 编译期源生成器：从语言资源生成强类型 Key | Roslyn（`PrivateAssets=all`，netstandard2.0） |
 
 \* 标注的依赖由对应包经传递引用带入，无需单独安装；它们本身不依赖 Semi，见 [主题与依赖](#主题与依赖--themes-and-dependencies)。

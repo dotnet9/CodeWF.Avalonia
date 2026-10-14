@@ -62,7 +62,7 @@ public class I18nBinding : MultiBindingExtensionBase
                     new ClrPropertyInfo(
                         nameof(I18nManager.ResourceVersion),
                         target => ((I18nManager)target).ResourceVersion,
-                        (target, value) => ((I18nManager)target).ResourceVersion = (int)value!,
+                        null,
                         typeof(int)),
                     PropertyInfoAccessorFactory.CreateInpcPropertyAccessor)
                 .Build()

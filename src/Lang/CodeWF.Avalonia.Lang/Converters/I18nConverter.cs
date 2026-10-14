@@ -59,10 +59,10 @@ public class I18nConverter : IMultiValueConverter
             try
             {
                 var formatCulture = currentCulture;
-                if (!string.IsNullOrWhiteSpace(owner.CultureName)
-                    && CultureFallback.TryCreateCulture(owner.CultureName, out var fixedCulture))
+                if (!string.IsNullOrWhiteSpace(owner.CultureName))
                 {
-                    formatCulture = fixedCulture;
+                    try { formatCulture = CultureInfo.GetCultureInfo(owner.CultureName); }
+                    catch (CultureNotFoundException) { }
                 }
 
                 value = string.Format(formatCulture, format, args);

@@ -11,6 +11,11 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using Xunit;
+using Avalonia.Controls;
+using Avalonia.Data;
+using CoreManager = CodeWF.Toolkit.Lang.I18nManager;
+using CoreJsonPlugin = CodeWF.Toolkit.Lang.Json.JsonLangPlugin;
+using CoreLocalizer = CodeWF.Toolkit.Lang.Json.JsonLocalizer;
 
 namespace CodeWF.Avalonia.Content.Tests.Lang;
 
@@ -113,7 +118,7 @@ public class CultureLookupTests
         var plugin = new JsonLangPlugin { ResourceFolder = folder.Path };
         plugin.Load(new CultureInfo("en-US"));
 
-        Assert.Contains(plugin.LoadDiagnostics, diagnostic => diagnostic.Contains("metadata", StringComparison.Ordinal));
+        Assert.Contains(new CoreLocalizer(typeof(CoreManager).Assembly).Format("Toolkit.Lang.Diagnostics.JsonMetadataSkipped", Path.Combine(folder.Path, "invalid.json")), plugin.LoadDiagnostics);
     }
 
     [Fact]
@@ -125,7 +130,7 @@ public class CultureLookupTests
         var plugin = new XmlLangPlugin { ResourceFolder = folder.Path };
         plugin.Load(new CultureInfo("en-US"));
 
-        Assert.Contains(plugin.LoadDiagnostics, diagnostic => diagnostic.Contains("metadata", StringComparison.Ordinal));
+        Assert.Contains(new CoreLocalizer(typeof(CoreManager).Assembly).Format("Toolkit.Lang.Diagnostics.XmlMetadataSkipped", Path.Combine(folder.Path, "invalid.xml")), plugin.LoadDiagnostics);
     }
 
     [Fact]
@@ -144,7 +149,7 @@ public class CultureLookupTests
         plugin.Load(new CultureInfo("en-US"));
 
         Assert.Empty(plugin.GetLanguages()!);
-        Assert.Contains(plugin.LoadDiagnostics, diagnostic => diagnostic.Contains("metadata", StringComparison.Ordinal));
+        Assert.Contains(new CoreLocalizer(typeof(CoreManager).Assembly).Format("Toolkit.Lang.Diagnostics.JsonMetadataSkipped", Path.Combine(folder.Path, "invalid.json")), plugin.LoadDiagnostics);
     }
 
     [Fact]
@@ -161,7 +166,7 @@ public class CultureLookupTests
         plugin.Load(new CultureInfo("en-US"));
 
         Assert.Empty(plugin.GetLanguages()!);
-        Assert.Contains(plugin.LoadDiagnostics, diagnostic => diagnostic.Contains("metadata", StringComparison.Ordinal));
+        Assert.Contains(new CoreLocalizer(typeof(CoreManager).Assembly).Format("Toolkit.Lang.Diagnostics.XmlMetadataSkipped", Path.Combine(folder.Path, "invalid.xml")), plugin.LoadDiagnostics);
     }
 
     [Fact]
@@ -183,6 +188,46 @@ public class CultureLookupTests
                 new CultureInfo("en-US"));
 
             Assert.Equal("Value: 1.234,50", result);
+        });
+    }
+
+    [Fact]
+    public void ToolkitCultureAndResourceChangesRefreshExistingAvaloniaBinding()
+    {
+        _platform.Run(() =>
+        {
+            using var folder = new TemporaryFolder();
+            WriteJson(folder.Path, "en.json", "en-US", "English");
+            WriteJson(folder.Path, "de.json", "de-DE", "German");
+            var plugin = new CoreJsonPlugin { ResourceFolder = folder.Path };
+            CoreManager.Instance.Register(plugin, new CultureInfo("en-US"));
+            var text = new TextBlock();
+            using var binding = text.Bind(TextBlock.TextProperty, (BindingBase)new I18nBinding("Localization.Title").ProvideValue(null!));
+            Assert.Equal("English", text.Text);
+            CoreManager.Instance.Culture = new CultureInfo("de-DE");
+            Assert.Equal("German", text.Text);
+            Assert.Equal(CoreManager.Instance.Culture, I18nManager.Instance.Culture);
+            plugin.Resources["de-DE"].Languages["Localization.Title"] = "Updated";
+            CoreManager.Instance.AddResource();
+            Assert.Equal("Updated", text.Text);
+            Assert.Equal(CoreManager.Instance.ResourceVersion, I18nManager.Instance.ResourceVersion);
+            Assert.IsType<LocalizationLanguage>(I18nManager.Instance.GetLanguages()![0]);
+            CoreManager.Instance.Culture = new CultureInfo("en-US");
+        });
+    }
+
+    [Fact]
+    public void LegacyPluginAndCultureAreVisibleToToolkitConsumers()
+    {
+        _platform.Run(() =>
+        {
+            var plugin = new TestPlugin();
+            I18nManager.Instance.Register(plugin, new CultureInfo("en-US"));
+            Assert.Equal("Value: {0:N2}", CoreManager.Instance.GetResource("Message"));
+            I18nManager.Instance.Culture = new CultureInfo("de-DE");
+            Assert.Equal("de-DE", CoreManager.Instance.Culture!.Name);
+            Assert.Equal("de-DE", plugin.Culture.Name);
+            I18nManager.Instance.Culture = new CultureInfo("en-US");
         });
     }
 
