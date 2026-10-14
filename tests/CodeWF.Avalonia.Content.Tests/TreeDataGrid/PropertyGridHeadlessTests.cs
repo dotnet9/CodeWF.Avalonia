@@ -3,8 +3,15 @@ using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 
 using Xunit;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 using Avalonia.Styling;
+using Avalonia;
+using Avalonia.Headless;
+using Avalonia.Input;
+using Avalonia.Layout;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 
 namespace CodeWF.Avalonia.Content.Tests.TreeDataGrid;
 
@@ -17,6 +24,63 @@ public sealed class PropertyGridHeadlessTests
     private readonly AvaloniaPlatformFixture _platform;
 
     public PropertyGridHeadlessTests(AvaloniaPlatformFixture platform) => _platform = platform;
+
+    [Fact]
+    public void EditorsFillCellsAndPointerDragsResizeColumnsAndRows() => _platform.Run(() =>
+    {
+        var theme = new Semi.Avalonia.SemiTheme();
+        Application.Current!.Styles.Add(theme);
+        var text = new PropertyItem { Id = "text", Name = "Title", Kind = PropertyItemKind.Text, Value = "Sample" };
+        var choice = new PropertyItem { Id = "choice", Name = "Mode", Kind = PropertyItemKind.Choice, Options = ["Light", "Dark"], Value = "Light" };
+        var grid = new PropertyGrid { Items = new[] { text, choice }, NameColumnWidth = 140 };
+        var window = new Window { Width = 480, Height = 360, Content = grid };
+        try
+        {
+            window.Show();
+            window.UpdateLayout();
+            Dispatcher.UIThread.RunJobs();
+            var editors = grid.GetVisualDescendants().OfType<PropertyCellEditor>().ToArray();
+            var input = Assert.IsType<TextBox>(editors.Single(editor => ((PropertyLeafRow)editor.DataContext!).Item == text).Content);
+            var combo = Assert.IsType<ComboBox>(editors.Single(editor => ((PropertyLeafRow)editor.DataContext!).Item == choice).Content);
+            foreach (var editor in new Control[] { input, combo })
+            {
+                Assert.Equal(HorizontalAlignment.Stretch, editor.HorizontalAlignment);
+                Assert.Equal(VerticalAlignment.Stretch, editor.VerticalAlignment);
+                var parent = Assert.IsAssignableFrom<Control>(editor.Parent);
+                Assert.Equal(parent.Bounds.Width, editor.Bounds.Width, 1);
+                Assert.Equal(parent.Bounds.Height, editor.Bounds.Height, 1);
+            }
+            Assert.Equal(new Thickness(0), input.BorderThickness);
+            Assert.Equal(new Thickness(0), combo.BorderThickness);
+            Assert.Equal(HorizontalAlignment.Left, combo.HorizontalContentAlignment);
+            Assert.NotNull(grid.FindControl<ToggleButton>("CategorizedButton")!.GetVisualDescendants().OfType<PathIcon>().Single().Data);
+            var search = grid.FindControl<TextBox>("SearchBox")!;
+            Assert.True(search.TranslatePoint(default, grid)!.Value.Y > grid.FindControl<ToggleButton>("CategorizedButton")!.Bounds.Height);
+
+            var column = grid.GetVisualDescendants().OfType<Border>().First(border => border.Classes.Contains("pg-col-handle"));
+            Drag(column, new Point(3, 10), new Vector(40, 0));
+            Assert.Equal(180, grid.NameColumnWidth, 1);
+            var rowLine = grid.GetVisualDescendants().OfType<Border>().Single(border => border.Classes.Contains("pg-row-line") && ReferenceEquals(border.Tag, text));
+            var initialHeight = Assert.IsAssignableFrom<Control>(rowLine.Parent).Bounds.Height;
+            Drag(rowLine, new Point(15, 3), new Vector(0, 20));
+            Assert.Equal(initialHeight + 20, text.RowHeight!.Value, 1);
+
+            void Drag(Control handle, Point offset, Vector delta)
+            {
+                var start = handle.TranslatePoint(offset, window)!.Value;
+                window.MouseMove(start);
+                window.MouseDown(start, MouseButton.Left);
+                window.MouseMove(start + delta);
+                window.MouseUp(start + delta, MouseButton.Left);
+                window.UpdateLayout();
+            }
+        }
+        finally
+        {
+            window.Close();
+            Application.Current.Styles.Remove(theme);
+        }
+    });
 
     [Fact]
     public void ReplacingItems_PreservesSelectionById_AndUsesTheNewDescription()

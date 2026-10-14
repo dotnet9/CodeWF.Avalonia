@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -15,10 +15,20 @@ using Avalonia.VisualTree;
 namespace CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 
 /// <summary>
-/// Value-cell editor host: builds the editor for <see cref="PropertyItem.Kind"/> and carries commit semantics./// (Text commits on focus loss/Enter with Esc revert; number validation rolls back; percent previews while dragging and commits on release; color commits live.)/// Expandable rows with children render as summary text./// </summary>
+/// 按属性类型创建值编辑器，并统一提交、回退与校验行为。
+/// 文本在失焦或按回车时提交，按 Esc 回退；百分比拖动时预览，松开后提交。
+/// 带子属性的行显示汇总值。
+/// </summary>
 public class PropertyCellEditor : ContentControl
 {
     private bool _rebuilding;
+
+    /// <summary>使值编辑器填满所属单元格，行高变化时同步拉伸。</summary>
+    public PropertyCellEditor()
+    {
+        HorizontalContentAlignment = HAlignment.Stretch;
+        VerticalContentAlignment = VAlignment.Stretch;
+    }
 
     /// <inheritdoc />
     protected override void OnDataContextChanged(EventArgs e)
@@ -129,6 +139,7 @@ public class PropertyCellEditor : ContentControl
     {
         var box = new TextBox
         {
+            Classes = { "pg-input" },
             Text = item.Value as string ?? string.Empty,
             PlaceholderText = item.Watermark,
             IsReadOnly = false,
@@ -158,7 +169,7 @@ public class PropertyCellEditor : ContentControl
                 }
                 else
                 {
-                    box.Text = committed; // preview canceled: roll back the display
+                    box.Text = committed; // 预览被取消时回退显示值
                 }
             }
             finally
@@ -204,9 +215,10 @@ public class PropertyCellEditor : ContentControl
 
     private Control BuildNumber(PropertyItem item)
     {
-        // FormatString must stay non-null: Avalonia 12.1.4 ConvertValueToText dereferences it.
+        // FormatString 不可为空，Avalonia 的数值转换会直接使用该格式。
         var numeric = new NumericUpDown
         {
+            Classes = { "pg-input" },
             Minimum = item.Minimum.HasValue ? (decimal)item.Minimum.Value : decimal.MinValue,
             Maximum = item.Maximum.HasValue ? (decimal)item.Maximum.Value : decimal.MaxValue,
             Increment = (decimal)(item.Increment <= 0 ? 1 : item.Increment),
@@ -247,6 +259,7 @@ public class PropertyCellEditor : ContentControl
         var checkBox = new CheckBox
         {
             IsChecked = item.Value as bool? ?? false,
+            Margin = new Thickness(6, 0),
             VerticalContentAlignment = VAlignment.Center,
         };
         checkBox.IsCheckedChanged += (_, _) =>
@@ -263,6 +276,9 @@ public class PropertyCellEditor : ContentControl
     {
         var combo = new ComboBox
         {
+            Classes = { "pg-input" },
+            HorizontalContentAlignment = HAlignment.Left,
+            VerticalContentAlignment = VAlignment.Center,
             ItemsSource = item.Options,
             PlaceholderText = item.Watermark ?? PropertyGridLocalization.Get(PropertyGridLanguage.SelectPlaceholder),
         };
@@ -282,6 +298,7 @@ public class PropertyCellEditor : ContentControl
         var panel = new StackPanel
         {
             Orientation = LOrientation.Horizontal,
+            Margin = new Thickness(6, 0),
             VerticalAlignment = VAlignment.Center,
         };
         var groupName = "pg_radio_" + (item.Id ?? item.GetHashCode().ToString());
@@ -350,7 +367,7 @@ public class PropertyCellEditor : ContentControl
             label.Text = Math.Round(slider.Value, 0) + "%";
             if (dragging)
             {
-                // While dragging: preview only; roll the slider back if the preview is canceled.
+                // 拖动时仅预览，预览被取消时回退滑块值。
                 var owner = Owner;
                 if (owner is not null && !Equals(item.Value, slider.Value)
                     && owner.PreviewValue(item, slider.Value))
@@ -378,7 +395,10 @@ public class PropertyCellEditor : ContentControl
     {
         var box = new TextBox
         {
+            Classes = { "pg-input" },
             Text = item.Value is DateTime dt ? dt.ToString("yyyy/MM/dd HH:mm", CultureInfo.InvariantCulture) : string.Empty,
+            HorizontalContentAlignment = HAlignment.Left,
+            VerticalContentAlignment = VAlignment.Center,
             PlaceholderText = item.Watermark ?? "yyyy/MM/dd HH:mm",
         };
         var committed = box.Text;

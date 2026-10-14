@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="CodeWF.Avalonia.TreeDataGrid.PropertyGrid.PropertyGrid"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -15,7 +15,7 @@
           <SolidColorBrush x:Key="PgForeground" Color="#1D2129" />
           <SolidColorBrush x:Key="PgSecondaryForeground" Color="#6B7075" />
           <SolidColorBrush x:Key="PgBorder" Color="#E2E4E8" />
-          <SolidColorBrush x:Key="PgLine" Color="#EDEEF1" />
+          <SolidColorBrush x:Key="PgLine" Color="#DADDE3" />
           <SolidColorBrush x:Key="PgHover" Color="#F4F6F8" />
           <SolidColorBrush x:Key="PgAccent" Color="#1667D9" />
           <SolidColorBrush x:Key="PgSelected" Color="#1667D9" />
@@ -30,7 +30,7 @@
           <SolidColorBrush x:Key="PgForeground" Color="#D4D4D4" />
           <SolidColorBrush x:Key="PgSecondaryForeground" Color="#9A9A9A" />
           <SolidColorBrush x:Key="PgBorder" Color="#333336" />
-          <SolidColorBrush x:Key="PgLine" Color="#2B2B2E" />
+          <SolidColorBrush x:Key="PgLine" Color="#414148" />
           <SolidColorBrush x:Key="PgHover" Color="#3A3A3D" />
           <SolidColorBrush x:Key="PgAccent" Color="#0F6FDF" />
           <SolidColorBrush x:Key="PgSelected" Color="#0F6FDF" />
@@ -48,34 +48,24 @@
   </UserControl.Resources>
 
   <UserControl.Styles>
-    <!-- Toolbar -->    <Style Selector="Border.pg-toolbar">
+    <!-- 工具栏 -->    <Style Selector="Border.pg-toolbar">
       <Setter Property="Background" Value="{DynamicResource PgToolbarBackground}" />
       <Setter Property="BorderBrush" Value="{DynamicResource PgBorder}" />
       <Setter Property="BorderThickness" Value="0,0,0,1" />
-      <Setter Property="Height" Value="36" />
-      <Setter Property="Padding" Value="8,0" />
+      <Setter Property="Padding" Value="6" />
     </Style>
     <Style Selector="ToggleButton.pg-view">
-      <Setter Property="Width" Value="28" />
-      <Setter Property="Height" Value="26" />
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Height" Value="30" />
       <Setter Property="Padding" Value="0" />
       <Setter Property="Foreground" Value="{DynamicResource PgSecondaryForeground}" />
-    </Style>
-    <Style Selector="ToggleButton.pg-view Path">
-      <Setter Property="Fill" Value="{DynamicResource PgSecondaryForeground}" />
-      <Setter Property="Stroke" Value="{DynamicResource PgSecondaryForeground}" />
     </Style>
     <Style Selector="ToggleButton.pg-view:checked">
       <Setter Property="Foreground" Value="{DynamicResource PgAccent}" />
     </Style>
-    <Style Selector="ToggleButton.pg-view:checked Path">
-      <Setter Property="Fill" Value="{DynamicResource PgAccent}" />
-      <Setter Property="Stroke" Value="{DynamicResource PgAccent}" />
-    </Style>
     <Style Selector="Border.pg-searchbox">
-      <Setter Property="Height" Value="24" />
-      <Setter Property="MinWidth" Value="160" />
-      <Setter Property="Margin" Value="8,0,0,0" />
+      <Setter Property="Height" Value="28" />
+      <Setter Property="Margin" Value="0,5,0,0" />
       <Setter Property="Padding" Value="8,0" />
       <Setter Property="BorderBrush" Value="{DynamicResource PgBorder}" />
       <Setter Property="BorderThickness" Value="1" />
@@ -96,7 +86,7 @@
       <Setter Property="Foreground" Value="{DynamicResource PgSecondaryForeground}" />
     </Style>
 
-    <!-- Rows -->    <Style Selector="Grid.pg-row, Border.pg-row">
+    <!-- 属性行 -->    <Style Selector="Grid.pg-row, Border.pg-row">
       <Setter Property="FlowDirection" Value="LeftToRight" />
     </Style>
     <Style Selector="Grid.pg-row:pointerover">
@@ -113,7 +103,23 @@
       <Setter Property="Background" Value="{DynamicResource PgSelected}" />
     </Style>
     <Style Selector="Border.pg-value">
-      <Setter Property="Padding" Value="6,0,4,0" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
+    <!-- 值列保持表格外观，编辑器占满单元格；焦点由底色和光标表达。 -->
+    <Style Selector="TextBox.pg-input, NumericUpDown.pg-input, ComboBox.pg-input">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="VerticalAlignment" Value="Stretch" />
+      <Setter Property="MinHeight" Value="0" />
+      <Setter Property="MinWidth" Value="0" />
+      <Setter Property="Margin" Value="0" />
+      <Setter Property="Padding" Value="6,0" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="TextBox.pg-input:focus, NumericUpDown.pg-input:focus-within, ComboBox.pg-input:focus">
+      <Setter Property="Background" Value="{DynamicResource PgEditorBackground}" />
     </Style>
     <Style Selector="TextBlock.pg-name">
       <Setter Property="VerticalAlignment" Value="Center" />
@@ -141,10 +147,12 @@
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style Selector="TextBlock.pg-readonly">
+      <Setter Property="Margin" Value="6,0" />
       <Setter Property="Foreground" Value="{DynamicResource PgSecondaryForeground}" />
       <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
     <Style Selector="TextBlock.pg-summary">
+      <Setter Property="Margin" Value="6,0" />
       <Setter Property="Foreground" Value="{DynamicResource PgSecondaryForeground}" />
       <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
@@ -172,11 +180,12 @@
       <Setter Property="Foreground" Value="{DynamicResource PgSecondaryForeground}" />
     </Style>
 
-    <!-- Indent guides -->    <Style Selector="ItemsControl.pg-guides">
+    <!-- 层级缩进线 -->    <Style Selector="ItemsControl.pg-guides">
       <Setter Property="VerticalAlignment" Value="Stretch" />
     </Style>
 
-    <!-- Column resize hit area -->    <Style Selector="Border.pg-col-handle">
+    <!-- 列宽拖拽命中区域 -->    <Style Selector="Border.pg-col-handle">
+      <Setter Property="Background" Value="Transparent" />
       <Setter Property="Width" Value="7" />
       <Setter Property="Margin" Value="-3,0,0,0" />
       <Setter Property="HorizontalAlignment" Value="Right" />
@@ -184,7 +193,8 @@
       <Setter Property="ZIndex" Value="3" />
     </Style>
 
-    <!-- Row divider line: flush with the panel's left edge -->    <Style Selector="Border.pg-row-line">
+    <!-- 贯穿属性行的行高拖拽区域 -->    <Style Selector="Border.pg-row-line">
+      <Setter Property="Background" Value="Transparent" />
       <Setter Property="Height" Value="7" />
       <Setter Property="VerticalAlignment" Value="Bottom" />
       <Setter Property="Margin" Value="0,0,0,-3" />
@@ -200,7 +210,7 @@
       <Setter Property="Background" Value="{DynamicResource PgAccent}" />
     </Style>
 
-    <!-- Description pane -->    <Style Selector="Border.pg-desc">
+    <!-- 属性说明区 -->    <Style Selector="Border.pg-desc">
       <Setter Property="Background" Value="{DynamicResource PgToolbarBackground}" />
       <Setter Property="BorderBrush" Value="{DynamicResource PgBorder}" />
       <Setter Property="BorderThickness" Value="0,1,0,0" />
@@ -219,26 +229,19 @@
 
   <Grid x:Name="RootGrid" RowDefinitions="Auto,*,Auto" Background="{DynamicResource PgBackground}" TextElement.Foreground="{DynamicResource PgForeground}">
 
-    <!-- Toolbar: categorized/alphabetical toggle + search + more -->    <Border Grid.Row="0" Classes="pg-toolbar" IsVisible="{Binding ShowToolBar, ElementName=Root}">
-      <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+    <!-- 分类与字母排序，下一行搜索 -->    <Border Grid.Row="0" Classes="pg-toolbar" IsVisible="{Binding ShowToolBar, ElementName=Root}">
+      <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,*,Auto">
         <ToggleButton Grid.Column="0" x:Name="CategorizedButton" Classes="pg-view" Click="OnCategorizedClick">
-          <Panel>
-            <Path Data="M1.5,2 h3.2 v3.2 h-3.2 z M1.5,6.4 h3.2 v3.2 h-3.2 z M1.5,10.8 h3.2 v3.2 h-3.2 z" Stretch="None" />
-            <Path Data="M6.8,3.6 h7.7 M6.8,8 h7.7 M6.8,12.4 h7.7" Stretch="None" />
-          </Panel>
+          <PathIcon Width="18" Height="18" Data="{DynamicResource SemiIconListView}" />
         </ToggleButton>
         <ToggleButton Grid.Column="1" x:Name="AlphabetButton" Classes="pg-view" Click="OnAlphabetClick">
-          <Panel>
-            <TextBlock FontSize="7" FontWeight="SemiBold" Text="A" Margin="2,-3,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
-            <TextBlock FontSize="7" FontWeight="SemiBold" Text="Z" Margin="2,0,0,-2" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-            <Path Data="M12.5,3 v9.5 m0,0 l-2.5,-2.7 m2.5,2.7 l2.5,-2.7" Stretch="None" />
-          </Panel>
+          <PathIcon Width="18" Height="18" Data="{DynamicResource SemiIconSort}" />
         </ToggleButton>
 
-        <Border Grid.Column="2" Classes="pg-searchbox">
+        <Border Grid.Row="1" Grid.ColumnSpan="4" Classes="pg-searchbox">
           <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
-            <Path Grid.Column="0" Stroke="{DynamicResource PgSecondaryForeground}" StrokeThickness="1.4" Stretch="None"
-                  Data="M6,2 a4,4 0 1 0 0.01,0 M9.2,9.2 L12.5,12.5" Margin="0,0,5,0" VerticalAlignment="Center" />
+            <PathIcon Grid.Column="0" Width="16" Height="16" Foreground="{DynamicResource PgSecondaryForeground}"
+                      Data="{DynamicResource SemiIconSearch}" Margin="0,0,5,0" VerticalAlignment="Center" />
             <TextBox Grid.Column="1" x:Name="SearchBox" Classes="pg-search"
                      Text="{Binding SearchText, ElementName=Root, Mode=TwoWay}"
                      TextChanged="OnSearchTextChanged" />
@@ -249,7 +252,7 @@
           </Grid>
         </Border>
 
-        <Button Grid.Column="5" x:Name="MoreButton" Classes="pg-mini-button" Focusable="False">
+        <Button Grid.Column="3" x:Name="MoreButton" Classes="pg-mini-button" Focusable="False">
           <Path Fill="{DynamicResource PgSecondaryForeground}" Stretch="None"
                 Data="M3,8 a1.4,1.4 0 1 0 0.02,0 M8,8 a1.4,1.4 0 1 0 0.02,0 M13,8 a1.4,1.4 0 1 0 0.02,0" />
           <Button.Flyout>
@@ -266,7 +269,7 @@
       </Grid>
     </Border>
 
-    <!-- Row list -->    <ScrollViewer Grid.Row="1" x:Name="RowsScroll">
+    <!-- 属性行列表 -->    <ScrollViewer Grid.Row="1" x:Name="RowsScroll">
       <ItemsControl x:Name="RowsHost">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>
@@ -275,7 +278,7 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.DataTemplates>
 
-          <!-- Category header row -->          <DataTemplate x:DataType="pg:PropertyCategoryRow" DataType="pg:PropertyCategoryRow">
+          <!-- 分类标题行 -->          <DataTemplate x:DataType="pg:PropertyCategoryRow" DataType="pg:PropertyCategoryRow">
             <Border Classes="pg-row"
                     Background="{DynamicResource PgGroupBackground}"
                     MinHeight="{Binding DefaultRowHeight, ElementName=Root}"
@@ -307,7 +310,7 @@
             </Border>
           </DataTemplate>
 
-          <!-- Property row -->          <DataTemplate x:DataType="pg:PropertyLeafRow" DataType="pg:PropertyLeafRow">
+          <!-- 属性行 -->          <DataTemplate x:DataType="pg:PropertyLeafRow" DataType="pg:PropertyLeafRow">
             <Grid Classes="pg-row" Classes.selected="{Binding Item.IsSelected}"
                   MinHeight="{Binding DefaultRowHeight, ElementName=Root}"
                   Height="{Binding Item.RowHeight, Converter={x:Static pg:NullableDoubleToHeightConverter.Instance}}"
@@ -320,7 +323,7 @@
                 </ContextMenu>
               </Grid.ContextMenu>
 
-              <!-- Name cell -->              <Border Grid.Column="0" Classes="pg-name" Classes.selected="{Binding Item.IsSelected}"
+              <!-- 名称单元格 -->              <Border Grid.Column="0" Classes="pg-name" Classes.selected="{Binding Item.IsSelected}"
                       Width="{Binding NameColumnWidth, ElementName=Root}">
                 <Panel>
                   <StackPanel Orientation="Horizontal" Margin="{Binding Depth, Converter={x:Static pg:DepthToThicknessConverter.Instance}}">
@@ -346,11 +349,11 @@
                 </Panel>
               </Border>
 
-              <!-- Value cell -->              <Border Grid.Column="1" Classes="pg-value">
+              <!-- 值单元格 -->              <Border Grid.Column="1" Classes="pg-value">
                 <pg:PropertyCellEditor />
               </Border>
 
-              <!-- Row divider line (flush) -->              <Border Grid.ColumnSpan="2" Classes="pg-row-line" Tag="{Binding Item}"
+              <!-- 贯穿整行的分隔线 -->              <Border Grid.ColumnSpan="2" Classes="pg-row-line" Tag="{Binding Item}"
                       PointerPressed="OnRowLinePressed" DoubleTapped="OnRowLineDoubleTapped">
                 <Border />
               </Border>
@@ -360,7 +363,7 @@
       </ItemsControl>
     </ScrollViewer>
 
-    <!-- Description pane -->    <Border Grid.Row="2" Classes="pg-desc" IsVisible="{Binding ShowDescriptionPane, ElementName=Root}">
+    <!-- 属性说明区 -->    <Border Grid.Row="2" Classes="pg-desc" IsVisible="{Binding ShowDescriptionPane, ElementName=Root}">
       <StackPanel Margin="12,8">
         <TextBlock Classes="pg-desc-name" Text="{Binding SelectedItem.Name, ElementName=Root}" />
         <TextBlock Classes="pg-desc-text"
