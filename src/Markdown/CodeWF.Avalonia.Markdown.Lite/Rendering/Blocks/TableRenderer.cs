@@ -9,7 +9,7 @@ using Markdig.Syntax;
 namespace CodeWF.Avalonia.Markdown.Rendering;
 
 /// <summary>
-/// 表格渲染器：星号列布局的网格表，含表头底色与行/列分隔线。
+/// 表格渲染器：按内容分配列宽，含表头底色与行/列分隔线。
 /// </summary>
 internal sealed class TableRenderer : IMarkdownBlockRenderer
 {
@@ -22,12 +22,12 @@ internal sealed class TableRenderer : IMarkdownBlockRenderer
 
         var rows = table.OfType<TableRow>().ToList();
         var columnCount = rows.Select(row => row.Count).DefaultIfEmpty(0).Max();
-        var grid = new Grid();
+        var grid = new MarkdownTableGrid();
         context.AddMarkdownClass(grid, MarkdownStyleKeys.Table);
 
         for (var i = 0; i < columnCount; i++)
         {
-            grid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
+            grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
         }
 
         for (var rowIndex = 0; rowIndex < rows.Count; rowIndex++)
