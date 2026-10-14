@@ -155,11 +155,11 @@ public class MyMarkdownThemes : MarkdownThemes
 
 ## 演示应用 / Demo
 
-Demo 保留 Ribbon + Dock，按按钮与输入、对话与反馈、数据展示、布局与导航、Markdown、开发工具分类；每个主菜单对应一个具体控件或 API。首页先展示目录，组合工作流集中到“综合示例”。共享主题接口、MVVM 约定与截图检查见 [原生演示台文档](docs/NativeDemo.md)。
+Demo 保留 Ribbon + Dock，按输入与选择、反馈与引导、数据展示、布局与导航、Markdown、开发工具分类；每个主菜单对应一个具体控件或 API。首页先展示目录，组合工作流集中到“综合示例”。新增展开动画独立页，块编辑、平面表格增强与状态卡片提供具体用例。共享主题接口、MVVM 约定与截图检查见 [原生演示台文档](docs/NativeDemo.md)。
 
 The native overview offers live Markdown, natural sorting and Dock experiments. See the linked guide for optional Studio themes, localization and validation.
 
-Windows x64 NativeAOT Demo：标题栏支持主题色圈与下拉同步切换，默认 .NET 紫，也提供 AI 极光与暖陶的深浅主题。首页目录包含 31 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
+Windows x64 NativeAOT Demo：标题栏支持主题色圈与下拉同步切换，默认 .NET 紫，也提供 AI 极光与暖陶的深浅主题。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
 
 ![.NET 紫色原生演示台](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-dotnet.png)
 
@@ -169,7 +169,11 @@ Windows x64 NativeAOT Demo：标题栏支持主题色圈与下拉同步切换，
 
 ![Markdown 实时编辑](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-markdown.png)
 
-![主题与实验切换](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-interactions.gif)
+![平面表格增强](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-treegrid.png)
+
+![展开与折叠动画的原生逐帧演示](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-expansion.gif)
+
+![主题与实验截图巡览](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-interactions.gif)
 
 ```bash
 # 桌面演示台：Ribbon 页签 + Dock 工作区（左导航 / 中文档 / 右属性面板 / 下日志），含 .NET 紫、AI 极光、AI 暖陶与原有六套 Semi 配色，支持深浅与双语切换

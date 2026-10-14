@@ -63,7 +63,7 @@ dotnet test CodeWF.Avalonia.slnx -c Release
 
 ## Windows NativeAOT 验收
 
-验收环境为 Windows x64、.NET SDK 10.0.401，版本 `12.1.4.8`。用本仓脚本发布后直接启动原生 EXE：
+验收环境为 Windows x64、.NET SDK 10.0.401，版本 `12.1.4.9`。用本仓脚本发布后直接启动原生 EXE：
 
 ```powershell
 pwsh scripts/publish_avalonia_demo.ps1 -RuntimeIdentifier win-x64
@@ -72,12 +72,26 @@ Start-Process $demo -ArgumentList '--smoke' -Wait -PassThru
 Start-Process $demo -ArgumentList '--capture ./artifacts/studio-qa' -Wait -PassThru
 ```
 
-冒烟退出 0：31 个页面、13 个场景步骤、403 次主题渲染、5 次外壳渲染；另外验证首页绑定、六个导航入口以及 PNG 解码、PDF 文件头、Word 文档和 HTML 导出内容。
+冒烟退出 0：32 个页面、13 个场景步骤、416 次主题渲染、5 次外壳渲染；另外验证首页绑定、六个导航入口以及 PNG 解码、PDF 文件头、Word 文档和 HTML 导出内容。
 
 `--capture` 忽略用户存档布局，输出新配色的深浅、实验、英文、紧凑窗口和独立 API 页面截图，结束后退出。README 的 PNG 与 GIF 来自本轮原生 EXE。
+
+展开控件额外验证默认展开首屏、横向 / 纵向动画、快速反向、关闭动效及卸载取消。`studio-expansion.gif` 来自原生控件展开 / 折叠时的 32 个渲染帧；`studio-interactions.gif` 是主题与实验截图巡览。
 
 ## 验收限制
 
 Markdown 的第三方渲染和导出路径仍有裁剪 / AOT 分析警告；Linux / macOS 未在本轮本机验收。 页面渲染通过不等于全部 API、异常路径和平台行为均已验证。
 
-版本标签 `v12.1.4.8` 触发现有 NuGet 与 Demo 发布流程。
+版本标签 `v12.1.4.9` 触发现有 NuGet 与 Demo 发布流程。
+
+## 本轮改进
+
+- 调整为“输入与选择”“反馈与引导”，列管理移入数据展示；新增 ContentExpansionAnimator 独立页，目录共 32 页。
+- LiveEditor 原型改为真实的单栏块编辑；MarkdownViewer 默认折叠输入，先展示渲染结果。
+- TreeDataGrid 展示平面源的三态排序、长文本提示、多选与计数；状态卡片统一尺寸和样例。
+- 当前命令 / 导航与 Dock 页签统一选中，按钮使用 Semi OutlineButton，避免覆盖第三方控件内部按钮；右侧空参数页回退全局设置，调小属性与日志面板初始占比。
+- 修复 ContentExpansionAnimator 默认状态与进度不一致、收起目标错误及旧动画覆盖反向状态；状态属性改为下拉，样例文案适配卡片尺寸。
+
+以上不是全部公开 API 和视觉状态的逐项验收声明。键盘焦点、跨屏浮动、所有 Markdown 扩展语法及长时间性能仍应按具体应用继续验证。
+
+本轮记录：2026-10-14，Windows x64 / .NET SDK 10.0.401。本仓 287 项单元测试通过；两个仓库各自发布脚本执行成功，最终原生 EXE 的 `--smoke` 均退出 0。浏览器全部目录页以及重点交互检查无脚本异常。

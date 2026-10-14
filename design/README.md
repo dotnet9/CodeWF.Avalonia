@@ -9,15 +9,15 @@
 | Ribbon 分类 | 菜单对应 API |
 |---|---|
 | 首页 / Home | `介绍`、`关于` |
-| 按钮与输入 / Buttons & Inputs | `SearchListBox`、`Transfer`、`ColumnDisplayEditor` |
-| 对话与反馈 / Dialogs & Feedback | `StatusBadge`、`StatusCard`、`Guide`、`LogNotifications` |
-| 数据展示 / Data Display | `DataGridEnhancement`、`TreeDataGridExtension`、`PropertyGrid`、`LogView` |
-| 布局与导航 / Layout & Navigation | `CodeWFWindow`、`CodeWFTitleBar`、`DockControl`、`TrapezoidShapedTabControl`、`WindowedStackPanel`、`LeftTop2RightBottomLine` |
+| 输入与选择 / Inputs & Selection | `SearchListBox`、`Transfer` |
+| 反馈与引导 / Feedback & Guidance | `StatusBadge`、`StatusCard`、`Guide`、`LogNotifications` |
+| 数据展示 / Data Display | `DataGridEnhancement`、`ColumnDisplayEditor`、`TreeDataGridExtension`、`PropertyGrid`、`LogView` |
+| 布局与导航 / Layout & Navigation | `CodeWFWindow`、`CodeWFTitleBar`、`DockControl`、`TrapezoidShapedTabControl`、`WindowedStackPanel`、`LeftTop2RightBottomLine`、`ContentExpansionAnimator` |
 | Markdown / Markdown | `MarkdownViewer`、`Lite.MarkdownViewer`、`MarkdownEditorView`、`MarkdownLiveEditorView` |
 | 开发工具 / Developer Tools | `If`、`Switch`、`I18nManager`、`MarkdownDocumentExporter` |
 | 综合示例 / Examples | `Markdown 工作流`、`数据工作流`、`多文档工作流`、`应用级引导示例` |
 
-共 8 个分类、31 个页面。文档区默认完整展示功能演示；源码面板由“查看源码”打开，只提供有内容的 XAML / C# 标签。页面标题展示 API 名、NuGet 包与功能说明。
+共 8 个分类、32 个页面。文档区默认完整展示功能演示；源码面板由“查看源码”打开，只提供有内容的 XAML / C# 标签。页面标题展示 API 名、NuGet 包与功能说明。
 
 ## 配色与交互
 
@@ -39,4 +39,25 @@
 
 浏览器原型展示交互与布局，不运行 .NET、原生窗口、Socket 或文件导出。页面明确提示仅为浏览器预览；实际 API 结果在原生 Demo 中产生。原生控件使用 Semi 与 Dock 的模板，字体、窗口按钮和平台交互存在差异。
 
-浏览器逐页检查 31 个路由、中英文和导航切换，未发现脚本异常。NativeAOT 运行范围、命令与限制见 [原生 Demo 文档](../docs/NativeDemo.md)。
+浏览器逐页检查 32 个路由、中英文和导航切换，未发现脚本异常。NativeAOT 运行范围、命令与限制见 [原生 Demo 文档](../docs/NativeDemo.md)。
+
+## 重点页面用例
+
+| API | 原型与原生共同表达的用例 |
+|---|---|
+| MarkdownLiveEditorView | 单栏直接编辑块、失焦渲染、定位首块、插入段落和表格；不使用双栏源码 / 预览模型 |
+| ContentExpansionAnimator | 水平 / 垂直展开、快速反向、尺寸与时长调节、关闭动画 |
+| TreeDataGridExtension | 平面数据源、三态自然排序、Ctrl+A 多选、长文本截断提示与选择计数 |
+| StatusCard | 180×80 状态样例、相同双语内容、动态 Kind；保留公开控件本身的模板 |
+| MarkdownViewer | 首次打开先显示渲染结果；源码输入折叠，保留增量追加、任务回写与排版配置 |
+| If / Switch | 使用有效的 MarkupExtension 表达式，源码与原生演示一致 |
+
+`assets/control-examples.js` 维护这些具体交互。Ribbon 分类、当前命令、导航叶子的选中状态都跟随活动文档；原生 Dock 页签切换也更新对应菜单。无页面参数时属性面板展示全局设置。
+
+## 设计判断与验收标准
+
+分类以可独立使用的控件 / API 为单位，包名作为页面上的查找线索；模板部件、数据模型和引导指示器等配套类型在所属控件页表达。介绍、关于及综合示例不计入控件覆盖率。
+
+默认文档优先展示真实控件、可操作参数及结果。源码按需打开，右侧仅放当前页面参数或全局设置；多个方法和状态放在同页，避免为了增加页面数量拆散一个控件。Markdown 块编辑、平面表格增强和展开动画采用各自实际支持的交互模型。
+
+还原检查包括首屏可见、选中状态、裁切、深浅主题、中英文、紧凑窗口，以及输入后结果是否变化。按钮和控件继续使用 Semi 模板；浏览器原型与原生字体、Markdown 渲染和窗口行为存在平台差异，不以所有像素相同作为验收承诺。
