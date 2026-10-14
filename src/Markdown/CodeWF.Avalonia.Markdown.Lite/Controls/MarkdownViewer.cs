@@ -690,6 +690,9 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         }
 
         I18nManager.Instance.CultureChanged += OnCultureChanged;
+        I18nManager.Instance.ResourcesChanged += OnCultureChanged;
+        // 控件离开界面期间语言可能已改变，重新挂载时同步菜单文案。
+        ContextMenu = CreateViewerContextMenu();
         QueueRenderDocument(MarkdownRenderMode.Full);
     }
 
@@ -701,6 +704,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         }
 
         I18nManager.Instance.CultureChanged -= OnCultureChanged;
+        I18nManager.Instance.ResourcesChanged -= OnCultureChanged;
         base.OnDetachedFromVisualTree(e);
     }
 
@@ -1506,7 +1510,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             _viewerCopyMenuItem = new MenuItem();
             _viewerCopyMenuItem.Click += async (_, _) => await CopyRenderedTextAsync();
         }
-        _viewerCopyMenuItem.Header = I18nManager.Instance.GetResource(MarkdownL.CopyRenderedText);
+        _viewerCopyMenuItem.Header = MarkdownLocalization.GetResource(MarkdownL.CopyRenderedText);
         return new ContextMenu { ItemsSource = new[] { _viewerCopyMenuItem } };
     }
 
@@ -1514,7 +1518,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     {
         var copySelectionItem = new MenuItem
         {
-            Header = I18nManager.Instance.GetResource(MarkdownL.CopySelectedText)
+            Header = MarkdownLocalization.GetResource(MarkdownL.CopySelectedText)
         };
         copySelectionItem.Click += async (_, _) =>
         {
@@ -1530,7 +1534,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
         var copyRenderedTextItem = new MenuItem
         {
-            Header = I18nManager.Instance.GetResource(MarkdownL.CopyRenderedText)
+            Header = MarkdownLocalization.GetResource(MarkdownL.CopyRenderedText)
         };
         copyRenderedTextItem.Click += async (_, _) => await CopyRenderedTextAsync();
 

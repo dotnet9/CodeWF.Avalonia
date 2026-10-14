@@ -512,7 +512,7 @@ public static class MarkdownSocialCopyRenderer
 
 		try
 		{
-			var localized = I18nManager.Instance.GetResource(resourceKey);
+			var localized = MarkdownLocalization.GetResource(resourceKey);
 			if (!string.IsNullOrWhiteSpace(localized)
 			    && !string.Equals(localized, resourceKey, StringComparison.Ordinal))
 			{

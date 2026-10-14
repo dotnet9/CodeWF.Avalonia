@@ -3,6 +3,7 @@ using CodeWF.Avalonia.Log.Notifications.ViewModels;
 using CodeWF.Toolkit.Logging;
 using Microsoft.Extensions.Logging;
 using Xunit;
+using System.Globalization;
 
 namespace CodeWF.Avalonia.Controls.Tests.Log;
 
@@ -43,9 +44,15 @@ public sealed class NotificationWindowViewModelTests
         Assert.False(viewModel.IsNewLogVisible);
     }
 
-    [Fact]
-    public void SelectedCriticalLog_UsesCriticalTextAndTruncatesExcessiveContent()
+    [Theory]
+    [InlineData("en-US", "Critical")]
+    [InlineData("zh-CN", "严重错误")]
+    public void SelectedCriticalLog_UsesCriticalTextAndTruncatesExcessiveContent(string culture, string expectedLevel)
     {
+        var previousCulture = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(culture);
+        try
+        {
         var viewModel = CreateViewModel();
         var content = new string('x', 4100);
 
@@ -57,11 +64,13 @@ public sealed class NotificationWindowViewModelTests
         viewModel.AddLogs([(logEvent, "formatted template content")]);
 
         Assert.Equal(LogLevel.Critical, viewModel.Level);
-        Assert.Equal("严重错误", viewModel.LevelText);
+        Assert.Equal(expectedLevel, viewModel.LevelText);
         Assert.Equal(4003, viewModel.LogContent.Length);
         Assert.EndsWith("...", viewModel.LogContent);
         Assert.Equal("formatted template content", viewModel.SelectedLog?.Content);
         Assert.Equal(420, viewModel.MinimumCardHeight);
+        }
+        finally { CultureInfo.CurrentUICulture = previousCulture; }
     }
 
     private static NotificationWindowViewModel CreateViewModel()

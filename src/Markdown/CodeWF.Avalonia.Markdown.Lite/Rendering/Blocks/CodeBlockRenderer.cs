@@ -47,7 +47,7 @@ internal sealed class CodeBlockRenderer : IMarkdownBlockRenderer
 
         var copyButton = new Button
         {
-            Content = I18nManager.Instance.GetResource(MarkdownL.Copy),
+            Content = MarkdownLocalization.GetResource(MarkdownL.Copy),
             Tag = code
         };
         context.AddMarkdownClass(copyButton, MarkdownStyleKeys.CopyButton);

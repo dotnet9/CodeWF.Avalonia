@@ -1,4 +1,4 @@
-using Avalonia.Data;
+﻿using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Markup.Xaml;
 using System;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace CodeWF.Avalonia.Lang.MarkupExtensions;
 
 /// <summary>
-/// Wraps a MultiBinding and lets derived extensions initialize converter state once.
+/// 封装 MultiBinding，供派生标记扩展统一初始化转换器状态。
 /// </summary>
 public abstract class MultiBindingExtensionBase : MarkupExtension
 {
@@ -16,12 +16,12 @@ public abstract class MultiBindingExtensionBase : MarkupExtension
     private bool converterParameterInitialized;
 
     /// <summary>
-    /// Child bindings used by the wrapped MultiBinding.
+    /// 内部 MultiBinding 使用的子绑定集合。
     /// </summary>
     internal IList<BindingBase> Bindings => binding.Bindings;
 
     /// <summary>
-    /// Binding mode used by the wrapped MultiBinding.
+    /// 内部 MultiBinding 使用的绑定模式。
     /// </summary>
     protected BindingMode Mode
     {
@@ -30,7 +30,7 @@ public abstract class MultiBindingExtensionBase : MarkupExtension
     }
 
     /// <summary>
-    /// Multi-value converter. Derived classes can set it during initialization.
+    /// 多值转换器，派生类可在初始化时设置。
     /// </summary>
     protected IMultiValueConverter? Converter
     {
@@ -48,7 +48,7 @@ public abstract class MultiBindingExtensionBase : MarkupExtension
     }
 
     /// <summary>
-    /// Converter parameter. Derived classes can set it during initialization.
+    /// 转换器参数，派生类可在初始化时设置。
     /// </summary>
     protected object? ConverterParameter
     {

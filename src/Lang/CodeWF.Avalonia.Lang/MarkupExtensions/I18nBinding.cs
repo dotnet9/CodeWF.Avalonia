@@ -1,4 +1,4 @@
-using Avalonia.Data;
+﻿using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Data.Core;
 using Avalonia.Markup.Xaml.MarkupExtensions;
@@ -12,13 +12,13 @@ using System.Globalization;
 namespace CodeWF.Avalonia.Lang.MarkupExtensions;
 
 /// <summary>
-/// MultiBinding implementation used by I18nExtension.
+/// I18nExtension 使用的多值绑定实现。
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 public class I18nBinding : MultiBindingExtensionBase
 {
     /// <summary>
-    /// Creates a localization binding from a resource key or key binding.
+    /// 根据资源键或资源键绑定创建国际化绑定。
     /// </summary>
     [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "I18nBinding intentionally accepts runtime Avalonia bindings for dynamic localization keys.")]
     public I18nBinding(object key)
@@ -72,7 +72,7 @@ public class I18nBinding : MultiBindingExtensionBase
     }
 
     /// <summary>
-    /// Creates a localization binding with a fixed culture and format arguments.
+    /// 创建包含固定语言和格式参数的国际化绑定。
     /// </summary>
     public I18nBinding(object key, string? cultureName, IReadOnlyCollection<object> args) : this(key)
     {
@@ -94,32 +94,32 @@ public class I18nBinding : MultiBindingExtensionBase
     }
 
     /// <summary>
-    /// Resource key, constant value, enum value, or Avalonia binding.
+    /// 资源键、常量、枚举值或 Avalonia 绑定。
     /// </summary>
     public object Key { get; }
 
     /// <summary>
-    /// Fixed culture name. When unset, the binding follows I18nManager.Culture.
+    /// 固定语言名称；未设置时跟随 I18nManager.Culture。
     /// </summary>
     public string? CultureName { get; set; }
 
     /// <summary>
-    /// Argument indexes. Binding arguments point to MultiBinding indexes; constants point to Args indexes.
+    /// 参数索引：绑定参数指向 MultiBinding 项，常量参数指向 Args 项。
     /// </summary>
     internal List<(bool IsBinding, int Index)> Indexes { get; } = [];
 
     /// <summary>
-    /// Constant arguments passed to string.Format.
+    /// 传递给 string.Format 的常量参数。
     /// </summary>
     internal List<object> Args { get; } = [];
 
     /// <summary>
-    /// Converts the resource key to its lookup string.
+    /// 将资源键转换为查询使用的字符串。
     /// </summary>
     public IValueConverter? KeyConverter { get; set; }
 
     /// <summary>
-    /// Optional final value converter.
+    /// 可选的最终结果转换器。
     /// </summary>
     public IValueConverter? ValueConverter { get; set; }
 }

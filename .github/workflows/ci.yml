@@ -21,6 +21,10 @@ jobs:
       - name: 还原
         run: dotnet restore CodeWF.Avalonia.slnx
 
+      - name: 验证 T4 国际化资源映射
+        shell: pwsh
+        run: ./scripts/sync_localization_keys.ps1 -Check
+
       - name: 构建
         run: dotnet build CodeWF.Avalonia.slnx -c Release --no-restore
 

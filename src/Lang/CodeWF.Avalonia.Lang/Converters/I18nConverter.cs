@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using CodeWF.Avalonia.Lang.MarkupExtensions;
@@ -11,7 +11,7 @@ using System.Linq;
 namespace CodeWF.Avalonia.Lang.Converters;
 
 /// <summary>
-/// Resolves the current culture, resource key, and format arguments to the final value.
+/// 结合当前语言、资源键及格式参数生成最终文本。
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 public class I18nConverter : IMultiValueConverter

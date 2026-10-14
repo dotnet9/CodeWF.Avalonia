@@ -212,13 +212,13 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
             ;
             await ShowFallbackAsync(
                 version,
-                string.Format(I18nManager.Instance.GetResource(CodeWF.Avalonia.Markdown.MarkdownL.ImageFileNotFound), ex.FileName ?? source));
+                string.Format(MarkdownLocalization.GetResource(CodeWF.Avalonia.Markdown.MarkdownL.ImageFileNotFound), ex.FileName ?? source));
         }
         catch
         {
             await ShowFallbackAsync(
                 version,
-                string.Format(I18nManager.Instance.GetResource(CodeWF.Avalonia.Markdown.MarkdownL.ImageLoadFailed), AltText ?? source));
+                string.Format(MarkdownLocalization.GetResource(CodeWF.Avalonia.Markdown.MarkdownL.ImageLoadFailed), AltText ?? source));
         }
         finally
         {

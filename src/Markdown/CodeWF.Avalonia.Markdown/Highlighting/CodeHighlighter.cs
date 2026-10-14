@@ -125,7 +125,7 @@ internal static class CodeHighlighter
     {
         var copySelectionItem = new MenuItem
         {
-            Header = I18nManager.Instance.GetResource(MarkdownL.CopyRenderedText)
+            Header = MarkdownLocalization.GetResource(MarkdownL.CopyRenderedText)
         };
         copySelectionItem.Click += async (_, _) =>
         {

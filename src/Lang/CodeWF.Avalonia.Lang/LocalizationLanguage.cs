@@ -1,6 +1,6 @@
-namespace CodeWF.Avalonia.Lang;
+﻿namespace CodeWF.Avalonia.Lang;
 
-/// <summary>Compatibility metadata type for existing Avalonia language selectors.</summary>
+/// <summary>兼容现有 Avalonia 语言选择器的语言元数据类型。</summary>
 public class LocalizationLanguage : global::CodeWF.Toolkit.Lang.LocalizationLanguage
 {
     internal static LocalizationLanguage FromCore(global::CodeWF.Toolkit.Lang.LocalizationLanguage language)

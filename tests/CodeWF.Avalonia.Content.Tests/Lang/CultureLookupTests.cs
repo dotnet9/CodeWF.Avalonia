@@ -231,6 +231,40 @@ public class CultureLookupTests
         });
     }
 
+    [Theory]
+    [InlineData("en-US", "Copy rendered text")]
+    [InlineData("zh-CN", "复制渲染文本")]
+    [InlineData("zh-Hant-TW", "複製渲染文字")]
+    [InlineData("ja-JP", "レンダリング済みテキストをコピー")]
+    [InlineData("fr-FR", "Copy rendered text")]
+    public void MarkdownUsesEmbeddedResourcesWithoutCopyingLibraryJsonToTheHost(string culture, string expected)
+    {
+        Assert.Equal(expected, global::CodeWF.Avalonia.Markdown.MarkdownLocalization.GetResource(
+            global::CodeWF.Avalonia.Markdown.MarkdownL.CopyRenderedText, culture));
+    }
+
+    [Fact]
+    public void HostOutputJsonCanOverrideOneMarkdownKeyWithoutReplacingLibraryDefaults()
+    {
+        _platform.Run(() =>
+        {
+            using var folder = new TemporaryFolder();
+            File.WriteAllText(Path.Combine(folder.Path, "en-US.json"), """
+                {"language":"English","description":"Host override","cultureName":"en-US",
+                 "CodeWF.Avalonia.Markdown.MarkdownL.CopyRenderedText":"Custom copy"}
+                """);
+            CoreManager.Instance.Register(new CoreJsonPlugin { ResourceFolder = folder.Path }, new CultureInfo("en-US"));
+            try
+            {
+                Assert.Equal("Custom copy", global::CodeWF.Avalonia.Markdown.MarkdownLocalization.GetResource(
+                    global::CodeWF.Avalonia.Markdown.MarkdownL.CopyRenderedText));
+                Assert.Equal("Copy selected text", global::CodeWF.Avalonia.Markdown.MarkdownLocalization.GetResource(
+                    global::CodeWF.Avalonia.Markdown.MarkdownL.CopySelectedText));
+            }
+            finally { CoreManager.Instance.Register(new CoreJsonPlugin { ScanResourceFolder = false }, new CultureInfo("en-US")); }
+        });
+    }
+
     private static void WriteJson(string folder, string fileName, string cultureName, string title)
     {
         File.WriteAllText(Path.Combine(folder, fileName), $$"""

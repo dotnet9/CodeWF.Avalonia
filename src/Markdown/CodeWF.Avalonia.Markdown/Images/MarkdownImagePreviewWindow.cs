@@ -45,7 +45,7 @@ internal sealed class MarkdownImagePreviewWindow : Window
         _originalHeight = Math.Max(1, bitmap.PixelSize.Height);
         _usesDefaultTitle = string.IsNullOrWhiteSpace(title);
 
-        Title = _usesDefaultTitle ? I18nManager.Instance.GetResource(MarkdownL.ImagePreviewTitle) : title;
+        Title = _usesDefaultTitle ? MarkdownLocalization.GetResource(MarkdownL.ImagePreviewTitle) : title;
         Classes.Add(MarkdownStyleKeys.ImagePreviewWindow);
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
@@ -84,6 +84,7 @@ internal sealed class MarkdownImagePreviewWindow : Window
         Content = CreateLayout();
         PointerWheelChanged += OnPointerWheelChanged;
         I18nManager.Instance.CultureChanged += OnCultureChanged;
+        I18nManager.Instance.ResourcesChanged += OnCultureChanged;
         Closed += OnClosed;
         UpdateImageSize();
     }
@@ -91,6 +92,7 @@ internal sealed class MarkdownImagePreviewWindow : Window
     private void OnClosed(object? sender, EventArgs e)
     {
         I18nManager.Instance.CultureChanged -= OnCultureChanged;
+        I18nManager.Instance.ResourcesChanged -= OnCultureChanged;
         _bitmap.Dispose();
         _animatedStream?.Dispose();
     }
@@ -182,7 +184,7 @@ internal sealed class MarkdownImagePreviewWindow : Window
     {
         var button = new Button
         {
-            Content = I18nManager.Instance.GetResource(resourceKey),
+            Content = MarkdownLocalization.GetResource(resourceKey),
             VerticalAlignment = VerticalAlignment.Center
         };
         button.Classes.Add(MarkdownStyleKeys.ImagePreviewButton);
@@ -292,19 +294,19 @@ internal sealed class MarkdownImagePreviewWindow : Window
         var rotated = Math.Abs(_rotation % 180) == 90;
         _imageHost.Width = (rotated ? _originalHeight : _originalWidth) * _zoom;
         _imageHost.Height = (rotated ? _originalWidth : _originalHeight) * _zoom;
-        _zoomText.Text = string.Format(I18nManager.Instance.GetResource(MarkdownL.ImagePreviewZoomStatus), _zoom, _rotation);
+        _zoomText.Text = string.Format(MarkdownLocalization.GetResource(MarkdownL.ImagePreviewZoomStatus), _zoom, _rotation);
     }
 
     private void OnCultureChanged(object? sender, EventArgs e)
     {
         if (_usesDefaultTitle)
         {
-            Title = I18nManager.Instance.GetResource(MarkdownL.ImagePreviewTitle);
+            Title = MarkdownLocalization.GetResource(MarkdownL.ImagePreviewTitle);
         }
 
         foreach (var (button, resourceKey) in _localizedButtons)
         {
-            button.Content = I18nManager.Instance.GetResource(resourceKey);
+            button.Content = MarkdownLocalization.GetResource(resourceKey);
         }
 
         UpdateImageSize();
@@ -330,7 +332,7 @@ internal sealed class MarkdownImagePreviewWindow : Window
             ShowOverwritePrompt = true,
             FileTypeChoices =
             [
-                new FilePickerFileType(I18nManager.Instance.GetResource(MarkdownL.ImagePreviewImagesFileType))
+                new FilePickerFileType(MarkdownLocalization.GetResource(MarkdownL.ImagePreviewImagesFileType))
                 {
                     Patterns = ["*.png", "*.jpg", "*.jpeg", "*.webp", "*.bmp", "*.gif", "*.svg"],
                     MimeTypes = ["image/png", "image/jpeg", "image/webp", "image/bmp", "image/gif", "image/svg+xml"]

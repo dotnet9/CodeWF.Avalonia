@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -8,10 +8,10 @@ using CoreManager = CodeWF.Toolkit.Lang.I18nManager;
 
 namespace CodeWF.Avalonia.Lang;
 
-/// <summary>Avalonia compatibility facade over the shared UI-independent localization manager.</summary>
+/// <summary>基于共享国际化引擎的 Avalonia 兼容入口，底层引擎不依赖界面框架。</summary>
 public class I18nManager : INotifyPropertyChanged
 {
-    /// <summary>Gets the facade over the process-wide Toolkit manager.</summary>
+    /// <summary>获取进程内共享 Toolkit 国际化管理器的兼容入口。</summary>
     public static I18nManager Instance { get; } = new();
 
     private I18nManager()
@@ -23,24 +23,24 @@ public class I18nManager : INotifyPropertyChanged
 
     /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
-    /// <summary>Raised when either facade changes the shared culture.</summary>
+    /// <summary>任一入口切换共享语言后触发。</summary>
     public event EventHandler<EventArgs>? CultureChanged;
-    /// <summary>Raised after resources are added through either facade.</summary>
+    /// <summary>任一入口添加共享资源后触发。</summary>
     public event EventHandler<EventArgs>? ResourcesChanged;
-    /// <summary>Gets or sets the shared application culture.</summary>
+    /// <summary>获取或设置应用共享的当前语言。</summary>
     public CultureInfo? Culture { get => CoreManager.Instance.Culture; set => CoreManager.Instance.Culture = value; }
-    /// <summary>Gets the shared resource version used by localization bindings.</summary>
+    /// <summary>获取国际化绑定使用的共享资源版本。</summary>
     public int ResourceVersion => CoreManager.Instance.ResourceVersion;
 
-    /// <summary>Registers a legacy or built-in plugin with the shared manager.</summary>
+    /// <summary>向共享管理器注册兼容旧接口的插件或内置插件。</summary>
     public void Register(ILangPlugin plugin, CultureInfo? defaultCulture = null) => CoreManager.Instance.Register(Adapt(plugin), defaultCulture);
-    /// <summary>Registers a plugin, preserving the previous one if loading fails.</summary>
+    /// <summary>注册语言插件，加载失败时保留原插件。</summary>
     public bool Register(ILangPlugin plugin, CultureInfo defaultCulture, out string? error) => CoreManager.Instance.Register(Adapt(plugin), defaultCulture, out error);
-    /// <summary>Adds resources and refreshes both Toolkit and Avalonia consumers.</summary>
+    /// <summary>添加资源并同步刷新 Toolkit 与 Avalonia 的资源使用方。</summary>
     public void AddResource(params Assembly[] assemblies) => CoreManager.Instance.AddResource(assemblies);
-    /// <summary>Gets a snapshot of available languages using the legacy metadata type.</summary>
+    /// <summary>以兼容旧接口的元数据类型返回可用语言快照。</summary>
     public List<LocalizationLanguage>? GetLanguages() => CoreManager.Instance.GetLanguages()?.Select(LocalizationLanguage.FromCore).ToList();
-    /// <summary>Resolves a translation through the shared manager.</summary>
+    /// <summary>通过共享管理器查询翻译文本。</summary>
     public string GetResource(string key, string? cultureName = null) => CoreManager.Instance.GetResource(key, cultureName);
 
     private static global::CodeWF.Toolkit.Lang.ILangPlugin Adapt(ILangPlugin plugin)
