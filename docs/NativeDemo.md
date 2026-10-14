@@ -1,4 +1,4 @@
-# CodeWF.Avalonia 原生 Demo
+﻿# CodeWF.Avalonia 原生 Demo
 
 Demo 使用 Ribbon + Dock，以单个控件或公开 API 为导航单位。8 个分类、32 个页面由 `design/catalog.json` 管理；组合工作流放在“综合示例”，首页直接展示目录。
 
@@ -13,9 +13,9 @@ Demo 使用 Ribbon + Dock，以单个控件或公开 API 为导航单位。8 个
 
 ## 主题与国际化
 
-标题栏色圈和下拉共用配色状态，提供 .NET 紫、AI 极光、AI 暖陶及既有 Semi 配色。新增配色遵循 Semi 的资源字典结构，通过显式 `ThemeVariant` 加载；不按 RGB 字符串判断主题。
+标题栏色圈和下拉共用配色状态，提供 .NET 紫、AI 极光、AI 赤陶、默认蓝、水生、沙漠、黄昏、夜空八套配色。浅色、深色和跟随系统独立选择，标题栏与属性面板同步；切换语言保留模式选中项。
 
-`StudioTheme` 位于 `CodeWF.Avalonia.Controls`，在 Semi 与 CodeWF 控件主题后加载。`DotNetLight/Dark`、`AuroraLight/Dark`、`EmberLight/Dark` 分别继承浅色与深色变体；`StudioBackground`、`StudioSurface`、`StudioText`、`StudioAccent` 等资源用于应用外壳。
+`StudioTheme` 与 `StudioThemeController` 位于 `CodeWF.Avalonia.Controls`。在 Semi 与 CodeWF 控件主题后加载 StudioTheme，控制器使用显式枚举选择独立浅深资源，并订阅平台主题变化；退出时释放订阅。新增配色遵循 Semi 的资源字典结构，不按 RGB 字符串判断主题。
 
 NuGet 库的语言 JSON 内嵌程序集，Demo 自身的 JSON 输出到 `I18n/`。应用通过 Lang 正常加载自身资源即可按同键覆盖库文案，无需 resolver 或逐库注册。资源键由 T4 生成，普通构建直接消费已提交的生成文件。
 
@@ -38,11 +38,11 @@ npm ci --prefix design/tests
 npm test --prefix design/tests
 ```
 
-浏览器门禁覆盖全部路由 × 中英文 × 1440/1120 两种宽度，共 128 次检查，验证实际 Ribbon/导航点击、内容、源码、下拉对齐、属性搜索/排序、列宽/行高拖拽和脚本异常。浏览器原型不执行 .NET API；真实行为由原生 Demo 验证。
+浏览器门禁覆盖全部路由 × 中英文 × 1440/1120 两种宽度，共 128 次检查，另验八套配色的浅深组合与系统模式变化，验证实际 Ribbon/导航点击、内容、源码、下拉对齐、属性搜索/排序、列宽/行高拖拽和脚本异常。浏览器原型不执行 .NET API；真实行为由原生 Demo 验证。
 
 ## Windows NativeAOT
 
-本轮版本 `12.1.4.12`，环境为 Windows x64 / .NET SDK 10.0.303。`global.json` 固定稳定版 .NET 10。
+本轮版本 `12.1.4.13`，环境为 Windows x64 / .NET SDK 10.0.303。`global.json` 固定稳定版 .NET 10。
 
 ```powershell
 dotnet test CodeWF.Avalonia.slnx -c Release
@@ -54,7 +54,9 @@ Start-Process $demo -ArgumentList '--capture ./artifacts/studio-qa' -Wait -PassT
 
 `--smoke` 验证目录页面、主题渲染、外壳命令、真实 Document 浮动与参数隔离。`--capture` 使用固定布局，输出页面、双语 Ribbon、深浅配色及紧凑窗口截图，并校验图标尺寸。README 的 PNG 来自原生 EXE；GIF 分别用于真实展开动画或主题截图巡览。
 
-本轮库测试 304 项通过（Content 241、Controls 63）。Markdown 额外在同一个已挂载控件中切换中、英、日、繁体中文及未配置语言，检查菜单、选择菜单、代码按钮、英文回退与宿主资源覆盖；也覆盖离开界面后切换语言、重新挂载时的刷新。
+Windows x64 NativeAOT 冒烟与截图均退出 0，32 个页面 × 16 配色组合共 512 次渲染零失败；真实文档浮动、参数隔离、语言切换后的模式选择及 Markdown 动态国际化均通过。
+
+本轮库测试 310 项通过（Content 247、Controls 63）。Markdown 额外在同一个已挂载控件中切换中、英、日、繁体中文及未配置语言，检查菜单、选择菜单、代码按钮、英文回退与宿主资源覆盖；也覆盖离开界面后切换语言、重新挂载时的刷新。
 
 ## 验收边界
 

@@ -1,4 +1,4 @@
-# CodeWF.Avalonia
+﻿# CodeWF.Avalonia
 
 [![CI](https://github.com/dotnet9/CodeWF.Avalonia/actions/workflows/ci.yml/badge.svg)](https://github.com/dotnet9/CodeWF.Avalonia/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/CodeWF.Avalonia.Controls?label=nuget)](https://www.nuget.org/packages/CodeWF.Avalonia.Controls)
@@ -94,21 +94,29 @@ dotnet add package CodeWF.Avalonia.DataGrid
 | `CodeWFLogTheme` | Log | 否 | 只在不使用日志查看控件时可省 |
 | `MarkdownThemes` / `MarkdownFullThemes` | Markdown.Lite / Markdown | 否 | 用了 Markdown 控件则必须引入（后者包含前者） |
 
-**6 套色板与 `RequestedThemeVariant` 的对应关系**（演示应用还提供三套 Studio 配色，见下文）：
+**八套常规配色 × 三态模式**：在 Semi 与控件样式之后加载 `<codewf:StudioTheme />`，由 `CodeWF.Avalonia.Controls.Themes.StudioThemeController` 统一管理。
 
-| 色板 | 取值 |
+| 配色 | `StudioPalette` |
 |---|---|
-| Default | `ThemeVariant.Light` / `ThemeVariant.Dark` |
-| Aquatic、Desert、Dusk、NightSky | `SemiTheme.Aquatic` / `.Desert` / `.Dusk` / `.NightSky`（Semi 提供的固定深色变体，不随浅深切换） |
-| HighContrast | `CodeWFLogTheme.HighContrast`（深色高对比，供日志控件使用） |
+| .NET 紫 | `DotNet` |
+| AI 极光 / AI 赤陶 | `Aurora` / `Ember` |
+| 默认蓝 | `Default` |
+| 水生 / 沙漠 / 黄昏 / 夜空 | `Aquatic` / `Desert` / `Dusk` / `NightSky` |
 
-运行时切换只需给 `Application.Current.RequestedThemeVariant` 赋值：
+每套配色均有独立浅色和深色资源。模式使用 `StudioThemeMode.System/Light/Dark`；跟随系统会订阅平台主题变化，固定模式保持用户选择。应用退出时释放控制器。
 
 ```csharp
-Application.Current!.RequestedThemeVariant = ThemeVariant.Dark;          // Default 色板 · 深色
-Application.Current!.RequestedThemeVariant = SemiTheme.Aquatic;          // 水生
-Application.Current!.RequestedThemeVariant = CodeWFLogTheme.HighContrast; // 高对比
+using CodeWF.Avalonia.Controls.Themes;
+
+// 由应用持有，退出时调用 Dispose()。
+_themeController = new StudioThemeController(Application.Current!)
+{
+    Palette = StudioPalette.DotNet,
+    Mode = StudioThemeMode.System,
+};
 ```
+
+现有 `SemiTheme.Aquatic/Desert/Dusk/NightSky` 和日志的 `CodeWFLogTheme.HighContrast` 仍可直接使用；高对比属于独立无障碍主题，不计入八套常规配色。
 
 ### 改色时的两个事实
 
@@ -167,7 +175,7 @@ Demo 保留 Ribbon + Dock，按输入与选择、反馈与引导、数据展示�
 
 Each Dock document contains its demonstration and property panel; both move together when detached. See the linked guide for optional Studio themes, localization and validation.
 
-Windows x64 NativeAOT Demo：标题栏支持主题色圈与下拉同步切换，默认 .NET 紫，也提供 AI 极光与暖陶的深浅主题。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
+Windows x64 NativeAOT Demo：标题栏支持主题色圈与下拉同步切换，默认 .NET 紫，共八套配色；浅色、深色与跟随系统分别选择。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
 
 ![.NET 紫色原生演示台](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-dotnet.png)
 
