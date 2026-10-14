@@ -59,8 +59,12 @@ public class SwitchBinding : MarkupExtension
         if (ReferenceEquals(value, BindingOperations.DoNothing)) return BindingOperations.DoNothing;
 
         foreach (var item in _cases)
-            if (ValuesMatch(value, item.When, culture))
+        {
+            var expected = IfBinding.ResolveValue(values, item.WhenIndex, item.WhenContent);
+            if (ReferenceEquals(expected, BindingOperations.DoNothing)) return BindingOperations.DoNothing;
+            if (ValuesMatch(value, expected, culture))
                 return IfBinding.ResolveValue(values, item.ThenIndex, item.ThenContent);
+        }
 
         return IfBinding.ResolveValue(values, DefaultIndex, DefaultContent);
     }
@@ -71,9 +75,11 @@ public class SwitchBinding : MarkupExtension
 
         foreach (var item in cases)
         {
+            var whenIndex = Constants.InvalidIndex;
+            SetProperty(item.When, ref whenIndex, out var whenContent);
             var thenIndex = Constants.InvalidIndex;
             SetProperty(item.Then, ref thenIndex, out var thenContent);
-            _cases.Add(new ResolvedSwitchCase(item.When, thenIndex, thenContent));
+            _cases.Add(new ResolvedSwitchCase(whenIndex, whenContent, thenIndex, thenContent));
         }
     }
 
@@ -126,5 +132,5 @@ public class SwitchBinding : MarkupExtension
         return false;
     }
 
-    private sealed record ResolvedSwitchCase(object? When, int ThenIndex, object? ThenContent);
+    private sealed record ResolvedSwitchCase(int WhenIndex, object? WhenContent, int ThenIndex, object? ThenContent);
 }

@@ -7,6 +7,11 @@
         <ResourceInclude Source="avares://Semi.Avalonia/Controls/TabItem.axaml" />
     </ResourceDictionary.MergedDictionaries>
     <ControlTheme x:Key="TrapezoidShapedTabItem" TargetType="TabItem">
+        <Setter Property="Padding" Value="20,8" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{DynamicResource TabItemLineHeaderForeground}" />
         <Setter Property="Background" Value="{DynamicResource TabItemLinePipeBackground}" />
         <Setter Property="BorderBrush" Value="{DynamicResource TabControlSeparatorBorderBrush}" />
@@ -22,7 +27,7 @@
                     <ContentPresenter
                         x:Name="PART_ContentPresenter"
                         Background="{DynamicResource TrapezoidShapedTabItemContentBackground}"
-                        Padding="{TemplateBinding Converter={StaticResource TrapezoidShapedTabItemPaddingConverter}}"
+                        Padding="{TemplateBinding Padding}"
                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                         VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                         Content="{TemplateBinding Header}"
