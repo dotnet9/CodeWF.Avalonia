@@ -8,8 +8,8 @@ Demo 使用 Ribbon + Dock，以单个控件或公开 API 为导航单位。8 个
 
 - 首屏展示真实控件、输入和结果，源码按需展开。介绍页提供全局设置；其他页面仅显示自身参数，无参数时保持空面板。
 - 属性面板使用 Semi 分类和排序图标；搜索独占下一行。文本、数值和下拉编辑器铺满单元格、默认无边框，下拉内容左对齐；复选和单选保持常规外观。
-- 表格具有横竖分隔线，可拖动名称和值之间的分隔条调整列宽，可拖动行底边调整行高。
-- Ribbon 组仅显示标题；命令图标使用 Semi 矢量资源，统一 32×32。快捷图标为 18×18，按钮热区 30×30。密集组双行排列，长 API 名不换行，窄窗口横向滚动。
+- 表格具有横竖分隔线，Demo 默认行高 31px、名称列宽 118px；可拖动名称和值之间的分隔条调整列宽，可拖动行底边调整行高。
+- Ribbon 组仅显示标题；命令图标使用 Semi 矢量资源，统一 32×32。快捷图标为 16×16，按钮热区 30×30。密集组双行排列，长 API 名不换行，窄窗口横向滚动。
 
 ## 主题与国际化
 
@@ -42,14 +42,14 @@ npm test --prefix design/tests
 
 ## Windows NativeAOT
 
-本轮版本 `12.1.4.14`，环境为 Windows x64 / .NET SDK 10.0.303。`global.json` 固定稳定版 .NET 10。
+本轮版本 `12.1.4.16`，环境为 Windows x64 / .NET SDK 10.0.303。`global.json` 固定稳定版 .NET 10。
 
 ```powershell
 dotnet test CodeWF.Avalonia.slnx -c Release
 pwsh scripts/publish_avalonia_demo.ps1 -RuntimeIdentifier win-x64
 $demo = './artifacts/publish/win-x64/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo.exe'
 Start-Process $demo -ArgumentList '--smoke' -Wait -PassThru
-Start-Process $demo -ArgumentList '--capture ./artifacts/studio-qa' -Wait -PassThru
+Start-Process $demo -ArgumentList '--capture E:/github/temp/CodeWF.Avalonia.NativeQA' -Wait -PassThru
 ```
 
 `--smoke` 验证目录页面、主题渲染、外壳命令、真实 Document 浮动与参数隔离。`--capture` 使用固定布局，输出页面、双语 Ribbon、深浅配色及紧凑窗口截图，并校验图标尺寸。README 的 PNG 来自原生 EXE；GIF 分别用于真实展开动画或主题截图巡览。
@@ -66,4 +66,6 @@ Windows x64 NativeAOT 冒烟与截图均退出 0，32 个页面 × 16 配色组�
 
 快捷区使用 Semi 线性图标、2px 间距和独立分隔留白；鼠标悬停、按下及键盘焦点各有反馈。Ribbon 分类复用 Semi LineTabStrip，单层 13px 水平内边距。标题栏密度与通知入口复用 Semi 图标；导航叶子与 Ribbon 使用同一目录图形。应用默认字体覆盖 Dock 浮动窗和弹出层，代码区域仍使用等宽字体。
 
-本次视觉校准已执行仓库发布脚本，Windows x64 NativeAOT 冒烟与截图退出 0。截图检查包括 18×18 图标、30×30 热区、32×32 主命令，以及中英文、1440×860 与 1120×640 窗口；README 中的 PNG/GIF 已替换为本次 AOT 程序输出。实际 Windows 桌面复核了快捷保存的鼠标反馈、键盘焦点边框及 Ribbon 布局；浅色展开箭头已修正前景并重新发布验证。持续按压瞬间的外观未单独留图，多 DPI 和跨屏交互仍未验收。
+本次视觉校准已执行仓库发布脚本，Windows x64 NativeAOT 冒烟与截图退出 0。截图检查包括 16×16 图标、30×30 热区、32×32 主命令，以及中英文、1440×860 与 1120×640 窗口；README 中的 PNG/GIF 来自本次 AOT 程序输出。CodeWFTitleBar 的浮动文档用例同时检查属性修改后的标题实际可见，控件页不再重复展示属性输入区。原型文件保持固定版本。
+
+本轮桌面工具捕获到锁屏，因此未重新执行人工鼠标、键盘操作；程序内部的原生布局、浮动窗口、渲染与 API 冒烟仍已验证。桌面解锁后需补充快捷入口悬停、按下及键盘焦点检查，多 DPI 和跨屏交互仍未验收。
