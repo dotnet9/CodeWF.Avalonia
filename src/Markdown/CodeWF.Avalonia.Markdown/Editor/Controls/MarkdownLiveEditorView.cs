@@ -44,6 +44,10 @@ public class MarkdownLiveEditorView : UserControl
     private bool _suppressChanged;
     private bool _autoPairEnabled = true;
     private int _activeIndex = -1;
+    private readonly List<MarkdownLiveEditorSnapshot> _undo = [];
+    private readonly List<MarkdownLiveEditorSnapshot> _redo = [];
+    private MarkdownLiveEditorSnapshot _lastSnapshot = new(string.Empty, -1, 0, 0);
+    private bool _restoringHistory;
 
     public static readonly StyledProperty<string?> ImageBasePathProperty =
         AvaloniaProperty.Register<MarkdownLiveEditorView, string?>(nameof(ImageBasePath));
@@ -83,6 +87,14 @@ public class MarkdownLiveEditorView : UserControl
         ActualThemeVariantChanged += (_, _) => ApplyThemedVisuals();
         AttachedToVisualTree += (_, _) => ApplyThemedVisuals();
         ApplyThemedVisuals();
+        AddHandler(KeyDownEvent, (_, e) =>
+        {
+            if (e.KeyModifiers == KeyModifiers.Control && e.Key is Key.Z or Key.Y)
+            {
+                ApplyAction(e.Key == Key.Z ? MarkdownEditorAction.Undo : MarkdownEditorAction.Redo);
+                e.Handled = true;
+            }
+        }, RoutingStrategies.Tunnel);
     }
 
     /// <summary>文档内容变化（用户编辑产生）；参数为当前全文 Markdown。</summary>
@@ -206,6 +218,57 @@ public class MarkdownLiveEditorView : UserControl
     /// <summary>当前处于编辑态的块序号；无则 -1。</summary>
     public int ActiveBlockIndex => _activeIndex;
 
+    public string SelectedText => ActiveTextBox?.SelectedText ?? string.Empty;
+    private TextBox? ActiveTextBox => _activeIndex >= 0 && _activeIndex < _blockViews.Count ? FindActiveEditor(_blockViews[_activeIndex]) : null;
+
+    /// <summary>当前活动块的选择映射到原始 Markdown；无选择时返回插入点。</summary>
+    public (int Start, int Length) Selection
+    {
+        get
+        {
+            var text = Text;
+            var cursor = 0;
+            for (var i = 0; i <= _activeIndex && i < _models.Count; i++)
+            {
+                var content = _models[i].Kind == MarkdownBlockKind.Raw ? _models[i].Raw : _models[i].Text;
+                var found = text.IndexOf(content, Math.Min(cursor, text.Length), StringComparison.Ordinal);
+                if (found < 0) found = Math.Min(cursor, text.Length);
+                if (i == _activeIndex)
+                {
+                    var box = ActiveTextBox;
+                    var start = Math.Min(box?.SelectionStart ?? 0, box?.SelectionEnd ?? 0);
+                    return (Math.Min(text.Length, found + start), Math.Abs((box?.SelectionEnd ?? 0) - (box?.SelectionStart ?? 0)));
+                }
+                cursor = found + content.Length;
+            }
+            return (0, 0);
+        }
+    }
+
+    public MarkdownLiveEditorState CaptureState() => new(CaptureSnapshot(), _undo.ToArray(), _redo.ToArray());
+    public void RestoreState(MarkdownLiveEditorState state)
+    {
+        RestoreSnapshot(state.Current);
+        _undo.Clear(); _undo.AddRange(state.Undo);
+        _redo.Clear(); _redo.AddRange(state.Redo);
+    }
+    private MarkdownLiveEditorSnapshot CaptureSnapshot() => new(Text, _activeIndex, ActiveTextBox?.SelectionStart ?? 0, ActiveTextBox?.SelectionEnd ?? 0);
+    private void RestoreSnapshot(MarkdownLiveEditorSnapshot snapshot)
+    {
+        _restoringHistory = true;
+        try
+        {
+            SetText(snapshot.Text);
+            if (snapshot.ActiveBlock >= 0)
+            {
+                FocusBlock(Math.Min(snapshot.ActiveBlock, _models.Count - 1));
+                if (ActiveTextBox is { } box) { box.SelectionStart = snapshot.SelectionStart; box.SelectionEnd = snapshot.SelectionEnd; }
+            }
+            _lastSnapshot = CaptureSnapshot();
+        }
+        finally { _restoringHistory = false; }
+    }
+
     /// <summary>替换全文（载入文档）；不触发 <see cref="MarkdownChanged"/>。</summary>
     public void SetText(string? markdown)
     {
@@ -216,6 +279,8 @@ public class MarkdownLiveEditorView : UserControl
             _activeIndex = -1;
             _models.AddRange(MarkdownBlockParser.Parse(markdown));
             RebuildBlocks();
+            if (!_restoringHistory) { _undo.Clear(); _redo.Clear(); }
+            _lastSnapshot = CaptureSnapshot();
         }
         finally
         {
@@ -255,8 +320,9 @@ public class MarkdownLiveEditorView : UserControl
     public async Task CopyPlainTextAsync()
     {
         var text = MarkdownTextRunParser.ToPlainText(
-            _activeIndex >= 0 && _activeIndex < _models.Count
-                ? MarkdownTextRunParser.Parse(_models[_activeIndex].Text)
+            SelectedText.Length > 0
+                ? MarkdownTextRunParser.Parse(SelectedText)
+                : _activeIndex >= 0 && _activeIndex < _models.Count ? MarkdownTextRunParser.Parse(_models[_activeIndex].Text)
                 : []);
 
         if (text.Length == 0)
@@ -463,6 +529,7 @@ public class MarkdownLiveEditorView : UserControl
             SplitRequested = SplitBlock
         };
         AttachAutoPair(view);
+        view.EditorSelectionChanged = RaiseSelectionChanged;
         view.RunFontSize = model.Kind switch
         {
             MarkdownBlockKind.Heading => model.HeadingLevel switch
@@ -615,17 +682,29 @@ public class MarkdownLiveEditorView : UserControl
             return;
         }
 
-        MarkdownChanged?.Invoke(this, Text);
+        var current = CaptureSnapshot();
+        if (current.Text != _lastSnapshot.Text)
+        {
+            if (!_restoringHistory)
+            {
+                _undo.Add(_lastSnapshot);
+                if (_undo.Count > 200) _undo.RemoveAt(0);
+                _redo.Clear();
+            }
+            _lastSnapshot = current;
+        }
+        MarkdownChanged?.Invoke(this, current.Text);
         RaiseSelectionChanged();
     }
 
     private void RaiseSelectionChanged()
     {
-        var index = _activeIndex < 0 ? 0 : _activeIndex;
-        var (column, lineCount) = (_activeIndex < 0 || _activeIndex >= _models.Count)
-            ? (1, Math.Max(1, _models.Count))
-            : (1, _models.Count);
-        SelectionChanged?.Invoke(this, new MarkdownCaretEventArgs(index + 1, column, lineCount));
+        if (_suppressChanged) return;
+        var text = Text;
+        var offset = Math.Clamp(Selection.Start, 0, text.Length);
+        var line = 1 + text.AsSpan(0, offset).Count('\n');
+        var previous = offset == 0 ? -1 : text.LastIndexOf('\n', offset - 1);
+        SelectionChanged?.Invoke(this, new MarkdownCaretEventArgs(line, offset - previous, 1 + text.Count(c => c == '\n')));
     }
 
     #endregion
@@ -634,6 +713,17 @@ public class MarkdownLiveEditorView : UserControl
 
     private void ApplyAction(MarkdownEditorAction action)
     {
+        if (action is not MarkdownEditorAction.Undo and not MarkdownEditorAction.Redo and not MarkdownEditorAction.FocusEditor)
+        {
+            if (_activeIndex < 0) FocusEditor();
+            else if (_activeIndex < _blockViews.Count && FindBlockView(_blockViews[_activeIndex]) is { IsEditing: false } block)
+            {
+                var input = block.EditingInput;
+                var start = input.SelectionStart; var end = input.SelectionEnd;
+                block.BeginEdit(input.CaretIndex);
+                input.SelectionStart = start; input.SelectionEnd = end;
+            }
+        }
         var activeEditor = (_activeIndex >= 0 && _activeIndex < _blockViews.Count)
             ? FindActiveEditor(_blockViews[_activeIndex])
             : null;
@@ -641,10 +731,10 @@ public class MarkdownLiveEditorView : UserControl
         switch (action)
         {
             case MarkdownEditorAction.Undo:
-                activeEditor?.Undo();
+                ChangeHistory(_undo, _redo);
                 break;
             case MarkdownEditorAction.Redo:
-                activeEditor?.Redo();
+                ChangeHistory(_redo, _undo);
                 break;
             case MarkdownEditorAction.Cut:
                 activeEditor?.Cut();
@@ -657,6 +747,21 @@ public class MarkdownLiveEditorView : UserControl
                 break;
             case MarkdownEditorAction.SelectAll:
                 activeEditor?.SelectAll();
+                break;
+            case MarkdownEditorAction.CopyPlainText:
+                _ = CopyPlainTextAsync();
+                break;
+            case MarkdownEditorAction.ClearFormatting:
+                if (activeEditor is { } clear)
+                {
+                    var text = clear.Text ?? string.Empty;
+                    var start = Math.Min(clear.SelectionStart, clear.SelectionEnd);
+                    var length = Math.Abs(clear.SelectionStart - clear.SelectionEnd);
+                    if (length == 0) { start = 0; length = text.Length; }
+                    var plain = MarkdownTextRunParser.ToPlainText(MarkdownTextRunParser.Parse(text.Substring(start, length)));
+                    clear.Text = text.Remove(start, length).Insert(start, plain);
+                    clear.CaretIndex = start + plain.Length;
+                }
                 break;
             case MarkdownEditorAction.Bold:
                 WrapActive("**", "**");
@@ -690,6 +795,9 @@ public class MarkdownLiveEditorView : UserControl
             case MarkdownEditorAction.UnorderedList:
                 ConvertActiveBlock(MarkdownBlockKind.ListItem, 0);
                 break;
+            case MarkdownEditorAction.OrderedList:
+                ConvertActiveBlock(MarkdownBlockKind.ListItem, 0, isOrdered: true);
+                break;
             case MarkdownEditorAction.TaskList:
                 ConvertActiveBlock(MarkdownBlockKind.ListItem, 0, isTask: true);
                 break;
@@ -720,7 +828,22 @@ public class MarkdownLiveEditorView : UserControl
             case MarkdownEditorAction.FocusEditor:
                 FocusEditor();
                 break;
+            case MarkdownEditorAction.SmartNewLine:
+                if (_activeIndex >= 0 && _activeIndex < _blockViews.Count && FindBlockView(_blockViews[_activeIndex]) is { } current)
+                    SplitBlock(current, activeEditor?.CaretIndex ?? current.Model.Text.Length);
+                break;
         }
+    }
+
+    private void ChangeHistory(List<MarkdownLiveEditorSnapshot> from, List<MarkdownLiveEditorSnapshot> to)
+    {
+        if (from.Count == 0) return;
+        var snapshot = from[^1]; from.RemoveAt(from.Count - 1);
+        to.Add(CaptureSnapshot());
+        RestoreSnapshot(snapshot);
+        _restoringHistory = true;
+        try { RaiseChanged(); }
+        finally { _restoringHistory = false; }
     }
 
     private void WrapActive(string prefix, string suffix)
@@ -755,7 +878,7 @@ public class MarkdownLiveEditorView : UserControl
         RaiseChanged();
     }
 
-    private void ConvertActiveBlock(MarkdownBlockKind kind, int headingLevel, bool isTask = false)
+    private void ConvertActiveBlock(MarkdownBlockKind kind, int headingLevel, bool isTask = false, bool isOrdered = false)
     {
         if (_activeIndex < 0 || _activeIndex >= _models.Count)
         {
@@ -772,7 +895,10 @@ public class MarkdownLiveEditorView : UserControl
         if (kind == MarkdownBlockKind.ListItem)
         {
             model.IsTask = isTask;
+            model.IsOrdered = isOrdered;
+            model.OrderedNumber = isOrdered ? 1 : 0;
         }
+        if (kind == MarkdownBlockKind.Quote) model.QuoteDepth = Math.Max(1, model.QuoteDepth);
 
         RebuildBlocks();
         RaiseChanged();

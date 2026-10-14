@@ -15,6 +15,10 @@ namespace CodeWF.Avalonia.Markdown.Controls;
 /// </summary>
 public partial class MarkdownViewer
 {
+    /// <summary>阅读宿主可关闭任务勾选，避免查看文档时产生编辑行为。</summary>
+    public static readonly StyledProperty<bool> IsTaskEditingEnabledProperty =
+        AvaloniaProperty.Register<MarkdownViewer, bool>(nameof(IsTaskEditingEnabled), true);
+    public bool IsTaskEditingEnabled { get => GetValue(IsTaskEditingEnabledProperty); set => SetValue(IsTaskEditingEnabledProperty, value); }
     // 渲染调度：文本变更只登记快照，合并窗口后在后台线程解析，过期结果丢弃。
     private readonly MarkdownRenderScheduler _scheduler;
     private MarkdownRenderMode _lastRenderMode = MarkdownRenderMode.Full;
@@ -281,6 +285,7 @@ public partial class MarkdownViewer
 
     private void OnTaskMarkerClick(CheckBox checkBox, bool isChecked)
     {
+        if (!IsTaskEditingEnabled) return;
         if (checkBox.Tag is not int markerStart)
         {
             return;
@@ -299,6 +304,7 @@ public partial class MarkdownViewer
     private void AttachTaskMarkerInteraction(CheckBox checkBox, int markerStart)
     {
         checkBox.Tag = markerStart;
+        checkBox.Bind(IsEnabledProperty, new global::Avalonia.Data.Binding(nameof(IsTaskEditingEnabled)) { Source = this });
         checkBox.IsHitTestVisible = true;
         checkBox.Click += OnTaskMarkerClickHandler;
         _currentBlockDisposables.Add(new TaskMarkerBinding(this, checkBox));

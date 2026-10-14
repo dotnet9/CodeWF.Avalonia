@@ -19,7 +19,8 @@ internal sealed class MarkdownBlockView : UserControl
     private readonly MarkdownRichTextView _richText = new();
     private readonly TextBox _editor = new();
     private readonly Border _root;
-    private readonly MarkdownViewer _preview = new() { DocumentBottomPadding = 0 };
+    private readonly MarkdownViewer _preview = new() { DocumentBottomPadding = 0, IsTaskEditingEnabled = false };
+    private readonly MarkdownViewer _editingPreview = new() { DocumentBottomPadding = 0, IsTaskEditingEnabled = false };
     private readonly bool _isCode;
     private readonly bool _isTableCell;
     private readonly MarkdownBlockViewOptions _options;
@@ -27,6 +28,8 @@ internal sealed class MarkdownBlockView : UserControl
 
     private bool _editing;
     private bool _syncingText;
+    private string _editOriginalText = string.Empty;
+    private readonly Grid _editHost = new() { RowDefinitions = new RowDefinitions("Auto,Auto"), RowSpacing = 12 };
 
     public MarkdownBlockView(MarkdownBlockModel model, bool isCode, MarkdownBlockViewOptions options, bool isTableCell = false)
     {
@@ -49,11 +52,19 @@ internal sealed class MarkdownBlockView : UserControl
             var text = _editor.Text ?? string.Empty;
             if (string.Equals(ModelText, text, StringComparison.Ordinal)) return;
             ModelText = text;
+            UpdateRichText();
             TextCommitted?.Invoke(this, ModelText);
         };
         _editor.LostFocus += (_, _) => CommitAndRender();
         _editor.KeyDown += OnEditorKeyDown;
+        _editor.PropertyChanged += (_, e) =>
+        {
+            if (_editing && e.Property.Name is "CaretIndex" or "SelectionStart" or "SelectionEnd") EditorSelectionChanged?.Invoke();
+        };
 
+        Grid.SetRow(_editingPreview, 1);
+        _editHost.Children.Add(_editor);
+        _editHost.Children.Add(_editingPreview);
         _root = new Border { Child = _richText };
         Content = _root;
 
@@ -70,6 +81,7 @@ internal sealed class MarkdownBlockView : UserControl
     public Action<int>? NavigateRequested { get; set; }
 
     public Action<MarkdownBlockView>? EditingStarted { get; set; }
+    public Action? EditorSelectionChanged { get; set; }
 
     public Action<MarkdownBlockView, int>? SplitRequested { get; set; }
 
@@ -114,6 +126,7 @@ internal sealed class MarkdownBlockView : UserControl
 
     /// <summary>正在编辑时的底层文本框（用于格式化动作），否则为 null。</summary>
     internal TextBox? ActiveEditor => _editing ? _editor : null;
+    internal TextBox EditingInput => _editor;
 
     /// <summary>当前编辑文本（非编辑态返回模型文本）。</summary>
     internal string CurrentText => _editing ? _editor.Text ?? string.Empty : ModelText;
@@ -137,11 +150,12 @@ internal sealed class MarkdownBlockView : UserControl
             return;
         }
 
+        _editOriginalText = ModelText;
         _syncingText = true;
         _editor.Text = ModelText;
         _syncingText = false;
         _editing = true;
-        _root.Child = _editor;
+        _root.Child = _editHost;
         _editor.Focus();
         _editor.CaretIndex = Math.Clamp(caretIndex, 0, _editor.Text?.Length ?? 0);
         EditingStarted?.Invoke(this);
@@ -205,10 +219,15 @@ internal sealed class MarkdownBlockView : UserControl
         switch (e.Key)
         {
             case Key.Escape:
+                ModelText = _editOriginalText;
+                TextCommitted?.Invoke(this, ModelText);
                 _editing = false;
                 UpdateRichText();
                 e.Handled = true;
                 break;
+
+            case Key.Enter when e.KeyModifiers == KeyModifiers.Control:
+                CommitAndRender(); e.Handled = true; break;
 
             case Key.Enter when !_isCode && Model.Kind != MarkdownBlockKind.Raw && e.KeyModifiers == KeyModifiers.None:
                 e.Handled = true;
@@ -243,6 +262,10 @@ internal sealed class MarkdownBlockView : UserControl
             _preview.TypographySize = _options.TypographySize;
             _preview.Markdown = Model.Kind == MarkdownBlockKind.ListItem || RenderQuoteAsParagraph
                 ? Model.Text : MarkdownBlockParser.WriteCanonical([Model]);
+            _editingPreview.ImageBasePath = _options.ImageBasePath;
+            _editingPreview.TypographyTheme = _options.TypographyTheme;
+            _editingPreview.TypographySize = _options.TypographySize;
+            _editingPreview.Markdown = _preview.Markdown;
             if (!_editing) _root.Child = _preview;
             return;
         }

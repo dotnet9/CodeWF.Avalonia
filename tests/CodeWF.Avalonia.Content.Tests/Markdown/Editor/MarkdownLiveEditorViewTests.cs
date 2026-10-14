@@ -1,5 +1,6 @@
 using CodeWF.Avalonia.Markdown;
 using CodeWF.Avalonia.Markdown.Editor.Controls;
+using CodeWF.Avalonia.Markdown.Editor.Services;
 using CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
 
 using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
@@ -21,6 +22,61 @@ public sealed class MarkdownLiveEditorViewTests
     private readonly AvaloniaPlatformFixture _platform;
 
     public MarkdownLiveEditorViewTests(AvaloniaPlatformFixture platform) => _platform = platform;
+
+    [Fact]
+    public void EditingRendersImmediatelyAndEscapeRestoresOriginalBlock() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView { TypographyTheme = "Simple" };
+        view.SetText("# 标题\r\n\r\n原文\r\n");
+        var original = view.Text;
+        view.FocusBlock(1);
+        var block = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Last();
+        block.ActiveEditor!.Text = "**实时内容**";
+        Dispatcher.UIThread.RunJobs();
+        Assert.Contains(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>(),
+            preview => preview.Markdown?.Contains("**实时内容**", StringComparison.Ordinal) == true);
+        block.ActiveEditor.RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = Key.Escape });
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal(original, view.Text);
+        Assert.False(block.IsEditing);
+    });
+
+    [Fact]
+    public void UndoRedoAndTemporaryDocumentPreserveCrossBlockHistory() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView();
+        view.SetText("# 标题\n\n正文");
+        var original = view.Text;
+        view.FocusBlock(0); view.InsertText("修改一"); Dispatcher.UIThread.RunJobs();
+        var first = view.Text;
+        view.FocusBlock(1); view.InsertText("修改二"); Dispatcher.UIThread.RunJobs();
+        var second = view.Text;
+        var saved = view.CaptureState();
+        view.SetText("引导临时文档"); view.InsertText("测试");
+        view.RestoreState(saved);
+        Assert.Equal(second, view.Text);
+        view.ExecuteAsync(MarkdownEditorAction.Undo).GetAwaiter().GetResult();
+        Assert.Equal(first, view.Text);
+        view.ExecuteAsync(MarkdownEditorAction.Undo).GetAwaiter().GetResult();
+        Assert.Equal(original, view.Text);
+        view.ExecuteAsync(MarkdownEditorAction.Redo).GetAwaiter().GetResult();
+        Assert.Equal(first, view.Text);
+    });
+
+    [Fact]
+    public void MenuActionsKeepSelectionAfterTheBlockLosesFocus() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView();
+        view.SetText("正文内容"); view.FocusBlock(0);
+        var block = Assert.Single(view.GetLogicalDescendants().OfType<MarkdownBlockView>());
+        block.ActiveEditor!.SelectionStart = 0; block.ActiveEditor.SelectionEnd = 2;
+        block.CommitAndRender();
+        view.ExecuteAsync(MarkdownEditorAction.Bold).GetAwaiter().GetResult();
+        Dispatcher.UIThread.RunJobs();
+        Assert.Contains("**正文**内容", view.Text);
+        view.ExecuteAsync(MarkdownEditorAction.OrderedList).GetAwaiter().GetResult();
+        Assert.StartsWith("1. ", view.Text);
+    });
 
     [Fact]
     public void MultiParagraphQuote_SharesContainerAndKeepsBlockNavigation() => _platform.Run(() =>
