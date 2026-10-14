@@ -1,0 +1,120 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- 颜色令牌与画刷遵循 Semi 的主题字典结构。 -->
+    <Color x:Key="StudioBackgroundColor">#FFFCF5</Color>
+    <Color x:Key="StudioSurfaceColor">#FBF4E7</Color>
+    <Color x:Key="StudioRaisedColor">#F3E8D5</Color>
+    <Color x:Key="StudioBorderColor">#DECDB0</Color>
+    <Color x:Key="StudioTextColor">#3C3022</Color>
+    <Color x:Key="StudioMutedColor">#7B6C55</Color>
+    <Color x:Key="StudioAccentColor">#9B651E</Color>
+    <Color x:Key="StudioSecondaryColor">#BD8437</Color>
+    <Color x:Key="StudioPrimaryColor">#9B651E</Color>
+    <Color x:Key="StudioGradientStartColor">#9B651E</Color>
+    <Color x:Key="StudioTextGradientEndColor">#BD8437</Color>
+    <SolidColorBrush x:Key="StudioBackground" Color="{StaticResource StudioBackgroundColor}" />
+    <SolidColorBrush x:Key="StudioSurface" Color="{StaticResource StudioSurfaceColor}" />
+    <SolidColorBrush x:Key="StudioRaised" Color="{StaticResource StudioRaisedColor}" />
+    <SolidColorBrush x:Key="StudioBorder" Color="{StaticResource StudioBorderColor}" />
+    <SolidColorBrush x:Key="StudioText" Color="{StaticResource StudioTextColor}" />
+    <SolidColorBrush x:Key="StudioMuted" Color="{StaticResource StudioMutedColor}" />
+    <SolidColorBrush x:Key="StudioAccent" Color="{StaticResource StudioAccentColor}" />
+    <SolidColorBrush x:Key="StudioSecondary" Color="{StaticResource StudioSecondaryColor}" />
+    <SolidColorBrush x:Key="StudioPrimary" Color="{StaticResource StudioPrimaryColor}" />
+    <LinearGradientBrush x:Key="StudioGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Offset="0" Color="{StaticResource StudioGradientStartColor}" />
+        <GradientStop Offset="1" Color="{StaticResource StudioSecondaryColor}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="StudioTextGradient" StartPoint="0%,0%" EndPoint="100%,0%">
+        <GradientStop Offset="0" Color="{StaticResource StudioAccentColor}" />
+        <GradientStop Offset="1" Color="{StaticResource StudioTextGradientEndColor}" />
+    </LinearGradientBrush>
+    <ResourceDictionary x:Key="StudioPropertyGridTheme">
+        <StaticResource x:Key="PgBackground" ResourceKey="StudioSurface" />
+        <StaticResource x:Key="PgToolbarBackground" ResourceKey="StudioSurface" />
+        <StaticResource x:Key="PgGroupBackground" ResourceKey="StudioRaised" />
+        <StaticResource x:Key="PgForeground" ResourceKey="StudioText" />
+        <StaticResource x:Key="PgSecondaryForeground" ResourceKey="StudioMuted" />
+        <StaticResource x:Key="PgBorder" ResourceKey="StudioBorder" />
+        <StaticResource x:Key="PgLine" ResourceKey="StudioBorder" />
+        <StaticResource x:Key="PgHover" ResourceKey="StudioRaised" />
+        <StaticResource x:Key="PgAccent" ResourceKey="StudioAccent" />
+        <StaticResource x:Key="PgSelected" ResourceKey="StudioPrimary" />
+        <StaticResource x:Key="PgSelectedSoft" ResourceKey="StudioRaised" />
+        <StaticResource x:Key="PgEditorBackground" ResourceKey="StudioSurface" />
+        <SolidColorBrush x:Key="PgSelectedText">White</SolidColorBrush>
+    </ResourceDictionary>
+    <!-- 现有控件模板通过资源别名使用配色。 -->
+    <StaticResource x:Key="CodeWFWindowBackground" ResourceKey="StudioBackground" />
+    <StaticResource x:Key="CodeWFWindowTitleBarBackground" ResourceKey="StudioBackground" />
+    <StaticResource x:Key="DockSurfaceWorkbenchBrush" ResourceKey="StudioBackground" />
+    <StaticResource x:Key="DockSurfaceEditorBrush" ResourceKey="StudioBackground" />
+    <StaticResource x:Key="WindowDefaultBackground" ResourceKey="StudioBackground" />
+    <StaticResource x:Key="SemiColorBg0" ResourceKey="StudioBackground" />
+    <StaticResource x:Key="SemiColorBg1" ResourceKey="StudioBackground" />
+    <StaticResource x:Key="DockSurfaceSidebarBrush" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="DockSurfacePanelBrush" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="DockSurfaceHeaderBrush" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="DockTabActiveBackgroundBrush" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="DockDocumentTabStripBackgroundBrush" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="DockDocumentTabStripMaskBrush" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="CodeWFDockPanelBackgroundBrush" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="SemiColorBg2" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="SemiColorBg3" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="SemiColorFill0" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="ButtonDefaultBackground" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="DockTabHoverBackgroundBrush" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="DockTabBackgroundBrush" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="DockTabCloseHoverBackgroundBrush" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="DockSplitterIdleBrush" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="SemiColorFill1" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="SemiColorFill2" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="ButtonDefaultPointeroverBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="ButtonDefaultPressedBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="SemiColorPrimaryLight" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="SemiColorInformationLight" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="DockBorderSubtleBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="DockBorderStrongBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="DockSeparatorBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="DockDocumentContentBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CodeWFDockPanelBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CodeWFDockInactiveBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="SemiColorBorder" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="TabControlSeparatorBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="ButtonOutlineBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CodeWFWindowForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="CodeWFWindowTitleBarForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="DockTabSelectedForegroundBrush" ResourceKey="StudioText" />
+    <StaticResource x:Key="DockTabActiveForegroundBrush" ResourceKey="StudioText" />
+    <StaticResource x:Key="DockDocumentTabSelectedForegroundBrush" ResourceKey="StudioText" />
+    <StaticResource x:Key="DockDocumentTabPointerOverForegroundBrush" ResourceKey="StudioText" />
+    <StaticResource x:Key="WindowDefaultForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="SemiColorText0" ResourceKey="StudioText" />
+    <StaticResource x:Key="SemiColorText1" ResourceKey="StudioText" />
+    <StaticResource x:Key="DockTabForegroundBrush" ResourceKey="StudioMuted" />
+    <StaticResource x:Key="SemiColorText2" ResourceKey="StudioMuted" />
+    <StaticResource x:Key="SemiColorText3" ResourceKey="StudioMuted" />
+    <StaticResource x:Key="DockTabActiveIndicatorBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="DockTargetIndicatorBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="DockSplitterHoverBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="DockSplitterDragBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="DockSurfaceHeaderActiveBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="SemiColorPrimary" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="SemiColorInformation" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="ButtonDefaultPrimaryForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonCheckIconDefaultBackground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonCheckIconPointeroverBackground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonCheckIconPressedBackground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonCheckIconDefaultBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonCheckIconPointeroverBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonCheckIconPressedBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonButtonCheckedForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="TabItemButtonHeaderSelectedForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="TabItemLinePipeSelectedBackground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="ProgressBarIndicatorBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="ProgressBarPrimaryForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="ButtonSolidPrimaryBackground" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="ButtonSolidPrimaryPointeroverBackground" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="ButtonSolidPrimaryPressedBackground" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="SystemAccentColor" ResourceKey="StudioAccentColor" />
+</ResourceDictionary>

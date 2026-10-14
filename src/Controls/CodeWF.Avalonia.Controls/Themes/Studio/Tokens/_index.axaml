@@ -1,4 +1,4 @@
-<ResourceDictionary xmlns="https://github.com/avaloniaui"
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:themes="using:CodeWF.Avalonia.Controls.Themes">
     <ResourceDictionary.ThemeDictionaries>
@@ -11,6 +11,14 @@
         <ResourceInclude x:Key="{x:Static themes:StudioTheme.AuroraDark}" Source="AuroraDark.axaml" />
         <ResourceInclude x:Key="{x:Static themes:StudioTheme.EmberLight}" Source="EmberLight.axaml" />
         <ResourceInclude x:Key="{x:Static themes:StudioTheme.EmberDark}" Source="EmberDark.axaml" />
+        <ResourceInclude x:Key="{x:Static themes:StudioTheme.AquaticLight}" Source="AquaticLight.axaml" />
+        <ResourceInclude x:Key="{x:Static themes:StudioTheme.AquaticDark}" Source="AquaticDark.axaml" />
+        <ResourceInclude x:Key="{x:Static themes:StudioTheme.DesertLight}" Source="DesertLight.axaml" />
+        <ResourceInclude x:Key="{x:Static themes:StudioTheme.DesertDark}" Source="DesertDark.axaml" />
+        <ResourceInclude x:Key="{x:Static themes:StudioTheme.DuskLight}" Source="DuskLight.axaml" />
+        <ResourceInclude x:Key="{x:Static themes:StudioTheme.DuskDark}" Source="DuskDark.axaml" />
+        <ResourceInclude x:Key="{x:Static themes:StudioTheme.NightSkyLight}" Source="NightSkyLight.axaml" />
+        <ResourceInclude x:Key="{x:Static themes:StudioTheme.NightSkyDark}" Source="NightSkyDark.axaml" />
     </ResourceDictionary.ThemeDictionaries>
     <SolidColorBrush x:Key="StudioSwatchDotNet">#512BD4</SolidColorBrush>
     <LinearGradientBrush x:Key="StudioSwatchAurora">

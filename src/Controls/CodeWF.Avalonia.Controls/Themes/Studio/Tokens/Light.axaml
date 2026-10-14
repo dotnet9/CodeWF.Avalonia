@@ -1,17 +1,17 @@
-<ResourceDictionary xmlns="https://github.com/avaloniaui"
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- Color tokens and their brushes follow Semi theme dictionaries. -->
+    <!-- 颜色令牌与画刷遵循 Semi 的主题字典结构。 -->
     <Color x:Key="StudioBackgroundColor">#FFFFFF</Color>
-    <Color x:Key="StudioSurfaceColor">#F7F6FC</Color>
-    <Color x:Key="StudioRaisedColor">#EFEDF7</Color>
-    <Color x:Key="StudioBorderColor">#DDD8EC</Color>
-    <Color x:Key="StudioTextColor">#242036</Color>
-    <Color x:Key="StudioMutedColor">#6E6684</Color>
-    <Color x:Key="StudioAccentColor">#512BD4</Color>
-    <Color x:Key="StudioSecondaryColor">#7355DE</Color>
-    <Color x:Key="StudioPrimaryColor">#512BD4</Color>
-    <Color x:Key="StudioGradientStartColor">#512BD4</Color>
-    <Color x:Key="StudioTextGradientEndColor">#7355DE</Color>
+    <Color x:Key="StudioSurfaceColor">#F8F9FB</Color>
+    <Color x:Key="StudioRaisedColor">#EEF1F6</Color>
+    <Color x:Key="StudioBorderColor">#DDE2EB</Color>
+    <Color x:Key="StudioTextColor">#202736</Color>
+    <Color x:Key="StudioMutedColor">#68758B</Color>
+    <Color x:Key="StudioAccentColor">#0064FA</Color>
+    <Color x:Key="StudioSecondaryColor">#4D8EFF</Color>
+    <Color x:Key="StudioPrimaryColor">#0064FA</Color>
+    <Color x:Key="StudioGradientStartColor">#0064FA</Color>
+    <Color x:Key="StudioTextGradientEndColor">#4D8EFF</Color>
     <SolidColorBrush x:Key="StudioBackground" Color="{StaticResource StudioBackgroundColor}" />
     <SolidColorBrush x:Key="StudioSurface" Color="{StaticResource StudioSurfaceColor}" />
     <SolidColorBrush x:Key="StudioRaised" Color="{StaticResource StudioRaisedColor}" />

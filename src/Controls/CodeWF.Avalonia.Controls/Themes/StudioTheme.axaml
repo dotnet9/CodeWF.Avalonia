@@ -1,4 +1,4 @@
-<Styles xmlns="https://github.com/avaloniaui"
+﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="CodeWF.Avalonia.Controls.Themes.StudioTheme">
   <Styles.Resources>
@@ -8,7 +8,7 @@
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Styles.Resources>
-  <!-- Opt-in presentation classes, using Semi's existing templates. -->
+  <!-- 可选外观样式复用 Semi 现有控件模板。 -->
   <Style Selector="UserControl.studio-page">
     <Setter Property="Background" Value="{DynamicResource StudioBackground}" />
     <Setter Property="Foreground" Value="{DynamicResource StudioText}" />

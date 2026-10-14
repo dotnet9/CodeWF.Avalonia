@@ -1,6 +1,6 @@
-<ResourceDictionary xmlns="https://github.com/avaloniaui"
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- Color tokens and their brushes follow Semi theme dictionaries. -->
+    <!-- 颜色令牌与画刷遵循 Semi 的主题字典结构。 -->
     <Color x:Key="StudioBackgroundColor">#1B1616</Color>
     <Color x:Key="StudioSurfaceColor">#241D1B</Color>
     <Color x:Key="StudioRaisedColor">#302522</Color>
@@ -44,7 +44,7 @@
         <StaticResource x:Key="PgEditorBackground" ResourceKey="StudioSurface" />
         <SolidColorBrush x:Key="PgSelectedText">White</SolidColorBrush>
     </ResourceDictionary>
-    <!-- Template resources alias this palette, without replacing Semi control templates. -->
+    <!-- 现有控件模板通过资源别名使用配色。 -->
     <StaticResource x:Key="CodeWFWindowBackground" ResourceKey="StudioBackground" />
     <StaticResource x:Key="CodeWFWindowTitleBarBackground" ResourceKey="StudioBackground" />
     <StaticResource x:Key="DockSurfaceWorkbenchBrush" ResourceKey="StudioBackground" />
