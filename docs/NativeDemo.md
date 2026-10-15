@@ -56,7 +56,7 @@ Start-Process $demo -ArgumentList '--capture E:/github/temp/CodeWF.Avalonia.Nati
 
 Windows x64 NativeAOT 冒烟与截图均退出 0，32 个页面 × 16 配色组合共 512 次渲染零失败；真实文档浮动、参数隔离、语言切换后的模式选择及 Markdown 动态国际化均通过。
 
-本轮库测试 325 项通过（Content 258、Controls 67）。Markdown 额外在同一个已挂载控件中切换中、英、日、繁体中文及未配置语言，检查菜单、选择菜单、代码按钮、英文回退与宿主资源覆盖；也覆盖离开界面后切换语言、重新挂载时的刷新。
+本轮库测试 334 项通过（Content 267、Controls 67）。Markdown 额外在同一个已挂载控件中切换中、英、日、繁体中文及未配置语言，检查菜单、选择菜单、代码按钮、英文回退与宿主资源覆盖；也覆盖离开界面后切换语言、重新挂载时的刷新。
 
 ## 验收边界
 
