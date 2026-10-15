@@ -50,6 +50,12 @@ jobs:
       - name: 运行冒烟演示
         run: artifacts\publish\win-x64\CodeWF.Avalonia.Demo\CodeWF.Avalonia.Demo.exe --smoke
 
+      - name: AOT 发布共享国际化离屏验证
+        run: dotnet publish scripts/localization-verification/LocalizationVerification.csproj -c Release -r win-x64 -p:PublishAot=true -p:IlcGenerateCompleteTypeMetadata=true -p:IlcTrimMetadata=false -p:IlcSingleThreaded=true -o artifacts/aot-localization
+
+      - name: 验证同一控件动态切语与业务资源覆盖
+        run: artifacts\aot-localization\LocalizationVerification.exe artifacts/localization-fixture
+
   prototype-audit:
     name: 原型路由与语言审计
     runs-on: ubuntu-latest

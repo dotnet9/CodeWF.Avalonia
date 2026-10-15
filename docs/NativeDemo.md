@@ -1,5 +1,9 @@
 ﻿# CodeWF.Avalonia 原生 Demo
 
+12.1.4.19 将宿主与所有库统一到 `CodeWF.Toolkit.Lang.I18nManager.Instance`。应用 JSON 输出到 I18n，库 JSON 内嵌，强类型键由 T4 生成；不再保留第二套管理器或事件桥接。
+
+共享国际化验证器位于 `scripts/localization-verification`，加载真实 Demo 主题，在同一组控件上连续切换中、英、日、繁体及未配置语言，检查 Markdown、属性面板、更新服务与宿主绑定；同时检查追加库后业务同键覆盖是否刷新到现有控件。Windows x64 的 managed 与 NativeAOT 运行均退出 0，CI 已纳入同一原生验证。两套 Demo 本轮发布脚本均通过；锁屏期间没有重新操作普通桌面入口。
+
 Demo 使用 Ribbon + Dock，以单个控件或公开 API 为导航单位。8 个分类、32 个页面由 `design/catalog.json` 管理；组合工作流放在“综合示例”，首页直接展示目录。
 
 ## 文档与参数
