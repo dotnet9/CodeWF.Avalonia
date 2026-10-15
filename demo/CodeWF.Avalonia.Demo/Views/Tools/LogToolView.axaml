@@ -6,17 +6,6 @@
              x:DataType="vm:MainViewModel"
              x:CompileBindings="True" Background="{DynamicResource StudioSurface}">
   <!--  底部日志工具面板内容（LogView 实时事件流）  -->
-  <Grid RowDefinitions="Auto,*">
-    <DockPanel Grid.Row="0" Margin="12,6">
-      <Button DockPanel.Dock="Right" Margin="8,0,0,0" Padding="8,2" FontSize="11"
-              Content="{codewf:I18n Demo.Shell.WriteLogs}"
-              Command="{Binding WriteLogsCommand}" />
-      <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-        <TextBlock Text="{codewf:I18n Demo.Shell.Log}" FontWeight="Bold" FontSize="11.5" />
-        <TextBlock Text="{Binding LogFolder}" Opacity="0.6" FontSize="11"
-                   TextTrimming="CharacterEllipsis" />
-      </StackPanel>
-    </DockPanel>
-    <codewf:LogView Grid.Row="1" Source="{Binding LogSource}" MaxDisplayCount="500" />
-  </Grid>
+  <codewf:LogView Source="{Binding LogSource}" LogDirectory="{Binding LogFolder}"
+                  MaxDisplayCount="500" FontSize="11" Padding="10,4" />
 </UserControl>

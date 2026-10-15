@@ -1,4 +1,4 @@
-﻿<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui"
+<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui"
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:codewf="https://codewf.com"
                      xmlns:dock="using:Dock.Avalonia.Controls"
@@ -14,7 +14,7 @@
                      MinWidth="1120" MinHeight="640"
                      Background="{DynamicResource StudioBackground}"
                      Foreground="{DynamicResource StudioText}"
-                     TitleBarHeight="52" FontSize="13" FontFamily="{DynamicResource DefaultFontFamily}">
+                     TitleBarHeight="52" CaptionButtonWidth="34" FontSize="13" FontFamily="{DynamicResource DefaultFontFamily}">
 
   <!--  外壳：CodeWFWindow 无边框窗口，标题栏即自我演示  -->
 
@@ -59,10 +59,6 @@
       </ComboBox>
       <ComboBox MinWidth="96" Height="30" FontSize="11.5"
                 ItemsSource="{Binding Cultures}" SelectedItem="{Binding SelectedCulture}" />
-      <Button Classes="qk-btn" Command="{Binding ToggleDensityCommand}"
-              ToolTip.Tip="{Binding DensityLabel}">
-        <PathIcon Width="16" Height="16" Data="{DynamicResource SemiIconRowsStroked}" />
-      </Button>
       <!--  通知中心入口：徽标显示当前卡片数  -->
       <Button Classes="qk-btn" Command="{Binding NotifyDemoCommand}"
               ToolTip.Tip="{codewf:I18n Demo.Shell.NotifyDemo}">
@@ -83,34 +79,21 @@
   <Grid RowDefinitions="Auto,Auto,*,Auto">
 
     <!--  Ribbon 页签行：快捷工具栏 + 分类页签（双击页签折叠/展开命令区，不另设图钉按钮）  -->
-    <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Height="42" Background="{DynamicResource StudioSurface}">
+    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Height="42" Background="{DynamicResource StudioSurface}">
       <Border Grid.Column="0" x:Name="RibbonQuickAccess" VerticalAlignment="Center"
               BorderBrush="{DynamicResource StudioBorder}" BorderThickness="0,0,1,0" Padding="0,0,10,0" Margin="10,0,10,0">
         <StackPanel Orientation="Horizontal" Spacing="2">
-          <Button Classes="qk-btn ribbon-quick"
-                  ToolTip.Tip="{codewf:I18n Demo.Shell.QuickGuide}"
-                  Command="{Binding QuickGuideCommand}" >
+          <Button Classes="qk-btn ribbon-quick" ToolTip.Tip="{codewf:I18n Demo.Shell.QuickGuide}"
+                  Command="{Binding QuickGuideCommand}">
             <PathIcon Classes="ribbon-quick-icon" Data="{DynamicResource SemiIconHelpCircleStroked}" />
           </Button>
-          <Button Classes="qk-btn ribbon-quick"
-                  ToolTip.Tip="{codewf:I18n Demo.Shell.QuickSave}"
-                  Command="{Binding QuickSaveCommand}" >
-            <PathIcon Classes="ribbon-quick-icon" Data="{DynamicResource SemiIconSaveStroked}" />
-          </Button>
-          <Button Classes="qk-btn ribbon-quick"
-                  ToolTip.Tip="{codewf:I18n Demo.Shell.Reset}"
-                  Command="{Binding QuickResetCommand}" >
+          <Button Classes="qk-btn ribbon-quick" ToolTip.Tip="{codewf:I18n Demo.Shell.Reset}"
+                  Command="{Binding QuickResetCommand}">
             <PathIcon Classes="ribbon-quick-icon" Data="{DynamicResource SemiIconRefresh}" />
           </Button>
-          <Button Classes="qk-btn ribbon-quick"
-                  ToolTip.Tip="{codewf:I18n Demo.Shell.QuickSettings}"
-                  Command="{Binding QuickSettingsCommand}" >
-            <PathIcon Classes="ribbon-quick-icon" Data="{DynamicResource SemiIconSettingStroked}" />
-          </Button>
-          <Button Classes="qk-btn ribbon-quick"
-                  ToolTip.Tip="{codewf:I18n Demo.Shell.Command}"
-                  Command="{Binding ToggleCommandPaletteCommand}" >
-            <PathIcon Classes="ribbon-quick-icon" Data="{DynamicResource SemiIconCommand}" />
+          <Button Classes="qk-btn ribbon-quick" ToolTip.Tip="{codewf:I18n Demo.Shell.Palette}"
+                  Command="{Binding CyclePaletteCommand}">
+            <PathIcon Classes="ribbon-quick-icon" Data="{DynamicResource SemiIconColorPalette}" />
           </Button>
         </StackPanel>
       </Border>
@@ -128,11 +111,32 @@
         </TabStrip.ItemTemplate>
       </TabStrip>
       </ScrollViewer>
+      <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4" Margin="8,0,10,0" VerticalAlignment="Center">
+        <Button Classes="ribbon-action" Command="{Binding ToggleCommandPaletteCommand}">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <PathIcon Width="16" Height="16" Data="{DynamicResource SemiIconSearchStroked}" />
+            <TextBlock Text="{codewf:I18n Demo.Shell.Command}" />
+            <TextBlock Text="Ctrl+K" Foreground="{DynamicResource StudioMuted}" FontSize="10" />
+          </StackPanel>
+        </Button>
+        <Button Classes="ribbon-action" Command="{Binding ToggleDensityCommand}" ToolTip.Tip="{Binding DensityLabel}">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <PathIcon Width="16" Height="16" Data="{DynamicResource SemiIconRowsStroked}" />
+            <TextBlock Text="{codewf:I18n Demo.Shell.Density}" />
+          </StackPanel>
+        </Button>
+        <Button Classes="ribbon-action" Command="{Binding QuickSaveCommand}">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <PathIcon Width="16" Height="16" Data="{DynamicResource SemiIconSaveStroked}" />
+            <TextBlock Text="{codewf:I18n Demo.Shell.QuickSave}" />
+          </StackPanel>
+        </Button>
+      </StackPanel>
     </Grid>
 
     <!--  Ribbon 命令区：当前页签的演示命令（图标 + 名称），底部组名；按功能分组，密集命令使用双行  -->
     <Border Grid.Row="1" IsVisible="{Binding RibbonExpanded}"
-            Background="{DynamicResource StudioSurface}" ClipToBounds="True" Padding="12,4,12,2"
+            Background="{DynamicResource StudioBackground}" ClipToBounds="True" Padding="12,4,12,2"
             BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}"
             BorderThickness="0,1,0,1">
       <ScrollViewer x:Name="RibbonCommands" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">

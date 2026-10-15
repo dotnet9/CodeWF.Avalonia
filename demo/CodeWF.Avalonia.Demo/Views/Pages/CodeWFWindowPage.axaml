@@ -7,7 +7,7 @@
     <StackPanel Margin="12,10" Spacing="12">
 
       <StackPanel Orientation="Horizontal" Spacing="8">
-        <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.CodeWFWindow.View.OpenDefaultConfiguration}" Click="OnOpenDefault" />
+        <Button x:Name="OpenWindowButton" Classes="demo-action" Content="{codewf:I18n Demo.Content.CodeWFWindow.View.OpenDefaultConfiguration}" Click="OnOpenDefault" />
         <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.CodeWFWindow.View.OpenMinimalButtonsAndCustomTitleBar}" Click="OnOpenCustom" />
         <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.CodeWFWindow.View.OpenExtendContentIntoTitleBar}" Click="OnOpenExtends" />
       </StackPanel>

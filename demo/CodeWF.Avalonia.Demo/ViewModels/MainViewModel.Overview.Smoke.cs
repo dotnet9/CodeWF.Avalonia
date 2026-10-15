@@ -1,6 +1,7 @@
-﻿using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.VisualTree;
@@ -24,6 +25,22 @@ public partial class MainViewModel
             await Task.Delay(50);
             window.UpdateLayout();
         }
+        // 验证标题栏高度在运行时变化后，窗口按钮的热区和垂直位置同步更新。
+        var shell = (Controls.Controls.CodeWFWindow)window;
+        var originalTitleBarHeight = shell.TitleBarHeight;
+        var originalCaptionButtonWidth = shell.CaptionButtonWidth;
+        foreach (var height in new[] { 32d, 44d, 52d })
+        {
+            shell.TitleBarHeight = height;
+            shell.CaptionButtonWidth = height;
+            window.UpdateLayout();
+            var captions = window.GetVisualDescendants().OfType<Button>()
+                .Where(button => button.Classes.Contains("caption-button") && button.IsEffectivelyVisible).ToArray();
+            if (captions.Length != 3 || captions.Any(button => button.Bounds.Height != height || button.Bounds.Width != height))
+                throw new InvalidOperationException("Caption buttons must follow the configured title bar height.");
+        }
+        shell.TitleBarHeight = originalTitleBarHeight;
+        shell.CaptionButtonWidth = originalCaptionButtonWidth;
         foreach (var palette in Palettes.Take(3))
         {
             SelectedPalette = palette;
@@ -149,7 +166,7 @@ public partial class MainViewModel
                         throw new InvalidOperationException("Ribbon quick buttons must retain a 30 by 30 pixel hit area: " +
                             string.Join(", ", quickButtons.Select(button => button.Bounds.Size)));
                     var quickIcons = quickButtons.Select(button => button.Content).OfType<PathIcon>().ToArray();
-                    if (quickIcons.Length != 5 || quickIcons.Any(icon => icon.Data is null || icon.Bounds.Width != 16 || icon.Bounds.Height != 16))
+                    if (quickIcons.Length != 3 || quickIcons.Any(icon => icon.Data is null || icon.Bounds.Width != 16 || icon.Bounds.Height != 16))
                         throw new InvalidOperationException("Ribbon quick icons must occupy 16 by 16 pixels.");
                     Save($"ribbon-{group.TitleKey.Split('.').Last()}-{(int)size.Width}-{culture.Name}");
                 }
@@ -158,6 +175,38 @@ public partial class MainViewModel
 
         void Save(string name)
         {
+            // 对现有日志控件反复切换语言，验证包内资源和菜单的动态刷新。
+            var logResources = new global::CodeWF.Toolkit.Lang.Json.JsonLocalizer(typeof(global::CodeWF.Avalonia.Log.LogView).Assembly);
+            foreach (var log in window.GetVisualDescendants().OfType<global::CodeWF.Avalonia.Log.LogView>())
+            {
+                foreach (var (menuName, key) in new[] { ("CopyMenuItem", "Log.View.Copy"), ("ClearMenuItem", "Log.View.Clear"), ("LocationMenuItem", "Log.View.Location") })
+                {
+                    var expected = logResources.GetResource(key);
+                    if (expected == key || !Equals(log.FindControl<MenuItem>(menuName)?.Header, expected))
+                        throw new InvalidOperationException("Log menu did not follow the current language: " + key);
+                }
+                if (log.IsEffectivelyVisible && log.Bounds.Height < 35)
+                    throw new InvalidOperationException("The log tool must retain room for readable entries.");
+            }
+            if (name.StartsWith("ribbon-", StringComparison.Ordinal))
+            {
+                var geometry = window.FindControl<ScrollViewer>("RibbonCommands")!.GetVisualDescendants()
+                    .OfType<Button>().Select(button => new
+                    {
+                        Item = (button.DataContext as DemoItemViewModel)?.TitleKey,
+                        Button = button.Bounds.ToString(),
+                        Presenter = button.GetVisualDescendants().OfType<ContentPresenter>().FirstOrDefault(presenter => presenter.Name == "PART_ContentPresenter")?.Bounds.ToString(),
+                        Selected = button.Classes.Contains("selected")
+                    }).ToArray();
+                File.WriteAllText(Path.Combine(directory, name + ".layout.txt"),
+                    string.Join(Environment.NewLine, geometry.Select(value => $"{value.Item}: {value.Button}; presenter={value.Presenter}; selected={value.Selected}")));
+                foreach (var button in window.FindControl<ScrollViewer>("RibbonCommands")!.GetVisualDescendants().OfType<Button>())
+                {
+                    var presenter = button.GetVisualDescendants().OfType<ContentPresenter>().First(presenter => presenter.Name == "PART_ContentPresenter");
+                    if (presenter.Bounds.Size != button.Bounds.Size)
+                        throw new InvalidOperationException("Ribbon feedback must cover the complete command button.");
+                }
+            }
             using var bitmap = new RenderTargetBitmap(new PixelSize((int)window.Bounds.Width, (int)window.Bounds.Height));
             bitmap.Render(window);
             bitmap.Save(Path.Combine(directory, name + ".png"), new PngBitmapEncoderOptions());

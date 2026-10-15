@@ -11,17 +11,11 @@ namespace CodeWF.Avalonia.Demo.Views.Pages;
 
 public partial class CodeWFWindowPage : DemoPageBase
 {
-    private const string IdTitleHeight = "cw.titleHeight";
-    private const string IdCornerRadius = "cw.cornerRadius";
-    private const string IdExtends = "cw.extends";
-
     public static string XamlSnippet => L.Instance.GetResource(DemoResources.Content.CodeWFWindow.Source.Xaml);
 
     public static string CSharpSnippet => L.Instance.GetResource(DemoResources.Content.CodeWFWindow.Source.CSharp);
 
-    private double _titleBarHeight = 36d;
-    private double _cornerRadius = 8d;
-    private bool _extends = true;
+    public ViewModels.WindowDemoViewModel ViewModel { get; } = new();
 
     public CodeWFWindowPage()
     {
@@ -36,66 +30,15 @@ public partial class CodeWFWindowPage : DemoPageBase
 
     public override string CSharpCode => CSharpSnippet;
 
-    public override void OnPropertyCommitted(PropertyValueChange change)
-    {
-        switch (change.Item.Id)
-        {
-            case IdTitleHeight when change.NewValue is decimal height:
-                _titleBarHeight = (double)height;
-                break;
-            case IdCornerRadius when change.NewValue is decimal radius:
-                _cornerRadius = (double)radius;
-                break;
-            case IdExtends when change.NewValue is bool extends:
-                _extends = extends;
-                break;
-        }
-    }
+    public override void OnPropertyCommitted(PropertyValueChange change) => ViewModel.Commit(change);
 
-    protected override IReadOnlyList<PropertyItem> BuildProperties()
-    {
-        var titleHeight = new PropertyItem
-        {
-            Id = IdTitleHeight,
-            Name = L.Instance.GetResource(DemoResources.Content.CodeWFWindow.Properties.TitleBarHeight),
-            Kind = PropertyItemKind.Number,
-            Value = (decimal)_titleBarHeight,
-            DefaultValue = 32m,
-            Minimum = 24,
-            Maximum = 64,
-            Unit = "px",
-            Description = L.Instance.GetResource(DemoResources.Content.CodeWFWindow.Properties.TitleBarHeightForTheNextExampleWindow),
-        };
-        var cornerRadius = new PropertyItem
-        {
-            Id = IdCornerRadius,
-            Name = L.Instance.GetResource(DemoResources.Content.CodeWFWindow.Properties.WindowCornerRadius),
-            Kind = PropertyItemKind.Number,
-            Value = (decimal)_cornerRadius,
-            DefaultValue = 4m,
-            Minimum = 0,
-            Maximum = 24,
-            Unit = "px",
-            Description = L.Instance.GetResource(DemoResources.Content.CodeWFWindow.Properties.WindowCornerRadiusWindowsDWM),
-        };
-        var extends = new PropertyItem
-        {
-            Id = IdExtends,
-            Name = L.Instance.GetResource(DemoResources.Content.CodeWFWindow.Properties.ExtendContentIntoTitleBar),
-            Kind = PropertyItemKind.Boolean,
-            Value = _extends,
-            DefaultValue = false,
-            Description = L.Instance.GetResource(DemoResources.Content.CodeWFWindow.Properties.ExtendTheWindowContentUnderneathTheTitleBar),
-        };
-
-        return [titleHeight, cornerRadius, extends];
-    }
+    protected override IReadOnlyList<PropertyItem> BuildProperties() => ViewModel.BuildProperties();
 
     private void OnOpenDefault(object? sender, RoutedEventArgs e) =>
-        ShowSample(L.Instance.GetResource(DemoResources.Content.CodeWFWindow.OnOpenDefault.DefaultConfiguration), extends: false, fullScreenButton: false, customTitleContent: false);
+        ShowSample(L.Instance.GetResource(DemoResources.Content.CodeWFWindow.OnOpenDefault.DefaultConfiguration), extends: ViewModel.ExtendsIntoTitleBar, fullScreenButton: false, customTitleContent: false);
 
     private void OnOpenCustom(object? sender, RoutedEventArgs e) =>
-        ShowSample(L.Instance.GetResource(DemoResources.Content.CodeWFWindow.OnOpenCustom.MinimalButtonsAndCustomTitleBar), extends: false, fullScreenButton: false, customTitleContent: true);
+        ShowSample(L.Instance.GetResource(DemoResources.Content.CodeWFWindow.OnOpenCustom.MinimalButtonsAndCustomTitleBar), extends: ViewModel.ExtendsIntoTitleBar, fullScreenButton: false, customTitleContent: true);
 
     private void OnOpenExtends(object? sender, RoutedEventArgs e) =>
         ShowSample(L.Instance.GetResource(DemoResources.Content.CodeWFWindow.OnOpenExtends.ExtendContentIntoTitleBar), extends: true, fullScreenButton: true, customTitleContent: false);
@@ -108,8 +51,9 @@ public partial class CodeWFWindowPage : DemoPageBase
             Title = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource(DemoResources.Content.CodeWFWindow.ShowSample.CodeWFWindowExampleFormat), name),
             Width = 640,
             Height = 420,
-            TitleBarHeight = _titleBarHeight,
-            WindowCornerRadius = new CornerRadius(_cornerRadius),
+            TitleBarHeight = ViewModel.TitleBarHeight,
+            CaptionButtonWidth = ViewModel.CaptionButtonWidth,
+            WindowCornerRadius = new CornerRadius(ViewModel.CornerRadius),
             ContentExtendsIntoTitleBar = extends,
             IsFullScreenButtonVisible = fullScreenButton,
         };
@@ -123,7 +67,7 @@ public partial class CodeWFWindowPage : DemoPageBase
                 VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
                 Margin = new Thickness(10, 0, 0, 0),
             };
-            var search = new TextBox { Width = 160, Height = 26, Watermark = L.Instance.GetResource(DemoResources.Content.CodeWFWindow.ShowSample.Search) };
+            var search = new TextBox { Width = 160, Height = 26, PlaceholderText = L.Instance.GetResource(DemoResources.Content.CodeWFWindow.ShowSample.Search) };
             DockPanel.SetDock(search, global::Avalonia.Controls.Dock.Right);
             window.RightContent = search;
         }
@@ -156,6 +100,7 @@ public partial class CodeWFWindowPage : DemoPageBase
         });
         window.Content = contentPanel;
 
-        window.Show(owner);
+        if (owner is null) window.Show();
+        else window.Show(owner);
     }
 }

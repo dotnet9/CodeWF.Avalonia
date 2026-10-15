@@ -224,6 +224,8 @@ public static class ResourceKeys
             }
             public static class @Properties
             {
+                public const string @CaptionButtonWidth = "Demo.Content.CodeWFWindow.Properties.CaptionButtonWidth";
+                public const string @CaptionButtonWidthDescription = "Demo.Content.CodeWFWindow.Properties.CaptionButtonWidthDescription";
                 public const string @ExtendContentIntoTitleBar = "Demo.Content.CodeWFWindow.Properties.ExtendContentIntoTitleBar";
                 public const string @ExtendTheWindowContentUnderneathTheTitleBar = "Demo.Content.CodeWFWindow.Properties.ExtendTheWindowContentUnderneathTheTitleBar";
                 public const string @TitleBarHeight = "Demo.Content.CodeWFWindow.Properties.TitleBarHeight";

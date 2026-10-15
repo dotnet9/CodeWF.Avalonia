@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Media;
 using ReactiveUI.Avalonia;
 
 namespace CodeWF.Avalonia.Demo;
@@ -22,6 +23,16 @@ internal static class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
+            // 为西文字体缺失的中文字形指定无衬线回退，避免系统选到宋体。
+            .With(new FontManagerOptions
+            {
+                FontFallbacks =
+                [
+                    new FontFallback { FontFamily = new FontFamily("Microsoft YaHei UI") },
+                    new FontFallback { FontFamily = new FontFamily("PingFang SC") },
+                    new FontFallback { FontFamily = new FontFamily("Noto Sans CJK SC") }
+                ]
+            })
             .UseReactiveUI(_ => { })
             .LogToTrace();
 }

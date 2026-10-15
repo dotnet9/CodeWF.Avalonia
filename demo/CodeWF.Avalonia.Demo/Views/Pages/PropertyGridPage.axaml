@@ -7,18 +7,11 @@
              x:CompileBindings="True">
   <Grid RowDefinitions="Auto,*" Margin="12,10">
 
-    <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
-            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <StackPanel Spacing="6">
-        <TextBlock Text="{codewf:I18n Demo.Content.PropertyGrid.View.PropertyGridDisplaysACompleteValvePropertyTreeTry}"
-                   TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
-        <StackPanel Orientation="Horizontal" Spacing="6">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6">
           <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.PropertyGrid.View.ExpandAll}" Click="OnExpandAll" />
           <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.PropertyGrid.View.CollapseAll}" Click="OnCollapseAll" />
           <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.PropertyGrid.View.ResetAllChanges}" Click="OnResetAll" />
         </StackPanel>
-      </StackPanel>
-    </Border>
 
     <Grid Grid.Row="1" ColumnDefinitions="2*,*" Margin="0,10,0,0">
       <codewf:PropertyGrid Grid.Column="0" x:Name="DemoGrid"

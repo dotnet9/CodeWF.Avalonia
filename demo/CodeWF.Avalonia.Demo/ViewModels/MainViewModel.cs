@@ -1,4 +1,4 @@
-﻿using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
+using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using L = global::CodeWF.Avalonia.Lang.I18nManager;
 using Avalonia;
 using Avalonia.Collections;
@@ -73,6 +73,7 @@ public partial class MainViewModel : ReactiveObject, IDisposable
             AppearanceOption.NightSky(),
         };
         _selectedPalette = Palettes[0];
+        CyclePaletteCommand = ReactiveCommand.Create(() => { SelectedPalette = Palettes[(Palettes.IndexOf(SelectedPalette) + 1) % Palettes.Count]; });
 
         Cultures = new ObservableCollection<CultureOption>
         {
@@ -249,6 +250,8 @@ public partial class MainViewModel : ReactiveObject, IDisposable
     public LogEventFeed LogSource => Logger.Events;
 
     public string LogFolder => DemoBootstrapper.LogFolder;
+
+    public ReactiveCommand<RxVoid, RxVoid> CyclePaletteCommand { get; }
 
     public ObservableCollection<AppearanceOption> Palettes { get; }
 
@@ -532,6 +535,7 @@ public partial class MainViewModel : ReactiveObject, IDisposable
         var logDock = new ToolDock
         {
             Id = "Dock.Log",
+            MinHeight = 84,
             ActiveDockable = _logTool,
             VisibleDockables = _dockFactory.CreateList<IDockable>(_logTool),
             Dock = DockMode.Bottom,

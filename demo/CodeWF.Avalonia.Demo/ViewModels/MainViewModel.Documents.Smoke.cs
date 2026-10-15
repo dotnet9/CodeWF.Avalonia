@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.VisualTree;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
@@ -11,6 +12,7 @@ public partial class MainViewModel
     /// <summary>将真实文档浮动、调整参数后重新停靠，验证内容与属性面板不会串到其他文档。</summary>
     private async Task SmokeDocumentIsolationAsync(CancellationToken cancellation)
     {
+        await SmokeWindowParametersAsync(cancellation);
         var item = Groups.SelectMany(group => group.Items).Single(entry => entry.Api == "CodeWFTitleBar");
         OpenItem(item);
         var document = ActiveDocument!;
@@ -64,5 +66,53 @@ public partial class MainViewModel
             }
             return (Window)TopLevel.GetTopLevel(control)!;
         }
+    }
+
+    private async Task SmokeWindowParametersAsync(CancellationToken cancellation)
+    {
+        OpenItem(Groups.SelectMany(group => group.Items).Single(entry => entry.Api == "CodeWFWindow"));
+        var document = ActiveDocument!;
+        var view = (Views.DemoDocumentView)document.DockDocument!.Context!;
+        var deadline = DateTime.UtcNow.AddSeconds(8);
+        while (TopLevel.GetTopLevel(view) is not Window || view.Bounds.Width <= 0)
+        {
+            await Task.Delay(40, cancellation);
+            if (DateTime.UtcNow >= deadline) throw new TimeoutException("Window demo did not load.");
+        }
+        var main = (Window)TopLevel.GetTopLevel(view)!;
+        var properties = view.FindControl<PropertyGrid>("DocumentProperties")!;
+        foreach (var (id, value) in new (string, object)[] { ("cw.titleHeight", 44m), ("cw.captionWidth", 40m), ("cw.cornerRadius", 12m) })
+            if (!properties.CommitValue(document.PropertyItems.Single(item => item.Id == id), value))
+                throw new InvalidOperationException("Window parameter commit failed: " + id);
+        main.UpdateLayout();
+        var position = properties.TranslatePoint(default, view) ?? throw new InvalidOperationException("Properties are detached.");
+        document.ShowSource = true;
+        main.UpdateLayout();
+        if (properties.TranslatePoint(default, view) != position)
+            throw new InvalidOperationException("Opening source must not move the document property panel.");
+        document.ShowSource = false;
+        try
+        {
+            foreach (var extends in new[] { true, false })
+            {
+                if (!properties.CommitValue(document.PropertyItems.Single(item => item.Id == "cw.extends"), extends))
+                    throw new InvalidOperationException("Window extension parameter commit failed.");
+                document.Page.FindControl<Button>("OpenWindowButton")!.RaiseEvent(new global::Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+                var sample = main.OwnedWindows.OfType<global::CodeWF.Avalonia.Controls.Controls.CodeWFWindow>().Single();
+                try
+                {
+                    await Task.Delay(80, cancellation);
+                    sample.UpdateLayout();
+                    if (sample.TitleBarHeight != 44 || sample.CaptionButtonWidth != 40 || sample.WindowCornerRadius.TopLeft != 12 || sample.ContentExtendsIntoTitleBar != extends)
+                        throw new InvalidOperationException("Window parameters did not reach the created sample window.");
+                    if (sample.GetVisualDescendants().OfType<Button>().Where(button => button.Classes.Contains("caption-button") && button.IsEffectivelyVisible)
+                        .Any(button => button.Bounds.Width != 40 || button.Bounds.Height != 44))
+                        throw new InvalidOperationException("Sample caption button dimensions are incorrect.");
+                }
+                finally { sample.Close(); }
+            }
+            Logger.Info("Window demo smoke: title height, caption width, corner radius, extension and source/property layout passed");
+        }
+        finally { CloseDocument(document); }
     }
 }

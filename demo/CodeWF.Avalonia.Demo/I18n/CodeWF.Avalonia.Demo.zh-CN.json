@@ -1,4 +1,4 @@
-﻿{
+{
   "language": "简体中文",
   "description": "CodeWF.Avalonia Demo 简体中文资源。",
   "cultureName": "zh-CN",
@@ -550,6 +550,8 @@
           "ArrangeCenterContentAndTheTitleToAvoidOverlap": "CenterContent 与标题并存时自行规划布局。"
         },
         "Properties": {
+          "CaptionButtonWidth": "窗口按钮宽度",
+          "CaptionButtonWidthDescription": "控制下一示例窗口的最小化、最大化和关闭按钮宽度。",
           "TitleBarHeight": "标题栏高度",
           "TitleBarHeightForTheNextExampleWindow": "新打开示例窗口的标题栏高度。",
           "WindowCornerRadius": "窗口圆角",
@@ -705,7 +707,7 @@
       "Guide": {
         "View": {
           "StartGuide13Placements": "开始引导（13 方位演示）",
-          "HighlightTheTargetIn13PlacementsWithEnter": "遮罩聚光目标控件，支持 13 个方位（Center / Top×3 / Bottom×3 / Left×3 / Right×3）、键盘导航（Enter 下一 / Esc 关闭）、缺省目标行为。",
+          "HighlightTheTargetIn13PlacementsWithEnter": "选择方位查看聚光效果。Enter 下一步，Esc 退出；拖动或缩放窗口时定位同步更新。",
           "Step1Center": "步骤 1 · Center",
           "IsPointAtCenterTrueOrNoTargetHighlightsTheScreen": "IsPointAtCenter=True 或缺省目标时聚光屏幕中心。",
           "Step2TopLeft": "步骤 2 · TopLeft",

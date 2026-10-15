@@ -124,6 +124,8 @@
     <Setter Property="Foreground" Value="{DynamicResource StudioText}" />
   </Style>
   <Style Selector="ToggleButton.nav-group /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.nav-group:checked /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="VerticalAlignment" Value="Stretch" />
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderBrush" Value="Transparent" />
   </Style>
@@ -139,6 +141,7 @@
     <Setter Property="MinHeight" Value="30" />
   </Style>
   <Style Selector="Button.rbn-cmd,Button.nav-leaf">
+    <Setter Property="FontWeight" Value="Normal" />
     <Setter Property="MinHeight" Value="30" />
     <Setter Property="CornerRadius" Value="6" />
     <Setter Property="Background" Value="Transparent" />
@@ -147,6 +150,8 @@
     <Setter Property="BorderBrush" Value="Transparent" />
   </Style>
   <Style Selector="Button.rbn-cmd /template/ ContentPresenter#PART_ContentPresenter, Button.nav-leaf /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="VerticalAlignment" Value="Stretch" />
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderBrush" Value="Transparent" />
     <Setter Property="Foreground" Value="{DynamicResource StudioText}" />
@@ -209,6 +214,8 @@
     <Setter Property="Height" Value="16" />
   </Style>
   <Style Selector="Button.ribbon-quick /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="VerticalAlignment" Value="Stretch" />
     <Setter Property="Foreground" Value="{DynamicResource StudioMuted}" />
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="Transitions">
@@ -234,4 +241,19 @@
     </Setter>
   </Style>
   <Style Selector="PathIcon.nav-chevron.expanded"><Setter Property="RenderTransform" Value="rotate(90deg)" /></Style>
+  <!-- 右侧快捷操作遵循原型的文字按钮，保持稳定图标尺寸与键盘焦点。 -->
+  <Style Selector="Button.ribbon-action">
+    <Setter Property="Theme" Value="{DynamicResource BorderlessButton}" />
+    <Setter Property="Height" Value="28" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="Padding" Value="8,0" />
+    <Setter Property="FontSize" Value="11.5" />
+    <Setter Property="FontWeight" Value="Normal" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Foreground" Value="{DynamicResource StudioMuted}" />
+  </Style>
+  <!-- Ribbon 使用整块选中底色；左侧强调线只用于导航行。 -->
+  <Style Selector="Button.rbn-cmd"><Setter Property="BorderThickness" Value="0" /></Style>
+  <Style Selector="PathIcon.ribbon-icon"><Setter Property="Foreground" Value="{DynamicResource StudioAccent}" /></Style>
+  <Style Selector="Border.catalog-group"><Setter Property="BorderThickness" Value="0" /></Style>
 </Styles>

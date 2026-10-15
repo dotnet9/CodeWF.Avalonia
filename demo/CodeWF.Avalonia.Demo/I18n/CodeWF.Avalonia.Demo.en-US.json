@@ -1,4 +1,4 @@
-﻿{
+{
   "language": "English",
   "description": "CodeWF.Avalonia Demo English resources.",
   "cultureName": "en-US",
@@ -550,6 +550,8 @@
           "ArrangeCenterContentAndTheTitleToAvoidOverlap": "Arrange CenterContent and the title to avoid overlap."
         },
         "Properties": {
+          "CaptionButtonWidth": "Caption button width",
+          "CaptionButtonWidthDescription": "Width of the minimize, maximize, and close buttons in the next example window.",
           "TitleBarHeight": "Title bar height",
           "TitleBarHeightForTheNextExampleWindow": "Title bar height for the next example window.",
           "WindowCornerRadius": "Window corner radius",
@@ -705,7 +707,7 @@
       "Guide": {
         "View": {
           "StartGuide13Placements": "Start guide (13 placements)",
-          "HighlightTheTargetIn13PlacementsWithEnter": "Highlight the target in 13 placements, with Enter / Escape navigation and fallback behavior for missing targets.",
+          "HighlightTheTargetIn13PlacementsWithEnter": "Choose a placement. Enter advances, Esc closes; highlights follow window moves and resizing.",
           "Step1Center": "Step 1 · Center",
           "IsPointAtCenterTrueOrNoTargetHighlightsTheScreen": "IsPointAtCenter=True or no target highlights the screen center.",
           "Step2TopLeft": "Step 2 · TopLeft",

@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:codewf="https://codewf.com" xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels" xmlns:pages="using:CodeWF.Avalonia.Demo.Views.Pages"
  x:Class="CodeWF.Avalonia.Demo.Views.Pages.WelcomePage" x:DataType="vm:WelcomeViewModel" x:CompileBindings="True" Classes="studio-page">
  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
@@ -8,7 +8,7 @@
     <ItemsControl ItemsSource="{Binding CatalogGroups}">
      <ItemsControl.ItemTemplate>
       <DataTemplate x:DataType="vm:DemoGroupViewModel">
-       <Border Classes="studio-card" Margin="0,4" Padding="14,10">
+       <Border Classes="studio-card catalog-group" Margin="0,4" Padding="14,10">
         <StackPanel Spacing="8">
          <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource StudioAccent}" />
          <ItemsControl ItemsSource="{Binding Items}">

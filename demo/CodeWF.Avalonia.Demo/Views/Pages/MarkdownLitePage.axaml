@@ -4,19 +4,7 @@
              xmlns:pages="using:CodeWF.Avalonia.Demo.Views.Pages"
              x:Class="CodeWF.Avalonia.Demo.Views.Pages.MarkdownLitePage"
              x:CompileBindings="False">
-  <Grid RowDefinitions="Auto,*" Margin="12,10">
-
-    <Border Grid.Row="0" Padding="10" CornerRadius="6" BorderThickness="1"
-            BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
-      <StackPanel Spacing="6">
-        <TextBlock Text="Markdown Lite" FontWeight="Bold" />
-        <TextBlock Text="{codewf:I18n Demo.Content.MarkdownLite.View.MarkdownLiteUsesMarkdigAndASmallerRendering}"
-                   TextWrapping="Wrap" Opacity="0.75" FontSize="12" />
-      </StackPanel>
-    </Border>
-
-    <codewf:MarkdownViewer Grid.Row="1" x:Name="Viewer" Margin="0,10,0,0"
+    <codewf:MarkdownViewer x:Name="Viewer" Margin="12,10"
                            TypographyTheme="Basic"
                            Markdown="{x:Static pages:MarkdownLitePage.SampleMarkdown}" />
-  </Grid>
 </UserControl>
