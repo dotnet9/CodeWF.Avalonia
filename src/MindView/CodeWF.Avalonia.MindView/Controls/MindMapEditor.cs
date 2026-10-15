@@ -1,4 +1,4 @@
-using global::Avalonia;
+﻿using global::Avalonia;
 using global::Avalonia.Collections;
 using global::Avalonia.Controls;
 using global::Avalonia.Controls.Primitives;
@@ -7,7 +7,7 @@ using global::Avalonia.Input;
 using global::Avalonia.Interactivity;
 using global::Avalonia.Media;
 using CodeWF.Avalonia.MindView.I18n;
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 

@@ -1,3 +1,4 @@
+﻿using PropertyGridLanguage = CodeWF.Avalonia.TreeDataGrid.PropertyGrid.I18n.ResourceKeys;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -8,7 +9,7 @@ using Layoutable = Avalonia.Layout.Layoutable;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 
 namespace CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 
@@ -94,7 +95,6 @@ public partial class PropertyGrid : UserControl
         Resources.MergedDictionaries.Add(defaults);
         Resources.MergedDictionaries.Add(_hostTheme);
         RowsHost.ItemsSource = Rows;
-        PropertyGridLocalization.RegisterResources();
         ApplyChromeStrings();
         SyncViewButtons();
         SyncDescriptionMenu();
@@ -104,12 +104,14 @@ public partial class PropertyGrid : UserControl
     {
         base.OnAttachedToVisualTree(e);
         I18nManager.Instance.CultureChanged += HandleCultureChanged;
+        I18nManager.Instance.ResourcesChanged += HandleCultureChanged;
         ApplyChromeStrings();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         I18nManager.Instance.CultureChanged -= HandleCultureChanged;
+        I18nManager.Instance.ResourcesChanged -= HandleCultureChanged;
         base.OnDetachedFromVisualTree(e);
     }
 

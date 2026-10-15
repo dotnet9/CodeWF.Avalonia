@@ -1,10 +1,10 @@
-using Avalonia;
+﻿using Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Controls.Documents;
 using global::Avalonia.Controls.Primitives;
 using global::Avalonia.Media;
 using global::Avalonia.Media.Immutable;
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 using System.Globalization;
 using TextMateSharp.Grammars;
 using TextMateSharp.Registry;

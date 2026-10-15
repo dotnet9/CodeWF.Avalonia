@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
@@ -8,7 +8,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using CodeWF.Avalonia.Log.Extensions;
 using CodeWF.Avalonia.Log.Platform;
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 using CodeWF.Avalonia.Log.I18n;
 using CodeWF.Toolkit.Lang.Json;
 using CodeWF.Toolkit.Logging;

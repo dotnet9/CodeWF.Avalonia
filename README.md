@@ -25,7 +25,7 @@ A suite of UI control and capability libraries for Avalonia 12, published with t
 
 「依赖」列只列第三方与本仓包依赖；所有包均面向 `net10.0`（`Lang.Generator` 为 `netstandard2.0`）。**只有 4 个包直接依赖 Semi.Avalonia**。
 
-从 `12.1.4.11` 起，国际化的 JSON/XML/RESX 解析、文化回退与全局状态由 NuGet 包 `CodeWF.Toolkit.Lang` 提供，无需获取另一个仓库源码。`CodeWF.Avalonia.Lang` 保留 XAML 绑定和旧接口兼容层，两种命名空间的管理器共用同一状态；已有应用可继续使用原来的插件、自定义 `ILangPlugin` 和语言下拉框类型。控制台、服务及基础库直接安装 `CodeWF.Toolkit.Lang`，无需引入 Avalonia。
+从 `12.1.4.19` 起，国际化只有 `CodeWF.Toolkit.Lang.I18nManager.Instance` 一个公开管理器和实例。`CodeWF.Avalonia.Lang` 仅提供 XAML 绑定与转换器，直接订阅该实例；旧命名空间中的管理器、插件及语言元数据类型已移除。应用与库统一引用 `CodeWF.Toolkit.Lang` 及其 `Json` / `Xml` / `Resx` 子命名空间，无需同步桥接或获取另一仓库源码。
 
 资源分发按角色区分：NuGet 库把 JSON 嵌入程序集，自行读取默认文案；Demo 和桌面应用将自己的 JSON 输出到 `I18n/`，沿用已有语言初始化。应用可选添加同名资源键定制库文案，覆盖与缺键回退由 Lang 引擎处理，无需逐库注册、合并 JSON 或提供 resolver。C# 强类型资源键使用 T4 或 `CodeWF.Avalonia.Lang.Generator`，不手写维护映射；Demo 的 T4 映射由 `pwsh scripts/sync_localization_keys.ps1` 更新，CI 使用 `-Check` 校验。
 
@@ -39,7 +39,7 @@ A suite of UI control and capability libraries for Avalonia 12, published with t
 | [CodeWF.Avalonia.Markdown](https://www.nuget.org/packages/CodeWF.Avalonia.Markdown) | 完整包：图片/公式/Mermaid/代码高亮/多格式导出/源码与所见即所得编辑器 | Avalonia.AvaloniaEdit、AnimatedImage.Avalonia、Mermaider、SkiaSharp、Svg.Skia、Svg.Controls.Skia.Avalonia、Sylinko.CSharpMath.Avalonia、TextMateSharp(.Grammars)、CodeWF.Avalonia.Markdown.Lite、CodeWF.Avalonia.Controls\*、CodeWF.Avalonia.Lang\* |
 | [CodeWF.Avalonia.MindView](https://www.nuget.org/packages/CodeWF.Avalonia.MindView) | 脑图编辑、缩略图、导入导出、只读 Markdown 结构图，内含浅深色主题与主题色 API | Avalonia、Markdig、CodeWF.Avalonia.Lang |
 | [CodeWF.Avalonia.Log](https://www.nuget.org/packages/CodeWF.Avalonia.Log) | 日志查看控件与桌面通知（配合 CodeWF.Toolkit.Logging） | Avalonia、Xaml.Behaviors、CodeWF.Toolkit.Logging |
-| [CodeWF.Avalonia.Lang](https://www.nuget.org/packages/CodeWF.Avalonia.Lang) | I18n 标记扩展、转换器与兼容接口；Json/Xml/Resx 解析使用共享 BCL 引擎 | Avalonia、CodeWF.Toolkit.Lang |
+| [CodeWF.Avalonia.Lang](https://www.nuget.org/packages/CodeWF.Avalonia.Lang) | I18n 标记扩展与转换器；直接使用 Toolkit 唯一语言管理器，支持业务资源覆盖 | Avalonia、CodeWF.Toolkit.Lang |
 | [CodeWF.Avalonia.Lang.Generator](https://www.nuget.org/packages/CodeWF.Avalonia.Lang.Generator) | 编译期源生成器：从语言资源生成强类型 Key | Roslyn（`PrivateAssets=all`，netstandard2.0） |
 
 \* 标注的依赖由对应包经传递引用带入，无需单独安装；它们本身不依赖 Semi，见 [主题与依赖](#主题与依赖--themes-and-dependencies)。

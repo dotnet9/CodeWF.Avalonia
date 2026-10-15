@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Controls.Documents;
 using global::Avalonia.Controls.Metadata;
@@ -16,7 +16,7 @@ using CodeWF.Avalonia.Controls.Controls;
 using CodeWF.Avalonia.Markdown.Helpers;
 using CodeWF.Avalonia.Markdown.Rendering;
 using CodeWF.Avalonia.Markdown.Shared.Rendering;
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 using Markdig;
 using Markdig.Extensions.Footnotes;
 using Markdig.Extensions.Mathematics;

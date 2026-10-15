@@ -1,10 +1,10 @@
-using global::Avalonia.Controls;
+﻿using global::Avalonia.Controls;
 using global::Avalonia.Controls.Documents;
 using global::Avalonia.Controls.Primitives;
 using global::Avalonia.Layout;
 using global::Avalonia.Media;
 using CodeWF.Avalonia.Markdown.Controls;
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 using Markdig.Syntax;
 
 namespace CodeWF.Avalonia.Markdown.Rendering;

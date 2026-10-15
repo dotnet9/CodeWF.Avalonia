@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using PropertyGridLanguage = CodeWF.Avalonia.TreeDataGrid.PropertyGrid.I18n.ResourceKeys;
+using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;

@@ -5,14 +5,14 @@ Push-Location $repositoryRoot
 try {
     dotnet tool restore
     if ($LASTEXITCODE -ne 0) { throw 'T4 tool restore failed.' }
-    $templates = @(Get-ChildItem demo,src -Filter Language.tt -Recurse)
+    $templates = @(Get-ChildItem demo,src -Filter *.tt -Recurse | Where-Object { $_.Directory.Name -eq 'I18n' })
     foreach ($template in $templates) {
         $templateText = [IO.File]::ReadAllText($template.FullName)
         if ($templateText -notmatch '<#@ output extension="(?<extension>\.g\.cs|\.cs)"') {
             throw "Unsupported T4 output extension: $($template.FullName)"
         }
         $outputExtension = $Matches.extension
-        $output = Join-Path $template.DirectoryName ('Language' + $outputExtension)
+        $output = Join-Path $template.DirectoryName ($template.BaseName + $outputExtension)
         $temporaryOutput = Join-Path ([IO.Path]::GetTempPath()) ('codewf-t4-' + [Guid]::NewGuid().ToString('N') + '.tmp')
         # 即使指定 -o，T4 输出指令仍会替换输出文件的扩展名。
         $generatedOutput = [IO.Path]::ChangeExtension($temporaryOutput, $outputExtension)

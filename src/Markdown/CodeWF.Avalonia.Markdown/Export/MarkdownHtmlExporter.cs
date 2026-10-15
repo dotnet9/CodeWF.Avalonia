@@ -1,7 +1,7 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net;
 
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 using CodeWF.Avalonia.Markdown.Shared.Rendering;
 
 namespace CodeWF.Avalonia.Markdown;

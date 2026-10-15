@@ -1,4 +1,4 @@
-using AnimatedImage.Avalonia;
+﻿using AnimatedImage.Avalonia;
 using Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Controls.Metadata;
@@ -9,7 +9,7 @@ using global::Avalonia.Layout;
 using global::Avalonia.Media;
 using global::Avalonia.Media.Imaging;
 using global::Avalonia.Threading;
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 using SkiaSharp;
 
 using CodeWF.Avalonia.Markdown.Rendering;

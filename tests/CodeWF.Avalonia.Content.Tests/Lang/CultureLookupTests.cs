@@ -1,9 +1,9 @@
-using CodeWF.Avalonia.Lang;
+﻿using CodeWF.Toolkit.Lang;
 using CodeWF.Avalonia.Lang.Converters;
-using CodeWF.Avalonia.Lang.Json;
+using CodeWF.Toolkit.Lang.Json;
 using CodeWF.Avalonia.Lang.MarkupExtensions;
-using CodeWF.Avalonia.Lang.Resx;
-using CodeWF.Avalonia.Lang.Xml;
+using CodeWF.Toolkit.Lang.Resx;
+using CodeWF.Toolkit.Lang.Xml;
 using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ using CoreLocalizer = CodeWF.Toolkit.Lang.Json.JsonLocalizer;
 namespace CodeWF.Avalonia.Content.Tests.Lang;
 
 /// <summary>
-/// 挂入 AvaloniaPlatform 集合：FixedCulture 用例会触达 I18nManager 单例（有 Avalonia 线程亲和），
+/// 挂入 AvaloniaPlatform 集合：语言切换会刷新 Avalonia 绑定，
 /// 与程序集内 Headless 测试共用同一执行线程，避免跨线程 SetValue。
 /// </summary>
 [Collection("AvaloniaPlatform")]
@@ -172,7 +172,7 @@ public class CultureLookupTests
     [Fact]
     public void FixedCultureFormatsArgumentsUsingTheSelectedCulture()
     {
-        // I18nManager 单例有 Avalonia 线程亲和：统一调度到 Headless 会话线程执行。
+        // 语言切换会刷新绑定：统一调度到 Headless 会话线程执行。
         _platform.Run(() =>
         {
             var plugin = new TestPlugin();
@@ -212,12 +212,13 @@ public class CultureLookupTests
             Assert.Equal("Updated", text.Text);
             Assert.Equal(CoreManager.Instance.ResourceVersion, I18nManager.Instance.ResourceVersion);
             Assert.IsType<LocalizationLanguage>(I18nManager.Instance.GetLanguages()![0]);
+            Assert.Null(typeof(I18nBinding).Assembly.GetType("CodeWF.Avalonia.Lang.I18nManager"));
             CoreManager.Instance.Culture = new CultureInfo("en-US");
         });
     }
 
     [Fact]
-    public void LegacyPluginAndCultureAreVisibleToToolkitConsumers()
+    public void AvaloniaBindingAndLibraryLocalizerUseTheToolkitSingletonDirectly()
     {
         _platform.Run(() =>
         {

@@ -1,5 +1,5 @@
-using CodeWF.Avalonia.MindView.I18n;
-using CodeWF.Avalonia.Lang;
+﻿using CodeWF.Avalonia.MindView.I18n;
+using CodeWF.Toolkit.Lang;
 
 namespace CodeWF.Avalonia.MindView;
 

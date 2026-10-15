@@ -1,4 +1,4 @@
-using AnimatedImage.Avalonia;
+﻿using AnimatedImage.Avalonia;
 using Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Input;
@@ -6,7 +6,7 @@ using global::Avalonia.Layout;
 using global::Avalonia.Media;
 using global::Avalonia.Media.Imaging;
 using global::Avalonia.Platform.Storage;
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 using Svg.Skia;
 using System.Text;
 

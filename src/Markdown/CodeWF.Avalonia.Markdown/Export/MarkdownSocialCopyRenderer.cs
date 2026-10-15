@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net;
 using System.Text;
 
@@ -8,7 +8,7 @@ using Markdig.Extensions.TaskLists;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 using CodeWF.Avalonia.Markdown.Shared.Rendering;
 
 using MarkdigInline = Markdig.Syntax.Inlines.Inline;

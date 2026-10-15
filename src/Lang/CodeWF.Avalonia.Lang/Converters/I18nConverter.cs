@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using CodeWF.Toolkit.Lang;
+using Avalonia;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using CodeWF.Avalonia.Lang.MarkupExtensions;

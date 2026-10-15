@@ -1,11 +1,11 @@
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using CodeWF.Avalonia.MindView.I18n;
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 using System.Globalization;
 
 namespace CodeWF.Avalonia.MindView;

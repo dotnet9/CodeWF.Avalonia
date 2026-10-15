@@ -1,0 +1,7 @@
+<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ output extension=".g.cs" #>
+<#@ include file="../../../../../scripts/LocalizationKeys.ttinclude" #>
+<#+
+private string resourceNamespace = "CodeWF.Avalonia.TreeDataGrid.PropertyGrid.I18n";
+private string resourcePrefix = "Localization.CodeWF_Avalonia_TreeDataGrid.PropertyGrid.";
+#>
