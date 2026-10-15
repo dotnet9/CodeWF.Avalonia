@@ -8,6 +8,9 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using CodeWF.Avalonia.Log.Extensions;
 using CodeWF.Avalonia.Log.Platform;
+using CodeWF.Avalonia.Lang;
+using CodeWF.Avalonia.Log.I18n;
+using CodeWF.Toolkit.Lang.Json;
 using CodeWF.Toolkit.Logging;
 using Microsoft.Extensions.Logging;
 using System;
@@ -19,6 +22,7 @@ namespace CodeWF.Avalonia.Log;
 
 public partial class LogView : UserControl
 {
+    private static readonly JsonLocalizer Localization = new(typeof(LogView).Assembly);
     private static readonly TimeSpan DefaultRefreshInterval = TimeSpan.FromMilliseconds(100);
     private static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(uint.MaxValue - 1L);
 
@@ -70,6 +74,7 @@ public partial class LogView : UserControl
         _textView = this.FindControl<SelectableTextBlock>("LogTextView")!;
         _scrollViewer = this.FindControl<ScrollViewer>("LogScrollViewer")!;
         _contextMenu = this.FindControl<ContextMenu>("LogContextMenu")!;
+        UpdateMenuLanguage();
         _isInitialized = true;
         UpdatePalette();
         UpdateLogLineHeight();
@@ -94,6 +99,9 @@ public partial class LogView : UserControl
     {
         base.OnAttachedToVisualTree(e);
         _isAttached = true;
+        I18nManager.Instance.CultureChanged += OnLanguageChanged;
+        I18nManager.Instance.ResourcesChanged += OnLanguageChanged;
+        UpdateMenuLanguage();
         _clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
         StartSubscription();
     }
@@ -101,9 +109,25 @@ public partial class LogView : UserControl
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         _isAttached = false;
+        I18nManager.Instance.CultureChanged -= OnLanguageChanged;
+        I18nManager.Instance.ResourcesChanged -= OnLanguageChanged;
         StopSubscription();
         _clipboard = null;
         base.OnDetachedFromVisualTree(e);
+    }
+
+    // 内嵌翻译随宿主语言与同键覆盖一起刷新，不要求应用复制日志资源。
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        if (Dispatcher.UIThread.CheckAccess()) UpdateMenuLanguage();
+        else Dispatcher.UIThread.Post(UpdateMenuLanguage);
+    }
+
+    private void UpdateMenuLanguage()
+    {
+        this.FindControl<MenuItem>("CopyMenuItem")!.Header = Localization.GetResource(ResourceKeys.Copy);
+        this.FindControl<MenuItem>("ClearMenuItem")!.Header = Localization.GetResource(ResourceKeys.Clear);
+        this.FindControl<MenuItem>("LocationMenuItem")!.Header = Localization.GetResource(ResourceKeys.Location);
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)

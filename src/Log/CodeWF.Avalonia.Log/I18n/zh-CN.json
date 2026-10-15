@@ -1,0 +1,12 @@
+{
+  "language": "简体中文",
+  "description": "简体中文",
+  "cultureName": "zh-CN",
+  "Log": {
+    "View": {
+      "Copy": "复制",
+      "Clear": "清空",
+      "Location": "打开日志目录"
+    }
+  }
+}

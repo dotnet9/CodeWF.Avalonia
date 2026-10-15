@@ -15,4 +15,19 @@
     <PackageReference Include="CodeWF.Toolkit.Logging" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Lang\CodeWF.Avalonia.Lang\CodeWF.Avalonia.Lang.csproj" />
+    <None Remove="I18n\*.json" />
+    <EmbeddedResource Include="I18n\*.json" />
+    <Compile Update="I18n\Language.g.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Language.tt</DependentUpon>
+    </Compile>
+    <None Update="I18n\Language.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Language.g.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
 </Project>

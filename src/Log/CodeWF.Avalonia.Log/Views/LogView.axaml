@@ -27,9 +27,9 @@
             TextWrapping="Wrap">
             <SelectableTextBlock.ContextMenu>
                 <ContextMenu x:Name="LogContextMenu">
-                    <MenuItem Click="Copy_OnClick" Header="复制" />
-                    <MenuItem Click="Clear_OnClick" Header="清空" />
-                    <MenuItem Click="Location_OnClick" Header="查看日志" />
+                    <MenuItem x:Name="CopyMenuItem" Click="Copy_OnClick" />
+                    <MenuItem x:Name="ClearMenuItem" Click="Clear_OnClick" />
+                    <MenuItem x:Name="LocationMenuItem" Click="Location_OnClick" />
                 </ContextMenu>
             </SelectableTextBlock.ContextMenu>
         </SelectableTextBlock>
