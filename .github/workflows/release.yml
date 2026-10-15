@@ -189,14 +189,13 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
           TAG_NAME: ${{ steps.version.outputs.tag_name }}
         run: |
-          # 优先使用附注 tag 的说明，否则退回 UpdateLog 中对应版本的段落
+          # 优先使用版本说明，其次使用更新日志，最后回退到附注 tag。
+          $curated = ".github/release-notes/v$env:VERSION.md"
           $bodyPath = "artifacts/release-body.md"
           New-Item -ItemType Directory -Path (Split-Path -Parent $bodyPath) -Force | Out-Null
-          git fetch --quiet --tags origin 2>$null
-          $tagMessage = git tag -l "$env:TAG_NAME" --format='%(contents)'
-          if (-not [string]::IsNullOrWhiteSpace($tagMessage)) {
-            $tagMessage | Set-Content -LiteralPath $bodyPath -Encoding utf8
-            Write-Host "使用附注 tag 说明作为发布说明。"
+          if (Test-Path -LiteralPath $curated -PathType Leaf) {
+            Copy-Item -LiteralPath $curated -Destination $bodyPath -Force
+            Write-Host "使用发布说明：$curated"
           }
           else {
             $updateLog = "UpdateLog.md"
@@ -219,8 +218,16 @@ jobs:
               Write-Host "使用 UpdateLog 段落作为发布说明。"
             }
             else {
-              "CodeWF.Avalonia v$env:VERSION" | Set-Content -LiteralPath $bodyPath -Encoding utf8
-              Write-Host "未找到版本说明，将只使用自动生成的变更列表。"
+              git fetch --quiet --tags origin 2>$null
+              $tagMessage = git tag -l "$env:TAG_NAME" --format='%(contents)'
+              if (-not [string]::IsNullOrWhiteSpace($tagMessage)) {
+                $tagMessage | Set-Content -LiteralPath $bodyPath -Encoding utf8
+                Write-Host "使用附注 tag 说明作为发布说明。"
+              }
+              else {
+                "CodeWF.Avalonia v$env:VERSION" | Set-Content -LiteralPath $bodyPath -Encoding utf8
+                Write-Host "未找到版本说明，将只使用自动生成的变更列表。"
+              }
             }
           }
 
