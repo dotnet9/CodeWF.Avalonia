@@ -66,7 +66,7 @@ $content += "window.CodeWFCatalogDescriptions = " + (ConvertTo-Json -InputObject
 $content += "window.CodeWFPrototypeSettings = " + (ConvertTo-Json -InputObject $settings -Depth 10) + ";`n"
 $content += "window.CodeWFMarkdownSamples = " + (ConvertTo-Json -InputObject $samples -Depth 10) + ";`n"
 $content += "window.CodeWFMarkdownTypography = " + (ConvertTo-Json -InputObject $typography -Depth 10) + ";`n"
-Write-GeneratedFile (Join-Path $repoRoot 'design/assets/catalog-data.js') $content
+Write-GeneratedFile (Join-Path $repoRoot 'scripts/prototype/assets/catalog-data.js') $content
 
 $items = @($catalog | ForEach-Object { $_.items })
 $keys = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
@@ -109,3 +109,4 @@ $($factories -join "`n")
 "@ + "`n"
 Write-GeneratedFile (Join-Path $repoRoot 'demo/CodeWF.Avalonia.Demo/ViewModels/DemoCatalog.g.cs') $code
 Write-Host "Catalog synchronized: $($catalog.Count) groups, $($items.Count) pages."
+& (Join-Path $PSScriptRoot 'build_standalone_prototype.ps1') -Check:$Check

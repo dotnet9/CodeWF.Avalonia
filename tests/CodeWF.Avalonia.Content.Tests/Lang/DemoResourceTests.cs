@@ -100,7 +100,7 @@ public sealed class DemoResourceTests
     {
         var repository = Directory.GetParent(Directory.GetParent(DemoDirectory)!.FullName)!.FullName;
         using var catalog = JsonDocument.Parse(File.ReadAllText(Path.Combine(repository, "design", "catalog.json")));
-        var generated = File.ReadAllText(Path.Combine(repository, "design", "assets", "catalog-data.js"))
+        var generated = File.ReadAllText(Path.Combine(repository, "scripts", "prototype", "assets", "catalog-data.js"))
             .ReplaceLineEndings(lineEnding);
         const string prefix = "window.CodeWFDemoCatalog = ";
         var assignment = generated.IndexOf(prefix, StringComparison.Ordinal);

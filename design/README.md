@@ -35,7 +35,7 @@
 4. 执行 `pwsh scripts/sync_design_catalog.ps1 -Check`、目录一致性测试和原生 Demo 冒烟。生成文件需要提交，正常 `dotnet build` 不依赖 PowerShell 或 Node.js。
 5. 执行 `npm ci --prefix design/tests`，在 `design/tests` 运行 `npx playwright install chromium` 和 `npm test`。浏览器门禁遍历全部路由 × 中英文 × 1440/1120 两种宽度，检查实际 Ribbon/导航点击、页面内容、源码面板和脚本错误。失败截图保存在 `design/tests/artifacts/`；CI 使用同一脚本。
 
-`design/catalog.json` 是 Demo 的嵌入式构建输入，属于仓库源码，不能当草稿删除。`assets/catalog-data.js` 与 `DemoCatalog.g.cs` 是生成文件；`catalog-gallery.js/css` 负责浏览器布局。每个仓库独立携带全部资源。资源文件采用 UTF-8，允许有或无 BOM；测试检查无效字节和替换字符，但不能识别所有已经被错误转码的合法文字。
+`design/catalog.json` 是 Demo 的嵌入式构建输入，属于仓库源码，不能当草稿删除。`scripts/prototype/assets/catalog-data.js` 与 `DemoCatalog.g.cs` 是生成文件；`catalog-gallery.js/css` 负责浏览器布局。每个仓库独立携带全部资源。资源文件采用 UTF-8，允许有或无 BOM；测试检查无效字节和替换字符，但不能识别所有已经被错误转码的合法文字。
 
 ## 实现与验证边界
 
@@ -54,7 +54,7 @@
 | MarkdownViewer | 首次打开先显示渲染结果；源码输入折叠，保留增量追加、任务回写与排版配置 |
 | If / Switch | 使用有效的 MarkupExtension 表达式，源码与原生演示一致 |
 
-`assets/control-examples.js` 维护这些具体交互。Ribbon 分类、当前命令、导航叶子的选中状态都跟随活动文档；原生 Dock 页签切换也更新对应菜单。介绍页提供全局设置，其余页面只显示自身参数，无参数时保持空面板。
+`scripts/prototype/assets/control-examples.js` 维护这些具体交互。Ribbon 分类、当前命令、导航叶子的选中状态都跟随活动文档；原生 Dock 页签切换也更新对应菜单。介绍页提供全局设置，其余页面只显示自身参数，无参数时保持空面板。
 
 ## 设计判断与验收标准
 
@@ -78,3 +78,9 @@ Markdown 导出归到 Markdown。阅读器、Lite 和编辑器的原型样例从
 Ribbon 命令图标统一为 32×32 Semi 矢量图标，快捷图标 18×18、按钮热区 30×30；组仅显示标题。Semi 图形资源遵循其 MIT 许可。
 
 快捷区使用 Semi 线性图标、2px 间距和独立分隔留白；鼠标悬停、按下及键盘焦点各有反馈。Ribbon 分类复用 Semi LineTabStrip，单层 13px 水平内边距。标题栏密度与通知入口复用 Semi 图标；导航叶子与 Ribbon 使用同一目录图形。应用默认字体覆盖 Dock 浮动窗和弹出层，代码区域仍使用等宽字体。
+
+## 单文件交付
+
+`design/` 中的主 HTML 已内嵌样式、脚本、图标和图片。只复制这一个 HTML 到空目录即可离线查看并操作，无需旁边的资源文件或本地服务。
+
+维护源码放在 `scripts/prototype/`；执行 `pwsh scripts/build_standalone_prototype.ps1` 重新生成，`-Check` 校验生成文件。不要直接修改交付 HTML。交互审计会复制 HTML 到空目录，阻止其他文件和网络资源请求，并检查脚本错误与图片完整性。

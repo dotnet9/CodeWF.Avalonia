@@ -1,4 +1,5 @@
-﻿const assert = require('node:assert/strict');
+const standaloneFixture = require('./standalone-fixture.cjs');
+const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
@@ -12,17 +13,19 @@ const { chromium } = require('playwright');
   assert.ok(html, 'Prototype HTML is missing');
   const output = process.env.CODEWF_AUDIT_OUTPUT || path.join(__dirname, 'artifacts');
   fs.mkdirSync(output, { recursive: true });
+  const standalone = standaloneFixture(path.join(design, html));
   const browser = await chromium.launch({ headless: true });
   const results = [];
   try {
     for (const width of [1440, 1120]) {
       const context = await browser.newContext({ viewport: { width, height: 860 } });
       const page = await context.newPage();
+      await standalone.attach(page);
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
       page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
       try {
-        await page.goto(pathToFileURL(path.join(design, html)).href);
+        await page.goto(standalone.url);
         await page.waitForFunction(() => window.CodeWFDemoCatalog && typeof openDoc === 'function' && document.querySelector('#dBody[data-page]'));
         await page.evaluate(() => {
           window.auditGuardErrors = [];
@@ -121,13 +124,38 @@ const { chromium } = require('playwright');
         }
         assert.deepEqual(await page.evaluate(() => window.auditGuardErrors), [], 'Caught prototype exceptions');
         assert.doesNotMatch(await page.locator('#logP').innerText(), /JS 异常\[/, 'Startup guard exception');
+        await standalone.verify(page);
         assert.deepEqual(errors, [], 'Browser errors');
       } catch (error) {
         await page.screenshot({ path: path.join(output, `failure-${width}.png`), fullPage: true });
         throw error;
       } finally { await context.close(); }
     }
+    const propertyPrototype = standaloneFixture(path.join(design, '属性面板原型.html'));
+    const propertyPage = await browser.newPage();
+    try {
+      const errors = [];
+      propertyPage.on('pageerror', error => errors.push(error.message));
+      await propertyPrototype.attach(propertyPage);
+      await propertyPage.goto(propertyPrototype.url);
+      assert.ok(await propertyPage.locator('#rows .row').count() > 0);
+      for (const palette of ['dotnet', 'aurora', 'ember']) {
+        await propertyPage.selectOption('#propertyPalette', palette);
+        assert.equal(await propertyPage.locator('html').getAttribute('data-palette'), palette);
+      }
+      await propertyPage.locator('#btnAlpha').click();
+      assert.equal(await propertyPage.locator('#rows .group-row').count(), 0);
+      await propertyPage.locator('#btnCat').click();
+      assert.ok(await propertyPage.locator('#rows .group-row').count() > 0);
+      await propertyPage.locator('#search').fill('does-not-exist');
+      assert.equal(await propertyPage.locator('#rows .row').count(), 0);
+      await propertyPage.locator('#search').fill('');
+      assert.ok(await propertyPage.locator('#rows .row').count() > 0);
+      await propertyPrototype.verify(propertyPage);
+      assert.deepEqual(errors, []);
+    } finally { await propertyPage.close(); propertyPrototype.dispose(); }
     fs.writeFileSync(path.join(output, 'routes.json'), JSON.stringify(results, null, 2));
     console.log(`Passed: ${catalog.length} Ribbon groups, ${catalog.flatMap(group => group.items).length} routes, ${results.length} route/language/viewport checks.`);
-  } finally { await browser.close(); }
+  } finally { await browser.close(); standalone.dispose(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
+
