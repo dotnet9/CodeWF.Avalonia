@@ -178,7 +178,9 @@ Each Dock document contains its demonstration and property panel; both move toge
 
 Windows x64 NativeAOT Demo：标题栏仅保留平铺八色点，模式复用 Ursa 三态按钮，语言图标弹出列表，默认 .NET 紫，共八套配色；浅色、深色与跟随系统分别选择。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
 
-当前 `12.1.4.22` 的 Dock 文档分屏、浮动与重新停靠效果（真实 Windows NativeAOT + Skia 离屏渲染）：
+`12.1.4.23` 修复属性编辑器响应外部值、校验回退和旧数据解绑，并补齐 Semi/Ursa 内建菜单的全局切语与宿主覆盖验证。本机正式 Windows NativeAOT、原生 UI 和安装器构建已通过，具体范围见[原生演示台文档](docs/NativeDemo.md)。
+
+以下为 `12.1.4.22` 的 Dock 文档分屏、浮动与重新停靠效果（真实 Windows NativeAOT + Skia 离屏渲染）：
 
 ![文档与属性面板同步停靠](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-dock-redocked.png)
 
