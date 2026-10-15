@@ -12,6 +12,10 @@ public sealed class StudioThemeTests
         StudioTheme.DotNetLight, StudioTheme.DotNetDark,
         StudioTheme.AuroraLight, StudioTheme.AuroraDark,
         StudioTheme.EmberLight, StudioTheme.EmberDark,
+        StudioTheme.AquaticLight, StudioTheme.AquaticDark,
+        StudioTheme.DesertLight, StudioTheme.DesertDark,
+        StudioTheme.DuskLight, StudioTheme.DuskDark,
+        StudioTheme.NightSkyLight, StudioTheme.NightSkyDark,
     };
 
     [Theory]
@@ -44,6 +48,30 @@ public sealed class StudioThemeTests
         Assert.False(theme.TryGetResource("SemiColorPrimary", ThemeVariant.Light, out _));
         Assert.False(theme.TryGetResource("SemiColorPrimary", ThemeVariant.Dark, out _));
         Assert.True(theme.TryGetResource("StudioSurface", ThemeVariant.Dark, out _));
+    }
+
+    [Theory]
+    [MemberData(nameof(Variants))]
+    public void SemiControlAliasesUseTheSelectedPalette(ThemeVariant variant)
+    {
+        var theme = new StudioTheme();
+        ISolidColorBrush Get(string key)
+        {
+            Assert.True(theme.TryGetResource(key, variant, out var value), key);
+            return Assert.IsAssignableFrom<ISolidColorBrush>(value);
+        }
+
+        foreach (var key in new[] { "SliderTrackForeground", "SliderThumbBorderBrush", "SliderThumbPointeroverBorderBrush",
+                     "TextBoxFocusBorderBrush", "ComboBoxSelectorFocusBorderBrush", "CalendarDatePickerFocusBorderBrush",
+                     "CheckBoxPointeroverBorderBrush", "RadioButtonUncheckIconPointeroverBorderBrush", "TabItemIconSelectedForeground" })
+            Assert.Equal(Get("StudioAccent").Color, Get(key).Color);
+        foreach (var key in new[] { "CheckBoxCheckedDefaultBackground", "CheckBoxCheckedPointeroverBackground",
+                     "ButtonSolidPrimaryBackground", "ButtonSolidPrimaryBorderBrush", "CalendarItemCalendarDayButtonSelectedBackground" })
+        {
+            Assert.Equal(Get("StudioPrimary").Color, Get(key).Color);
+            Assert.True(Contrast(Colors.White, Get(key).Color) >= 4.5, key);
+        }
+        Assert.Equal(0.4, Get("CheckBoxCheckedDisabledBackground").Opacity);
     }
 
     private static double Contrast(Color first, Color second)

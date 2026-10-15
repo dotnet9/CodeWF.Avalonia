@@ -101,20 +101,90 @@
     <StaticResource x:Key="DockSurfaceHeaderActiveBrush" ResourceKey="StudioAccent" />
     <StaticResource x:Key="SemiColorPrimary" ResourceKey="StudioAccent" />
     <StaticResource x:Key="SemiColorInformation" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="SystemAccentColor" ResourceKey="StudioAccentColor" />
+    <!-- Semi 的控件别名需随主题整体替换，避免静态资源保留默认蓝色。 -->
+    <SolidColorBrush x:Key="StudioAccentDisabled" Color="{StaticResource StudioAccentColor}" Opacity="0.4" />
+    <SolidColorBrush x:Key="StudioPrimaryDisabled" Color="{StaticResource StudioPrimaryColor}" Opacity="0.4" />
+    <StaticResource x:Key="AdornerLayerBorderBrush" ResourceKey="StudioBorder" />
     <StaticResource x:Key="ButtonDefaultPrimaryForeground" ResourceKey="StudioAccent" />
-    <StaticResource x:Key="RadioButtonCheckIconDefaultBackground" ResourceKey="StudioAccent" />
-    <StaticResource x:Key="RadioButtonCheckIconPointeroverBackground" ResourceKey="StudioAccent" />
-    <StaticResource x:Key="RadioButtonCheckIconPressedBackground" ResourceKey="StudioAccent" />
-    <StaticResource x:Key="RadioButtonCheckIconDefaultBorderBrush" ResourceKey="StudioAccent" />
-    <StaticResource x:Key="RadioButtonCheckIconPointeroverBorderBrush" ResourceKey="StudioAccent" />
-    <StaticResource x:Key="RadioButtonCheckIconPressedBorderBrush" ResourceKey="StudioAccent" />
-    <StaticResource x:Key="RadioButtonButtonCheckedForeground" ResourceKey="StudioAccent" />
-    <StaticResource x:Key="TabItemButtonHeaderSelectedForeground" ResourceKey="StudioAccent" />
-    <StaticResource x:Key="TabItemLinePipeSelectedBackground" ResourceKey="StudioAccent" />
-    <StaticResource x:Key="ProgressBarIndicatorBrush" ResourceKey="StudioAccent" />
-    <StaticResource x:Key="ProgressBarPrimaryForeground" ResourceKey="StudioAccent" />
     <StaticResource x:Key="ButtonSolidPrimaryBackground" ResourceKey="StudioPrimary" />
     <StaticResource x:Key="ButtonSolidPrimaryPointeroverBackground" ResourceKey="StudioPrimary" />
     <StaticResource x:Key="ButtonSolidPrimaryPressedBackground" ResourceKey="StudioPrimary" />
-    <StaticResource x:Key="SystemAccentColor" ResourceKey="StudioAccentColor" />
+    <StaticResource x:Key="ButtonSolidPrimaryBorderBrush" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="ButtonSolidPrimaryPointeroverBorderBrush" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="ButtonSolidPrimaryPressedBorderBrush" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="ButtonInputInnerPointeroverForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="ButtonInputInnerPressedForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CalendarItemCalendarButtonSelectedBackground" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="CalendarItemCalendarDayButtonSelectedBackground" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="CalendarItemCalendarDayButtonTodayForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CalendarDatePickerFocusBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CalendarDatePickerBorderedPointeroverBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CheckBoxPointeroverBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CheckBoxPressedBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CheckBoxCheckedDefaultBackground" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="CheckBoxCheckedDefaultBorderBrush" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="CheckBoxCheckedPointeroverBackground" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="CheckBoxCheckedPointeroverBorderBrush" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="CheckBoxCheckedPressedBackground" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="CheckBoxCheckedPressedBorderBrush" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="CheckBoxCheckedDisabledBackground" ResourceKey="StudioPrimaryDisabled" />
+    <StaticResource x:Key="CheckBoxCheckedDisabledBorderBrush" ResourceKey="StudioPrimaryDisabled" />
+    <StaticResource x:Key="CheckBoxCardCheckedBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="CheckBoxCardCheckedBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CheckBoxCardCheckedDisabledBorderBrush" ResourceKey="StudioPrimaryDisabled" />
+    <StaticResource x:Key="CheckBoxCardCheckedPointeroverBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CheckBoxCardCheckedPressedBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="ComboBoxSelectorFocusBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="ComboBoxSelectorPressedBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="ComboBoxItemSelectedBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="ComboBoxItemSelectedPointeroverBackground" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="ComboBoxSelectorBorderedPointeroverBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="ComboBoxSelectorBorderedFocusBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="ComboBoxSelectorBorderedPressedBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CommandBarToggleButtonCheckedForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CommandBarToggleButtonCheckedBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="CommandBarToggleButtonCheckedPointeroverBackground" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CommandBarToggleButtonCheckedPressedBackground" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CommandBarToggleButtonCheckedDisabledForeground" ResourceKey="StudioPrimaryDisabled" />
+    <StaticResource x:Key="GlyphButtonPointeroverForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="GlyphButtonPressedForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="GridSplitterPreviewBackground" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="ListBoxItemSelectedBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="ListBoxItemSelectedPointeroverBackground" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="ProgressBarIndicatorBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="ProgressBarPrimaryForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonUncheckIconPointeroverBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonUncheckIconPressedBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonCheckIconDefaultBackground" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="RadioButtonCheckIconPointeroverBackground" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="RadioButtonCheckIconPressedBackground" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="RadioButtonCheckIconDisabledBackground" ResourceKey="StudioPrimaryDisabled" />
+    <StaticResource x:Key="RadioButtonCheckIconDefaultBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonCheckIconPointeroverBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonCheckIconPressedBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonCheckIconDisabledBorderBrush" ResourceKey="StudioPrimaryDisabled" />
+    <StaticResource x:Key="RadioButtonButtonCheckedForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonCardCheckedBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="RadioButtonCardCheckDefaultBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonCardCheckPointeroverBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RadioButtonCardCheckPressedBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="RefreshVisualizerIconForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="SliderTrackForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="SliderThumbBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="SliderThumbPointeroverBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="SliderThumbPressedBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="TabItemLinePipeSelectedBackground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="TabItemLineHeaderSelectedBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="TabItemButtonHeaderSelectedForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="TabItemButtonHeaderSelectedBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="TabItemIconSelectedForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="TableViewRowBackgroundSelected" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="TableViewRowBackgroundSelectedPointerover" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="TableViewRowBackgroundSelectedPressed" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="TextBlockMarkBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="TextBoxFocusBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="TextBoxBorderedPointeroverBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="ToggleButtonPrimaryIndeterminateBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="TreeViewItemSelectedBackground" ResourceKey="StudioRaised" />
 </ResourceDictionary>
