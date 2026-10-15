@@ -176,9 +176,15 @@ Demo 保留 Ribbon + Dock，按输入与选择、反馈与引导、数据展示�
 
 Each Dock document contains its demonstration and property panel; both move together when detached. See the linked guide for optional Studio themes, localization and validation.
 
-Windows x64 NativeAOT Demo：标题栏支持主题色圈与下拉同步切换，默认 .NET 紫，共八套配色；浅色、深色与跟随系统分别选择。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
+Windows x64 NativeAOT Demo：标题栏仅保留平铺八色点，模式复用 Ursa 三态按钮，语言图标弹出列表，默认 .NET 紫，共八套配色；浅色、深色与跟随系统分别选择。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
 
-快捷入口采用 16×16 图标与 30×30 点击热区，Ribbon 主命令使用 32×32 图标。每个文档内的演示和属性面板通过 GridSplitter 调整宽度，属性默认行高 31px、名称列宽 118px；下列图片来自 `12.1.4.18` 的 Windows x64 NativeAOT 程序。
+当前 `12.1.4.21` 的 Dock 文档分屏、浮动与重新停靠效果（真实 Windows NativeAOT + Skia 离屏渲染）：
+
+![文档与属性面板同步停靠](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-dock-redocked.png)
+
+![浮动文档保留属性面板](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-dock-floating.png)
+
+快捷入口采用 18×18 图标与 30×30 点击热区，Ribbon 主命令使用 32×32 图标。每个文档内的演示和属性面板通过 GridSplitter 调整宽度，属性默认行高 31px、名称列宽 118px；下列历史页面截图来自 `12.1.4.18` 的 Windows x64 NativeAOT 程序。
 
 ![.NET 紫色原生演示台](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-dotnet.png)
 

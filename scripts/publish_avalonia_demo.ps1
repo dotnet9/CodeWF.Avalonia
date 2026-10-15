@@ -4,7 +4,8 @@ param(
     [ValidateSet("win-x64", "linux-x64", "linux-arm64", "osx-x64", "osx-arm64")]
     [string] $RuntimeIdentifier,
 
-    [string] $Version = ""
+    [string] $Version = "",
+    [string] $BuildArtifactsPath = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -46,6 +47,7 @@ $ilcArgs = @(
     "-p:Version=$Version"
 )
 # macOS 保留符号（ld_classic 不支持压缩调试段）
+if ($BuildArtifactsPath) { $ilcArgs += "-p:ArtifactsPath=$([IO.Path]::GetFullPath($BuildArtifactsPath))" }
 if ($RuntimeIdentifier.StartsWith("osx-", [StringComparison]::OrdinalIgnoreCase)) { $ilcArgs += "-p:StripSymbols=false" }
 
 Write-Host "发布 CodeWF.Avalonia.Demo $RuntimeIdentifier (Version=$Version)"
