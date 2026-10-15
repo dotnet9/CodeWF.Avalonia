@@ -1,4 +1,4 @@
-# CodeWF.Avalonia.Controls
+﻿# CodeWF.Avalonia.Controls
 
 基础自定义控件库，控件 API、状态模型、绘制逻辑与 Semi 主题资源在同一包内，安装即用。
 
@@ -39,6 +39,8 @@ XAML 中统一通过 `https://codewf.com` 命名空间使用：
   <codewf:StatusBadge Kind="Success" Content="运行中" />
 </Window>
 ```
+
+`CodeWFWindow.TitleBarHeight` 控制标题栏及窗口按钮的高度，`CaptionButtonWidth` 独立控制最小化、最大化和关闭按钮宽度（默认 32px）。两者支持运行时调整，例如 52px 标题栏配 34px 按钮，或 44×44px 的窗口按钮；宽度必须是有限正数。Demo 的 CodeWFWindow 页面通过文档属性面板配置下一次打开的示例窗口。
 
 ## 标记扩展
 

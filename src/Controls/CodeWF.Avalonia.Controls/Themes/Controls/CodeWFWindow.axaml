@@ -93,8 +93,8 @@
                                                 <StackPanel
                                                     Grid.Column="1"
                                                     HorizontalAlignment="Right"
-                                                    VerticalAlignment="Top"
-                                                    Height="32"
+                                                    VerticalAlignment="Stretch"
+                                                    Height="{TemplateBinding TitleBarHeight}"
                                                     Orientation="Horizontal">
                                                     <Button
                                                         Name="PART_FullScreenButton"
@@ -277,15 +277,15 @@
             <Setter Property="BorderThickness" Value="0" />
         </Style>
         <Style Selector="^ /template/ Button.caption-button">
-            <!--  Semi 的 CaptionButton* 字典在启动窗口期不可达，内联字面量（对齐 Semi WindowDrawnDecorations 取值）  -->
-            <Setter Property="Width" Value="32" />
-            <Setter Property="Height" Value="32" />
-            <Setter Property="MinWidth" Value="32" />
-            <Setter Property="MinHeight" Value="32" />
+            <!-- 窗口按钮随宿主标题栏度量布局，默认宽度与 Semi 保持一致。 -->
+            <Setter Property="Width" Value="{Binding CaptionButtonWidth, RelativeSource={RelativeSource TemplatedParent}}" />
+            <Setter Property="Height" Value="{Binding TitleBarHeight, RelativeSource={RelativeSource TemplatedParent}}" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
             <Setter Property="Padding" Value="8" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />

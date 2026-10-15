@@ -59,6 +59,11 @@ public class CodeWFWindow : Window
     public static readonly StyledProperty<double> TitleBarHeightProperty =
         AvaloniaProperty.Register<CodeWFWindow, double>(nameof(TitleBarHeight), 32);
 
+    /// <summary>标题栏中最小化、最大化和关闭按钮的宽度。</summary>
+    public static readonly StyledProperty<double> CaptionButtonWidthProperty =
+        AvaloniaProperty.Register<CodeWFWindow, double>(nameof(CaptionButtonWidth), 32,
+            validate: value => double.IsFinite(value) && value > 0);
+
     public static readonly StyledProperty<IBrush?> TitleBarBackgroundProperty =
         AvaloniaProperty.Register<CodeWFWindow, IBrush?>(nameof(TitleBarBackground));
 
@@ -175,6 +180,13 @@ public class CodeWFWindow : Window
     {
         get => GetValue(TitleBarMarginProperty);
         set => SetValue(TitleBarMarginProperty, value);
+    }
+
+    /// <summary>窗口按钮的宽度；高度随标题栏同步变化。</summary>
+    public double CaptionButtonWidth
+    {
+        get => GetValue(CaptionButtonWidthProperty);
+        set => SetValue(CaptionButtonWidthProperty, value);
     }
 
     public double TitleBarHeight
