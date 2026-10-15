@@ -1,6 +1,7 @@
-<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui"
+﻿<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui"
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:codewf="https://codewf.com"
+                     xmlns:u="https://irihi.tech/ursa"
                      xmlns:dock="using:Dock.Avalonia.Controls"
                      xmlns:dockmodel="using:Dock.Model.ReactiveUI.Controls"
                      xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
@@ -47,18 +48,23 @@
           </DataTemplate>
         </ListBox.ItemTemplate>
       </ListBox>
-      <TextBlock Text="{codewf:I18n Demo.Shell.Palette}" VerticalAlignment="Center" FontSize="11.5" />
-      <ComboBox MinWidth="96" Height="30" FontSize="11.5"
-                ItemsSource="{Binding Palettes}" SelectedItem="{Binding SelectedPalette}">
-        <ComboBox.ItemTemplate><DataTemplate x:DataType="vm:AppearanceOption"><TextBlock Text="{Binding Title}" /></DataTemplate></ComboBox.ItemTemplate>
+      <ThemeVariantScope x:Name="TitleBarThemeScope"
+                         RequestedThemeVariant="{Binding ThemeModeIndex, Mode=TwoWay, Converter={x:Static codewf:StudioThemeModeConverter.Instance}}">
+        <ThemeVariantScope.Resources>
+          <TextBlock x:Key="STRING_THEME_TOGGLE_SYSTEM" Text="{codewf:I18n Demo.Shell.GlobalSettings.SystemMode}" />
+          <TextBlock x:Key="STRING_THEME_TOGGLE_LIGHT" Text="{codewf:I18n Demo.Shell.GlobalSettings.LightMode}" />
+          <TextBlock x:Key="STRING_THEME_TOGGLE_DARK" Text="{codewf:I18n Demo.Shell.GlobalSettings.DarkMode}" />
+        </ThemeVariantScope.Resources>
+        <u:ThemeToggleButton x:Name="TitleBarThemeToggle" Width="30" Height="30" IsThreeState="True"
+                             TargetScope="{Binding #TitleBarThemeScope}"
+                             ToolTip.Tip="{codewf:I18n Demo.Shell.GlobalSettings.ModeLabel}" />
+      </ThemeVariantScope>
+      <ComboBox x:Name="TitleBarLanguageSelector" Width="50" MinHeight="0" Height="30" Padding="6,0"
+                ItemsSource="{Binding Cultures}" SelectedItem="{Binding SelectedCulture}"
+                HorizontalContentAlignment="Left" ToolTip.Tip="{codewf:I18n Demo.Shell.GlobalSettings.LanguageLabel}">
+        <ComboBox.SelectionBoxItemTemplate><DataTemplate><PathIcon Width="16" Height="16" Data="{DynamicResource SemiIconLanguage}" /></DataTemplate></ComboBox.SelectionBoxItemTemplate>
+        <ComboBox.ItemTemplate><DataTemplate x:DataType="vm:CultureOption"><TextBlock MinWidth="120" Text="{Binding DisplayName}" /></DataTemplate></ComboBox.ItemTemplate>
       </ComboBox>
-      <ComboBox MinWidth="100" Height="30" FontSize="11.5"
-                x:Name="ThemeModeSelector" ItemsSource="{Binding ThemeModeOptions}" SelectedIndex="{Binding ThemeModeIndex}"
-                HorizontalContentAlignment="Left" ToolTip.Tip="{codewf:I18n Demo.Shell.GlobalSettings.ModeLabel}">
-        <ComboBox.ItemTemplate><DataTemplate x:DataType="vm:ThemeModeOption"><TextBlock Text="{Binding Title}" /></DataTemplate></ComboBox.ItemTemplate>
-      </ComboBox>
-      <ComboBox MinWidth="96" Height="30" FontSize="11.5"
-                ItemsSource="{Binding Cultures}" SelectedItem="{Binding SelectedCulture}" />
       <!--  通知中心入口：徽标显示当前卡片数  -->
       <Button Classes="qk-btn" Command="{Binding NotifyDemoCommand}"
               ToolTip.Tip="{codewf:I18n Demo.Shell.NotifyDemo}">

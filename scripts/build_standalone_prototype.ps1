@@ -46,6 +46,11 @@ foreach ($prototype in @(
 $template = Join-Path $sourceRoot $prototype.Template
 $output = Join-Path $repositoryRoot $prototype.Output
 $html = [IO.File]::ReadAllText($template)
+if ($html.Contains('__CODEWF_DEMO_VERSION__')) {
+    $versionMatch = [regex]::Match([IO.File]::ReadAllText((Join-Path $repositoryRoot 'Directory.Build.props')), '<Version>([^<]+)</Version>')
+    if (-not $versionMatch.Success) { throw '无法读取 Demo 原型版本号。' }
+    $html = $html.Replace('__CODEWF_DEMO_VERSION__', $versionMatch.Groups[1].Value)
+}
 $html = [regex]::Replace($html, '<link\b[^>]*>', [Text.RegularExpressions.MatchEvaluator] {
     param($match)
     if ($match.Value -notmatch '\brel\s*=\s*["'']stylesheet["'']') { return $match.Value }

@@ -207,3 +207,18 @@ select, select option, .pgp .ctl select { text-align:left; text-align-last:left;
 
 /* 三态模式入口与配色分别选择，下拉文字保持左对齐。 */
 .cap .theme-mode { min-width:100px; text-align:left; text-align-last:left; }
+
+/* 原型保留可见窗框，最小化和关闭后可重新打开模拟窗口。 */
+body.prototype-maximized { padding:0; }
+.prototype-window-restore { position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); padding:12px 24px; border:1px solid var(--bd); border-radius:8px; color:var(--tx); background:var(--bg); box-shadow:0 12px 40px #0005; cursor:pointer; }
+.win { border-width:1px; border-style:solid; }
+@media(max-width:700px) { .win { border:1px solid var(--bd); } .cap .wb[data-window-action] { display:flex; } }
+
+/* 标题栏仅保留一种配色入口，三态按钮和可扩展语言菜单各占一个位置。 */
+.titlebar-language { position:relative; display:flex; align-items:center; }
+#languageMenu { position:absolute; top:calc(100% + 6px); right:0; min-width:152px; padding:5px; border:1px solid var(--bd); border-radius:8px; background:var(--bg2); box-shadow:0 8px 24px #0004; z-index:1000; }
+#languageMenu[hidden] { display:none; }
+#languageMenu button { display:block; width:100%; padding:8px 12px 8px 28px; border:0; border-radius:4px; background:transparent; color:var(--tx); text-align:left; cursor:pointer; position:relative; }
+#languageMenu button:hover, #languageMenu button:focus-visible { background:var(--hov); }
+#languageMenu button[aria-checked=true]::before { content:"✓"; position:absolute; left:9px; color:var(--pri); }
+#darkBtn svg { fill:none; stroke:currentColor; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; }

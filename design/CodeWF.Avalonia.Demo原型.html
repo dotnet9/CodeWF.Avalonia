@@ -695,6 +695,21 @@ select, select option, .pgp .ctl select { text-align:left; text-align-last:left;
 /* 三态模式入口与配色分别选择，下拉文字保持左对齐。 */
 .cap .theme-mode { min-width:100px; text-align:left; text-align-last:left; }
 
+/* 原型保留可见窗框，最小化和关闭后可重新打开模拟窗口。 */
+body.prototype-maximized { padding:0; }
+.prototype-window-restore { position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); padding:12px 24px; border:1px solid var(--bd); border-radius:8px; color:var(--tx); background:var(--bg); box-shadow:0 12px 40px #0005; cursor:pointer; }
+.win { border-width:1px; border-style:solid; }
+@media(max-width:700px) { .win { border:1px solid var(--bd); } .cap .wb[data-window-action] { display:flex; } }
+
+/* 标题栏仅保留一种配色入口，三态按钮和可扩展语言菜单各占一个位置。 */
+.titlebar-language { position:relative; display:flex; align-items:center; }
+#languageMenu { position:absolute; top:calc(100% + 6px); right:0; min-width:152px; padding:5px; border:1px solid var(--bd); border-radius:8px; background:var(--bg2); box-shadow:0 8px 24px #0004; z-index:1000; }
+#languageMenu[hidden] { display:none; }
+#languageMenu button { display:block; width:100%; padding:8px 12px 8px 28px; border:0; border-radius:4px; background:transparent; color:var(--tx); text-align:left; cursor:pointer; position:relative; }
+#languageMenu button:hover, #languageMenu button:focus-visible { background:var(--hov); }
+#languageMenu button[aria-checked=true]::before { content:"✓"; position:absolute; left:9px; color:var(--pri); }
+#darkBtn svg { fill:none; stroke:currentColor; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; }
+
 </style>
 <style>
 .catalog-header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-bottom:12px;border-bottom:1px solid var(--line)}
@@ -770,24 +785,19 @@ body.hideR .document-workspace{grid-template-columns:minmax(0,1fr) 0 0}
   <!-- ═══ 1. 标题栏 ═══ -->
   <div class="cap">
     <img class="logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+CiAgPCEtLSBDb2RlV0YuQXZhbG9uaWEgwrcg5bGF5Lit5a2X5q+NIEHvvJrlnIblpLTnrJTnlLsgKyDmqKrmnaDkuIvmlrnkuInmnprmlrnlnZfvvIhDb250cm9scy9EYXRhR3JpZC9Eb2NrIOS4ieadoeS6p+WTgee6v++8iSAtLT4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNkM1Q0U3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzBBODRFMyIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTEyIiBmaWxsPSJ1cmwoI2JnKSIvPgoKICA8IS0tIOWxheS4reWtl+avjSBB77yI5Z6C55u06LeoIDExNuKAkzM5Nu+8jOS4reW/gyAyNTbvvIkgLS0+CiAgPGcgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjQwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGZpbGw9Im5vbmUiPgogICAgPHBhdGggZD0iTTE2MCAzOTYgTDI1NiAxMTYgTDM1MiAzOTYiLz4KICAgIDxsaW5lIHgxPSIxOTYiIHkxPSIzMDAiIHgyPSIzMTYiIHkyPSIzMDAiLz4KICA8L2c+CgogIDwhLS0g6K6h5pWw56m66Ze05YaF5LiJ5p6a5Lqn5ZOB57q/5pa55Z2X77yI5rC05bmz5bGF5LitIDIyNi8yNTYvMjg277yJIC0tPgogIDxyZWN0IHg9IjIxNCIgeT0iMzM2IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHJ4PSI2IiBmaWxsPSIjRkZGRkZGIiBvcGFjaXR5PSIwLjQ1Ii8+CiAgPHJlY3QgeD0iMjQ0IiB5PSIzMzYiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjYiIGZpbGw9IiNGRkZGRkYiIG9wYWNpdHk9IjAuNzAiLz4KICA8cmVjdCB4PSIyNzQiIHk9IjMzNiIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iNiIgZmlsbD0iI0ZGRkZGRiIgb3BhY2l0eT0iMS4wMCIvPgo8L3N2Zz4K" alt="CodeWF.Avalonia logo" title="CodeWF.Avalonia">
-    <span class="lg">CodeWF.Avalonia</span><span class="vbadge">v12.1.4.10</span>
+    <span class="lg">CodeWF.Avalonia</span><span class="vbadge">v12.1.4.21</span>
     <span class="sp"></span>
     <span class="pal" id="palDots"></span>
-    <select id="palSel" title="色板">
-      <option value="default">默认</option>
-      <option value="aqua">水生</option>
-      <option value="desert">沙漠</option>
-      <option value="dusk">黄昏</option>
-      <option value="night">夜空</option>
-      <option value="contrast">高对比</option>
-    </select>
     <button class="wb" id="darkBtn" title="深色 / 浅色（Ctrl+D）">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 9.6A5.6 5.6 0 0 1 6.4 3a5.6 5.6 0 1 0 6.6 6.6z"/></svg>
     </button>
-    <button class="wb" id="langBtn" style="width:34px;font-size:11px;font-weight:700;color:var(--tx2)" title="中文 / English（Ctrl+L）">文A</button>
-    <button class="wb" title="最小化"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6h8"/></svg></button>
-    <button class="wb" title="最大化"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" rx="1.2"/></svg></button>
-    <button class="wb cls" title="关闭"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>
+    <div class="titlebar-language">
+      <button class="wb" id="langBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="languageMenu" title="Language"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18z"/></svg></button>
+      <div id="languageMenu" role="menu" hidden></div>
+    </div>
+    <button class="wb" data-window-action="minimize" title="最小化"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6h8"/></svg></button>
+    <button class="wb" data-window-action="maximize" title="最大化"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" rx="1.2"/></svg></button>
+    <button class="wb cls" data-window-action="close" title="关闭"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>
   </div>
 
   <!-- ═══ 2. Ribbon 页签行 ═══ -->
@@ -3495,7 +3505,7 @@ function cpmRun() {
 /* ═══ 事件绑定 ═══ */
 function bindShell() {
  $("rTabsBar").ondblclick = function (e) { if (e.target.classList.contains("t2")) toggleRibbon(); };
- $("palSel").onchange = function () { setPalette(this.value); };
+
  $("darkBtn").onclick = toggleDark;
  $("darkBtn2").onclick = toggleDark;
  $("langBtn").onclick = function () { setLang(LANG === "zh-CN" ? "en-US" : "zh-CN"); };
@@ -3589,9 +3599,6 @@ boot();
   Object.assign(PAL_COLOR, { dotnet:"#512bd4", aurora:"linear-gradient(135deg,#8968ff,#26d4cc)", ember:"#bd674d" });
   SELF_PROPS[1].options = PAL_LIST.map(function (p) { return paletteNames[p]; });
   SELF_PROPS[1].apply = function (name) { setPalette(PAL_LIST.find(function (p) { return paletteNames[p] === name; }) || "dotnet"); };
-  var paletteSelect = $("palSel");
-  paletteSelect.setAttribute("aria-label", "界面配色");
-  paletteSelect.innerHTML = PAL_LIST.map(function (p) { return '<option value="' + p + '">' + paletteNames[p] + '</option>'; }).join("");
   renderPalDots = function () {
     var current = document.documentElement.dataset.palette;
     $("palDots").innerHTML = PAL_LIST.map(function (p) {
@@ -3602,7 +3609,6 @@ boot();
   setPalette = function (p) {
     if (PAL_LIST.indexOf(p) < 0) p = "dotnet";
     document.documentElement.dataset.palette = p;
-    paletteSelect.value = p;
     SELF_PROPS[1].value = paletteNames[p];
     renderPalDots();
     renderPGrid(ACTIVE_DOC);
@@ -3612,12 +3618,7 @@ boot();
   var systemTheme = matchMedia("(prefers-color-scheme: dark)");
   var themeMode = "system";
   try { themeMode = JSON.parse(localStorage.getItem(LAYOUT_KEY) || "null")?.theme || "system"; } catch (_) {}
-  var modeSelect = document.createElement("select");
-  modeSelect.id = "themeModeSel";
-  modeSelect.className = "theme-mode";
-  modeSelect.innerHTML = '<option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>';
-  $("darkBtn").hidden = true;
-  $("darkBtn").before(modeSelect);
+  var modeButton = $("darkBtn");
   SELF_PROPS[2].type = "combo";
   SELF_PROPS[2].options = ["system", "light", "dark"];
   SELF_PROPS[2].apply = function(mode) { setTheme(mode); };
@@ -3626,10 +3627,23 @@ boot();
     document.documentElement.dataset.themeMode = themeMode;
     originalTheme(themeMode === "system" ? (systemTheme.matches ? "dark" : "light") : themeMode);
     SELF_PROPS[2].value = themeMode;
-    modeSelect.value = themeMode;
+    var paths = {system:'<rect x="2" y="2" width="12" height="9" rx="1.5"/><path d="M6 14h4M8 11v3"/>',light:'<circle cx="8" cy="8" r="3"/><path d="M8 0v2M8 14v2M0 8h2M14 8h2M2 2l1.5 1.5M12.5 12.5 14 14M2 14l1.5-1.5M12.5 3.5 14 2"/>',dark:'<path d="M13 9.6A5.6 5.6 0 0 1 6.4 3a5.6 5.6 0 1 0 6.6 6.6z"/>'};
+    modeButton.dataset.mode = themeMode;
+    modeButton.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true">' + paths[themeMode] + '</svg>';
     renderPGrid(ACTIVE_DOC);
   };
-  modeSelect.onchange = function() { setTheme(modeSelect.value); };
+  toggleDark = function() { setTheme({system:"light", light:"dark", dark:"system"}[themeMode]); };
+  modeButton.onclick = toggleDark;
+  $("darkBtn2").onclick = toggleDark;
+  var languageButton = $("langBtn"), languageMenu = $("languageMenu");
+  var languageNames = {"zh-CN":"简体中文", "en-US":"English"};
+  languageMenu.innerHTML = Object.keys(I18N).map(function(culture) { return '<button type="button" role="menuitemradio" data-language="' + culture + '">' + esc(languageNames[culture] || culture) + '</button>'; }).join('');
+  function closeLanguages() { languageMenu.hidden = true; languageButton.setAttribute("aria-expanded", "false"); }
+  languageButton.onclick = function(event) { event.stopPropagation(); languageMenu.hidden = !languageMenu.hidden; languageButton.setAttribute("aria-expanded", String(!languageMenu.hidden)); };
+  languageButton.onkeydown = function(event) { if(event.key === "ArrowDown") { event.preventDefault(); languageMenu.hidden = false; languageButton.setAttribute("aria-expanded", "true"); languageMenu.querySelector('button').focus(); } };
+  languageMenu.querySelectorAll('button').forEach(function(button) { button.onclick = function() { setLang(button.dataset.language); closeLanguages(); languageButton.focus(); }; });
+  document.addEventListener('click', function(event) { if(!event.target.closest('.titlebar-language')) closeLanguages(); });
+  document.addEventListener('keydown', function(event) { if(event.key === 'Escape' && !languageMenu.hidden) { closeLanguages(); languageButton.focus(); } });
   systemTheme.addEventListener("change", function() { if (themeMode === "system") setTheme("system"); });
   var originalRender = renderDoc;
   renderDoc = function (id) {
@@ -3803,7 +3817,6 @@ boot();
   renderInto = function (id,el) { originalRenderInto(id,el); if (id === 'welcome' && el) bindOverview(el); };
   var current = document.documentElement.dataset.palette;
   if (PAL_LIST.indexOf(current) < 0) current='dotnet';
-  paletteSelect.value=current;
   SELF_PROPS[1].value=paletteNames[current];
   setTheme(themeMode);
   renderPalDots();
@@ -3881,16 +3894,12 @@ boot();
           : settings.shell.GlobalSettings[{system:"SystemMode",light:"LightMode",dark:"DarkMode"}[value]];
       });
     });
-    var modeSelect = $("themeModeSel");
-    if (modeSelect) {
-      modeSelect.setAttribute("aria-label", settings.shell.GlobalSettings.ModeLabel);
-      Array.from(modeSelect.options).forEach(function(option) {
-        option.textContent = settings.shell.GlobalSettings[{system:"SystemMode",light:"LightMode",dark:"DarkMode"}[option.value]];
-      });
-    }
-    var paletteSelect = $("palSel");
-    Array.from(paletteSelect.options).forEach(function(option, index) { option.textContent = settings.palettes[paletteKeys[index]]; });
-    paletteSelect.setAttribute("aria-label", settings.shell.Palette);
+    var modeButton = $("darkBtn"), mode = document.documentElement.dataset.themeMode || "system";
+    modeButton.title = settings.shell.GlobalSettings.ModeLabel + ": " + settings.shell.GlobalSettings[{system:"SystemMode",light:"LightMode",dark:"DarkMode"}[mode]];
+    modeButton.setAttribute("aria-label", modeButton.title);
+    $("langBtn").title = settings.language;
+    $("langBtn").setAttribute("aria-label", settings.language);
+    $("languageMenu").querySelectorAll('button').forEach(function(button) { button.setAttribute('aria-checked', String(button.dataset.language === LANG)); });
     $("palDots").querySelectorAll("button").forEach(function(button, index) {
       button.title = settings.palettes[paletteKeys[index]]; button.setAttribute("aria-label", button.title);
     });
@@ -4025,6 +4034,25 @@ boot();
     return renderWithProperties(id);
   };
   curTab='home';
+  // 浏览器中模拟桌面窗体按钮，不影响浏览器自身窗口。
+  var frame=document.querySelector('.win');
+  function windowLabels(){
+    var labels=LANG==='en-US'?{minimize:'Minimize',maximize:'Maximize / restore',close:'Close'}:{minimize:'最小化',maximize:'最大化 / 还原',close:'关闭'};
+    document.querySelectorAll('[data-window-action]').forEach(function(button){button.title=labels[button.dataset.windowAction];button.setAttribute('aria-label',button.title);});
+  }
+  function windowAction(action){
+    if(action==='maximize'){document.body.classList.toggle('prototype-maximized');return;}
+    frame.style.display='none';
+    var restore=document.createElement('button');restore.className='prototype-window-restore';
+    restore.textContent=LANG==='en-US'?'Reopen demo window':'重新打开演示窗口';
+    restore.onclick=function(){frame.style.display='';restore.remove();};
+    document.body.appendChild(restore);restore.focus();
+  }
+  document.querySelectorAll('[data-window-action]').forEach(function(button){button.onclick=function(){windowAction(button.dataset.windowAction);};});
+  document.querySelector('.cap').ondblclick=function(event){if(!event.target.closest('button,select'))windowAction('maximize');};
+  var localizeWindow=setLang;
+  setLang=function(language){localizeWindow(language);windowLabels();};
+  windowLabels();
   renderRTabs();renderTree();renderDocTabs();
   if(ACTIVE_DOC&&entries[ACTIVE_DOC])renderDoc(ACTIVE_DOC);else openDoc('welcome');
 })();

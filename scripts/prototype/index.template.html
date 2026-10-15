@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN" data-theme="dark" data-palette="dotnet" data-density="cozy">
 <head>
 <meta charset="utf-8">
@@ -494,24 +494,19 @@ d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"
   <!-- ═══ 1. 标题栏 ═══ -->
   <div class="cap">
     <img class="logo" src="logo.svg" alt="CodeWF.Avalonia logo" title="CodeWF.Avalonia">
-    <span class="lg">CodeWF.Avalonia</span><span class="vbadge">v12.1.4.10</span>
+    <span class="lg">CodeWF.Avalonia</span><span class="vbadge">v__CODEWF_DEMO_VERSION__</span>
     <span class="sp"></span>
     <span class="pal" id="palDots"></span>
-    <select id="palSel" title="色板">
-      <option value="default">默认</option>
-      <option value="aqua">水生</option>
-      <option value="desert">沙漠</option>
-      <option value="dusk">黄昏</option>
-      <option value="night">夜空</option>
-      <option value="contrast">高对比</option>
-    </select>
     <button class="wb" id="darkBtn" title="深色 / 浅色（Ctrl+D）">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 9.6A5.6 5.6 0 0 1 6.4 3a5.6 5.6 0 1 0 6.6 6.6z"/></svg>
     </button>
-    <button class="wb" id="langBtn" style="width:34px;font-size:11px;font-weight:700;color:var(--tx2)" title="中文 / English（Ctrl+L）">文A</button>
-    <button class="wb" title="最小化"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6h8"/></svg></button>
-    <button class="wb" title="最大化"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" rx="1.2"/></svg></button>
-    <button class="wb cls" title="关闭"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>
+    <div class="titlebar-language">
+      <button class="wb" id="langBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="languageMenu" title="Language"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18z"/></svg></button>
+      <div id="languageMenu" role="menu" hidden></div>
+    </div>
+    <button class="wb" data-window-action="minimize" title="最小化"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6h8"/></svg></button>
+    <button class="wb" data-window-action="maximize" title="最大化"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" rx="1.2"/></svg></button>
+    <button class="wb cls" data-window-action="close" title="关闭"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>
   </div>
 
   <!-- ═══ 2. Ribbon 页签行 ═══ -->

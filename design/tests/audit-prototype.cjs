@@ -1,4 +1,4 @@
-const standaloneFixture = require('./standalone-fixture.cjs');
+﻿const standaloneFixture = require('./standalone-fixture.cjs');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -27,6 +27,17 @@ const { chromium } = require('playwright');
       try {
         await page.goto(standalone.url);
         await page.waitForFunction(() => window.CodeWFDemoCatalog && typeof openDoc === 'function' && document.querySelector('#dBody[data-page]'));
+        assert.ok(await page.locator('.win').evaluate(element => parseFloat(getComputedStyle(element).borderTopWidth) >= 1));
+        assert.equal(await page.locator('[data-window-action]').count(), 3);
+        await page.locator('[data-window-action="maximize"]').click();
+        assert.equal(await page.locator('body').evaluate(element => element.classList.contains('prototype-maximized')), true);
+        await page.locator('[data-window-action="maximize"]').click();
+        for (const action of ['minimize', 'close']) {
+          await page.locator('[data-window-action="'+action+'"]').click();
+          assert.equal(await page.locator('.win').isVisible(), false);
+          await page.locator('.prototype-window-restore').click();
+          assert.equal(await page.locator('.win').isVisible(), true);
+        }
         await page.evaluate(() => {
           window.auditGuardErrors = [];
           guard = function (action, tag) {
@@ -35,28 +46,33 @@ const { chromium } = require('playwright');
           };
         });
         // 验证八套配色与三态模式独立，以及系统主题动态变化。
-        assert.equal(await page.locator('#palSel option').count(), 8);
-        for (const palette of await page.locator('#palSel option').evaluateAll(items => items.map(item => item.value))) {
-          await page.selectOption('#palSel', palette);
+        assert.equal(await page.locator('#palSel, #themeModeSel').count(), 0);
+        assert.equal(await page.locator('#palDots button').count(), 8);
+        async function chooseMode(mode) { for(let count=0;count<3 && await page.locator('#darkBtn').getAttribute('data-mode') !== mode;count++) await page.locator('#darkBtn').click(); assert.equal(await page.locator('#darkBtn').getAttribute('data-mode'), mode); }
+        for (const palette of await page.locator('#palDots button').evaluateAll(items => items.map(item => item.dataset.p))) {
+          await page.locator('#palDots button[data-p="'+palette+'"]').click();
           for (const mode of ['light', 'dark']) {
-            await page.selectOption('#themeModeSel', mode);
+            await chooseMode(mode);
             assert.equal(await page.locator('html').getAttribute('data-theme'), mode);
             assert.equal(await page.locator('html').getAttribute('data-palette'), palette);
             assert.equal(await page.locator('html').getAttribute('data-theme-mode'), mode);
           }
         }
-        await page.selectOption('#themeModeSel', 'system');
+        await chooseMode('system');
         for (const mode of ['light', 'dark']) {
           await page.emulateMedia({ colorScheme: mode });
           await page.waitForFunction(expected => document.documentElement.dataset.theme === expected, mode);
-          assert.equal(await page.locator('#themeModeSel').inputValue(), 'system');
+          assert.equal(await page.locator('#darkBtn').getAttribute('data-mode'), 'system');
         }
-        await page.selectOption('#themeModeSel', 'light');
+        await chooseMode('light');
         await page.emulateMedia({ colorScheme: 'dark' });
         assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
-        await page.selectOption('#palSel', 'dotnet');
+        await page.locator('#palDots button[data-p="dotnet"]').click();
         for (const culture of ['zh-CN', 'en-US']) {
-          await page.evaluate(language => setLang(language), culture);
+          await page.locator('#langBtn').click();
+          assert.equal(await page.locator('#languageMenu').isVisible(), true);
+          await page.locator('#languageMenu [data-language="'+culture+'"]').click();
+          assert.equal(await page.locator('#languageMenu').isVisible(), false);
           assert.equal(await page.locator('html').getAttribute('lang'), culture);
           assert.equal(await page.locator('#rTabs [data-t]').count(), catalog.length);
           for (const group of catalog) {

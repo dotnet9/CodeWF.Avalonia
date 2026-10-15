@@ -1444,7 +1444,7 @@ function cpmRun() {
 /* ═══ 事件绑定 ═══ */
 function bindShell() {
  $("rTabsBar").ondblclick = function (e) { if (e.target.classList.contains("t2")) toggleRibbon(); };
- $("palSel").onchange = function () { setPalette(this.value); };
+
  $("darkBtn").onclick = toggleDark;
  $("darkBtn2").onclick = toggleDark;
  $("langBtn").onclick = function () { setLang(LANG === "zh-CN" ? "en-US" : "zh-CN"); };

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -43,6 +43,8 @@
     <PackageReference Include="Avalonia.Desktop" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
     <PackageReference Include="Semi.Avalonia" />
+    <PackageReference Include="Irihi.Ursa" />
+    <PackageReference Include="Irihi.Ursa.Themes.Semi" />
     <PackageReference Include="Prism.DryIoc.Avalonia" />
     <PackageReference Include="ReactiveUI.Avalonia" />
     <PackageReference Include="Xaml.Behaviors" />

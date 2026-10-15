@@ -7,9 +7,6 @@
   Object.assign(PAL_COLOR, { dotnet:"#512bd4", aurora:"linear-gradient(135deg,#8968ff,#26d4cc)", ember:"#bd674d" });
   SELF_PROPS[1].options = PAL_LIST.map(function (p) { return paletteNames[p]; });
   SELF_PROPS[1].apply = function (name) { setPalette(PAL_LIST.find(function (p) { return paletteNames[p] === name; }) || "dotnet"); };
-  var paletteSelect = $("palSel");
-  paletteSelect.setAttribute("aria-label", "界面配色");
-  paletteSelect.innerHTML = PAL_LIST.map(function (p) { return '<option value="' + p + '">' + paletteNames[p] + '</option>'; }).join("");
   renderPalDots = function () {
     var current = document.documentElement.dataset.palette;
     $("palDots").innerHTML = PAL_LIST.map(function (p) {
@@ -20,7 +17,6 @@
   setPalette = function (p) {
     if (PAL_LIST.indexOf(p) < 0) p = "dotnet";
     document.documentElement.dataset.palette = p;
-    paletteSelect.value = p;
     SELF_PROPS[1].value = paletteNames[p];
     renderPalDots();
     renderPGrid(ACTIVE_DOC);
@@ -30,12 +26,7 @@
   var systemTheme = matchMedia("(prefers-color-scheme: dark)");
   var themeMode = "system";
   try { themeMode = JSON.parse(localStorage.getItem(LAYOUT_KEY) || "null")?.theme || "system"; } catch (_) {}
-  var modeSelect = document.createElement("select");
-  modeSelect.id = "themeModeSel";
-  modeSelect.className = "theme-mode";
-  modeSelect.innerHTML = '<option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>';
-  $("darkBtn").hidden = true;
-  $("darkBtn").before(modeSelect);
+  var modeButton = $("darkBtn");
   SELF_PROPS[2].type = "combo";
   SELF_PROPS[2].options = ["system", "light", "dark"];
   SELF_PROPS[2].apply = function(mode) { setTheme(mode); };
@@ -44,10 +35,23 @@
     document.documentElement.dataset.themeMode = themeMode;
     originalTheme(themeMode === "system" ? (systemTheme.matches ? "dark" : "light") : themeMode);
     SELF_PROPS[2].value = themeMode;
-    modeSelect.value = themeMode;
+    var paths = {system:'<rect x="2" y="2" width="12" height="9" rx="1.5"/><path d="M6 14h4M8 11v3"/>',light:'<circle cx="8" cy="8" r="3"/><path d="M8 0v2M8 14v2M0 8h2M14 8h2M2 2l1.5 1.5M12.5 12.5 14 14M2 14l1.5-1.5M12.5 3.5 14 2"/>',dark:'<path d="M13 9.6A5.6 5.6 0 0 1 6.4 3a5.6 5.6 0 1 0 6.6 6.6z"/>'};
+    modeButton.dataset.mode = themeMode;
+    modeButton.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true">' + paths[themeMode] + '</svg>';
     renderPGrid(ACTIVE_DOC);
   };
-  modeSelect.onchange = function() { setTheme(modeSelect.value); };
+  toggleDark = function() { setTheme({system:"light", light:"dark", dark:"system"}[themeMode]); };
+  modeButton.onclick = toggleDark;
+  $("darkBtn2").onclick = toggleDark;
+  var languageButton = $("langBtn"), languageMenu = $("languageMenu");
+  var languageNames = {"zh-CN":"简体中文", "en-US":"English"};
+  languageMenu.innerHTML = Object.keys(I18N).map(function(culture) { return '<button type="button" role="menuitemradio" data-language="' + culture + '">' + esc(languageNames[culture] || culture) + '</button>'; }).join('');
+  function closeLanguages() { languageMenu.hidden = true; languageButton.setAttribute("aria-expanded", "false"); }
+  languageButton.onclick = function(event) { event.stopPropagation(); languageMenu.hidden = !languageMenu.hidden; languageButton.setAttribute("aria-expanded", String(!languageMenu.hidden)); };
+  languageButton.onkeydown = function(event) { if(event.key === "ArrowDown") { event.preventDefault(); languageMenu.hidden = false; languageButton.setAttribute("aria-expanded", "true"); languageMenu.querySelector('button').focus(); } };
+  languageMenu.querySelectorAll('button').forEach(function(button) { button.onclick = function() { setLang(button.dataset.language); closeLanguages(); languageButton.focus(); }; });
+  document.addEventListener('click', function(event) { if(!event.target.closest('.titlebar-language')) closeLanguages(); });
+  document.addEventListener('keydown', function(event) { if(event.key === 'Escape' && !languageMenu.hidden) { closeLanguages(); languageButton.focus(); } });
   systemTheme.addEventListener("change", function() { if (themeMode === "system") setTheme("system"); });
   var originalRender = renderDoc;
   renderDoc = function (id) {
@@ -221,7 +225,6 @@
   renderInto = function (id,el) { originalRenderInto(id,el); if (id === 'welcome' && el) bindOverview(el); };
   var current = document.documentElement.dataset.palette;
   if (PAL_LIST.indexOf(current) < 0) current='dotnet';
-  paletteSelect.value=current;
   SELF_PROPS[1].value=paletteNames[current];
   setTheme(themeMode);
   renderPalDots();

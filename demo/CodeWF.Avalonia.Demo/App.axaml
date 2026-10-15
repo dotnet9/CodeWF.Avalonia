@@ -3,26 +3,18 @@
                         xmlns:prism="http://prismlibrary.com"
                         xmlns:dockmodel="using:Dock.Model.ReactiveUI.Controls"
                         xmlns:semi="https://irihi.tech/semi"
+                        xmlns:u="https://irihi.tech/ursa"
                         xmlns:codewf="https://codewf.com"
                         x:Class="CodeWF.Avalonia.Demo.App"
                         RequestedThemeVariant="Dark">
-  <!-- 文档模板放在应用级，主窗口与 Dock 浮动窗口共用。 -->
-  <Application.DataTemplates>
-    <!--  Dock 12.1 内容承载：Tool / Document 的正文由类型匹配的 DataTemplate 呈现
-          （IDockable.Context 只服务定位器与命令栏），这里把视图实例桥接到内容宿主。 -->
-    <DataTemplate DataType="dockmodel:Tool" x:DataType="dockmodel:Tool">
-      <ContentControl Content="{Binding Context}" />
-    </DataTemplate>
-    <DataTemplate DataType="dockmodel:Document" x:DataType="dockmodel:Document">
-      <ContentControl Content="{Binding Context}" />
-    </DataTemplate>
-  </Application.DataTemplates>
+  <!-- 文档与工具模板由 App 注册，使用 Dock 官方内容回收实现跨宿主转移。 -->
   <!-- 应用字体同样覆盖 Dock 浮动窗与弹出层，代码区仍用等宽字体。 -->
   <Application.Resources>
     <FontFamily x:Key="DefaultFontFamily">Segoe UI, Microsoft YaHei UI, PingFang SC, Noto Sans, sans-serif</FontFamily>
   </Application.Resources>
   <Application.Styles>
     <semi:SemiTheme Locale="zh-CN" />
+    <semi:UrsaSemiTheme Locale="zh-CN" />
     <codewf:ACSemiTheme />
     <codewf:DataGridSemiTheme />
     <codewf:TreeDataGridSemiTheme />
