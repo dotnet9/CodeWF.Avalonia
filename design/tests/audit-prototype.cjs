@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { chromium } = require('playwright');
+const properties = require('./audit-properties.cjs');
 
 // Exercise the real HTML event handlers, including errors caught by the prototype's guard.
 (async () => {
@@ -84,9 +85,10 @@ const { chromium } = require('playwright');
               await button.click();
               await page.waitForFunction(id => document.querySelector('#dBody')?.dataset.page === id, route);
               const segment = page.locator(`#seg-${route}`);
-              await page.waitForFunction(id => document.getElementById('seg-' + id)?.innerText.trim().length > 0, route);
+              await page.waitForFunction(id => { const segment=document.getElementById('seg-'+id); return segment && (segment.innerText.trim().length>0 || segment.querySelector('svg')); }, route);
               assert.ok(await segment.isVisible(), `${culture}: hidden page ${route}`);
-              assert.ok((await segment.innerText()).trim(), `${culture}: empty page ${route}`);
+              assert.ok((await segment.innerText()).trim() || await segment.locator('svg').count(), `${culture}: empty page ${route}`);
+              await properties.verifyContract(page, route);
               const expectedTitle = culture === 'zh-CN' ? entry.titleZh : entry.titleEn;
               if (route !== 'welcome') assert.equal(await page.locator('.catalog-header h1').innerText(), expectedTitle);
               assert.equal(await button.getAttribute('aria-pressed'), 'true', `Ribbon selection: ${route}`);
@@ -108,6 +110,7 @@ const { chromium } = require('playwright');
               results.push({ width, culture, route });
             }
           }
+          await properties.verifyEffects(page, culture);
           await page.evaluate(() => openDoc('welcome'));
           const firstRow = page.locator('#pGrid .rw').first();
           const column = firstRow.locator('.property-column-handle');

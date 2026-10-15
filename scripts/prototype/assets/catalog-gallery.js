@@ -47,10 +47,10 @@
         var next = child.nextElementSibling; child.remove(); child = next;
       }
     }
-    if (pageProps.length || id !== 'welcome') removeSection(categories[0], categories[1]);
+    if (pageProps.length) removeSection(categories[0], categories[1]);
     else removeSection(categories[1], categories[2]);
     removeSection(categories[2], null);
-    if (!pageProps.length && id === 'welcome' && categories[0]) categories[0].textContent = settings.group;
+    if (!pageProps.length && categories[0]) categories[0].textContent = settings.group;
     var labels = [settings.shell.Density, settings.shell.Palette, settings.shell.GlobalSettings.ModeLabel, settings.language];
     SELF_PROPS.forEach(function(property, index) {
       var control = panel.querySelector('[data-id="' + property.id + '"]');
@@ -74,7 +74,7 @@
     $("palDots").querySelectorAll("button").forEach(function(button, index) {
       button.title = settings.palettes[paletteKeys[index]]; button.setAttribute("aria-label", button.title);
     });
-    if ($("pgCnt")) $("pgCnt").textContent = "(" + (id === 'welcome' ? SELF_PROPS.length : pageProps.length) + ")";
+    if ($("pgCnt")) $("pgCnt").textContent = "(" + (pageProps.length || SELF_PROPS.length) + ")";
   };
   var originalOpenDoc = openDoc;
   openDoc = function (id) {

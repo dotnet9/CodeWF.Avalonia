@@ -1204,15 +1204,19 @@ function propKey(pageId, p) { return (p.global ? "" : (pageId || "")) + "|" + p.
 function rowHtml(pageId, p) {
  var mod = MODIFIED[propKey(pageId, p)] ? " mod" : "";
  var ctl;
- if (p.type === "combo") {
+ if (p.type === "radio") {
+  ctl = '<div class="catalog-radio-options" data-id="' + p.id + '">' + p.options.map(function(option){ return '<label><input type="radio" name="' + esc(pageId+'-'+p.id) + '" value="' + esc(option) + '"' + (option === p.value ? ' checked' : '') + '> ' + esc(option) + '</label>'; }).join('') + '</div>';
+ } else if (p.type === "combo") {
   ctl = '<select data-id="' + p.id + '"' + (p.readonly ? " disabled" : "") + ">" +
    p.options.map(function (o) { return "<option" + (o === p.value ? " selected" : "") + ">" + esc(o) + "</option>"; }).join("") + "</select>";
  } else if (p.type === "bool") {
-  ctl = '<div class="switch' + (p.value ? " on" : "") + '" data-id="' + p.id + '" role="switch" tabindex="0" title="' + esc(p.label) + '"></div>';
+  ctl = '<div class="switch' + (p.value ? " on" : "") + '" data-id="' + p.id + '" role="switch" aria-checked="' + !!p.value + '" tabindex="0" title="' + esc(p.label) + '"></div>';
  } else if (p.type === "text" || p.type === "multiline") {
   ctl = p.type === "multiline"
-   ? '<textarea data-id="' + p.id + '">' + esc(String(p.value)) + '</textarea>'
-   : '<input type="text" data-id="' + p.id + '" value="' + esc(String(p.value)) + '">';
+   ? '<textarea data-id="' + p.id + '"' + (p.readonly ? ' readonly' : '') + '>' + esc(String(p.value)) + '</textarea>'
+   : '<input type="text" data-id="' + p.id + '" value="' + esc(String(p.value)) + '"' + (p.readonly ? ' readonly' : '') + '>';
+ } else if (p.type === "number") {
+  ctl = '<input type="number" data-id="' + p.id + '" min="' + p.min + '" max="' + p.max + '" step="' + (p.step || 1) + '" value="' + p.value + '"' + (p.readonly ? ' readonly' : '') + '>';
  } else {
   ctl = '<input type="range" data-id="' + p.id + '" min="' + p.min + '" max="' + p.max + '" step="' + (p.step || 1) +
    '" value="' + p.value + '"' + (p.readonly ? " disabled" : "") + ">";
@@ -1234,10 +1238,15 @@ function renderPGrid(id) {
  all.forEach(function (p) {
   var el = document.querySelector('#pGrid [data-id="' + p.id + '"]');
   if (!el) return;
-  if (p.type === "combo") el.onchange = function () { applyProp(id, p, el.value); };
+  if (p.type === "radio") el.querySelectorAll('input').forEach(function(option){ option.onchange = function(){ if(option.checked) applyProp(id,p,option.value); }; });
+  else if (p.type === "combo") el.onchange = function () { applyProp(id, p, el.value); };
   else if (p.type === "range") el.oninput = function () { applyProp(id, p, +el.value, true); };
-  else if (p.type === "text" || p.type === "multiline") el.onchange = function () { applyProp(id, p, el.value); };
-  else if (p.type === "bool") el.onclick = function () { el.classList.toggle("on"); applyProp(id, p, el.classList.contains("on"), true); };
+  else if (p.type === "number") el.onchange = function () { var value = Math.max(p.min, Math.min(p.max, Number(el.value))); if (Number.isFinite(value)) applyProp(id, p, value); };
+  else if ((p.type === "text" || p.type === "multiline") && !p.readonly) el.onchange = function () { applyProp(id, p, el.value); };
+  else if (p.type === "bool") {
+   el.onclick = function () { el.classList.toggle("on"); el.setAttribute('aria-checked', String(el.classList.contains('on'))); applyProp(id, p, el.classList.contains("on"), true); };
+   el.onkeydown = function (event) { if (event.key === ' ' || event.key === 'Enter') { event.preventDefault(); el.click(); } };
+  }
  });
 }
 function applyProp(pageId, p, v, light) {

@@ -59,6 +59,7 @@
     if(table)output.push('</tbody></table>');
     return output.join('');
   }
+  window.CodeWFRenderMarkdownSample = renderSample;
   register('md-viewer', {props:typographyProperties('md-viewer',MD_THEMES),xaml:'<codewf:MarkdownViewer Markdown="{Binding AppliedMarkdown}"\n  TypographyTheme="{Binding Theme}" TypographySize="{Binding Size}" />', render:function(el) {
     var source=samples().viewer;
     el.classList.add('catalog-markdown-page');
