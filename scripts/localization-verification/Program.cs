@@ -31,6 +31,7 @@ AppBuilder.Configure<CodeWF.Avalonia.Demo.App>().UseSkia().WithInterFont().UseRe
 DemoBootstrapper.Initialize();
 VerifyWindowCapabilities();
 VerifyEditableTableColumns();
+VerifyStatusLanguageState();
 VerifyDockDocumentTransfer(Path.Combine(Path.GetFullPath(args.FirstOrDefault() ?? Path.GetTempPath()), "dock-captures"));
 var manager = I18nManager.Instance;
 var text = new TextBlock();
@@ -182,6 +183,9 @@ static void VerifyEditableTableColumns()
         Require(grid.ColumnDefinitions[0].ActualWidth < grid.ColumnDefinitions[1].ActualWidth / 2,
             "An editable table preserves the shorter API column at width " + width);
         Require(grid.Bounds.Width <= editor.Bounds.Width + 1, "An editable table fits the document at width " + width);
+        var outline = (Border)grid.Parent!;
+        Require(Math.Abs(outline.Bounds.Width - grid.ColumnDefinitions.Sum(column => column.ActualWidth) - 2) <= 2,
+            "The editable table outline hugs its real columns without a blank trailing area at width " + width);
     }
     // 使用同一个表格逐次切语，验证原生代码能读取新增内嵌资源并刷新已存在的菜单。
     var table = editor.GetVisualDescendants().OfType<UserControl>().Single(control => control.GetType().Name == "MarkdownTableView");
@@ -210,6 +214,42 @@ static void VerifyEditableTableColumns()
         window.Close();
     }
     Console.WriteLine("PASS editable table: natural columns and live embedded menu/action translations in four languages.");
+}
+
+static void VerifyStatusLanguageState()
+{
+    var manager = I18nManager.Instance;
+    var originalCulture = manager.Culture;
+    try
+    {
+        manager.Culture = CultureInfo.GetCultureInfo("zh-CN");
+        var model = new global::CodeWF.Avalonia.Demo.ViewModels.Pages.StatusComponentsPageViewModel("StatusBadge");
+        var original = model.BuildProperties();
+        var chineseText = model.BadgeText;
+        var status = original.Single(item => item.Id == "st.kind");
+        model.Commit(new PropertyValueChange(status, status.Value,
+            manager.GetResource(DemoKeys.Content.StatusComponents.OnPropertyCommitted.Warning)));
+        manager.Culture = CultureInfo.GetCultureInfo("en-US");
+        var english = model.BuildProperties();
+        Require(model.BadgeText != chineseText && model.BadgeText == manager.GetResource(DemoKeys.Content.StatusComponents.View.ChangeTheStatusAndIconWidthInThe),
+            "Untouched badge sample text switches language.");
+        Require(Equals(english.Single(item => item.Id == "st.kind").Value,
+            manager.GetResource(DemoKeys.Content.StatusComponents.Properties.Warning)) && model.BadgeKind == "Warn",
+            "Language refresh preserves the chosen badge status in both the control and property panel.");
+        var text = english.Single(item => item.Id == "st.badgeText");
+        model.Commit(new PropertyValueChange(text, text.Value, "Custom input 123"));
+        manager.Culture = CultureInfo.GetCultureInfo("zh-CN");
+        Require(Equals(model.BuildProperties().Single(item => item.Id == "st.badgeText").Value, "Custom input 123") && model.BadgeText == "Custom input 123",
+            "Language refresh preserves user-edited badge content.");
+        var card = new global::CodeWF.Avalonia.Demo.ViewModels.Pages.StatusComponentsPageViewModel("StatusCard");
+        var width = card.BuildProperties().Single(item => item.Id == "st.iconWidth");
+        card.Commit(new PropertyValueChange(width, width.Value, 48m));
+        manager.Culture = CultureInfo.GetCultureInfo("en-US");
+        Require(Equals(card.BuildProperties().Single(item => item.Id == "st.iconWidth").Value, 48m),
+            "Language refresh preserves the edited card icon width.");
+    }
+    finally { manager.Culture = originalCulture; }
+    Console.WriteLine("PASS status samples: live default translations preserve edited text, status and icon width.");
 }
 
 static void VerifyWindowCapabilities()

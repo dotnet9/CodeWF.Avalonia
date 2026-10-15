@@ -319,6 +319,7 @@ internal sealed class MarkdownTableView : UserControl
             BorderBrush = _options.SeparatorBrush,
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(6),
+            HorizontalAlignment = HorizontalAlignment.Left,
             Child = _grid
         };
         var menu = new ContextMenu();

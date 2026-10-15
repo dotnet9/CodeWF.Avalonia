@@ -18,6 +18,7 @@ public sealed class StatusComponentsPageViewModel : ReactiveObject
     private StatusLabelKind _kind = StatusLabelKind.Info;
     private int _iconWidth = 32;
     private string _badgeText = L.Instance.GetResource(DemoResources.Content.StatusComponents.View.ChangeTheStatusAndIconWidthInThe);
+    private bool _badgeTextEdited;
     public string BadgeKind => Kind.ToString();
     public bool BadgeDebug => Kind == StatusLabelKind.Debug;
     public bool BadgeInfo => Kind == StatusLabelKind.Info;
@@ -48,6 +49,7 @@ public sealed class StatusComponentsPageViewModel : ReactiveObject
                 this.RaisePropertyChanged(nameof(BadgeFatal));
                 break;
             case "st.badgeText" when change.NewValue is string text:
+                _badgeTextEdited = true;
                 BadgeText = text;
                 break;
             case IdIconWidth when change.NewValue is decimal width:
@@ -58,13 +60,23 @@ public sealed class StatusComponentsPageViewModel : ReactiveObject
 
     public IReadOnlyList<PropertyItem> BuildProperties()
     {
+        // 未编辑的示例文案跟随界面语言，用户输入与已选状态在重建属性表时保留。
+        if (!_badgeTextEdited)
+            BadgeText = L.Instance.GetResource(DemoResources.Content.StatusComponents.View.ChangeTheStatusAndIconWidthInThe);
         var kind = new PropertyItem
         {
             Id = IdKind,
             Name = L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.CardStatus),
             Kind = PropertyItemKind.Choice,
             Options = [L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.Debug), L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.Information), L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.Warning), L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.Error), L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.Critical)],
-            Value = L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.Information),
+            Value = L.Instance.GetResource(Kind switch
+            {
+                StatusLabelKind.Debug => DemoResources.Content.StatusComponents.Properties.Debug,
+                StatusLabelKind.Warn => DemoResources.Content.StatusComponents.Properties.Warning,
+                StatusLabelKind.Error => DemoResources.Content.StatusComponents.Properties.Error,
+                StatusLabelKind.Fatal => DemoResources.Content.StatusComponents.Properties.Critical,
+                _ => DemoResources.Content.StatusComponents.Properties.Information,
+            }),
             DefaultValue = L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.Information),
             Description = L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.FiveStatusLabelKindValuesChangeTheCardStateAnd),
         };
@@ -73,7 +85,7 @@ public sealed class StatusComponentsPageViewModel : ReactiveObject
             Id = IdIconWidth,
             Name = L.Instance.GetResource(DemoResources.Content.StatusComponents.Properties.IconWidth),
             Kind = PropertyItemKind.Number,
-            Value = 32m,
+            Value = (decimal)IconWidth,
             DefaultValue = 32m,
             Minimum = 16,
             Maximum = 64,
