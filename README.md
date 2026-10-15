@@ -178,7 +178,7 @@ Each Dock document contains its demonstration and property panel; both move toge
 
 Windows x64 NativeAOT Demo：标题栏仅保留平铺八色点，模式复用 Ursa 三态按钮，语言图标弹出列表，默认 .NET 紫，共八套配色；浅色、深色与跟随系统分别选择。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
 
-当前 `12.1.4.21` 的 Dock 文档分屏、浮动与重新停靠效果（真实 Windows NativeAOT + Skia 离屏渲染）：
+当前 `12.1.4.22` 的 Dock 文档分屏、浮动与重新停靠效果（真实 Windows NativeAOT + Skia 离屏渲染）：
 
 ![文档与属性面板同步停靠](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-dock-redocked.png)
 
@@ -201,7 +201,7 @@ Windows x64 NativeAOT Demo：标题栏仅保留平铺八色点，模式复用 Ur
 ![主题与实验截图巡览](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-interactions.gif)
 
 ```bash
-# 桌面演示台：Ribbon 页签 + Dock 工作区（左导航 / 文档内效果与属性 / 下日志），含 .NET 紫、AI 极光、AI 暖陶与原有六套 Semi 配色，支持深浅与双语切换
+# 桌面演示台：Ribbon 页签 + Dock 工作区（左导航 / 文档内效果与属性 / 下日志），含 .NET 紫、AI 极光、AI 赤陶、默认蓝、水生、沙漠、黄昏、夜空八套配色，支持深浅与双语切换
 dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0
 
 # 冒烟模式：逐页构建后逐色板渲染一遍再退出，退出码 0 表示全部页面构建 + 渲染通过（CI 使用）
@@ -214,7 +214,7 @@ dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0 -- --smoke
 
 - `ci.yml`：`dotnet build -c Release` + `dotnet test`，外加 NativeAOT 发布并在 Windows 上运行 `--smoke`。
 - `publish-nuget.yml`：推送 `v*` tag 时打包并发布 NuGet（Trusted Publishing）。
-- `release.yml`：同一 tag 触发全平台演示应用发布（6 个 RID：win-x64/x86、linux-x64/arm64、osx-x64/arm64）。
+- `release.yml`：同一 tag 触发五平台演示应用发布（win-x64、linux-x64、linux-arm64、osx-x64、osx-arm64）。
 - 版本号前三跟随 Avalonia，第四位为本仓修订，例如 `v12.1.4.4`。
 - 变更记录见 [UpdateLog.md](UpdateLog.md)。
 
