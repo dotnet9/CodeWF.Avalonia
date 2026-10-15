@@ -243,33 +243,56 @@ static void VerifyDockDocumentTransfer(string captures)
     try
     {
         VerifyTitleBar(shell, model);
-        model.ResetLayout();
-        model.OpenItem(model.Groups.SelectMany(group => group.Items).Single(item => item.Api == "StatusBadge"));
-        var document = model.ActiveDocument!;
-        var dockable = document.DockDocument!;
-        var view = (global::CodeWF.Avalonia.Demo.Views.DemoDocumentView)dockable.Context!;
-        var properties = view.FindControl<PropertyGrid>("DocumentProperties")!;
-        model.OpenItem(model.Groups[0].Items[0]);
-        var target = (global::Dock.Model.Core.IDock)model.ActiveDocument!.DockDocument!.Owner!;
-        var factory = model.Layout!.Factory!;
-        var service = new global::Dock.Model.DockService();
-        Require(service.SplitDockable(dockable, (global::Dock.Model.Core.IDock)dockable.Owner!, target,
-            global::Dock.Model.Core.DockOperation.Right, bExecute: true), "The standard Dock service splits the document.");
-        PumpDock(() => ReferenceEquals(TopLevel.GetTopLevel(view), shell) && properties.Bounds.Width > 0);
-        Require(!target.VisibleDockables!.Contains(dockable), "Splitting removes the document from its original tab group.");
-        Require(ReferenceEquals(properties.Items, document.PropertyItems), "Split document keeps its own property panel.");
-        Capture(shell, "split.png");
-        factory.FloatDockable(dockable);
-        PumpDock(() => TopLevel.GetTopLevel(view) is Window floating && !ReferenceEquals(floating, shell));
-        Require(ReferenceEquals(properties.Items, document.PropertyItems), "Floating document keeps its own property panel.");
-        Capture((Window)TopLevel.GetTopLevel(view)!, "floating.png");
-        factory.MoveDockable((global::Dock.Model.Core.IDock)dockable.Owner!, target, dockable, null);
-        PumpDock(() => ReferenceEquals(TopLevel.GetTopLevel(view), shell) && properties.Bounds.Width > 0);
-        Require(ReferenceEquals(dockable.Context, view), "Dock transfer preserves the actual document view.");
-        Require(target.VisibleDockables!.Count(item => ReferenceEquals(item, dockable)) == 1,
-            "Re-docking creates exactly one tab for the document.");
-        Capture(shell, "redocked.png");
-        Console.WriteLine("PASS actual shell: split, float and re-dock preserve document content and properties.");
+        foreach (var navigationShare in new[] { 0.16, 0.24 })
+        {
+            model.ResetLayout();
+            model.OpenItem(model.Groups.SelectMany(group => group.Items).Single(item => item.Api == "StatusBadge"));
+            var document = model.ActiveDocument!;
+            var dockable = document.DockDocument!;
+            var view = (global::CodeWF.Avalonia.Demo.Views.DemoDocumentView)dockable.Context!;
+            var properties = view.FindControl<PropertyGrid>("DocumentProperties")!;
+            var documentArea = (global::Dock.Model.Controls.IProportionalDock)((global::Dock.Model.Core.IDock)dockable.Owner!).Owner!;
+            var navigationDock = (global::Dock.Model.Core.IDock)((global::Dock.Model.Core.IDock)documentArea.Owner!).VisibleDockables!
+                .Single(item => item.Id == "Dock.Nav");
+            var navigationView = (Control)navigationDock.VisibleDockables![0].Context!;
+            // 同时检查默认布局与拖动分隔条后的份额，不能靠恢复固定默认值通过。
+            navigationDock.Proportion = navigationShare;
+            documentArea.Proportion = 1 - navigationShare;
+            PumpDock(() => navigationView.Bounds.Width > 0);
+            var navigationWidth = navigationView.Bounds.Width;
+            model.OpenItem(model.Groups[0].Items[0]);
+            var target = (global::Dock.Model.Core.IDock)model.ActiveDocument!.DockDocument!.Owner!;
+            var factory = model.Layout!.Factory!;
+            var service = new global::Dock.Model.DockService();
+            Require(service.SplitDockable(dockable, (global::Dock.Model.Core.IDock)dockable.Owner!, target,
+                global::Dock.Model.Core.DockOperation.Right, bExecute: true), "The standard Dock service splits the document.");
+            PumpDock(() => ReferenceEquals(TopLevel.GetTopLevel(view), shell) && properties.Bounds.Width > 0);
+            Require(!target.VisibleDockables!.Contains(dockable), "Splitting removes the document from its original tab group.");
+            Require(ReferenceEquals(properties.Items, document.PropertyItems), "Split document keeps its own property panel.");
+            VerifyNavigation("split");
+            Capture(shell, navigationShare == 0.16 ? "split.png" : "split-adjusted.png");
+            factory.FloatDockable(dockable);
+            PumpDock(() => TopLevel.GetTopLevel(view) is Window floating && !ReferenceEquals(floating, shell));
+            Require(ReferenceEquals(properties.Items, document.PropertyItems), "Floating document keeps its own property panel.");
+            VerifyNavigation("float");
+            Capture((Window)TopLevel.GetTopLevel(view)!, navigationShare == 0.16 ? "floating.png" : "floating-adjusted.png");
+            factory.MoveDockable((global::Dock.Model.Core.IDock)dockable.Owner!, target, dockable, null);
+            PumpDock(() => ReferenceEquals(TopLevel.GetTopLevel(view), shell) && properties.Bounds.Width > 0);
+            Require(ReferenceEquals(dockable.Context, view), "Dock transfer preserves the actual document view.");
+            Require(target.VisibleDockables!.Count(item => ReferenceEquals(item, dockable)) == 1,
+                "Re-docking creates exactly one tab for the document.");
+            VerifyNavigation("re-dock");
+            Capture(shell, navigationShare == 0.16 ? "redocked.png" : "redocked-adjusted.png");
+            Console.WriteLine("PASS actual shell: split, float and re-dock preserve document content, properties and navigation share " + navigationShare);
+
+            void VerifyNavigation(string stage)
+            {
+                Require(Math.Abs(navigationDock.Proportion - navigationShare) < 0.000001,
+                    "Document " + stage + " preserves the current navigation proportion.");
+                Require(Math.Abs(navigationView.Bounds.Width - navigationWidth) <= 2,
+                    "Document " + stage + " preserves the actual navigation width.");
+            }
+        }
     }
     finally { shell.Close(); }
 

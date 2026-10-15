@@ -547,10 +547,21 @@ public partial class MainViewModel : ReactiveObject, IDisposable
             Id = "Dock.Docs",
             VisibleDockables = _dockFactory.CreateList<IDockable>(),
             CanCreateDocument = false,
-            Proportion = 0.84,
+            Proportion = 1,
             IsCollapsable = false,
         };
         _docDock.PropertyChanged += OnDocDockPropertyChanged;
+
+        // 文档分屏仅调整中央区域内部的份额，浮动或回停不改变外侧导航宽度。
+        var documentArea = new ProportionalDock
+        {
+            Id = "Dock.DocumentArea",
+            Orientation = global::Dock.Model.Core.Orientation.Horizontal,
+            Proportion = 0.84,
+            IsCollapsable = false,
+            VisibleDockables = _dockFactory.CreateList<IDockable>(_docDock),
+            ActiveDockable = _docDock,
+        };
 
         var mainHorizontal = new ProportionalDock
         {
@@ -560,8 +571,8 @@ public partial class MainViewModel : ReactiveObject, IDisposable
             VisibleDockables = _dockFactory.CreateList<IDockable>(
                 navDock,
                 new ProportionalDockSplitter(),
-                _docDock),
-            ActiveDockable = _docDock,
+                documentArea),
+            ActiveDockable = documentArea,
         };
         var workspace = new ProportionalDock
         {
