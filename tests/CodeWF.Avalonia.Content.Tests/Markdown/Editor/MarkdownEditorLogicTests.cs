@@ -9,6 +9,7 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Editor;
 /// 下沉到 CodeWF.Avalonia.Markdown.Editor 的纯逻辑测试（不依赖 Avalonia 平台）：
 /// 智能换行、模板服务与本地化回退。
 /// </summary>
+[Collection("AvaloniaPlatform")]
 public sealed class MarkdownEditorLogicTests
 {
     [Fact]
@@ -45,9 +46,9 @@ public sealed class MarkdownEditorLogicTests
     }
 
     [Fact]
-    public void InvariantLocalizer_ReturnsNonEmptyTextForEveryKey()
+    public void EmbeddedLocalizer_ReturnsNonEmptyTextForEveryKey()
     {
-        var localizer = new InvariantMarkdownEditorLocalizer();
+        var localizer = new MarkdownEditorLocalizer();
 
         foreach (var key in Enum.GetValues<MarkdownEditorText>())
         {
@@ -56,9 +57,9 @@ public sealed class MarkdownEditorLogicTests
     }
 
     [Fact]
-    public void InvariantLocalizer_FormatFillsArguments()
+    public void EmbeddedLocalizer_FormatFillsArguments()
     {
-        var localizer = new InvariantMarkdownEditorLocalizer();
+        var localizer = new MarkdownEditorLocalizer();
 
         var text = localizer.Format(MarkdownEditorText.SearchMatchCountFormat, 3, "abc", 4);
 
@@ -114,10 +115,10 @@ public sealed class MarkdownEditorLogicTests
             LinkUrlPlaceholder = "https://codewf.com",
             ImageTargetPlaceholder = "assets/a.png"
         };
-        var templates = new MarkdownEditorTemplateService(new InvariantMarkdownEditorLocalizer(), options);
+        var templates = new MarkdownEditorTemplateService(new MarkdownEditorLocalizer(), options);
 
         Assert.Equal("https://codewf.com", templates.LinkUrlPlaceholder);
-        Assert.Equal("![alt text](assets/a.png)", templates.ImageInsertion);
+        Assert.Equal($"![{MarkdownLocalization.GetResource(MarkdownL.EditorImageAltPlaceholder)}](assets/a.png)", templates.ImageInsertion);
         Assert.Contains("| --- |", templates.TableInsertion, StringComparison.Ordinal);
     }
 }

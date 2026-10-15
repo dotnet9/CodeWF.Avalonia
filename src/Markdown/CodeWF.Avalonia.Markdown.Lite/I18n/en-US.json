@@ -22,7 +22,30 @@
           "CopyRenderedText": "Copy rendered text",
           "Copy": "Copy",
           "SocialCopyToolName": "Markdown editor",
-          "SocialCopySuffixFormat": "Formatted with {0}"
+          "SocialCopySuffixFormat": "Formatted with {0}",
+          "EditorBoldPlaceholder": "bold text",
+          "EditorItalicPlaceholder": "italic text",
+          "EditorInlineCodePlaceholder": "code",
+          "EditorLinkPlaceholder": "link text",
+          "EditorImageAltPlaceholder": "alt text",
+          "EditorCodeFencePlaceholder": "code",
+          "EditorMathPlaceholder": "formula",
+          "EditorTableColumn": "Column",
+          "EditorTableValue": "Value",
+          "EditorTableItem": "Item",
+          "EditorTableDescription": "Description",
+          "EditorEnterSearchTextFirst": "Enter search text first.",
+          "EditorSearchNoMatchFormat": "No match for \"{0}\".",
+          "EditorSearchFoundOnLineFormat": "Found \"{0}\" on line {1} ({2}/{3}).",
+          "EditorSearchFoundWrappedOnLineFormat": "Wrapped to line {1} for \"{0}\" ({2}/{3}).",
+          "EditorSearchReplacedNextFormat": "Replaced next \"{0}\".",
+          "EditorSearchReplacedAllFormat": "Replaced {0} occurrence(s).",
+          "EditorSearchMatchCountFormat": "{0} match(es) for \"{1}\" ({2}).",
+          "EditorSearchInvalidRegexFormat": "Invalid regular expression: {0}",
+          "EditorTableAddRow": "Add row",
+          "EditorTableRemoveLastRow": "Remove last row",
+          "EditorTableAddColumn": "Add column",
+          "EditorTableRemoveLastColumn": "Remove last column"
         }
       }
     }

@@ -6,6 +6,8 @@ using global::Avalonia.Layout;
 using global::Avalonia.Media;
 using global::Avalonia.VisualTree;
 using CodeWF.Avalonia.Markdown.Controls;
+using CodeWF.Toolkit.Lang;
+using global::Avalonia.Threading;
 
 namespace CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
 
@@ -36,6 +38,7 @@ internal sealed class MarkdownBlockView : UserControl
     private readonly bool _isCode;
     private readonly bool _isTableCell;
     private readonly MarkdownBlockViewOptions _options;
+
     private double _runFontSize = 15;
 
     private bool _editing;
@@ -295,10 +298,16 @@ internal sealed class MarkdownBlockView : UserControl
 /// <summary>所见即所得视图里一个表格块的编辑视图（每个单元格就地编辑）。</summary>
 internal sealed class MarkdownTableView : UserControl
 {
-    private readonly Grid _grid = new();
+    private readonly Grid _grid = new global::CodeWF.Avalonia.Markdown.Rendering.MarkdownTableGrid();
     private readonly List<List<MarkdownBlockView>> _cells = [];
     private readonly MarkdownBlockModel _model;
     private readonly MarkdownBlockViewOptions _options;
+
+    private static readonly string[] MenuResourceKeys =
+    [
+        MarkdownL.EditorTableAddRow, MarkdownL.EditorTableRemoveLastRow,
+        MarkdownL.EditorTableAddColumn, MarkdownL.EditorTableRemoveLastColumn
+    ];
 
     public MarkdownTableView(MarkdownBlockModel model, MarkdownBlockViewOptions options)
     {
@@ -313,15 +322,41 @@ internal sealed class MarkdownTableView : UserControl
             Child = _grid
         };
         var menu = new ContextMenu();
-        var labels = new[] { "添加行", "删除末行", "添加列", "删除末列" };
-        for (var action = 0; action < labels.Length; action++)
+        for (var action = 0; action < MenuResourceKeys.Length; action++)
         {
             var capturedAction = action;
-            var item = new MenuItem { Header = labels[action] };
+            var item = new MenuItem { Header = MarkdownLocalization.GetResource(MenuResourceKeys[action]) };
             item.Click += (_, _) => StructureChangeRequested?.Invoke(this, capturedAction);
             menu.Items.Add(item);
         }
         ContextMenu = menu;
+        AttachedToVisualTree += (_, _) =>
+        {
+            I18nManager.Instance.CultureChanged += OnLocalizationChanged;
+            I18nManager.Instance.ResourcesChanged += OnLocalizationChanged;
+            UpdateMenuHeaders();
+        };
+        DetachedFromVisualTree += (_, _) =>
+        {
+            I18nManager.Instance.CultureChanged -= OnLocalizationChanged;
+            I18nManager.Instance.ResourcesChanged -= OnLocalizationChanged;
+        };
+    }
+
+    private void OnLocalizationChanged(object? sender, EventArgs e)
+    {
+        if (Dispatcher.UIThread.CheckAccess()) UpdateMenuHeaders();
+        else Dispatcher.UIThread.Post(UpdateMenuHeaders);
+    }
+
+    private void UpdateMenuHeaders()
+    {
+        if (ContextMenu is null) return;
+        for (var index = 0; index < MenuResourceKeys.Length; index++)
+        {
+            if (ContextMenu.Items[index] is MenuItem item)
+                item.Header = MarkdownLocalization.GetResource(MenuResourceKeys[index]);
+        }
     }
 
     /// <summary>单元格内容变化回调。</summary>
@@ -350,7 +385,7 @@ internal sealed class MarkdownTableView : UserControl
 
         for (var column = 0; column < columnCount; column++)
         {
-            _grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+            _grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
         }
 
         for (var row = 0; row < rows.Count; row++)

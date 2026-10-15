@@ -30,6 +30,7 @@ AppBuilder.Configure<CodeWF.Avalonia.Demo.App>().UseSkia().WithInterFont().UseRe
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false }).SetupWithoutStarting();
 DemoBootstrapper.Initialize();
 VerifyWindowCapabilities();
+VerifyEditableTableColumns();
 VerifyDockDocumentTransfer(Path.Combine(Path.GetFullPath(args.FirstOrDefault() ?? Path.GetTempPath()), "dock-captures"));
 var manager = I18nManager.Instance;
 var text = new TextBlock();
@@ -163,6 +164,52 @@ void OnCultureChanged(object? sender, EventArgs args)
 static void Require(bool condition, string message)
 {
     if (!condition) throw new InvalidOperationException(message);
+}
+
+static void VerifyEditableTableColumns()
+{
+    // 短名称列保持紧凑，描述列获得更多空间；即时编辑与只读渲染复用同一布局。
+    var editor = new global::CodeWF.Avalonia.Markdown.Editor.Controls.MarkdownLiveEditorView();
+    editor.SetText("| API | Purpose |\n| --- | --- |\n| Open | Open a Markdown document without modifying its source. |\n| Save | Persist edits after the user confirms the destination. |");
+    var window = new Window { Width = 800, Height = 420, Content = editor };
+    window.Show();
+    foreach (var width in new[] { 800d, 380d })
+    {
+        window.Width = width;
+        Dispatcher.UIThread.RunJobs();
+        window.UpdateLayout();
+        var grid = editor.GetVisualDescendants().OfType<Grid>().Single(grid => grid.GetType().Name == "MarkdownTableGrid");
+        Require(grid.ColumnDefinitions[0].ActualWidth < grid.ColumnDefinitions[1].ActualWidth / 2,
+            "An editable table preserves the shorter API column at width " + width);
+        Require(grid.Bounds.Width <= editor.Bounds.Width + 1, "An editable table fits the document at width " + width);
+    }
+    // 使用同一个表格逐次切语，验证原生代码能读取新增内嵌资源并刷新已存在的菜单。
+    var table = editor.GetVisualDescendants().OfType<UserControl>().Single(control => control.GetType().Name == "MarkdownTableView");
+    var headers = new HashSet<string>();
+    var manager = I18nManager.Instance;
+    var originalCulture = manager.Culture;
+    var localizer = new global::CodeWF.Avalonia.Markdown.Editor.Services.MarkdownEditorLocalizer();
+    try
+    {
+        foreach (var culture in new[] { "en-US", "zh-CN", "zh-Hant", "ja-JP" })
+        {
+            manager.Culture = CultureInfo.GetCultureInfo(culture);
+            Dispatcher.UIThread.RunJobs();
+            var expected = MarkdownLocalization.GetResource(MarkdownL.EditorTableAddRow);
+            var header = ((MenuItem)table.ContextMenu!.Items[0]!).Header?.ToString() ?? string.Empty;
+            Require(header == expected && header != MarkdownL.EditorTableAddRow, "Existing editable table menu follows " + culture);
+            Require(localizer.Get(global::CodeWF.Avalonia.Markdown.Editor.Services.MarkdownEditorText.BoldPlaceholder)
+                == MarkdownLocalization.GetResource(MarkdownL.EditorBoldPlaceholder), "Editor actions follow " + culture);
+            headers.Add(header);
+        }
+        Require(headers.Count == 4, "Editable table has four distinct embedded translations.");
+    }
+    finally
+    {
+        manager.Culture = originalCulture;
+        window.Close();
+    }
+    Console.WriteLine("PASS editable table: natural columns and live embedded menu/action translations in four languages.");
 }
 
 static void VerifyWindowCapabilities()

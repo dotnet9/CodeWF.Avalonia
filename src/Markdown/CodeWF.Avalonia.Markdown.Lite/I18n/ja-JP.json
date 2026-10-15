@@ -22,7 +22,30 @@
           "CopyRenderedText": "レンダリング済みテキストをコピー",
           "Copy": "コピー",
           "SocialCopyToolName": "Markdown エディター",
-          "SocialCopySuffixFormat": "{0} で整形"
+          "SocialCopySuffixFormat": "{0} で整形",
+          "EditorBoldPlaceholder": "太字",
+          "EditorItalicPlaceholder": "斜体",
+          "EditorInlineCodePlaceholder": "コード",
+          "EditorLinkPlaceholder": "リンクテキスト",
+          "EditorImageAltPlaceholder": "代替テキスト",
+          "EditorCodeFencePlaceholder": "コード",
+          "EditorMathPlaceholder": "数式",
+          "EditorTableColumn": "列",
+          "EditorTableValue": "値",
+          "EditorTableItem": "項目",
+          "EditorTableDescription": "説明",
+          "EditorEnterSearchTextFirst": "検索テキストを入力してください。",
+          "EditorSearchNoMatchFormat": "「{0}」が見つかりません。",
+          "EditorSearchFoundOnLineFormat": "{1} 行目に「{0}」が見つかりました（{2}/{3}）。",
+          "EditorSearchFoundWrappedOnLineFormat": "先頭に戻り、{1} 行目に「{0}」が見つかりました（{2}/{3}）。",
+          "EditorSearchReplacedNextFormat": "次の「{0}」を置換しました。",
+          "EditorSearchReplacedAllFormat": "{0} 件置換しました。",
+          "EditorSearchMatchCountFormat": "「{1}」に {0} 件一致しました（{2}）。",
+          "EditorSearchInvalidRegexFormat": "正規表現が無効です：{0}",
+          "EditorTableAddRow": "行を追加",
+          "EditorTableRemoveLastRow": "最後の行を削除",
+          "EditorTableAddColumn": "列を追加",
+          "EditorTableRemoveLastColumn": "最後の列を削除"
         }
       }
     }

@@ -27,6 +27,29 @@ namespace CodeWF.Avalonia.Markdown
         public static readonly string Copy = "CodeWF.Avalonia.Markdown.MarkdownL.Copy";
         public static readonly string SocialCopyToolName = "CodeWF.Avalonia.Markdown.MarkdownL.SocialCopyToolName";
         public static readonly string SocialCopySuffixFormat = "CodeWF.Avalonia.Markdown.MarkdownL.SocialCopySuffixFormat";
+        public static readonly string EditorBoldPlaceholder = "CodeWF.Avalonia.Markdown.MarkdownL.EditorBoldPlaceholder";
+        public static readonly string EditorItalicPlaceholder = "CodeWF.Avalonia.Markdown.MarkdownL.EditorItalicPlaceholder";
+        public static readonly string EditorInlineCodePlaceholder = "CodeWF.Avalonia.Markdown.MarkdownL.EditorInlineCodePlaceholder";
+        public static readonly string EditorLinkPlaceholder = "CodeWF.Avalonia.Markdown.MarkdownL.EditorLinkPlaceholder";
+        public static readonly string EditorImageAltPlaceholder = "CodeWF.Avalonia.Markdown.MarkdownL.EditorImageAltPlaceholder";
+        public static readonly string EditorCodeFencePlaceholder = "CodeWF.Avalonia.Markdown.MarkdownL.EditorCodeFencePlaceholder";
+        public static readonly string EditorMathPlaceholder = "CodeWF.Avalonia.Markdown.MarkdownL.EditorMathPlaceholder";
+        public static readonly string EditorTableColumn = "CodeWF.Avalonia.Markdown.MarkdownL.EditorTableColumn";
+        public static readonly string EditorTableValue = "CodeWF.Avalonia.Markdown.MarkdownL.EditorTableValue";
+        public static readonly string EditorTableItem = "CodeWF.Avalonia.Markdown.MarkdownL.EditorTableItem";
+        public static readonly string EditorTableDescription = "CodeWF.Avalonia.Markdown.MarkdownL.EditorTableDescription";
+        public static readonly string EditorEnterSearchTextFirst = "CodeWF.Avalonia.Markdown.MarkdownL.EditorEnterSearchTextFirst";
+        public static readonly string EditorSearchNoMatchFormat = "CodeWF.Avalonia.Markdown.MarkdownL.EditorSearchNoMatchFormat";
+        public static readonly string EditorSearchFoundOnLineFormat = "CodeWF.Avalonia.Markdown.MarkdownL.EditorSearchFoundOnLineFormat";
+        public static readonly string EditorSearchFoundWrappedOnLineFormat = "CodeWF.Avalonia.Markdown.MarkdownL.EditorSearchFoundWrappedOnLineFormat";
+        public static readonly string EditorSearchReplacedNextFormat = "CodeWF.Avalonia.Markdown.MarkdownL.EditorSearchReplacedNextFormat";
+        public static readonly string EditorSearchReplacedAllFormat = "CodeWF.Avalonia.Markdown.MarkdownL.EditorSearchReplacedAllFormat";
+        public static readonly string EditorSearchMatchCountFormat = "CodeWF.Avalonia.Markdown.MarkdownL.EditorSearchMatchCountFormat";
+        public static readonly string EditorSearchInvalidRegexFormat = "CodeWF.Avalonia.Markdown.MarkdownL.EditorSearchInvalidRegexFormat";
+        public static readonly string EditorTableAddRow = "CodeWF.Avalonia.Markdown.MarkdownL.EditorTableAddRow";
+        public static readonly string EditorTableRemoveLastRow = "CodeWF.Avalonia.Markdown.MarkdownL.EditorTableRemoveLastRow";
+        public static readonly string EditorTableAddColumn = "CodeWF.Avalonia.Markdown.MarkdownL.EditorTableAddColumn";
+        public static readonly string EditorTableRemoveLastColumn = "CodeWF.Avalonia.Markdown.MarkdownL.EditorTableRemoveLastColumn";
     }
 
 }

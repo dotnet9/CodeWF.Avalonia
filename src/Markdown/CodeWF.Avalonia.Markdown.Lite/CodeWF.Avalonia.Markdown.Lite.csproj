@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="CodeWF.Avalonia.Markdown" />
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Markdig" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />

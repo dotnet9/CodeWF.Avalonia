@@ -94,7 +94,7 @@ public class MarkdownLiveEditorView : UserControl
     {
         _options = options ?? new MarkdownEditorOptions();
         _autoPairEnabled = _options.EnableAutoPair;
-        _localizer = localizer ?? new LiveEditorLocalizer();
+        _localizer = localizer ?? new MarkdownEditorLocalizer();
         _blockOptions = new MarkdownBlockViewOptions();
 
         _blockHost.Orientation = Orientation.Vertical;

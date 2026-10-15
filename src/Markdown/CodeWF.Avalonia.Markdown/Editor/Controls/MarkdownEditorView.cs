@@ -81,7 +81,7 @@ public class MarkdownEditorView : UserControl
         _options = options ?? new MarkdownEditorOptions();
         _autoPairEnabled = _options.EnableAutoPair;
 
-        var resolvedLocalizer = localizer ?? new InvariantMarkdownEditorLocalizer();
+        var resolvedLocalizer = localizer ?? new MarkdownEditorLocalizer();
         var templates = new MarkdownEditorTemplateService(resolvedLocalizer, _options);
         Localizer = resolvedLocalizer;
         _actions = actionService ?? new MarkdownEditorActionService(templates, new MarkdownEditorMutationService(), _options);

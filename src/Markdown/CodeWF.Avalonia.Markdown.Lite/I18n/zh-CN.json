@@ -22,7 +22,30 @@
           "CopyRenderedText": "复制渲染文本",
           "Copy": "复制",
           "SocialCopyToolName": "Markdown 编辑器",
-          "SocialCopySuffixFormat": "本文使用 {0} 排版"
+          "SocialCopySuffixFormat": "本文使用 {0} 排版",
+          "EditorBoldPlaceholder": "粗体",
+          "EditorItalicPlaceholder": "斜体",
+          "EditorInlineCodePlaceholder": "代码",
+          "EditorLinkPlaceholder": "链接文字",
+          "EditorImageAltPlaceholder": "替代文本",
+          "EditorCodeFencePlaceholder": "代码",
+          "EditorMathPlaceholder": "公式",
+          "EditorTableColumn": "列",
+          "EditorTableValue": "值",
+          "EditorTableItem": "项目",
+          "EditorTableDescription": "说明",
+          "EditorEnterSearchTextFirst": "请先输入查找文本。",
+          "EditorSearchNoMatchFormat": "未找到“{0}”。",
+          "EditorSearchFoundOnLineFormat": "在第 {1} 行找到“{0}”（{2}/{3}）。",
+          "EditorSearchFoundWrappedOnLineFormat": "已循环至第 {1} 行找到“{0}”（{2}/{3}）。",
+          "EditorSearchReplacedNextFormat": "已替换下一个“{0}”。",
+          "EditorSearchReplacedAllFormat": "已替换 {0} 处。",
+          "EditorSearchMatchCountFormat": "“{1}”共匹配 {0} 处（{2}）。",
+          "EditorSearchInvalidRegexFormat": "正则表达式无效：{0}",
+          "EditorTableAddRow": "添加行",
+          "EditorTableRemoveLastRow": "删除末行",
+          "EditorTableAddColumn": "添加列",
+          "EditorTableRemoveLastColumn": "删除末列"
         }
       }
     }

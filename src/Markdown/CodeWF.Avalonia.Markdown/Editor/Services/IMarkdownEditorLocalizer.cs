@@ -1,6 +1,6 @@
 namespace CodeWF.Avalonia.Markdown.Editor.Services;
 
-/// <summary>编辑器动作与搜索结果的本地化文案键（宿主按自己的 i18n 体系解析）。</summary>
+/// <summary>编辑器动作与搜索结果的本地化文案标识。</summary>
 public enum MarkdownEditorText
 {
     BoldPlaceholder,
@@ -25,7 +25,7 @@ public enum MarkdownEditorText
 }
 
 /// <summary>
-/// 编辑器本地化接缝：库内不绑定任何 i18n 框架，宿主把键映射到自己的资源。
+/// 编辑器文案接口；默认实现使用库内嵌 JSON 并跟随全局语言，宿主无需另外提供映射。
 /// </summary>
 public interface IMarkdownEditorLocalizer
 {
