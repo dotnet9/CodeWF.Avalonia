@@ -1,5 +1,6 @@
 ﻿using PropertyGridLanguage = CodeWF.Avalonia.TreeDataGrid.PropertyGrid.I18n.ResourceKeys;
 using System.Globalization;
+using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -9,8 +10,8 @@ using HAlignment = Avalonia.Layout.HorizontalAlignment;
 using LOrientation = Avalonia.Layout.Orientation;
 using Avalonia.Interactivity;
 using Avalonia.Media;
-using Avalonia.Data;
-using Avalonia.Data.Converters;
+using Avalonia.Utilities;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 
 namespace CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
@@ -20,9 +21,12 @@ namespace CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 /// 文本在失焦或按回车时提交，按 Esc 回退；百分比拖动时预览，松开后提交。
 /// 带子属性的行显示汇总值。
 /// </summary>
-public class PropertyCellEditor : ContentControl
+public class PropertyCellEditor : ContentControl, IWeakEventSubscriber<PropertyChangedEventArgs>
 {
     private bool _rebuilding;
+    private bool _synchronizing;
+    private PropertyItem? _observedItem;
+    private Action? _updateValue;
 
     /// <summary>使值编辑器填满所属单元格，行高变化时同步拉伸。</summary>
     public PropertyCellEditor()
@@ -36,6 +40,54 @@ public class PropertyCellEditor : ContentControl
     {
         base.OnDataContextChanged(e);
         Rebuild();
+    }
+
+    /// <inheritdoc />
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        ObserveItem();
+        SynchronizeValue();
+    }
+
+    /// <inheritdoc />
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        StopObserving();
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    void IWeakEventSubscriber<PropertyChangedEventArgs>.OnEvent(object? sender, WeakEvent ev, PropertyChangedEventArgs e)
+    {
+        if (ReferenceEquals(sender, _observedItem)
+            && (string.IsNullOrEmpty(e.PropertyName) || e.PropertyName is nameof(PropertyItem.Value) or nameof(PropertyItem.Summary)))
+        {
+            SynchronizeValue();
+        }
+    }
+
+    private void ObserveItem()
+    {
+        if (ReferenceEquals(_observedItem, Item)) return;
+        StopObserving();
+        _observedItem = Item;
+        if (_observedItem is not null)
+            WeakEvents.ThreadSafePropertyChanged.Subscribe(_observedItem, this);
+    }
+
+    private void StopObserving()
+    {
+        if (_observedItem is not null)
+            WeakEvents.ThreadSafePropertyChanged.Unsubscribe(_observedItem, this);
+        _observedItem = null;
+    }
+
+    private void SynchronizeValue()
+    {
+        if (_synchronizing) return;
+        _synchronizing = true;
+        try { _updateValue?.Invoke(); }
+        finally { _synchronizing = false; }
     }
 
     private PropertyLeafRow? Row => DataContext as PropertyLeafRow;
@@ -54,8 +106,12 @@ public class PropertyCellEditor : ContentControl
         _rebuilding = true;
         try
         {
+            StopObserving();
+            _updateValue = null;
             var item = Item;
             Content = item is null ? null : BuildEditor(item);
+            ObserveItem();
+            SynchronizeValue();
         }
         finally
         {
@@ -100,11 +156,15 @@ public class PropertyCellEditor : ContentControl
 
     private bool Commit(PropertyItem item, object? newValue)
     {
+        // 模型通知只更新显示，不能再次触发业务提交；校验拒绝时立即回退所有类型的编辑器。
+        if (_synchronizing) return true;
         var owner = Owner;
-        return owner is null || owner.CommitValue(item, newValue);
+        var accepted = owner is null || owner.CommitValue(item, newValue);
+        if (!accepted) SynchronizeValue();
+        return accepted;
     }
 
-    private static TextBlock BuildSummary(PropertyItem item)
+    private TextBlock BuildSummary(PropertyItem item)
     {
         var text = new TextBlock
         {
@@ -112,19 +172,11 @@ public class PropertyCellEditor : ContentControl
             VerticalAlignment = VAlignment.Center,
         };
 
-        void Update() => text.Text = item.Summary ?? item.Value as string ?? string.Empty;
-        item.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName is nameof(PropertyItem.Summary) or nameof(PropertyItem.Value))
-            {
-                Update();
-            }
-        };
-        Update();
+        _updateValue = () => text.Text = item.Summary ?? item.Value as string ?? string.Empty;
         return text;
     }
 
-    private static TextBlock BuildReadOnly(PropertyItem item)
+    private TextBlock BuildReadOnly(PropertyItem item)
     {
         var text = new TextBlock
         {
@@ -132,7 +184,11 @@ public class PropertyCellEditor : ContentControl
             VerticalAlignment = VAlignment.Center,
             Text = item.Summary ?? item.Value?.ToString() ?? string.Empty,
         };
-        ToolTip.SetTip(text, text.Text);
+        _updateValue = () =>
+        {
+            text.Text = item.Summary ?? item.Value?.ToString() ?? string.Empty;
+            ToolTip.SetTip(text, text.Text);
+        };
         return text;
     }
 
@@ -153,6 +209,11 @@ public class PropertyCellEditor : ContentControl
 
         var committed = box.Text;
         var committing = false;
+        _updateValue = () =>
+        {
+            committed = item.Value as string ?? string.Empty;
+            box.Text = committed;
+        };
 
         void CommitNow()
         {
@@ -235,6 +296,7 @@ public class PropertyCellEditor : ContentControl
                 Commit(item, e.NewValue.Value);
             }
         };
+        _updateValue = () => numeric.Value = ToDecimal(item.Value);
 
         if (string.IsNullOrEmpty(item.Unit))
         {
@@ -270,6 +332,7 @@ public class PropertyCellEditor : ContentControl
                 Commit(item, checkBox.IsChecked.Value);
             }
         };
+        _updateValue = () => checkBox.IsChecked = item.Value as bool? ?? false;
         return checkBox;
     }
 
@@ -283,7 +346,7 @@ public class PropertyCellEditor : ContentControl
             ItemsSource = item.Options,
             PlaceholderText = item.Watermark ?? PropertyGridLocalization.Get(PropertyGridLanguage.SelectPlaceholder),
         };
-        combo.Bind(ComboBox.SelectedItemProperty, new Binding(nameof(PropertyItem.Value)) { Source = item, Mode = BindingMode.OneWay });
+        _updateValue = () => combo.SelectedItem = item.Value;
         combo.SelectionChanged += (_, _) =>
         {
             if (combo.SelectedItem is string value && !Equals(item.Value, value))
@@ -312,21 +375,27 @@ public class PropertyCellEditor : ContentControl
                 IsChecked = Equals(item.Value, option),
                 VerticalContentAlignment = VAlignment.Center,
             };
-            radio.Bind(RadioButton.IsCheckedProperty, new Binding(nameof(PropertyItem.Value))
-            {
-                Source = item,
-                Mode = BindingMode.OneWay,
-                Converter = new FuncValueConverter<object?, bool>(value => Equals(value, option)),
-            });
             radio.IsCheckedChanged += (_, _) =>
             {
                 if (radio.IsChecked == true && !Equals(item.Value, option))
                 {
-                    Commit(item, option);
+                    if (!Commit(item, option))
+                    {
+                        // 单选组会在状态事件后取消旧选项，需等组内联动结束再恢复。
+                        Dispatcher.UIThread.Post(() =>
+                        {
+                            if (ReferenceEquals(Item, item)) SynchronizeValue();
+                        });
+                    }
                 }
             };
             panel.Children.Add(radio);
         }
+        _updateValue = () =>
+        {
+            foreach (var radio in panel.Children.OfType<RadioButton>())
+                radio.IsChecked = Equals(item.Value, radio.Content);
+        };
 
         return panel;
     }
@@ -365,6 +434,7 @@ public class PropertyCellEditor : ContentControl
         };
         slider.ValueChanged += (_, _) =>
         {
+            if (_synchronizing) return;
             label.Text = Math.Round(slider.Value, 0) + "%";
             if (dragging)
             {
@@ -381,8 +451,13 @@ public class PropertyCellEditor : ContentControl
 
             if (!Equals(item.Value, slider.Value))
             {
-                Commit(item, slider.Value); // non-drag changes (keyboard) commit immediately
+                Commit(item, slider.Value); // 非拖动操作（键盘调整）立即提交
             }
+        };
+        _updateValue = () =>
+        {
+            slider.Value = ToDouble(item.Value);
+            label.Text = FormatPercent(item.Value);
         };
 
         var panel = new DockPanel { LastChildFill = true };
@@ -403,6 +478,11 @@ public class PropertyCellEditor : ContentControl
             PlaceholderText = item.Watermark ?? "yyyy/MM/dd HH:mm",
         };
         var committed = box.Text;
+        _updateValue = () =>
+        {
+            committed = item.Value is DateTime value ? value.ToString("yyyy/MM/dd HH:mm", CultureInfo.InvariantCulture) : string.Empty;
+            box.Text = committed;
+        };
 
         void CommitText()
         {
@@ -421,7 +501,7 @@ public class PropertyCellEditor : ContentControl
                 }
             }
 
-            box.Text = committed; // parse failure or canceled preview: roll back
+            box.Text = committed; // 日期解析失败或预览被取消时回退
         }
 
         box.LostFocus += (_, _) => CommitText();
@@ -480,6 +560,12 @@ public class PropertyCellEditor : ContentControl
             {
                 Commit(item, value);
             }
+        };
+        _updateValue = () =>
+        {
+            picker.Color = ParseColor(item.Value as string);
+            swatch.Background = ParseBrush(item.Value as string);
+            hex.Text = item.Value as string ?? string.Empty;
         };
         swatch.PointerReleased += (_, _) => popup.IsOpen = true;
 

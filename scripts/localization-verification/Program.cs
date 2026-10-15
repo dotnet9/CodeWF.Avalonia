@@ -29,6 +29,8 @@ AppBuilder.Configure<CodeWF.Avalonia.Demo.App>().UseSkia().WithInterFont().UseRe
     ] })
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false }).SetupWithoutStarting();
 DemoBootstrapper.Initialize();
+VerifyThirdPartyLocales();
+VerifyPropertyEditors();
 VerifyWindowCapabilities();
 VerifyEditableTableColumns();
 VerifyStatusLanguageState();
@@ -408,4 +410,121 @@ static string MissingRepositoryMessage()
     try { new UpdateServiceOptions().Validate(); }
     catch (InvalidOperationException error) { return error.Message; }
     throw new InvalidOperationException("Expected a repository validation message.");
+}
+
+static void VerifyPropertyEditors()
+{
+    var items = new[]
+    {
+        new PropertyItem { Name = "Text", Kind = PropertyItemKind.Text, Value = "Before" },
+        new PropertyItem { Name = "Number", Kind = PropertyItemKind.Number, Value = 1m },
+        new PropertyItem { Name = "Boolean", Kind = PropertyItemKind.Boolean, Value = false },
+        new PropertyItem { Name = "Choice", Kind = PropertyItemKind.Choice, Options = ["Light", "Dark"], Value = "Light" },
+        new PropertyItem { Name = "Radio", Kind = PropertyItemKind.Radio, Options = ["Light", "Dark"], Value = "Light" },
+        new PropertyItem { Name = "Percent", Kind = PropertyItemKind.Percent, Value = 10d },
+        new PropertyItem { Name = "Color", Kind = PropertyItemKind.Color, Value = "#000000" },
+        new PropertyItem { Name = "ReadOnly", IsReadOnly = true, Value = "Before" },
+    };
+    var grid = new PropertyGrid { Items = items };
+    var shell = new Window { Width = 640, Height = 760, Content = grid };
+    var previews = 0;
+    var commits = 0;
+    grid.ValuePreviewing += (_, e) => { previews++; e.Cancel = true; };
+    grid.ValueCommitted += (_, _) => commits++;
+    try
+    {
+        shell.Show();
+        Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+        var editors = grid.GetVisualDescendants().OfType<PropertyCellEditor>().ToArray();
+        Control Editor(int index) => (Control)editors.Single(editor => ReferenceEquals(((PropertyLeafRow)editor.DataContext!).Item, items[index])).Content!;
+        var text = (TextBox)Editor(0);
+        var number = (NumericUpDown)Editor(1);
+        var check = (CheckBox)Editor(2);
+        var combo = (ComboBox)Editor(3);
+        var radios = ((StackPanel)Editor(4)).Children.OfType<RadioButton>().ToArray();
+        var slider = ((DockPanel)Editor(5)).Children.OfType<Slider>().Single();
+        var color = (StackPanel)Editor(6);
+        var picker = (ColorPicker)color.Children.OfType<global::Avalonia.Controls.Primitives.Popup>().Single().Child!;
+        var readOnly = (TextBlock)Editor(7);
+
+        text.Text = "Rejected";
+        text.RaiseEvent(new global::Avalonia.Input.KeyEventArgs { RoutedEvent = global::Avalonia.Input.InputElement.KeyDownEvent, Key = global::Avalonia.Input.Key.Enter });
+        number.Value = 12m;
+        check.IsChecked = true;
+        combo.SelectedItem = "Dark";
+        radios[1].IsChecked = true;
+        Dispatcher.UIThread.RunJobs();
+        slider.Value = 80d;
+        picker.Color = Colors.White;
+        Require(text.Text == "Before" && number.Value == 1m && check.IsChecked == false && Equals(combo.SelectedItem, "Light")
+            && radios[0].IsChecked == true && radios[1].IsChecked == false && slider.Value == 10d && picker.Color == Colors.Black,
+            "Canceled property edits restore every existing editor.");
+        Require(previews == 7 && commits == 0, "Each rejected edit raises one preview and no commit.");
+
+        object[] values = ["External", 23m, true, "Dark", "Dark", 70d, "#FFFFFF", "External read-only"];
+        for (var i = 0; i < items.Length; i++) items[i].Value = values[i];
+        Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+        Require(ReferenceEquals(text, Editor(0)) && text.Text == "External" && number.Value == 23m && check.IsChecked == true
+            && Equals(combo.SelectedItem, "Dark") && radios[1].IsChecked == true && slider.Value == 70d && picker.Color == Colors.White
+            && readOnly.Text == "External read-only" && Equals(ToolTip.GetTip(readOnly), "External read-only"),
+            "Programmatic values update existing property editors without replacing rows.");
+        Require(previews == 7 && commits == 0, "Model updates do not submit back to the host.");
+        shell.Content = null;
+        items[0].Value = "Reattached";
+        shell.Content = grid;
+        Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+        editors = grid.GetVisualDescendants().OfType<PropertyCellEditor>().ToArray();
+        Require(((TextBox)Editor(0)).Text == "Reattached", "Reattached editors refresh updates missed while detached.");
+        Console.WriteLine("PASS PropertyGrid: live external values, canceled edits, no duplicate commits and reattachment.");
+    }
+    finally { shell.Close(); }
+}
+static void VerifyThirdPartyLocales()
+{
+    var application = Application.Current!;
+    var editor = new TextBox { Text = "Locale verification" };
+    var shell = new Window { Width = 360, Height = 120, Content = editor };
+    try
+    {
+        shell.Show(); Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+        var menu = (MenuFlyout)editor.ContextFlyout!;
+        foreach (var culture in new[] { "en-US", "zh-CN", "ja-JP", "zh-Hant", "en-US" })
+        {
+            I18nManager.Instance.Culture = CultureInfo.GetCultureInfo(culture);
+            Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+            ResourceDictionary semi = culture switch
+            {
+                "en-US" => new Semi.Avalonia.Locale.en_us(),
+                "ja-JP" => new Semi.Avalonia.Locale.ja_jp(),
+                "zh-Hant" => new Semi.Avalonia.Locale.zh_tw(),
+                _ => new Semi.Avalonia.Locale.zh_cn(),
+            };
+            ResourceDictionary ursa = culture switch
+            {
+                "en-US" => new Ursa.Themes.Semi.Locale.en_us(),
+                "ja-JP" => new Ursa.Themes.Semi.Locale.en_us(),
+                _ => new Ursa.Themes.Semi.Locale.zh_cn(),
+            };
+            menu.ShowAt(editor); Dispatcher.UIThread.RunJobs();
+            Require(Equals(((MenuItem)menu.Items[1]!).Header, semi["STRING_MENU_COPY"])
+                && Equals(((MenuItem)menu.Items[2]!).Header, semi["STRING_MENU_PASTE"]),
+                "Existing Semi editor menu follows global culture: " + culture);
+            Require(Equals(application.Styles.OfType<Ursa.Themes.Semi.UrsaSemiTheme>().Single().Resources["STRING_MENU_DIALOG_CANCEL"],
+                ursa["STRING_MENU_DIALOG_CANCEL"]), "Existing Ursa dialog follows global culture: " + culture);
+            menu.Hide();
+        }
+        application.Resources["STRING_MENU_COPY"] = "Host copy";
+        I18nManager.Instance.Culture = CultureInfo.GetCultureInfo("zh-CN");
+        Dispatcher.UIThread.RunJobs();
+        menu.ShowAt(editor); Dispatcher.UIThread.RunJobs();
+        Require(Equals(((MenuItem)menu.Items[1]!).Header, "Host copy"), "Theme locale changes preserve host overrides.");
+        menu.Hide();
+        Console.WriteLine("PASS Semi/Ursa: existing menu, global culture and host resource precedence.");
+    }
+    finally
+    {
+        application.Resources.Remove("STRING_MENU_COPY");
+        I18nManager.Instance.Culture = CultureInfo.GetCultureInfo("zh-CN");
+        shell.Close();
+    }
 }
