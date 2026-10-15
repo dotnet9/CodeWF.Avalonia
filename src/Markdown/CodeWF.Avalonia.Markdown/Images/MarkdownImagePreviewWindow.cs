@@ -299,6 +299,11 @@ internal sealed class MarkdownImagePreviewWindow : Window
 
     private void OnCultureChanged(object? sender, EventArgs e)
     {
+        if (!global::Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
+        {
+            global::Avalonia.Threading.Dispatcher.UIThread.Post(() => OnCultureChanged(sender, e));
+            return;
+        }
         if (_usesDefaultTitle)
         {
             Title = MarkdownLocalization.GetResource(MarkdownL.ImagePreviewTitle);

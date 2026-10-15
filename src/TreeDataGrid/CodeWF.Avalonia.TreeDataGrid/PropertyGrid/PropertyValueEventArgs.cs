@@ -2,8 +2,7 @@ using Avalonia.Interactivity;
 
 namespace CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 
-/// <summary>
-/// Arguments of a property value change (raised after commit)./// </summary>
+/// <summary>属性值提交后的变更事件参数。</summary>
 public class PropertyValueChangedEventArgs : RoutedEventArgs
 {
     public PropertyValueChangedEventArgs(PropertyItem item, object? oldValue, object? newValue)
@@ -13,34 +12,31 @@ public class PropertyValueChangedEventArgs : RoutedEventArgs
         NewValue = newValue;
     }
 
-    /// <summary>The changed property item.</summary>
+    /// <summary>发生变更的属性项。</summary>
     public PropertyItem Item { get; }
 
-    /// <summary>The value before the change.</summary>
+    /// <summary>变更前的值。</summary>
     public object? OldValue { get; }
 
-    /// <summary>The value after the change.</summary>
+    /// <summary>变更后的值。</summary>
     public object? NewValue { get; }
 }
 
-/// <summary>
-/// Preview arguments before a value commit: handlers may set <see cref="Cancel"/> to reject the change (the editor rolls back)./// </summary>
+/// <summary>提交前的预览参数；处理程序可设置 <see cref="Cancel"/> 拒绝变更并回退编辑器。</summary>
 public sealed class PropertyValuePreviewEventArgs : PropertyValueChangedEventArgs
 {
     public PropertyValuePreviewEventArgs(PropertyItem item, object? oldValue, object? newValue) : base(item, oldValue, newValue)
     {
     }
 
-    /// <summary>Whether to cancel the change.</summary>
+    /// <summary>是否取消本次变更。</summary>
     public bool Cancel { get; set; }
 }
 
-/// <summary>
-/// Value change command parameter (for binding <see cref="PropertyGrid.ValueCommittedCommand"/>)./// </summary>
+/// <summary>绑定 <see cref="PropertyGrid.ValueCommittedCommand"/> 时传入的值变更参数。</summary>
 public sealed record PropertyValueChange(PropertyItem Item, object? OldValue, object? NewValue);
 
-/// <summary>
-/// Browse request arguments (raised when Path/Button editors click "…")./// </summary>
+/// <summary>路径或按钮编辑器触发浏览操作时的事件参数。</summary>
 public sealed class PropertyBrowseRequestedEventArgs : RoutedEventArgs
 {
     public PropertyBrowseRequestedEventArgs(PropertyItem item)
@@ -48,6 +44,6 @@ public sealed class PropertyBrowseRequestedEventArgs : RoutedEventArgs
         Item = item;
     }
 
-    /// <summary>The property item that raised the browse request.</summary>
+    /// <summary>发起浏览请求的属性项。</summary>
     public PropertyItem Item { get; }
 }

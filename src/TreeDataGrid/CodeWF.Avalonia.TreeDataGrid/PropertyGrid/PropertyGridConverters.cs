@@ -6,7 +6,7 @@ using Avalonia;
 
 namespace CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 
-/// <summary>RowHeight (double?) to row height: null converts to NaN (auto).</summary>
+/// <summary>将可空行高转换为布局高度，空值使用 NaN 表示自动高度。</summary>
 public sealed class NullableDoubleToHeightConverter : IValueConverter
 {
     public static readonly NullableDoubleToHeightConverter Instance = new();
@@ -18,7 +18,7 @@ public sealed class NullableDoubleToHeightConverter : IValueConverter
         => BindingOperations.DoNothing;
 }
 
-/// <summary>Depth (int) to name-cell indent Thickness.</summary>
+/// <summary>将层级转换为名称单元格的缩进。</summary>
 public sealed class DepthToThicknessConverter : IValueConverter
 {
     public static readonly DepthToThicknessConverter Instance = new();
@@ -30,7 +30,7 @@ public sealed class DepthToThicknessConverter : IValueConverter
         => BindingOperations.DoNothing;
 }
 
-/// <summary>Depth (int) to indent guide indices (0..depth-1); empty when depth is 0.</summary>
+/// <summary>将层级转换为引导线索引，顶层返回空序列。</summary>
 public sealed class DepthToGuidesConverter : IValueConverter
 {
     public static readonly DepthToGuidesConverter Instance = new();
@@ -42,7 +42,7 @@ public sealed class DepthToGuidesConverter : IValueConverter
         => BindingOperations.DoNothing;
 }
 
-/// <summary>bool to chevron glyph (true = ▾ expanded, false = ▸ collapsed).</summary>
+/// <summary>将展开状态转换为对应的展开或折叠箭头。</summary>
 public sealed class BoolToChevronConverter : IValueConverter
 {
     public static readonly BoolToChevronConverter Instance = new();
@@ -54,7 +54,7 @@ public sealed class BoolToChevronConverter : IValueConverter
         => BindingOperations.DoNothing;
 }
 
-/// <summary>null object to true (default instance); <see cref="InverseInstance"/>: null to false.</summary>
+/// <summary>默认实例在值为空时返回 true；<see cref="InverseInstance"/> 在值为空时返回 false。</summary>
 public sealed class NullToBoolConverter : IValueConverter
 {
     public static readonly NullToBoolConverter Instance = new(inverse: false);

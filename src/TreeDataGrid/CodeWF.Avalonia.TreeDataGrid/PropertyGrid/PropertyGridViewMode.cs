@@ -1,12 +1,11 @@
 namespace CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 
-/// <summary>
-/// View modes of the property panel./// </summary>
+/// <summary>属性面板的显示模式。</summary>
 public enum PropertyGridViewMode
 {
-    /// <summary>Categorized view: renders the model tree (category rows + unlimited-depth children).</summary>
+    /// <summary>分类模式：显示分组和不限层级的属性树。</summary>
     Categorized,
 
-    /// <summary>Alphabetical view: strips groups and depth; all properties sorted by name in a flat table.</summary>
+    /// <summary>字母模式：去除分组和缩进，将属性按名称排序。</summary>
     Alphabetical,
 }

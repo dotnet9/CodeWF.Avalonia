@@ -31,6 +31,7 @@ public sealed class MarkdownTableLayoutTests(AvaloniaPlatformFixture platform)
             var wideHeight = grid.DesiredSize.Height;
             Assert.True(labelWidth < grid.ColumnDefinitions[1].ActualWidth / 2);
             Assert.InRange(grid.ColumnDefinitions.Sum(column => column.ActualWidth), 1, 641);
+            Assert.InRange(container.Bounds.Width - grid.ColumnDefinitions.Sum(column => column.ActualWidth), 0, 2);
 
             window.Width = 240;
             window.UpdateLayout();

@@ -1,4 +1,4 @@
-// Static UI strings consumed through x:Static; refreshed on culture change before rows rebuild.
+// 通过 x:Static 提供界面文本，在语言切换后、重建行之前刷新。
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 
 namespace CodeWF.Avalonia.TreeDataGrid.PropertyGrid;

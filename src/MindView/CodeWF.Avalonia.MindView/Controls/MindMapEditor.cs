@@ -960,6 +960,7 @@ public partial class MindMapEditor : UserControl
         }
 
         I18nManager.Instance.CultureChanged += HandleCultureChanged;
+        I18nManager.Instance.ResourcesChanged += HandleCultureChanged;
         _isI18nSubscribed = true;
     }
 
@@ -971,11 +972,18 @@ public partial class MindMapEditor : UserControl
         }
 
         I18nManager.Instance.CultureChanged -= HandleCultureChanged;
+        I18nManager.Instance.ResourcesChanged -= HandleCultureChanged;
         _isI18nSubscribed = false;
     }
 
     private void HandleCultureChanged(object? sender, EventArgs e)
     {
+        if (!global::Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
+        {
+            global::Avalonia.Threading.Dispatcher.UIThread.Post(() => HandleCultureChanged(sender, e));
+            return;
+        }
+        if (!_isI18nSubscribed) return;
         RefreshLocalizedText();
     }
 

@@ -130,6 +130,43 @@ public sealed class PropertyGridRowsBuilderTests
         Assert.Single(Build(items).Where(static row => row.Item.Name == "退避系数"));
     }
 
+    [Theory]
+    [InlineData(PropertyGridViewMode.Categorized, null)]
+    [InlineData(PropertyGridViewMode.Categorized, "hidden")]
+    [InlineData(PropertyGridViewMode.Alphabetical, null)]
+    [InlineData(PropertyGridViewMode.Alphabetical, "hidden")]
+    public void HiddenCategory_HidesEntireSubtree(PropertyGridViewMode mode, string? search)
+    {
+        var category = Category("Hidden category", Text("Hidden child"));
+        category.VisibleWhen = () => false;
+
+        Assert.Empty(Build([category], mode, search));
+    }
+
+    [Theory]
+    [InlineData(PropertyGridViewMode.Categorized)]
+    [InlineData(PropertyGridViewMode.Alphabetical)]
+    public void Search_DoesNotKeepAncestorsForHiddenMatches(PropertyGridViewMode mode)
+    {
+        var hidden = Text("Hidden match");
+        hidden.VisibleWhen = () => false;
+        var parent = new PropertyItem { Name = "Parent", Children = [hidden] };
+
+        Assert.Empty(Build([Category("Group", parent)], mode, "hidden"));
+    }
+
+    [Fact]
+    public void Alphabetical_SearchMatchedParent_RespectsDescendantVisibilityAndSkipsCategoryRows()
+    {
+        var hidden = new PropertyItem { Name = "Hidden branch", Children = [Text("Hidden descendant")], VisibleWhen = () => false };
+        var parent = new PropertyItem { Name = "Matched parent", Children = [Text("Visible child"), hidden, Category("Nested group", Text("Nested child"))] };
+
+        var rows = Build([Category("Group", parent)], PropertyGridViewMode.Alphabetical, "matched");
+
+        Assert.Equal(new[] { "Matched parent", "Nested child", "Visible child" }, rows.Select(row => row.Item.Name));
+        Assert.DoesNotContain(rows, row => row.Item.Kind == PropertyItemKind.Category);
+    }
+
     [Fact]
     public void ModifiedDeep_FollowsDescendantChanges()
     {

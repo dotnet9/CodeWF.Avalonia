@@ -13,34 +13,33 @@ using CodeWF.Toolkit.Lang;
 
 namespace CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 
-/// <summary>
-/// Generic property panel control (modeled after the Visual Studio Properties window):/// categorized/alphabetical views, unlimited-depth property tree, search filtering,/// description pane, multiple editors, modified-bold with reset, per-row height drag, name column resize./// The data model is a <see cref="PropertyItem"/> tree provided through <see cref="Items"/>./// </summary>
+/// <summary>通用属性面板，支持分类和字母排序、不限层级的属性树、搜索、说明、多种值编辑器、修改标记和重置，以及行高与名称列宽拖动。通过 <see cref="Items"/> 接收 <see cref="PropertyItem"/> 树。</summary>
 public partial class PropertyGrid : UserControl
 {
-    /// <summary>Minimum width of the name column.</summary>
+    /// <summary>名称列的最小宽度。</summary>
     public const double MinNameColumnWidth = 90;
 
-    /// <summary>Maximum width of the name column.</summary>
+    /// <summary>名称列的最大宽度。</summary>
     public const double MaxNameColumnWidth = 340;
 
-    /// <summary>Lower/upper bounds of a single row height (px).</summary>
+    /// <summary>单行高度的上下限，单位为像素。</summary>
     public const double MinRowHeight = 20;
 
     public const double MaxRowHeight = 200;
 
-    /// <summary>Identifies the <see cref="ValueCommitted"/> routed event.</summary>
+    /// <summary><see cref="ValueCommitted"/> 路由事件的标识。</summary>
     public static readonly RoutedEvent<PropertyValueChangedEventArgs> ValueCommittedEvent =
         RoutedEvent.Register<PropertyGrid, PropertyValueChangedEventArgs>(nameof(ValueCommitted), RoutingStrategies.Bubble);
 
-    /// <summary>Identifies the <see cref="ValuePreviewing"/> routed event.</summary>
+    /// <summary><see cref="ValuePreviewing"/> 路由事件的标识。</summary>
     public static readonly RoutedEvent<PropertyValuePreviewEventArgs> ValuePreviewingEvent =
         RoutedEvent.Register<PropertyGrid, PropertyValuePreviewEventArgs>(nameof(ValuePreviewing), RoutingStrategies.Bubble);
 
-    /// <summary>Identifies the <see cref="BrowseRequested"/> routed event.</summary>
+    /// <summary><see cref="BrowseRequested"/> 路由事件的标识。</summary>
     public static readonly RoutedEvent<PropertyBrowseRequestedEventArgs> BrowseRequestedEvent =
         RoutedEvent.Register<PropertyGrid, PropertyBrowseRequestedEventArgs>(nameof(BrowseRequested), RoutingStrategies.Bubble);
 
-    /// <summary>Property item tree (root collection; groups are <see cref="PropertyItemKind.Category"/> items).</summary>
+    /// <summary>属性树的根集合，分组使用 <see cref="PropertyItemKind.Category"/> 类型。</summary>
     public static readonly StyledProperty<IEnumerable?> ItemsProperty =
         AvaloniaProperty.Register<PropertyGrid, IEnumerable?>(nameof(Items));
 
@@ -62,15 +61,15 @@ public partial class PropertyGrid : UserControl
     public static readonly StyledProperty<string?> SearchTextProperty =
         AvaloniaProperty.Register<PropertyGrid, string?>(nameof(SearchText));
 
-    /// <summary>Custom editor factory: a non-null control replaces the built-in editor.</summary>
+    /// <summary>自定义编辑器工厂，返回非空控件时替换内置编辑器。</summary>
     public static readonly StyledProperty<Func<PropertyItem, Control?>?> EditorFactoryProperty =
         AvaloniaProperty.Register<PropertyGrid, Func<PropertyItem, Control?>?>(nameof(EditorFactory));
 
-    /// <summary>Panel background brush; null uses the built-in theme resource (for host palettes).</summary>
+    /// <summary>面板背景画刷，空值使用内置主题资源。</summary>
     public static readonly StyledProperty<IBrush?> BackgroundBrushProperty =
         AvaloniaProperty.Register<PropertyGrid, IBrush?>(nameof(BackgroundBrush));
 
-    /// <summary>Optional flat resource overrides (Pg* keys); null restores the built-in theme.</summary>
+    /// <summary>可选的 Pg 资源覆盖，空值恢复内置主题。</summary>
     public static readonly StyledProperty<ResourceDictionary?> ThemeOverridesProperty =
         AvaloniaProperty.Register<PropertyGrid, ResourceDictionary?>(nameof(ThemeOverrides));
 
@@ -80,13 +79,13 @@ public partial class PropertyGrid : UserControl
     private bool _hasVisibleWhen;
     private bool _syncingViewButtons;
 
-    /// <summary>Visible rows (computed by <see cref="PropertyGridRowsBuilder"/>, rebuilt on view mode/search/expansion changes).</summary>
+    /// <summary>当前可见行，由 <see cref="PropertyGridRowsBuilder"/> 计算，在模式、搜索或展开状态变化时重建。</summary>
     public ObservableCollection<PropertyGridRow> Rows { get; } = new();
 
     public PropertyGrid()
     {
         InitializeComponent();
-        // Keep defaults as a fallback so host resources can override every editor and row.
+        // 默认资源作为回退，宿主可覆盖全部编辑器和行样式。
         var defaults = new ResourceDictionary();
         var themeDefaults = Resources.ThemeDictionaries.ToArray();
         Resources.ThemeDictionaries.Clear();
@@ -181,19 +180,19 @@ public partial class PropertyGrid : UserControl
         set => SetValue(ThemeOverridesProperty, value);
     }
 
-    /// <summary>Currently selected property (description pane data source).</summary>
+    /// <summary>当前选中的属性，也是底部说明区域的数据源。</summary>
     public PropertyItem? SelectedItem
     {
         get => _selectedItem;
         private set => SetAndRaise(SelectedItemProperty, ref _selectedItem, value);
     }
 
-    /// <summary>Read-only StyledProperty for the selected item (for styles/bindings).</summary>
+    /// <summary>选中项的只读样式属性，供样式和绑定使用。</summary>
     public static readonly DirectProperty<PropertyGrid, PropertyItem?> SelectedItemProperty =
         AvaloniaProperty.RegisterDirect<PropertyGrid, PropertyItem?>(
             nameof(SelectedItem), o => o._selectedItem);
 
-    /// <summary>Value commit command (parameter is <see cref="PropertyValueChange"/>, for MVVM).</summary>
+    /// <summary>值提交命令，参数为 <see cref="PropertyValueChange"/>，用于 MVVM 绑定。</summary>
     public static readonly StyledProperty<ICommand?> ValueCommittedCommandProperty =
         AvaloniaProperty.Register<PropertyGrid, ICommand?>(nameof(ValueCommittedCommand));
 
@@ -254,10 +253,10 @@ public partial class PropertyGrid : UserControl
         }
     }
 
-    /// <summary>Recomputes visible rows (call on view mode/search/expansion/dynamic visibility changes).</summary>
+    /// <summary>重新计算可见行，在模式、搜索、展开或动态可见性变化时调用。</summary>
     public void Refresh() => RebuildRows();
 
-    /// <summary>Expands all levels.</summary>
+    /// <summary>展开所有层级。</summary>
     public void ExpandAll()
     {
         foreach (var item in EnumerateItems())
@@ -268,7 +267,7 @@ public partial class PropertyGrid : UserControl
         RebuildRows();
     }
 
-    /// <summary>Collapses all levels.</summary>
+    /// <summary>折叠所有层级。</summary>
     public void CollapseAll()
     {
         foreach (var item in EnumerateItems())
@@ -279,7 +278,7 @@ public partial class PropertyGrid : UserControl
         RebuildRows();
     }
 
-    /// <summary>Resets all modifications (values return to defaults and summaries refresh).</summary>
+    /// <summary>重置所有修改，将值恢复为默认值并刷新汇总。</summary>
     public void ResetAll()
     {
         foreach (var item in EnumerateItems())
@@ -291,7 +290,7 @@ public partial class PropertyGrid : UserControl
         RebuildRows();
     }
 
-    /// <summary>Selects a property item (updates row highlight and the description pane).</summary>
+    /// <summary>选择属性项，同时更新行高亮和底部说明。</summary>
     public void Select(PropertyItem item)
     {
         if (ReferenceEquals(SelectedItem, item))
@@ -308,8 +307,7 @@ public partial class PropertyGrid : UserControl
         SelectedItem = item;
     }
 
-    /// <summary>
-    /// Commits a value change: raises <see cref="ValuePreviewing"/> (cancelable), writes the model, refreshes the summary chain,    /// raises <see cref="ValueCommitted"/> and the command; refreshes rows when dynamic visibility exists. Returns whether committed.    /// </summary>
+    /// <summary>提交值变更：先触发可取消的 <see cref="ValuePreviewing"/>，再写入模型、刷新汇总链并触发 <see cref="ValueCommitted"/> 和命令。存在动态可见性时刷新行，返回是否提交成功。</summary>
     public bool CommitValue(PropertyItem item, object? newValue)
     {
         var oldValue = item.Value;
@@ -345,7 +343,7 @@ public partial class PropertyGrid : UserControl
         return true;
     }
 
-    /// <summary>Raises a value preview (not persisted); returns whether it was canceled.</summary>
+    /// <summary>触发不写入模型的值预览，返回是否已取消。</summary>
     public bool PreviewValue(PropertyItem item, object? newValue)
         => RaiseValuePreviewing(item, item.Value, newValue);
 
@@ -484,11 +482,16 @@ public partial class PropertyGrid : UserControl
     }
     private void HandleCultureChanged(object? sender, EventArgs e)
     {
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            Dispatcher.UIThread.Post(() => HandleCultureChanged(sender, e));
+            return;
+        }
         ApplyChromeStrings();
         RebuildRows();
     }
 
-    /* ---------------- Toolbar events ---------------- */
+    /* ---------------- 工具栏事件 ---------------- */
     private void OnCategorizedClick(object? sender, RoutedEventArgs e)
     {
         if (!_syncingViewButtons)
@@ -530,7 +533,7 @@ public partial class PropertyGrid : UserControl
 
     private void OnResetAllClick(object? sender, RoutedEventArgs e) => ResetAll();
 
-    /* ---------------- Row events ---------------- */
+    /* ---------------- 属性行事件 ---------------- */
     private void OnRowPressed(object? sender, PointerPressedEventArgs e)
     {
         if (sender is Grid { DataContext: PropertyLeafRow row } && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)

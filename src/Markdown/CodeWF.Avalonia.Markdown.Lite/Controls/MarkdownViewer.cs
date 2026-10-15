@@ -740,6 +740,11 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
     private void OnCultureChanged(object? sender, EventArgs e)
     {
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            Dispatcher.UIThread.Post(() => OnCultureChanged(sender, e));
+            return;
+        }
         ContextMenu = CreateViewerContextMenu();
         QueueRenderDocument(MarkdownRenderMode.Full);
     }

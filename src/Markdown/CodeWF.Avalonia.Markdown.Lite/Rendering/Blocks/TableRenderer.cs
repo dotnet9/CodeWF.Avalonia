@@ -51,6 +51,7 @@ internal sealed class TableRenderer : IMarkdownBlockRenderer
         var container = new Border
         {
             Child = grid,
+            HorizontalAlignment = HorizontalAlignment.Left,
             ClipToBounds = true
         };
         context.AddMarkdownClass(container, MarkdownStyleKeys.TableContainer);
