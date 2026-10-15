@@ -202,7 +202,7 @@ dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0
 dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0 -- --smoke
 ```
 
-安装包由 [GitHub Releases](https://github.com/dotnet9/CodeWF.Avalonia/releases) 提供（随 `v*` tag 构建）：Windows `setup.exe` / 便携 `zip`、Linux `deb`、macOS `dmg`，均附 `.sha256` 校验文件。
+安装包由 [GitHub Releases](https://github.com/dotnet9/CodeWF.Avalonia/releases) 提供（随 `v*` tag 构建）：Windows x64 `setup.exe`、Linux x64 / ARM64 `deb`、macOS x64 / ARM64 `dmg`，均附 `.sha256`，不分发便携压缩包。
 
 ## CI/CD 与版本策略 / CI and versioning
 

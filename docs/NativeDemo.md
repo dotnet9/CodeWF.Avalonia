@@ -1,4 +1,4 @@
-﻿# CodeWF.Avalonia 原生 Demo
+# CodeWF.Avalonia 原生 Demo
 
 12.1.4.19 将宿主与所有库统一到 `CodeWF.Toolkit.Lang.I18nManager.Instance`。应用 JSON 输出到 I18n，库 JSON 内嵌，强类型键由 T4 生成；不再保留第二套管理器或事件桥接。
 
@@ -13,7 +13,7 @@ Demo 使用 Ribbon + Dock，以单个控件或公开 API 为导航单位。8 个
 - 首屏展示真实控件、输入和结果，源码按需展开。介绍页提供全局设置；其他页面仅显示自身参数，无参数时保持空面板。
 - 属性面板使用 Semi 分类和排序图标；搜索独占下一行。文本、数值和下拉编辑器铺满单元格、默认无边框，下拉内容左对齐；复选和单选保持常规外观。
 - 表格具有横竖分隔线，Demo 默认行高 31px、名称列宽 118px；可拖动名称和值之间的分隔条调整列宽，可拖动行底边调整行高。
-- Ribbon 组仅显示标题；命令图标使用 Semi 矢量资源，统一 32×32。快捷图标为 16×16，按钮热区 30×30。密集组双行排列，长 API 名不换行，窄窗口横向滚动。
+- Ribbon 组仅显示标题；命令图标使用 Semi 矢量资源，统一 32×32。快捷图标为 18×18，按钮热区 30×30。密集组双行排列，长 API 名不换行，窄窗口横向滚动。
 
 ## 主题与国际化
 
@@ -82,3 +82,14 @@ Windows x64 NativeAOT 冒烟与截图均退出 0，32 个页面 × 16 配色组�
 - 中文字形显式回退到微软雅黑、苹方或 Noto CJK，修正字号相同但中文显示成宋体的偏差。
 
 本轮后台门禁：原型全部路由 × 中英 × 两种宽度通过。原生验证分别记录构建、NativeAOT 冒烟、窗口参数传递和离屏渲染结果；锁屏期间不执行人工桌面操作，多 DPI 与跨屏检查仍待补充。
+
+
+## 单文件原型与安装包
+
+`design/` 中的主 HTML 内嵌 CSS、脚本和图形资源，复制单文件即可离线交互。维护源码位于 `scripts/prototype/`；通过 `scripts/build_standalone_prototype.ps1` 生成，`-Check` 防止交付文件过期。浏览器审计把 HTML 复制到空目录，禁止其他文件和网络资源请求。
+
+正式发布提供 Windows x64 EXE、Linux x64/ARM64 DEB、macOS x64/ARM64 DMG 和各自的 SHA-256，不发布便携 ZIP。Windows 本机可执行 `scripts/package_windows_installer.ps1`；合并五平台产物后执行 `scripts/verify_release_installers.ps1 -Version <版本>`。macOS 的宿主 JSON 放在 `Contents/Resources/I18n`，启动时自动探测；库 JSON 仍内嵌程序集。
+
+离屏渲染使用真实 Skia、控件模板和页面代码，可在锁屏期间运行；它不能代替多 DPI、输入法、真实拖出窗口或安装器交互验收。路由覆盖与构建通过不代表全界面已达到 95% 视觉还原。
+
+本次 12.1.4.20 验证：正式 Windows x64 NativeAOT 发布通过，同一已挂载控件动态切色/切语、宿主覆盖及 32 页 × 2 语言 × 16 配色共 1024 次 NativeAOT 离屏渲染通过；库测试 Content 267 项、Controls 89 项通过。已编译 Windows EXE 安装器并生成 SHA-256，尚未执行安装器交互。

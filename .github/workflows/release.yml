@@ -1,8 +1,8 @@
-name: release
+﻿name: release
 
-# 推送 v* 标签发布 CodeWF.Avalonia 演示应用全平台包（6 个 RID）：
+# 推送 v* 标签发布 CodeWF.Avalonia 演示应用五平台安装包：
 # 全平台 NativeAOT（完整反射元数据保全 Prism/DryIoc）；
-# win 出 Inno Setup 安装向导（x64）与便携 zip，linux 出 deb，macOS 出 dmg，均附 sha256。
+# Windows 出 Inno Setup 安装器，Linux 出 deb，macOS 出 dmg，均附 sha256。
 on:
   push:
     tags:
@@ -30,14 +30,12 @@ jobs:
         include:
           - rid: win-x64
             os: windows-latest
-          - rid: win-x86
-            os: windows-latest
           - rid: linux-x64
             os: ubuntu-latest
           - rid: linux-arm64
             os: ubuntu-24.04-arm
           - rid: osx-x64
-            os: macos-14
+            os: macos-15-intel
           - rid: osx-arm64
             # Intel 运行器提供 14 GB 内存，为完整元数据的 ARM64 交叉编译增加余量。
             os: macos-15-intel
@@ -52,7 +50,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-          dotnet-quality: preview
 
       - name: 计算版本号
         id: version
@@ -83,10 +80,6 @@ jobs:
         shell: bash
         run: lipo artifacts/publish/osx-arm64/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo -verify_arch arm64
 
-      - name: 打包便携 zip + sha256
-        shell: pwsh
-        run: pwsh scripts/package_demo_artifacts.ps1 -RuntimeIdentifier '${{ matrix.rid }}' -Version $env:APP_VERSION -Force
-
       - name: 打包 Linux deb + sha256
         if: startsWith(matrix.rid, 'linux-')
         shell: pwsh
@@ -108,7 +101,6 @@ jobs:
           Copy-Item -Path "artifacts/macos/*.dmg.sha256" -Destination artifacts/release/ -Force
           Get-ChildItem artifacts/release | ForEach-Object { Write-Host $_.Name }
 
-      # win-x86 没有对应安装向导（Inno 脚本按 x64 编译），只发便携 zip；x64 额外出一个 setup.exe
       - name: 构建 Windows 安装包
         if: matrix.rid == 'win-x64'
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
@@ -170,6 +162,10 @@ jobs:
           "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           "tag_name=$tagName" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
+      - name: 校验五平台安装包与 SHA-256
+        shell: pwsh
+        run: ./scripts/verify_release_installers.ps1 -Version '${{ steps.version.outputs.version }}'
+
       - name: 准备发布说明
         shell: pwsh
         env:
@@ -219,7 +215,6 @@ jobs:
           body_path: artifacts/release-body.md
           generate_release_notes: true
           files: |
-            artifacts/release/*.zip
             artifacts/release/*.deb
             artifacts/release/*.dmg
             artifacts/release/*.exe

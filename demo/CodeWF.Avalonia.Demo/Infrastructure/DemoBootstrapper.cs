@@ -18,8 +18,12 @@ public static class DemoBootstrapper
     /// <summary>默认语言。</summary>
     public const string DefaultCultureName = "zh-CN";
 
-    /// <summary>语言资源目录（Json 后端按目录递归扫描，含 Markdown 包拷贝的 I18n\CodeWF.Markdown）。</summary>
-    public static string I18nFolder { get; } = Path.Combine(AppContext.BaseDirectory, "I18n");
+    /// <summary>宿主输出语言资源目录，同时支持 macOS 应用包的 Resources/I18n 布局。</summary>
+    public static string I18nFolder { get; } = new[]
+    {
+        Path.Combine(AppContext.BaseDirectory, "I18n"),
+        Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "Resources", "I18n")),
+    }.FirstOrDefault(Directory.Exists) ?? Path.Combine(AppContext.BaseDirectory, "I18n");
 
     /// <summary>日志目录。</summary>
     public static string LogFolder { get; } = Path.Combine(Path.GetTempPath(), "CodeWFAvaloniaDemo", "logs");

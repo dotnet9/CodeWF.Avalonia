@@ -1,7 +1,7 @@
 ﻿[CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet("win-x64", "win-x86", "linux-x64", "linux-arm64", "osx-x64", "osx-arm64")]
+    [ValidateSet("win-x64", "linux-x64", "linux-arm64", "osx-x64", "osx-arm64")]
     [string] $RuntimeIdentifier,
 
     [string] $Version = ""
@@ -25,6 +25,11 @@ if ([string]::IsNullOrWhiteSpace($Version)) {
 # 保证 CI 各处路径一致）；Profile 仍负责 TFM、SelfContained 与 AOT 设定。
 # 全平台 NativeAOT：完整反射元数据保全 Prism/DryIoc，单线程 ILC 更稳。
 $outputPath = Join-Path $repositoryRoot "artifacts/publish/$RuntimeIdentifier/CodeWF.Avalonia.Demo"
+$outputPath = [IO.Path]::GetFullPath($outputPath)
+$allowedOutputRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts/publish')) + [IO.Path]::DirectorySeparatorChar
+if (-not $outputPath.StartsWith($allowedOutputRoot, [StringComparison]::OrdinalIgnoreCase)) {
+    throw "发布输出目录超出仓库产物范围：$outputPath"
+}
 if (Test-Path -LiteralPath $outputPath) {
     Remove-Item -LiteralPath $outputPath -Recurse -Force
 }
