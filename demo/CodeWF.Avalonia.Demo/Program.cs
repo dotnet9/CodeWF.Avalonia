@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Media;
 using ReactiveUI.Avalonia;
 
@@ -14,6 +14,11 @@ internal static class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        if (args.Length == 2 && args[0] == "--verify-runtime")
+        {
+            RuntimeVerification.Run(args[1]);
+            return;
+        }
         IsSmokeMode = args.Any(a => string.Equals(a, "--smoke", StringComparison.OrdinalIgnoreCase));
         CaptureDirectory = args.SkipWhile(a => a != "--capture").Skip(1).FirstOrDefault();
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
