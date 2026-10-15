@@ -143,6 +143,10 @@ const properties = require('./audit-properties.cjs');
         }
         assert.deepEqual(await page.evaluate(() => window.auditGuardErrors), [], 'Caught prototype exceptions');
         assert.doesNotMatch(await page.locator('#logP').innerText(), /JS 异常\[/, 'Startup guard exception');
+        // 重新加载未编辑状态，单独验证默认文案随切语更新。
+        await page.reload();
+        await page.waitForFunction(() => window.CodeWFDemoCatalog && typeof openDoc === 'function' && document.querySelector('#dBody[data-page]'));
+        await properties.verifyLiveDefaults(page);
         await standalone.verify(page);
         assert.deepEqual(errors, [], 'Browser errors');
       } catch (error) {

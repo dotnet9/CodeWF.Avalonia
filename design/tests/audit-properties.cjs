@@ -25,6 +25,38 @@ exports.verifyContract = async function (page, route) {
     assert.equal(await control.locator('xpath=ancestor::div[contains(@class,"rw")]').locator(':scope > label').innerText(),item.label);
     if(item.readonly)assert.equal(await control.getAttribute('readonly'),'');
   }
+  if(route==='status-badge'){
+    assert.equal(await page.locator('#seg-status-badge .demo').count(),0,'Status page has no invented card wrappers');
+    const heights=await page.locator('#seg-status-badge .catalog-status.badge').evaluateAll(items=>items.map(el=>el.getBoundingClientRect().height));
+    assert.ok(heights.every(height=>Math.abs(height-24)<0.1),'StatusBadge uses the actual 24px default height');
+    assert.ok(await page.locator('#seg-status-badge .catalog-status.badge').evaluateAll(items=>items.every(el=>getComputedStyle(el).borderTopStyle==='solid')),'StatusBadge keeps its control border');
+  }
+  if(route==='titlebar'){
+    assert.equal(await page.locator('.catalog-titlebar-preview').evaluate(el=>el.getBoundingClientRect().height),44,'CodeWFTitleBar preview height');
+    assert.equal(await page.locator('.catalog-titlebar-preview>span').count(),1,'Title preview contains only its actual .NET right content');
+  }
+  if(route==='diagonal-line'){
+    const size=await page.locator('.catalog-line').evaluate(el=>[el.getBoundingClientRect().width,el.getBoundingClientRect().height]);
+    assert.ok(Math.abs(size[0]-280)<0.1&&Math.abs(size[1]-180)<0.1,'Actual line dimensions');
+    const centered=await page.locator('.catalog-line').evaluate(el=>{const r=el.getBoundingClientRect(),p=el.parentElement.getBoundingClientRect();return Math.abs((r.left-p.left)-(p.right-r.right))<1;});
+    assert.ok(centered,'Fixed-width line is centered inside its stretched card');
+  }
+  if(route==='wsp'){
+    assert.equal(await page.locator('.catalog-wsp .blk').count(),0,'WindowedStackPanel starts empty');
+    assert.equal(await page.locator('.catalog-wsp').evaluate(el=>getComputedStyle(el).height==='300px'),false,'Viewport follows document height');
+  }
+};
+exports.verifyLiveDefaults=async function(page){
+  await page.evaluate(()=>{setLang('zh-CN');openDoc('status-badge');});
+  const editor=page.locator('#pGrid [data-id="st.badgeText"]');
+  const chinese=await editor.inputValue();
+  await page.evaluate(()=>setLang('en-US'));
+  const english=await editor.inputValue();
+  assert.notEqual(english,chinese,'An unedited default follows the new language');
+  assert.equal(english,await page.evaluate(()=>window.CodeWFPrototypeResources['en-US'].Content.StatusComponents.View.ChangeTheStatusAndIconWidthInThe));
+  await editor.fill('User status label');await editor.press('Tab');
+  await page.evaluate(()=>setLang('zh-CN'));
+  assert.equal(await editor.inputValue(),'User status label','Language switching preserves edited content');
 };
 exports.verifyEffects = async function (page,culture) {
   async function open(route){await page.evaluate(id=>openDoc(id),route);}
@@ -80,9 +112,11 @@ exports.verifyEffects = async function (page,culture) {
   assert.ok(await page.locator('.catalog-log [data-level="Error"]').count()>0);
   assert.equal(await page.locator('.catalog-log [data-level="Information"]').count(),0);
   await choose('log.min',0);await edit('log.max',100);assert.equal(await page.locator('.catalog-log>div').count(),100);
-  await open('wsp');assert.ok(await page.locator('.catalog-wsp .blk').count()<5000);
+  await open('wsp');assert.equal(await page.locator('.catalog-wsp .blk').count(),0);
+  await page.locator('#seg-wsp [data-generate]').click();assert.ok(await page.locator('.catalog-wsp .blk').count()<5000);
+  assert.equal(await page.locator('.catalog-wsp .blk').first().evaluate(el=>el.getBoundingClientRect().height),44,'Realized block height');
   await toggle('wsp.virtual');assert.equal(await page.locator('.catalog-wsp .blk').count(),5000);
-  await toggle('wsp.virtual');await edit('wsp.spacing',20);assert.equal(await page.locator('.catalog-wsp .blk').nth(1).evaluate(el=>el.offsetTop),60);
+  await toggle('wsp.virtual');await edit('wsp.spacing',20);assert.equal(await page.locator('.catalog-wsp .blk').nth(1).evaluate(el=>el.offsetTop),64);
   await page.locator('#seg-wsp [data-clear]').click();assert.equal(await page.locator('.catalog-wsp .blk').count(),0);
   await page.locator('#seg-wsp [data-generate]').click();assert.ok(await page.locator('.catalog-wsp .blk').count()>0);
   await open('md-viewer');await edit('md.threshold',1);assert.equal(await page.locator('#seg-md-viewer .catalog-markdown-basic').getAttribute('data-virtualizing'),'true');

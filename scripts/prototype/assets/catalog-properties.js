@@ -41,6 +41,15 @@
 
   // 五档状态的名称和参数选项均复用原生语言资源。
   var levels = ['Debug','Info','Warn','Error','Fatal'], levelKeys = ['Debug','Information','Warning','Error','Critical'];
+  function badgeTextProperty(id) {
+    var edited = false, custom = '';
+    var item = prop('st.badgeText', null, 'RightText', 'text', '', { apply:function (text) {
+      each(id,function(el){el.querySelector('.catalog-driven span').textContent=text;});
+    } });
+    // 未编辑的默认文案随语言读取；用户输入是内容，不在切语时覆盖。
+    Object.defineProperty(item,'value',{get:function(){return edited?custom:view('StatusComponents','ChangeTheStatusAndIconWidthInThe');},set:function(value){edited=true;custom=value;}});
+    return item;
+  }
   function statusProps(id, badge) {
     var kind = choice('st.kind', 'StatusComponents', 'CardStatus', levelKeys, 'Information', function (selected) {
       each(id, function (el) { el.querySelectorAll('.catalog-driven').forEach(function (card) {
@@ -50,7 +59,7 @@
     }, true);
     if (badge) Object.defineProperty(kind, 'label', { get:function () { return 'Classes / LeftText'; } });
     return [kind, badge
-      ? prop('st.badgeText', null, 'RightText', 'text', view('StatusComponents','ChangeTheStatusAndIconWidthInThe'), { apply:function (text) { each(id, function (el) { el.querySelector('.catalog-driven span').textContent = text; }); } })
+      ? badgeTextProperty(id)
       : number('st.iconWidth','StatusComponents','IconWidth',32,16,64,function (width) { each(id,function (el) { el.querySelectorAll('.catalog-driven.card').forEach(function(card){card.style.setProperty('--status-icon-width',width+'px');}); }); })];
   }
   function statusRender(id, badge) {
@@ -62,16 +71,17 @@
         return '<div class="catalog-status '+(badge?'badge':'card')+(driven?' catalog-driven':'')+'" data-level="'+level+'">'+(!badge?'<span class="catalog-status-icon" aria-hidden="true"></span>':'')+item+'</div>';
       }
       var selected = levels[levelKeys.indexOf(PROTO[id].props[0].selected)];
-      el.innerHTML='<div class="demo"><div class="row catalog-status-row">'+levels.map(function(level,index){return card(level,index,false);}).join('')+'</div></div><div class="demo"><h4>'+esc(view('StatusComponents','DrivenByPropertyPanel'))+'</h4>'+card(selected,0,true)+'</div>';
+      el.innerHTML='<div class="catalog-status-page"><h4>'+(badge?'StatusBadge':'StatusCard')+'</h4><div class="catalog-status-row">'+levels.map(function(level,index){return card(level,index,false);}).join('')+'</div><h4>'+esc(view('StatusComponents','DrivenByPropertyPanel'))+'</h4>'+card(selected,0,true)+'</div>';
       if(!badge)el.querySelector('.catalog-driven').style.setProperty('--status-icon-width',value(id,'st.iconWidth')+'px');
     };
   }
   ['status-badge','status-card'].forEach(function (id) { PROTO[id].props=statusProps(id,id==='status-badge');replace(id,statusRender(id,id==='status-badge')); });
 
   PROTO.titlebar.props=[prop('Title',null,'Title','text','CodeWFTitleBar',{ apply:function (title) { each('titlebar',function(el){el.querySelector('.catalog-titlebar strong').textContent=title;}); } })];
-  replace('titlebar',function(el){el.innerHTML='<div class="demo"><div class="catalog-titlebar"><span>CodeWF</span><strong>'+esc(value('titlebar','Title'))+'</strong><span>.NET</span></div></div>';});
+  function apiCard(content) {return '<div class="demo catalog-api-card"><h4>'+esc(resource('Segment.Demo'))+'</h4>'+content+'</div>';}
+  replace('titlebar',function(el){el.innerHTML=apiCard('<div class="catalog-titlebar catalog-titlebar-preview"><strong>'+esc(value('titlebar','Title'))+'</strong><span>.NET</span></div>');});
   PROTO['diagonal-line'].props=[number('Thickness',null,'BorderThickness',3,1,12,function(thickness){each('diagonal-line',function(el){el.querySelector('line').setAttribute('stroke-width',thickness);});})];
-  replace('diagonal-line',function(el){el.innerHTML='<div class="demo"><svg class="catalog-line" viewBox="0 0 280 180"><line x1="0" y1="0" x2="280" y2="180" stroke="currentColor" stroke-width="'+value('diagonal-line','Thickness')+'" /></svg></div>';});
+  replace('diagonal-line',function(el){el.innerHTML=apiCard('<svg class="catalog-line" viewBox="0 0 280 180"><line x1="0" y1="0" x2="280" y2="180" stroke="currentColor" stroke-width="'+value('diagonal-line','Thickness')+'" /></svg>');});
   PROTO.notifications.props=[prop('Message',null,'Message','text',text('Notification'))];
   replace('notifications',function(el){el.innerHTML='<div class="demo"><button class="btn pri">'+esc(text('Notifications'))+'</button></div>';el.querySelector('button').onclick=function(){notify('warn','LogNotifications',value('notifications','Message'));};});
   PROTO.treegrid.props=[prop('SingleSelect',null,'SingleSelect','bool',false,{apply:function(){each('treegrid',function(el){el.dispatchEvent(new Event('selection-mode-change'));});}})];
@@ -134,7 +144,20 @@
 
   function wspEffect(){each('wsp',function(el){el.dispatchEvent(new Event('virtualization-change'));});}
   PROTO.wsp.props=[prop('wsp.virtual','WindowedStackPanel','Virtualization','bool',true,{apply:wspEffect}),number('wsp.threshold','WindowedStackPanel','VirtualizationThreshold',40,1,5000,wspEffect),number('wsp.overscan','WindowedStackPanel','Overscan',2,0,10,wspEffect),number('wsp.spacing','WindowedStackPanel','BlockSpacing',8,0,32,wspEffect)];
-  replace('wsp',function(el){var count=5000;el.innerHTML='<div class="demo"><div class="row"><button class="btn pri" data-generate>'+esc(view('WindowedStackPanel','Generate5000Blocks'))+'</button><button class="btn" data-clear>'+esc(view('WindowedStackPanel','Clear'))+'</button></div><p class="catalog-wsp-metrics"></p><div class="wsp catalog-wsp"><div class="catalog-wsp-content"></div></div></div>';var box=el.querySelector('.catalog-wsp'),content=el.querySelector('.catalog-wsp-content');function paint(){var height=40+Number(value('wsp','wsp.spacing')),virtual=value('wsp','wsp.virtual')&&count>=value('wsp','wsp.threshold'),overscan=Number(value('wsp','wsp.overscan')),viewport=box.clientHeight,first=virtual?Math.max(0,Math.floor(box.scrollTop/height)-Math.ceil(viewport/height)*overscan):0,last=virtual?Math.min(count,Math.ceil((box.scrollTop+viewport)/height)+Math.ceil(viewport/height)*overscan):count;content.style.height=count*height+'px';content.innerHTML=Array.from({length:last-first},function(_,index){var n=first+index;return '<div class="blk" data-block="'+n+'" style="top:'+(n*height)+'px;height:40px"><span>#'+(n+1)+'</span><span>CodeWF</span></div>';}).join('');el.querySelector('.catalog-wsp-metrics').textContent='ItemCount '+count+' · IsVirtualizing '+virtual+' · RealizedItemCount '+(last-first);box.dataset.virtualizing=String(virtual);}box.onscroll=paint;el.addEventListener('virtualization-change',paint);el.querySelector('[data-generate]').onclick=function(){count=5000;paint();};el.querySelector('[data-clear]').onclick=function(){count=0;box.scrollTop=0;paint();};paint();});
+  replace('wsp',function(el){
+    var count=0;
+    el.innerHTML='<div class="catalog-wsp-page"><div class="catalog-wsp-toolbar"><button class="btn" data-generate>'+esc(view('WindowedStackPanel','Generate5000Blocks'))+'</button><button class="btn" data-clear>'+esc(view('WindowedStackPanel','Clear'))+'</button><span>'+esc(view('WindowedStackPanel','WindowedStackPanelRealizesBlocksNearTheViewportWithOverscan'))+'</span></div><div class="wsp catalog-wsp"><div class="catalog-wsp-content"></div></div><div class="catalog-wsp-metrics"></div></div>';
+    var box=el.querySelector('.catalog-wsp'),content=el.querySelector('.catalog-wsp-content');
+    function format(key,args){return resource('Content.WindowedStackPanel.'+key).replace(/\{(\d+)\}/g,function(_,index){return args[Number(index)];});}
+    function paint(){
+      var height=44+Number(value('wsp','wsp.spacing')),virtual=value('wsp','wsp.virtual')&&count>=value('wsp','wsp.threshold'),overscan=Number(value('wsp','wsp.overscan')),viewport=box.clientHeight;
+      var first=virtual?Math.max(0,Math.floor(box.scrollTop/height)-Math.ceil(viewport/height)*overscan):0,last=virtual?Math.min(count,Math.ceil((box.scrollTop+viewport)/height)+Math.ceil(viewport/height)*overscan):count;
+      content.style.height=count*height+'px';content.innerHTML=Array.from({length:last-first},function(_,index){var n=first+index;return '<div class="blk" data-block="'+n+'" style="top:'+(n*height)+'px;height:44px">'+esc(format('OnGenerate.BlockFormat',[n+1,count]))+'</div>';}).join('');
+      el.querySelector('.catalog-wsp-metrics').textContent=format('UpdateMetrics.BlocksRealizedVirtualizingFormat',[count,last-first,resource('Content.WindowedStackPanel.UpdateMetrics.'+(virtual?'Yes':'No'))]);box.dataset.virtualizing=String(virtual);
+    }
+    box.onscroll=paint;el.addEventListener('virtualization-change',paint);el.querySelector('[data-generate]').onclick=function(){count=5000;paint();};el.querySelector('[data-clear]').onclick=function(){count=0;box.scrollTop=0;paint();};
+    var observer=new ResizeObserver(function(){if(!box.isConnected){observer.disconnect();return;}paint();});observer.observe(box);paint();
+  });
 
   // Markdown 复用已有的源文、排版度量和渲染器，增加真实参数联动。
   function typography(id){each(id,function(el){var page=el.querySelector('.catalog-markdown-basic,.catalog-live,.catalog-export-preview');if(!page)return;var theme=PROTO[id].props.find(function(p){return p.id==='typography-theme';}),size=PROTO[id].props.find(function(p){return p.id==='typography-size';}),tokens=window.CodeWFMarkdownTypography,metrics=Object.assign({},tokens.Common,tokens[theme?.value||'Basic'],size?.value==='Small'?tokens.CompactTypographyResources:{});page.dataset.typographyTheme=theme?.value||'Basic';page.style.fontSize=metrics.CodeWFMarkdownParagraphFontSize+'px';page.style.lineHeight=metrics.CodeWFMarkdownParagraphLineHeight+'px';page.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach(function(heading){heading.style.fontSize=metrics['CodeWFMarkdownHeading'+heading.tagName.slice(1)+'FontSize']+'px';});page.querySelectorAll('pre').forEach(function(code){code.style.fontSize=metrics.CodeWFMarkdownCodeBlockFontSize+'px';});});}

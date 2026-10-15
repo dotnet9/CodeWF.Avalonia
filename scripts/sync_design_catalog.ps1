@@ -26,7 +26,7 @@ foreach ($culture in @('zh-CN','en-US')) {
     $resources = (Get-Content -LiteralPath $path -Raw -Encoding utf8 | ConvertFrom-Json -AsHashtable).Demo
     $translations[$culture] = $resources.Catalog
     $descriptions[$culture] = $resources.Api
-    $pageResources[$culture] = [ordered]@{ Content = $resources.Content; Scene = $resources.Scene }
+    $pageResources[$culture] = [ordered]@{ Content = $resources.Content; Scene = $resources.Scene; Segment = $resources.Segment }
     $settings[$culture] = [ordered]@{
         shell = $resources.Shell
         palettes = $resources.Palette

@@ -66,6 +66,21 @@ body.hideR .document-workspace{grid-template-columns:minmax(0,1fr) 0 0}
 .catalog-status.card{position:relative;padding-left:calc(var(--status-icon-width,32px) + 16px)}
 .catalog-status-icon{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:var(--status-icon-width,32px);height:var(--status-icon-width,32px);color:var(--status-color)}
 .catalog-status.catalog-driven.card{width:100%;min-height:80px}.catalog-status.catalog-driven.badge{display:inline-flex;width:auto;max-width:100%}
+/* 状态页复用真实控件默认尺寸，不额外包装大卡片。 */
+.dbody:not([data-page="welcome"])>#seg-status-badge,.dbody:not([data-page="welcome"])>#seg-status-card{padding:10px 12px}
+.catalog-status-page{display:flex;flex-direction:column;gap:12px;max-width:900px;margin:0 auto}
+.catalog-status-page>h4{font-size:13px;line-height:18px;font-weight:700;color:var(--tx);margin:0}
+.catalog-status-row{display:flex;gap:0 8px}.catalog-status-row>.catalog-status{margin-bottom:8px}
+.catalog-status.badge{display:inline-flex;align-self:flex-start;box-sizing:border-box;height:24px;gap:0;padding:0;border:1px solid var(--status-color);border-radius:6px;font-size:13px;line-height:20px}
+.catalog-status.badge strong{padding:1px 8px;font-weight:400}.catalog-status.badge span{padding:1px 4px}
+.catalog-status-page>.catalog-driven{margin-top:0}
+/* 独立 API 页沿用 StudioUi.Card 的 18px 内边距和 12px 圆角。 */
+.catalog-api-card{padding:18px;border-radius:12px;display:flex;flex-direction:column;gap:8px}
+.catalog-api-card>h4{font-size:12.5px;line-height:18px;color:var(--tx);font-weight:600;margin:0}
+.catalog-titlebar-preview{height:44px;box-sizing:border-box;margin:0;padding:0;background:transparent;border-radius:0;align-items:center}
+.catalog-titlebar-preview strong{font-size:13px;font-weight:400;margin-left:12px}
+.catalog-titlebar-preview>span{font-size:11px}
+.catalog-api-card>.catalog-line{margin:0 auto}
 .catalog-data-grid tbody tr{height:var(--demo-row-height,32px)}.catalog-data-grid td{padding:0 9px}
 .catalog-property-demo{width:100%;border-collapse:collapse;table-layout:fixed}.catalog-property-demo th,.catalog-property-demo td{border:1px solid var(--bd);height:32px;text-align:left;padding:0}
 .catalog-property-demo th{width:var(--demo-name-width,148px);padding:0 8px;font-weight:400}.catalog-property-demo input:not([type=checkbox]){width:100%;height:100%;min-width:0;box-sizing:border-box;background:transparent;border:0;outline:0;padding:0 8px;color:var(--tx)}
@@ -75,6 +90,14 @@ body.hideR .document-workspace{grid-template-columns:minmax(0,1fr) 0 0}
 .catalog-log{min-height:160px;max-height:260px;overflow:auto;padding:8px;background:var(--bg2);font:12px/1.8 Consolas,monospace}.catalog-log [data-level=Warning]{color:var(--warn)}.catalog-log [data-level=Error]{color:var(--err)}
 .catalog-wsp{height:300px;overflow:auto;position:relative}.catalog-wsp-content{position:relative}.catalog-wsp .blk{position:absolute;left:0;right:0;box-sizing:border-box;margin:0;display:flex;align-items:center;justify-content:space-between}
 .catalog-wsp-metrics{font:11px/1.7 Consolas,monospace;margin:8px 0;color:var(--tx2)}
+.dbody[data-page="wsp"]{display:flex;flex-direction:column}.dbody[data-page="wsp"]>.catalog-header{flex:none}
+.dbody:not([data-page="welcome"])>#seg-wsp{padding:10px 12px;flex:1;min-height:0}
+.catalog-wsp-page{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:8px;height:100%;min-height:0}
+.catalog-wsp-toolbar{display:flex;gap:8px;align-items:center;padding:10px;border:1px solid var(--bd);border-radius:6px}
+.catalog-wsp-toolbar>span{font-size:12px;line-height:18px;color:var(--tx2)}
+.catalog-wsp-page>.catalog-wsp{height:auto;min-height:0;border:1px solid var(--bd);border-radius:6px;padding:8px}
+.catalog-wsp-content>.blk{padding:0 12px;border:0;border-radius:6px;background:#80809018;font-size:13px}
+.catalog-wsp-page>.catalog-wsp-metrics{margin:0;padding:6px 8px;border:1px solid var(--bd);border-radius:6px;font:11px/16px "Segoe UI","Microsoft YaHei UI",sans-serif}
 .catalog-editor-shell{display:flex;min-width:0}.catalog-editor-lines{width:36px;flex:none;padding:10px 6px;margin:0;box-sizing:border-box;overflow:hidden;color:var(--tx3);background:var(--bg2);line-height:normal;text-align:right;max-height:300px}
 .catalog-editor-shell #edTa{flex:1;min-width:0;resize:vertical;box-sizing:border-box;margin:0;line-height:normal}.catalog-live textarea{font-size:var(--live-editor-font,15px)}
 .catalog-scene-steps{flex-wrap:wrap}.catalog-scene-body{min-width:0}

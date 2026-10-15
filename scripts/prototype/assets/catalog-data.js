@@ -1864,6 +1864,11 @@ window.CodeWFPrototypeResources = {
       "Summary.Markdown": "5 步写作流程 · 每一步复用下方组件页",
       "Summary.Data": "4 步表数据流程 · 与属性面板联动",
       "Summary.Docs": "4 步多文档流程 · 面板与页签协同"
+    },
+    "Segment": {
+      "Demo": "演示",
+      "Xaml": "XAML",
+      "CSharp": "C#"
     }
   },
   "en-US": {
@@ -2771,6 +2776,11 @@ window.CodeWFPrototypeResources = {
       "Summary.Markdown": "5-step writing flow · each step reuses the component pages below",
       "Summary.Data": "4-step data flow · wired to the property panel",
       "Summary.Docs": "4-step multi-document flow · panels and tabs working together"
+    },
+    "Segment": {
+      "Demo": "Demo",
+      "Xaml": "XAML",
+      "CSharp": "C#"
     }
   }
 };
