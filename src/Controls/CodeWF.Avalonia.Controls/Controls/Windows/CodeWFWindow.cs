@@ -283,6 +283,7 @@ public class CodeWFWindow : Window
         if (change.Property == ContentExtendsIntoTitleBarProperty) UpdateContentLayoutPseudoClasses();
 
         if (change.Property == WindowStateProperty
+            || change.Property == CanMinimizeProperty
             || change.Property == CanResizeProperty
             || change.Property == CanMaximizeProperty)
         {
@@ -358,7 +359,7 @@ public class CodeWFWindow : Window
 
     private void MinimizeButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        WindowState = WindowState.Minimized;
+        if (CanMinimize) WindowState = WindowState.Minimized;
     }
 
     private void MaximizeRestoreButton_OnClick(object? sender, RoutedEventArgs e)
@@ -399,6 +400,8 @@ public class CodeWFWindow : Window
 
     private void UpdateButtonStates()
     {
+        if (_minimizeButton is not null) _minimizeButton.IsEnabled = CanMinimize;
+
         if (_maximizeRestoreButton is not null)
             _maximizeRestoreButton.IsEnabled = CanResize && CanMaximize && WindowState != WindowState.FullScreen;
     }

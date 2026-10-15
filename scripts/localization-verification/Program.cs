@@ -29,6 +29,7 @@ AppBuilder.Configure<CodeWF.Avalonia.Demo.App>().UseSkia().WithInterFont().UseRe
     ] })
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false }).SetupWithoutStarting();
 DemoBootstrapper.Initialize();
+VerifyWindowCapabilities();
 VerifyDockDocumentTransfer(Path.Combine(Path.GetFullPath(args.FirstOrDefault() ?? Path.GetTempPath()), "dock-captures"));
 var manager = I18nManager.Instance;
 var text = new TextBlock();
@@ -162,6 +163,28 @@ void OnCultureChanged(object? sender, EventArgs args)
 static void Require(bool condition, string message)
 {
     if (!condition) throw new InvalidOperationException(message);
+}
+
+static void VerifyWindowCapabilities()
+{
+    // 验证实际标题栏模板响应运行时能力变化；禁用后程序化点击也不能最小化。
+    var window = new global::CodeWF.Avalonia.Controls.Controls.CodeWFWindow { Width = 500, Height = 300, CanMinimize = false };
+    window.Show();
+    Dispatcher.UIThread.RunJobs();
+    window.UpdateLayout();
+    var minimize = window.GetVisualDescendants().OfType<Button>().Single(button => button.Name == "PART_MinimizeButton");
+    Require(!minimize.IsEnabled, "A window that cannot minimize disables its actual caption button.");
+    minimize.RaiseEvent(new global::Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+    Require(window.WindowState == WindowState.Normal, "Disabled minimization is also enforced by the caption handler.");
+    window.CanMinimize = true;
+    Require(minimize.IsEnabled, "Enabling minimization updates the existing caption button.");
+    minimize.RaiseEvent(new global::Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+    Require(window.WindowState == WindowState.Minimized, "An enabled caption button can minimize the window.");
+    window.WindowState = WindowState.Normal;
+    window.CanMinimize = false;
+    Require(!minimize.IsEnabled, "Disabling minimization updates the same caption button.");
+    window.Close();
+    Console.WriteLine("PASS actual caption: CanMinimize controls the live button and handler.");
 }
 
 static void VerifyDockDocumentTransfer(string captures)
