@@ -1,8 +1,11 @@
-namespace CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
+﻿namespace CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
 
 /// <summary>所见即所得视图中的一个块（对应 Markdown 里的一个块级元素）。</summary>
 public sealed class MarkdownBlockModel
 {
+    /// <summary>初始源码行号；定位时以当前文本重新解析。</summary>
+    public int SourceLine { get; set; } = 1;
+
     public MarkdownBlockKind Kind { get; set; }
 
     /// <summary>块正文（不含块前缀）。表格块为空，内容在 <see cref="Cells"/>。</summary>

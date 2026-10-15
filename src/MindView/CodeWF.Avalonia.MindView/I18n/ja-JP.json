@@ -37,7 +37,10 @@
           "MetadataPathLabel": "パス: {0}",
           "BaiduMindMapFormat": "Baidu Mind Map",
           "ImageFormat": "画像",
-          "DrawIoDiagramTitle": "draw.io 図表"
+          "DrawIoDiagramTitle": "draw.io 図表",
+          "MarkdownDocument": "ドキュメント",
+          "ExpandBranch": "枝を展開",
+          "CollapseBranch": "枝を折りたたむ"
         }
       }
     }

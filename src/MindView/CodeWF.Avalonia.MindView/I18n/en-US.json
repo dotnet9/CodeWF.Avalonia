@@ -37,7 +37,10 @@
           "MetadataPathLabel": "Path: {0}",
           "BaiduMindMapFormat": "Baidu Mind Map",
           "ImageFormat": "Image",
-          "DrawIoDiagramTitle": "draw.io diagram"
+          "DrawIoDiagramTitle": "draw.io diagram",
+          "MarkdownDocument": "Document",
+          "ExpandBranch": "Expand branch",
+          "CollapseBranch": "Collapse branch"
         }
       }
     }

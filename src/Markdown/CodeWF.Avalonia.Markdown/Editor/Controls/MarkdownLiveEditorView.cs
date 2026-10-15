@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Input;
 using global::Avalonia.Input.Platform;
@@ -59,6 +59,30 @@ public class MarkdownLiveEditorView : UserControl
         set => SetValue(ImageBasePathProperty, value);
     }
 
+    /// <summary>正文最大宽度（含留白），默认不限制；宿主可控制阅读行长。</summary>
+    public static readonly StyledProperty<double> DocumentMaxWidthProperty =
+        AvaloniaProperty.Register<MarkdownLiveEditorView, double>(nameof(DocumentMaxWidth), double.PositiveInfinity);
+    public double DocumentMaxWidth { get => GetValue(DocumentMaxWidthProperty); set => SetValue(DocumentMaxWidthProperty, value); }
+    public static readonly StyledProperty<Thickness> DocumentPaddingProperty =
+        AvaloniaProperty.Register<MarkdownLiveEditorView, Thickness>(nameof(DocumentPadding), new Thickness(32, 20, 32, 48));
+    public Thickness DocumentPadding { get => GetValue(DocumentPaddingProperty); set => SetValue(DocumentPaddingProperty, value); }
+
+    /// <summary>按当前文档源码行定位块，不改写内容；可选择仅滚动或进入编辑。</summary>
+    public void NavigateToSourceLine(int line, bool beginEdit = false)
+    {
+        if (_blockViews.Count == 0) return;
+        var parsed = MarkdownBlockParser.Parse(Text);
+        var index = parsed.FindLastIndex(model => model.SourceLine <= Math.Max(1, line));
+        index = Math.Clamp(index, 0, _blockViews.Count - 1);
+        if (index < 0) return;
+        _blockViews[index].BringIntoView();
+        if (beginEdit) FocusBlock(index);
+    }
+
+    public static readonly StyledProperty<double> DocumentBlockSpacingProperty =
+        AvaloniaProperty.Register<MarkdownLiveEditorView, double>(nameof(DocumentBlockSpacing));
+    public double DocumentBlockSpacing { get => GetValue(DocumentBlockSpacingProperty); set => SetValue(DocumentBlockSpacingProperty, value); }
+
     public MarkdownLiveEditorView()
         : this(new MarkdownEditorOptions(), null)
     {
@@ -74,13 +98,14 @@ public class MarkdownLiveEditorView : UserControl
         _blockOptions = new MarkdownBlockViewOptions();
 
         _blockHost.Orientation = Orientation.Vertical;
-        _blockHost.Spacing = 0;
-        _blockHost.Margin = new Thickness(32, 20, 32, 48);
+        _blockHost.Spacing = DocumentBlockSpacing;
+        _blockHost.Margin = DocumentPadding;
+        Focusable = true;
 
         BuildPaneHead(out _paneHead, out _chipHost, out _paneTitle);
         UpdatePaneHead();
 
-        _container = new Border { Child = _blockHost };
+        _container = new Border { Child = _blockHost, MaxWidth = DocumentMaxWidth };
         Content = BuildContent();
 
         SetText(string.Empty);
@@ -373,23 +398,26 @@ public class MarkdownLiveEditorView : UserControl
     {
         base.OnPropertyChanged(change);
         if (_paneHead is null) return;
+        if (change.Property == DocumentBlockSpacingProperty) _blockHost.Spacing = DocumentBlockSpacing;
+        if (change.Property == DocumentPaddingProperty) _blockHost.Margin = DocumentPadding;
+        if (change.Property == DocumentMaxWidthProperty && _container is not null) _container.MaxWidth = DocumentMaxWidth;
         if (change.Property == HeaderTextProperty || change.Property == ChipTextProperty) UpdatePaneHead();
         if (change.Property == ImageBasePathProperty)
         {
             _blockOptions.ImageBasePath = ImageBasePath;
-            RebuildBlocks();
+            RebuildPreservingEdit();
         }
-        if (change.Property == EditorFontSizeProperty) RebuildBlocks();
+        if (change.Property == EditorFontSizeProperty) RebuildPreservingEdit();
         if (change.Property == TableHeaderBackgroundBrushProperty)
         {
             _blockOptions.TableHeaderBackgroundBrush = TableHeaderBackgroundBrush;
-            RebuildBlocks();
+            RebuildPreservingEdit();
         }
         if (change.Property == TypographyThemeProperty || change.Property == TypographySizeProperty)
         {
             _blockOptions.TypographyTheme = TypographyTheme;
             _blockOptions.TypographySize = TypographySize;
-            RebuildBlocks();
+            RebuildPreservingEdit();
         }
         if (change.Property == EditorBackgroundKeyProperty || change.Property == EditorForegroundKeyProperty) ApplyThemedVisuals();
     }
@@ -450,6 +478,18 @@ public class MarkdownLiveEditorView : UserControl
         _paneHead.IsVisible = !string.IsNullOrEmpty(HeaderText);
         _chipText.Text = ChipText ?? string.Empty;
         _chipHost.IsVisible = !string.IsNullOrEmpty(ChipText);
+    }
+
+    private void RebuildPreservingEdit()
+    {
+        var box = ActiveTextBox;
+        var index = _activeIndex;
+        var start = box?.SelectionStart ?? 0;
+        var end = box?.SelectionEnd ?? 0;
+        RebuildBlocks();
+        if (box is null || index < 0 || index >= _blockViews.Count) return;
+        FocusBlock(index);
+        if (ActiveTextBox is { } current) { current.SelectionStart = start; current.SelectionEnd = end; }
     }
 
     private void RebuildBlocks()
@@ -654,6 +694,20 @@ public class MarkdownLiveEditorView : UserControl
     private void AttachAutoPair(MarkdownBlockView view)
     {
         view.AddHandler(InputElement.KeyDownEvent, OnBlockKeyDown, RoutingStrategies.Tunnel);
+        view.TextEntering = e => OnBlockTextInput(view, e);
+    }
+
+    private void OnBlockTextInput(object? sender, TextInputEventArgs e)
+    {
+        if (!_autoPairEnabled || e.Text?.Length != 1 || sender is not MarkdownBlockView { ActiveEditor: { } box }) return;
+        var start = Math.Min(box.SelectionStart, box.SelectionEnd);
+        var length = Math.Abs(box.SelectionEnd - box.SelectionStart);
+        if (TextAutoPair.HandleTextInput(box.Text ?? string.Empty, start, length, e.Text) is not { } change) return;
+        e.Handled = true;
+        if (change.Length > 0 || change.Text.Length > 0)
+            box.Text = (box.Text ?? string.Empty).Remove(change.Start, change.Length).Insert(change.Start, change.Text);
+        box.CaretIndex = change.CaretOffset;
+        box.SelectionStart = box.SelectionEnd = change.CaretOffset;
     }
 
     private void OnBlockKeyDown(object? sender, KeyEventArgs e)
@@ -665,7 +719,7 @@ public class MarkdownLiveEditorView : UserControl
 
         if (e.Key == Key.Back && e.KeyModifiers == KeyModifiers.None && view.ActiveEditor is { } backBox)
         {
-            var result = TextAutoPair.HandleBackspace(backBox.Text ?? string.Empty, backBox.SelectionStart, backBox.SelectionEnd - backBox.SelectionStart);
+            var result = TextAutoPair.HandleBackspace(backBox.Text ?? string.Empty, Math.Min(backBox.SelectionStart, backBox.SelectionEnd), Math.Abs(backBox.SelectionEnd - backBox.SelectionStart));
             if (result is { } change)
             {
                 backBox.Text = (backBox.Text ?? string.Empty).Remove(change.Start, change.Length).Insert(change.Start, change.Text);

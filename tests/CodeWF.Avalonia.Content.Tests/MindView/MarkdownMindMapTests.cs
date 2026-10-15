@@ -1,10 +1,19 @@
-using CodeWF.Avalonia.MindView.Markdown;
+﻿using CodeWF.Avalonia.MindView.Markdown;
 using Xunit;
 
 namespace CodeWF.Avalonia.Content.Tests.MindView;
 
 public class MarkdownMindMapTests
 {
+    [Fact]
+    public void InsertingEarlierContentKeepsExistingNodeIdentity()
+    {
+        var before = MarkdownMindMapDocument.Parse("# 标题\n\n## 章节\n\n正文");
+        var after = MarkdownMindMapDocument.Parse("# 标题\n\n新增段落\n\n## 章节\n\n正文");
+        Assert.Equal(before.Children[0].Id, after.Children[1].Id);
+        Assert.NotEqual(before.Children[0].SourceLine, after.Children[1].SourceLine);
+    }
+
     [Fact]
     public void AstPreservesHeadingAndListHierarchyAndSourceRanges()
     {

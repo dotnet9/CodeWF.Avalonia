@@ -42,6 +42,9 @@ namespace CodeWF.Avalonia.MindView.I18n
         public static readonly string BaiduMindMapFormat = "CodeWF.Avalonia.MindView.MindViewL.BaiduMindMapFormat";
         public static readonly string ImageFormat = "CodeWF.Avalonia.MindView.MindViewL.ImageFormat";
         public static readonly string DrawIoDiagramTitle = "CodeWF.Avalonia.MindView.MindViewL.DrawIoDiagramTitle";
+        public static readonly string MarkdownDocument = "CodeWF.Avalonia.MindView.MindViewL.MarkdownDocument";
+        public static readonly string ExpandBranch = "CodeWF.Avalonia.MindView.MindViewL.ExpandBranch";
+        public static readonly string CollapseBranch = "CodeWF.Avalonia.MindView.MindViewL.CollapseBranch";
     }
 
 }

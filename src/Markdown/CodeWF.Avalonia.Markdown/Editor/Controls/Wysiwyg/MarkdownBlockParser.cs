@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 
 using Markdig;
 using Markdig.Extensions.Tables;
@@ -134,6 +134,7 @@ public static class MarkdownBlockParser
             foreach (var model in group)
             {
                 model.Source = source;
+                model.SourceLine = block.Line + 1;
             }
             sourceCursor = end;
         }

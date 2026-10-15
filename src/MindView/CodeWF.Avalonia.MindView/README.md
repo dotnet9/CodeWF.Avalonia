@@ -1,4 +1,4 @@
-# CodeWF.Avalonia.MindView
+﻿# CodeWF.Avalonia.MindView
 
 脑图控件、Markdown 结构图、导入导出和配套主题合并为一个 NuGet 包。依赖 Avalonia、Markdig 和 CodeWF.Avalonia.Lang，宿主可独立选择 Semi / Ursa / Fluent 等主题。版本随 CodeWF.Avalonia 仓库统一版本。
 
@@ -35,3 +35,11 @@ view.SourceRequested += (_, node) => NavigateToSource(node.SourceStart, node.Sou
 宿主应合并连续输入，在后台构造 AST 后回到 UI 线程更新 `Root`。短文档可直接解析。深层或大型文档仍需宿主提供检索、分页等产品策略，控件当前会构造全部可见节点。
 
 内嵌简体中文、繁体中文、英语和日语资源，使用共享 Lang 引擎的文化切换及宿主同键覆盖。
+
+## 宿主配色与大纲联动
+
+`MarkdownMindMapView` 的 `CanvasBrush`、`CardBrush`、`TextBrush`、`LineBrush`、`DotBrush` 可以绑定宿主语义资源；`AccentColor`、`SuccessColor`、`WarningColor` 负责分支色。未设置时仍可独立跟随浅深色。标题显示 H1–H6 层级，内容摘要使用虚线边框，折叠和选择不改写文档。
+
+`RevealNode(id)` 展开祖先、选中并居中节点；`ClearSelection()` 清除选择；`VisibleNodeCount` / `VisibleNodesChanged` 供工具栏显示实时可见节点数。自动适应状态会随窗口尺寸重新适配，手动缩放、平移或定位后则保留画布中心对应的内容。节点 ID 随内容生成，前方插入段落不会让后续章节丢失折叠状态；同文重复内容按出现次序区分。
+
+配套 Markdown 即时编辑器新增 `DocumentMaxWidth`、`DocumentPadding`、`DocumentBlockSpacing`，宿主可设置阅读行长和留白。`NavigateToSourceLine(line, beginEdit: false)` 只滚动到对应块，`beginEdit: true` 进入编辑。排版切换保留活动块选区。

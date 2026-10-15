@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Media;
@@ -64,6 +64,73 @@ public class MindViewControlTests(AvaloniaPlatformFixture platform)
             Assert.Equal(.9, view.Zoom, 4);
             Assert.True(view.Root.Children[0].IsCollapsed);
             Assert.Equal("正文", view.Root.Children[0].Children[0].FullText);
+        }
+        finally { window.Close(); }
+    });
+
+    [Fact]
+    public void OutlineRevealExpandsAncestorsCentersSelectionAndKeepsThemeTokens() => platform.Run(() =>
+    {
+        var root = MarkdownMindMapDocument.Parse("# 文档\n\n## 一节\n\n### 小节\n\n正文\n\n## 二节\n\n正文");
+        var target = root.Children[0].Children[0];
+        var view = new MarkdownMindMapView { Root = root, CanvasBrush = Brushes.Beige, CardBrush = Brushes.AliceBlue, TextBrush = Brushes.DarkBlue, AccentColor = Colors.Crimson };
+        var window = new Window { Width = 1000, Height = 700, Content = view };
+        window.Show();
+        try
+        {
+            view.CollapseAll();
+            var collapsedCount = view.VisibleNodeCount;
+            Assert.True(view.RevealNode(target.Id));
+            Assert.Same(target, view.SelectedNode);
+            Assert.False(root.Children[0].IsCollapsed);
+            Assert.True(view.VisibleNodeCount > collapsedCount);
+            Assert.Equal(3, target.HeadingLevel);
+            window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
+            var card = view.GetVisualDescendants().OfType<Border>().Single(b => ToolTip.GetTip(b)?.ToString() == "小节");
+            var center = card.TranslatePoint(new global::Avalonia.Point(card.Bounds.Width / 2, card.Bounds.Height / 2), view)!.Value;
+            Assert.InRange(center.X, view.Bounds.Width / 2 - 1, view.Bounds.Width / 2 + 1);
+            Assert.Contains(view.GetVisualDescendants().OfType<Panel>(), panel => panel.Background == Brushes.Beige);
+            view.ClearSelection(); Assert.Null(view.SelectedNode);
+            Assert.Equal("正文", target.Children[0].FullText);
+        }
+        finally { window.Close(); }
+    });
+
+    [Fact]
+    public void LongDocumentSupportsFoldRevealAndResizeWithoutLosingTheFocusedNode() => platform.Run(() =>
+    {
+        var markdown = "# 长文档\n\n" + string.Join("\n\n", Enumerable.Range(1, 120).Select(i => $"## 章节 {i}\n\n这是一段需要在导图中截取摘要、并在点击后保留完整正文的内容 {i}。\n\n- 列表项 {i}\n- 第二项 {i}"));
+        var root = MarkdownMindMapDocument.Parse(markdown);
+        var view = new MarkdownMindMapView { Root = root, EnableMotion = false };
+        var window = new Window { Width = 1280, Height = 820, Content = view }; window.Show();
+        try
+        {
+            Assert.Equal(481, view.VisibleNodeCount);
+            view.CollapseAll(); Assert.Equal(121, view.VisibleNodeCount);
+            var last = root.Children.Last(); view.RevealNode(last.Id); window.UpdateLayout();
+            window.Width = 980; window.Height = 640; window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
+            var card = view.GetVisualDescendants().OfType<Border>().Single(b => ToolTip.GetTip(b)?.ToString() == last.FullText);
+            var center = card.TranslatePoint(new global::Avalonia.Point(card.Bounds.Width / 2, card.Bounds.Height / 2), view)!.Value;
+            Assert.InRange(center.X, view.Bounds.Width / 2 - 1, view.Bounds.Width / 2 + 1);
+            Assert.InRange(center.Y, view.Bounds.Height / 2 - 1, view.Bounds.Height / 2 + 1);
+            Assert.Same(last, view.SelectedNode);
+            Assert.Equal(120, root.Children.Count);
+        }
+        finally { window.Close(); }
+    });
+
+    [Fact]
+    public void AutomaticFitKeepsRootVisibleWhenWindowNarrows() => platform.Run(() =>
+    {
+        var view = new MarkdownMindMapView { Root = MarkdownMindMapDocument.Parse("# 文档\n\n## 一\n\n### 二\n\n正文"), EnableMotion = false };
+        var window = new Window { Width = 1280, Height = 820, Content = view }; window.Show();
+        try
+        {
+            view.Fit(.75); window.Width = 780; window.Height = 500; window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
+            var root = view.GetVisualDescendants().OfType<Border>().Single(b => ToolTip.GetTip(b)?.ToString() == view.Root!.FullText);
+            var point = root.TranslatePoint(default, view)!.Value;
+            Assert.True(point.X >= 0 && point.Y >= 0);
+            Assert.Equal(60, root.Bounds.Height);
         }
         finally { window.Close(); }
     });

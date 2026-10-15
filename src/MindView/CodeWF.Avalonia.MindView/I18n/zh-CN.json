@@ -37,7 +37,10 @@
           "MetadataPathLabel": "路径：{0}",
           "BaiduMindMapFormat": "百度脑图",
           "ImageFormat": "图片",
-          "DrawIoDiagramTitle": "draw.io 图表"
+          "DrawIoDiagramTitle": "draw.io 图表",
+          "MarkdownDocument": "文档",
+          "ExpandBranch": "展开分支",
+          "CollapseBranch": "收起分支"
         }
       }
     }

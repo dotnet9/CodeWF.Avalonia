@@ -1,4 +1,4 @@
-using CodeWF.Avalonia.Markdown;
+﻿using CodeWF.Avalonia.Markdown;
 using CodeWF.Avalonia.Markdown.Editor.Controls;
 using CodeWF.Avalonia.Markdown.Editor.Services;
 using CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
@@ -22,6 +22,65 @@ public sealed class MarkdownLiveEditorViewTests
     private readonly AvaloniaPlatformFixture _platform;
 
     public MarkdownLiveEditorViewTests(AvaloniaPlatformFixture platform) => _platform = platform;
+
+    [Theory]
+    [InlineData("(", "()")]
+    [InlineData("[", "[]")]
+    [InlineData("\"", "\"\"")]
+    public void LiveInputPairsWrapsAndSkipsClosingCharacters(string input, string pair) => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView(); view.SetText("文字"); view.FocusBlock(0);
+        var box = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Single().ActiveEditor!;
+        box.SelectionStart = 2; box.SelectionEnd = 0;
+        var opening = new TextInputEventArgs { RoutedEvent = InputElement.TextInputEvent, Text = input };
+        box.RaiseEvent(opening);
+        Assert.True(opening.Handled);
+        Assert.Equal(pair[0] + "文字" + pair[1], box.Text);
+        box.CaretIndex = box.SelectionStart = box.SelectionEnd = box.Text!.Length - 1;
+        var closing = new TextInputEventArgs { RoutedEvent = InputElement.TextInputEvent, Text = pair[1].ToString() };
+        box.RaiseEvent(closing);
+        Assert.True(closing.Handled); Assert.Equal(4, box.CaretIndex);
+        view.EnableAutoPair = false;
+        var disabled = new TextInputEventArgs { RoutedEvent = InputElement.TextInputEvent, Text = input };
+        box.RaiseEvent(disabled); Assert.Equal(pair[0] + "文字" + pair[1] + input, box.Text);
+        view.EnableAutoPair = true;
+        var unicode = new TextInputEventArgs { RoutedEvent = InputElement.TextInputEvent, Text = "中文👩‍💻" };
+        box.RaiseEvent(unicode); Assert.EndsWith(input + "中文👩‍💻", box.Text);
+    });
+
+    [Fact]
+    public void TypographyChangesKeepSelectionAndDoNotModifyMarkdown() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView(); view.SetText("# 标题\n\n正文内容"); view.FocusBlock(1);
+        var block = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Last();
+        block.ActiveEditor!.SelectionStart = 0; block.ActiveEditor.SelectionEnd = 2;
+        var original = view.Text;
+        view.TypographyTheme = "OrangeHeart";
+        var current = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Last();
+        Assert.True(current.IsEditing); Assert.Equal(0, current.ActiveEditor!.SelectionStart); Assert.Equal(2, current.ActiveEditor.SelectionEnd);
+        Assert.Equal(original, view.Text);
+    });
+
+    [Fact]
+    public void SourceNavigationScrollsWithoutEditingAndUsesCurrentLineNumbers() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView { DocumentMaxWidth = 810, DocumentPadding = new global::Avalonia.Thickness(44, 34), DocumentBlockSpacing = 6 };
+        const string source = "# 标题\r\n\r\n正文\r\n\r\n## 目标\r\n\r\n更多正文";
+        view.SetText(source);
+        var window = new Window { Width = 1200, Height = 700, Content = view };
+        window.Show();
+        try
+        {
+            view.NavigateToSourceLine(5);
+            Assert.Equal(-1, view.ActiveBlockIndex);
+            Assert.Equal(source, view.Text);
+            view.NavigateToSourceLine(5, beginEdit: true);
+            Assert.Equal(2, view.ActiveBlockIndex);
+            Assert.Equal(source, view.Text);
+            Assert.Equal(5, MarkdownBlockParser.Parse(source)[2].SourceLine);
+        }
+        finally { window.Close(); }
+    });
 
     [Fact]
     public void EditingRendersImmediatelyAndEscapeRestoresOriginalBlock() => _platform.Run(() =>

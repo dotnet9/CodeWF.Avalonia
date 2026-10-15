@@ -9,6 +9,18 @@ using CodeWF.Avalonia.Markdown.Controls;
 
 namespace CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
 
+/// <summary>在 TextBox 默认插入之前处理已提交文本，保留输入法预编辑流程。</summary>
+internal sealed class MarkdownInputTextBox : TextBox
+{
+    protected override Type StyleKeyOverride => typeof(TextBox);
+    public Action<TextInputEventArgs>? BeforeTextInput { get; set; }
+    protected override void OnTextInput(TextInputEventArgs e)
+    {
+        BeforeTextInput?.Invoke(e);
+        if (!e.Handled) base.OnTextInput(e);
+    }
+}
+
 /// <summary>
 /// 一个块的就地编辑视图：默认渲染为富文本（只读显示，可选中），
 /// 点入后切换为源码编辑（<see cref="TextBox"/>），失焦或按 Esc 回渲染，
@@ -17,7 +29,7 @@ namespace CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
 internal sealed class MarkdownBlockView : UserControl
 {
     private readonly MarkdownRichTextView _richText = new();
-    private readonly TextBox _editor = new();
+    private readonly MarkdownInputTextBox _editor = new();
     private readonly Border _root;
     private readonly MarkdownViewer _preview = new() { DocumentBottomPadding = 0, IsTaskEditingEnabled = false };
     private readonly MarkdownViewer _editingPreview = new() { DocumentBottomPadding = 0, IsTaskEditingEnabled = false };
@@ -82,6 +94,7 @@ internal sealed class MarkdownBlockView : UserControl
 
     public Action<MarkdownBlockView>? EditingStarted { get; set; }
     public Action? EditorSelectionChanged { get; set; }
+    internal Action<TextInputEventArgs>? TextEntering { get => _editor.BeforeTextInput; set => _editor.BeforeTextInput = value; }
 
     public Action<MarkdownBlockView, int>? SplitRequested { get; set; }
 

@@ -1,4 +1,6 @@
-using System.Globalization;
+﻿using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Extensions.Tables;
@@ -16,6 +18,7 @@ public sealed class MarkdownMindMapNode
     public MarkdownMindMapNodeKind Kind { get; init; }
     public int SourceStart { get; init; }
     public int SourceEnd { get; init; }
+    public int HeadingLevel { get; init; }
     public int SourceLine { get; init; }
     public List<MarkdownMindMapNode> Children { get; } = [];
     public bool IsCollapsed { get; set; }
@@ -46,6 +49,7 @@ public static class MarkdownMindMapDocument
             Id = "document", Title = title, FullText = title, Kind = MarkdownMindMapNodeKind.Document,
             SourceEnd = markdown.Length
         };
+        var occurrences = new Dictionary<string, int>(StringComparer.Ordinal);
         var headings = new Stack<(int Level, MarkdownMindMapNode Node)>();
         headings.Push((0, root));
         foreach (var block in document)
@@ -72,11 +76,15 @@ public static class MarkdownMindMapDocument
         {
             var full = text ?? Markdig.Markdown.ToPlainText(Source(block), Pipeline).Trim();
             full = string.Join(" ", full.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+            var fingerprint = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes($"{kind}:{full}")))[..16];
+            var occurrence = occurrences.GetValueOrDefault(fingerprint);
+            occurrences[fingerprint] = occurrence + 1;
             return new()
             {
-                Id = $"{kind}:{block.Span.Start}", Kind = kind, FullText = full,
+                Id = $"{kind}:{fingerprint}:{occurrence}", Kind = kind, FullText = full,
                 Title = truncate ? Summarize(full, limit) : full,
                 SourceStart = block.Span.Start, SourceEnd = Math.Min(markdown.Length, block.Span.End + 1),
+                HeadingLevel = block is HeadingBlock heading ? heading.Level : 0,
                 SourceLine = block.Line + 1
             };
         }
