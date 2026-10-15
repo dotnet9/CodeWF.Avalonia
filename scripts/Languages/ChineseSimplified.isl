@@ -220,7 +220,10 @@ ReadyMemoGroup=开始菜单文件夹：
 ReadyMemoTasks=附加任务：
 
 ; *** TDownloadWizardPage wizard page and DownloadTemporaryFile
+DownloadingLabel=正在下载其他文件...
 DownloadingLabel2=正在下载文件...
+ErrorFileHash1=文件哈希校验失败：%1
+ErrorFileHash2=文件哈希不匹配：应为 %1，实际为 %2
 ButtonStopDownload=停止下载(&S)
 StopDownload=您确定要停止下载吗？
 ErrorDownloadAborted=下载已中止。
