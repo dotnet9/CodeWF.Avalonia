@@ -1,6 +1,6 @@
-using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
+﻿using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
-using L = global::CodeWF.Avalonia.Lang.I18nManager;
+using L = global::CodeWF.Toolkit.Lang.I18nManager;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 

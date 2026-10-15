@@ -1,5 +1,5 @@
-using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
-using L = global::CodeWF.Avalonia.Lang.I18nManager;
+﻿using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
+using L = global::CodeWF.Toolkit.Lang.I18nManager;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 

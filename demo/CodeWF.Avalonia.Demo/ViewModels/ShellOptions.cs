@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Styling;
 using Avalonia.Media;
 using CodeWF.Avalonia.Controls.Themes;
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 
 namespace CodeWF.Avalonia.Demo.ViewModels;
 

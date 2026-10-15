@@ -1,6 +1,6 @@
-using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
+﻿using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using CodeWF.Avalonia.Demo.ViewModels.Pages;
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 
 namespace CodeWF.Avalonia.Demo.Views.Pages;

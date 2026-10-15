@@ -1,4 +1,4 @@
-using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
+﻿using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
@@ -259,7 +259,7 @@ public partial class MainViewModel
             {
                 SelectedCulture = culture;
                 await Task.Delay(30, cancellation);
-                if (ActiveDocument?.DockDocument?.Title != global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource(DemoPages.Welcome))
+                if (ActiveDocument?.DockDocument?.Title != global::CodeWF.Toolkit.Lang.I18nManager.Instance.GetResource(DemoPages.Welcome))
                     throw new InvalidOperationException("Dock title was not localized: " + culture.Name);
             }
             SelectedCulture = Cultures[0];

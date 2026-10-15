@@ -1,12 +1,12 @@
-using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
-using L = global::CodeWF.Avalonia.Lang.I18nManager;
+﻿using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
+using L = global::CodeWF.Toolkit.Lang.I18nManager;
 using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using CodeWF.Avalonia.Demo.Infrastructure;
 using CodeWF.Avalonia.Demo.ViewModels;
-using CodeWF.Avalonia.Lang;
-using CodeWF.Avalonia.Lang.Json;
+using CodeWF.Toolkit.Lang;
+using CodeWF.Toolkit.Lang.Json;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 using CodeWF.Toolkit.Logging;
 

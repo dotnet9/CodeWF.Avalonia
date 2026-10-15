@@ -1,8 +1,8 @@
-using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
+﻿using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using System.Globalization;
 using System.Windows.Input;
 using CodeWF.Avalonia.Demo.Infrastructure;
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 using CodeWF.Toolkit.Logging;
 using ReactiveUI;
 

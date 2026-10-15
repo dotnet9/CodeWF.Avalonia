@@ -1,5 +1,5 @@
-using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
-using L = global::CodeWF.Avalonia.Lang.I18nManager;
+﻿using DemoResources = global::CodeWF.Avalonia.Demo.I18n.ResourceKeys;
+using L = global::CodeWF.Toolkit.Lang.I18nManager;
 using System.Windows.Input;
 using ReactiveUI;
 
@@ -45,11 +45,11 @@ public sealed class WelcomeViewModel : ReactiveObject
         {
             if (CopyToClipboard is null) throw new InvalidOperationException("Clipboard unavailable");
             await CopyToClipboard(InstallCommand);
-            CopyStatus = global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource(DemoResources.Studio.Copied);
+            CopyStatus = global::CodeWF.Toolkit.Lang.I18nManager.Instance.GetResource(DemoResources.Studio.Copied);
         }
         catch
         {
-            CopyStatus = global::CodeWF.Avalonia.Lang.I18nManager.Instance.GetResource(DemoResources.Studio.CopyFailed);
+            CopyStatus = global::CodeWF.Toolkit.Lang.I18nManager.Instance.GetResource(DemoResources.Studio.CopyFailed);
         }
     }
     public ICommand TogglePanelCommand { get; }

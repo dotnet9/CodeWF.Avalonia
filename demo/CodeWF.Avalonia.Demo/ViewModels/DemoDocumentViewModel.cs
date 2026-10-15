@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using CodeWF.Avalonia.Demo.Views;
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 using ReactiveUI;
 using System.Reactive;

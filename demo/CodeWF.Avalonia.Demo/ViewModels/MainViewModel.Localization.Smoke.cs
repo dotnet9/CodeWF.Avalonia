@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.VisualTree;
 using CodeWF.Avalonia.Markdown;
@@ -13,7 +13,7 @@ public partial class MainViewModel
     private async Task SmokeMarkdownLocalizationAsync(CancellationToken cancellation)
     {
         var host = await AttachSmokeHostAsync(cancellation) ?? throw new InvalidOperationException("Localization smoke needs a native window.");
-        var original = Lang.I18nManager.Instance.Culture;
+        var original = global::CodeWF.Toolkit.Lang.I18nManager.Instance.Culture;
         try
         {
             var viewer = new MarkdownViewer { Markdown = "Paragraph\n\n```text\nNative AOT\n```" };
@@ -21,7 +21,7 @@ public partial class MainViewModel
             var renderedLabels = new HashSet<string>();
             foreach (var culture in new[] { "en-US", "zh-CN", "ja-JP", "zh-Hant-TW", "fr-FR", "en-US" })
             {
-                Lang.I18nManager.Instance.Culture = new CultureInfo(culture);
+                global::CodeWF.Toolkit.Lang.I18nManager.Instance.Culture = new CultureInfo(culture);
                 var expected = MarkdownLocalization.GetResource(MarkdownL.Copy);
                 var deadline = DateTime.UtcNow.AddSeconds(8);
                 while (!viewer.GetVisualDescendants().OfType<Button>().Any(button => Equals(button.Content, expected)))
@@ -44,7 +44,7 @@ public partial class MainViewModel
         {
             host.Content = null;
             if (host.Parent is Panel panel) panel.Children.Remove(host);
-            Lang.I18nManager.Instance.Culture = original;
+            global::CodeWF.Toolkit.Lang.I18nManager.Instance.Culture = original;
         }
     }
 }
