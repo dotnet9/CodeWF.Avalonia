@@ -26,6 +26,7 @@ namespace CodeWF.Avalonia.Demo.ViewModels;
 /// </summary>
 public partial class MainViewModel : ReactiveObject, IDisposable
 {
+    private bool _disposed;
     private DemoDocumentViewModel? _activeDocument;
     private DemoItemViewModel? _selectedNavItem;
     private string _statusText = string.Empty;
@@ -80,7 +81,7 @@ public partial class MainViewModel : ReactiveObject, IDisposable
             new("zh-CN", L.Instance.GetResource(DemoResources.Shell.LanguageChinese)),
             new("en-US", "English"),
         };
-        _selectedCulture = Cultures[0];
+        _selectedCulture = Cultures.FirstOrDefault(option => option.Name == I18nManager.Instance.Culture?.Name) ?? Cultures[0];
 
         GlobalValueCommittedCommand = ReactiveCommand.Create<PropertyValueChange>(OnGlobalPropertyCommitted);
         GlobalBrowseRequestedCommand = ReactiveCommand.Create<PropertyItem>(_ => { });
@@ -325,32 +326,6 @@ public partial class MainViewModel : ReactiveObject, IDisposable
 
             this.RaiseAndSetIfChanged(ref _selectedCulture, value);
             I18nManager.Instance.Culture = new CultureInfo(value.Name);
-            this.RaisePropertyChanged(nameof(RibbonSections));
-            SyncToolTitles();
-            foreach (var palette in Palettes) palette.RefreshTitle();
-            foreach (var mode in ThemeModeOptions) mode.RefreshTitle();
-            this.RaisePropertyChanged(nameof(ThemeModes));
-            this.RaisePropertyChanged(nameof(ThemeModeIndex));
-            GlobalProperties = BuildGlobalProperties();
-            SyncGlobalItems();
-            foreach (var document in Documents)
-            {
-                document.RefreshProperties();
-                document.RefreshTitle();
-                if (document.Page is Views.Pages.WelcomePage overview) overview.Overview.RefreshCulture();
-            }
-            this.RaisePropertyChanged(nameof(ActivePropertyItems));
-            this.RaisePropertyChanged(nameof(NavFilterPlaceholder));
-            this.RaisePropertyChanged(nameof(NavEmptyHint));
-            this.RaisePropertyChanged(nameof(RenameHint));
-            this.RaisePropertyChanged(nameof(ResetRenamesHint));
-            this.RaisePropertyChanged(nameof(DensityLabel));
-            this.RaisePropertyChanged(nameof(CommandPlaceholder));
-            this.RaisePropertyChanged(nameof(CommandHint));
-            this.RaisePropertyChanged(nameof(NotificationDismissHint));
-            RaiseCommandState();
-            StatusText = I18nManager.Instance.GetResource(DemoResources.Shell.Ready);
-            Logger.Info(L.Instance.GetResource(DemoResources.Shell.LanguageChanged) + value.Name);
         }
     }
 
@@ -792,7 +767,45 @@ public partial class MainViewModel : ReactiveObject, IDisposable
         Sync(_langItem, SelectedCulture.DisplayName);
     }
 
-    private void OnCultureChanged(object? sender, EventArgs args) => this.RaisePropertyChanged(nameof(StatusText));
+    private void OnCultureChanged(object? sender, EventArgs args)
+    {
+        if (global::Avalonia.Threading.Dispatcher.UIThread.CheckAccess()) RefreshCulture();
+        else global::Avalonia.Threading.Dispatcher.UIThread.Post(RefreshCulture);
+    }
+
+    private void RefreshCulture()
+    {
+        if (_disposed) return;
+        // 从共享实例反向同步现有选项，避免绑定仍停在旧语言而无法再次选择。
+        if (Cultures.FirstOrDefault(option => option.Name == I18nManager.Instance.Culture?.Name) is { } culture)
+            this.RaiseAndSetIfChanged(ref _selectedCulture, culture, nameof(SelectedCulture));
+        this.RaisePropertyChanged(nameof(RibbonSections));
+        SyncToolTitles();
+        foreach (var palette in Palettes) palette.RefreshTitle();
+        foreach (var mode in ThemeModeOptions) mode.RefreshTitle();
+        this.RaisePropertyChanged(nameof(ThemeModes));
+        this.RaisePropertyChanged(nameof(ThemeModeIndex));
+        GlobalProperties = BuildGlobalProperties();
+        SyncGlobalItems();
+        foreach (var document in Documents)
+        {
+            document.RefreshProperties();
+            document.RefreshTitle();
+            if (document.Page is Views.Pages.WelcomePage overview) overview.Overview.RefreshCulture();
+        }
+        this.RaisePropertyChanged(nameof(ActivePropertyItems));
+        this.RaisePropertyChanged(nameof(NavFilterPlaceholder));
+        this.RaisePropertyChanged(nameof(NavEmptyHint));
+        this.RaisePropertyChanged(nameof(RenameHint));
+        this.RaisePropertyChanged(nameof(ResetRenamesHint));
+        this.RaisePropertyChanged(nameof(DensityLabel));
+        this.RaisePropertyChanged(nameof(CommandPlaceholder));
+        this.RaisePropertyChanged(nameof(CommandHint));
+        this.RaisePropertyChanged(nameof(NotificationDismissHint));
+        RaiseCommandState();
+        StatusText = I18nManager.Instance.GetResource(DemoResources.Shell.Ready);
+        Logger.Info(L.Instance.GetResource(DemoResources.Shell.LanguageChanged) + I18nManager.Instance.Culture?.Name);
+    }
 
     private void OnApplicationPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs args)
     {
@@ -801,6 +814,8 @@ public partial class MainViewModel : ReactiveObject, IDisposable
 
     public void Dispose()
     {
+        if (_disposed) return;
+        _disposed = true;
         I18nManager.Instance.CultureChanged -= OnCultureChanged;
         if (Application.Current is { } app) app.PropertyChanged -= OnApplicationPropertyChanged;
         _themeController?.Dispose();

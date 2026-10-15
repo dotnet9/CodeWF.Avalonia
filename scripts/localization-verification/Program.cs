@@ -30,9 +30,12 @@ AppBuilder.Configure<CodeWF.Avalonia.Demo.App>().UseSkia().WithInterFont().UseRe
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false }).SetupWithoutStarting();
 DemoBootstrapper.Initialize();
 VerifyThirdPartyLocales();
+VerifyHiddenPropertyRows();
 VerifyPropertyEditors();
 VerifyWindowCapabilities();
 VerifyEditableTableColumns();
+VerifyReadOnlyTableColumns();
+VerifyMindMapLanguageState();
 VerifyStatusLanguageState();
 VerifyDockDocumentTransfer(Path.Combine(Path.GetFullPath(args.FirstOrDefault() ?? Path.GetTempPath()), "dock-captures"));
 var manager = I18nManager.Instance;
@@ -126,6 +129,8 @@ try
     Require(Equals((markdown.ContextMenu!.Items[0] as MenuItem)?.Header, "Application copy"), "Existing Markdown menu applies the host override.");
     Require(properties.GetVisualDescendants().OfType<TextBox>().Single(input => input.Name == "SearchBox").PlaceholderText == "Application properties", "Existing property panel applies the host override.");
     Require(MarkdownLocalization.GetResource(MarkdownL.CopySelectedText) == "Copy selected text", "Missing host key falls back to embedded Markdown.");
+    // 覆盖用例结束后恢复宿主资源，后续目录渲染必须使用真实 Demo 文案。
+    manager.Register(new JsonLangPlugin { ResourceFolder = DemoBootstrapper.I18nFolder }, CultureInfo.GetCultureInfo("zh-CN"));
     var renders = 0;
     using var bitmap = new global::Avalonia.Media.Imaging.RenderTargetBitmap(new PixelSize(960, 720));
     foreach (var item in DemoCatalog.CreateGroups().SelectMany(group => group.Items))
@@ -136,6 +141,8 @@ try
         foreach (var culture in new[] { "zh-CN", "en-US" })
         {
             manager.Culture = CultureInfo.GetCultureInfo(culture);
+            Require(manager.GetResource(DemoKeys.Shell.Ready) != DemoKeys.Shell.Ready,
+                "Catalog rendering uses the real host translations in " + culture);
             foreach (var palette in Enum.GetValues<StudioPalette>())
             foreach (var dark in new[] { false, true })
             {
@@ -216,6 +223,57 @@ static void VerifyEditableTableColumns()
         window.Close();
     }
     Console.WriteLine("PASS editable table: natural columns and live embedded menu/action translations in four languages.");
+}
+
+static void VerifyReadOnlyTableColumns()
+{
+    var viewer = new MarkdownViewer { Markdown = "| API | Purpose |\n| --- | --- |\n| Open | Open a Markdown document with a naturally sized table. |" };
+    var shell = new Window { Width = 800, Height = 420, Content = viewer };
+    try
+    {
+        shell.Show();
+        foreach (var width in new[] { 800d, 380d, 800d })
+        {
+            shell.Width = width;
+            var deadline = DateTime.UtcNow.AddSeconds(10);
+            Grid? grid;
+            do
+            {
+                Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+                grid = viewer.GetVisualDescendants().OfType<Grid>().SingleOrDefault(item => item.GetType().Name == "MarkdownTableGrid");
+                if (grid is not null) break;
+                if (DateTime.UtcNow >= deadline) throw new TimeoutException("Read-only Markdown table did not materialize.");
+                Thread.Sleep(1);
+            } while (true);
+            var outline = (Border)grid.Parent!;
+            var columnsWidth = grid.ColumnDefinitions.Sum(column => column.ActualWidth);
+            Require(columnsWidth > 0 && Math.Abs(outline.Bounds.Width - columnsWidth - outline.BorderThickness.Left - outline.BorderThickness.Right) <= 2,
+                "Read-only table outline follows actual columns without a blank trailing area at " + width);
+            Require(grid.ColumnDefinitions[0].ActualWidth < grid.ColumnDefinitions[1].ActualWidth,
+                "Read-only Markdown keeps the shorter API column compact.");
+        }
+        Console.WriteLine("PASS read-only table: natural outline width and resize reflow.");
+    }
+    finally { shell.Close(); }
+}
+static void VerifyMindMapLanguageState()
+{
+    var editor = new global::CodeWF.Avalonia.MindView.Controls.MindMapEditor();
+    var shell = new Window { Width = 600, Height = 400, Content = editor };
+    try
+    {
+        shell.Show(); Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+        foreach (var culture in new[] { "en-US", "zh-CN", "en-US" })
+        {
+            Task.Run(() => I18nManager.Instance.Culture = CultureInfo.GetCultureInfo(culture)).GetAwaiter().GetResult();
+            Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+            Require(editor.CenterTopicPlaceholder == global::CodeWF.Avalonia.MindView.I18n.MindViewLocalization.GetResource(
+                global::CodeWF.Avalonia.MindView.I18n.MindViewL.CenterTopicPlaceholder),
+                "Existing mind-map chrome follows background global culture changes: " + culture);
+        }
+        Console.WriteLine("PASS mind-map: background culture changes refresh the existing editor on the UI thread.");
+    }
+    finally { shell.Close(); }
 }
 
 static void VerifyStatusLanguageState()
@@ -368,6 +426,23 @@ static void VerifyTitleBar(global::CodeWF.Avalonia.Demo.Views.MainWindow shell, 
     var toggle = shell.FindControl<Ursa.Controls.ThemeToggleButton>("TitleBarThemeToggle")!;
     var language = shell.FindControl<ComboBox>("TitleBarLanguageSelector")!;
     Require(toggle.IsThreeState, "Title bar uses the existing three-state Ursa control.");
+    var firstCulture = model.Cultures[0];
+    var lastCulture = model.Cultures[^1];
+    language.SelectedItem = firstCulture;
+    I18nManager.Instance.Culture = CultureInfo.GetCultureInfo(lastCulture.Name);
+    Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+    Require(ReferenceEquals(model.SelectedCulture, lastCulture) && ReferenceEquals(language.SelectedItem, lastCulture),
+        "Global culture changes synchronize the existing title-bar selection.");
+    language.SelectedItem = firstCulture;
+    Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+    Require(I18nManager.Instance.Culture.Name == firstCulture.Name,
+        "Choosing the previous language after an external change restores the global culture.");
+    Task.Run(() => I18nManager.Instance.Culture = CultureInfo.GetCultureInfo(lastCulture.Name)).GetAwaiter().GetResult();
+    Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+    Require(ReferenceEquals(language.SelectedItem, lastCulture),
+        "Background global culture changes update the existing language control on the UI thread.");
+    Require(model.StatusText == I18nManager.Instance.GetResource(DemoKeys.Shell.Ready),
+        "The shell status refreshes after external culture changes.");
     var button = toggle.GetVisualDescendants().OfType<Button>().Single(item => item.Name == "PART_ThemeButton");
     foreach (var width in new[] { 1120, 1440 })
     {
@@ -479,6 +554,45 @@ static void VerifyPropertyEditors()
     }
     finally { shell.Close(); }
 }
+static void VerifyHiddenPropertyRows()
+{
+    var visible = false;
+    var hiddenLeaf = new PropertyItem { Name = "Private value", VisibleWhen = () => visible };
+    var hiddenCategory = new PropertyItem { Name = "Private category", Kind = PropertyItemKind.Category,
+        VisibleWhen = () => visible, Children = [new PropertyItem { Name = "Private descendant" }] };
+    var parent = new PropertyItem { Name = "Parent", Children = [new PropertyItem { Name = "Public" }, hiddenLeaf, hiddenCategory] };
+    var grid = new PropertyGrid { Items = new[] { parent } };
+    var shell = new Window { Width = 480, Height = 360, Content = grid };
+    try
+    {
+        shell.Show();
+        foreach (var mode in Enum.GetValues<PropertyGridViewMode>())
+        foreach (var query in new string?[] { null, "Parent", "Private" })
+        {
+            grid.ViewMode = mode;
+            grid.SearchText = query;
+            Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+            Require(!grid.Rows.Any(row => row.Item.Name.StartsWith("Private", StringComparison.Ordinal)),
+                "Hidden items and categories stay hidden in " + mode + " with query " + query);
+            if (query == "Private") Require(grid.Rows.Count == 0, "Hidden matches do not retain their ancestors.");
+            if (mode == PropertyGridViewMode.Alphabetical)
+                Require(!grid.Rows.Any(row => row is PropertyCategoryRow), "Alphabetical search never adds category rows.");
+        }
+        grid.SearchText = "Private";
+        visible = true;
+        grid.Refresh();
+        Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+        Require(grid.Rows.Any(row => ReferenceEquals(row.Item, hiddenLeaf)),
+            "A refreshed dynamic visibility predicate makes the matching property accessible.");
+        visible = false;
+        grid.Refresh();
+        Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+        Require(grid.Rows.Count == 0, "Refreshing dynamic visibility removes the branch from current search results.");
+        Console.WriteLine("PASS PropertyGrid visibility: categories, hidden descendants, both sorting modes and dynamic refresh.");
+    }
+    finally { shell.Close(); }
+}
+
 static void VerifyThirdPartyLocales()
 {
     var application = Application.Current!;
