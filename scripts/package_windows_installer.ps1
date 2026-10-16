@@ -19,7 +19,7 @@ if ([string]::IsNullOrWhiteSpace($OutputDirectory)) {
     $OutputDirectory = Join-Path $repositoryRoot 'artifacts/release'
 }
 if ([string]::IsNullOrWhiteSpace($InnoSetupCompiler)) {
-    $command = Get-Command ISCC.exe -ErrorAction SilentlyContinue
+    $command = Get-Command ISCC.exe -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($command) { $InnoSetupCompiler = $command.Source }
     elseif (${env:ProgramFiles(x86)}) { $InnoSetupCompiler = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6/ISCC.exe' }
 }
