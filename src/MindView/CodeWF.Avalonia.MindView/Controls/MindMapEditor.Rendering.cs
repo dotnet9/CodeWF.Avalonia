@@ -297,6 +297,7 @@ public partial class MindMapEditor
             BorderThickness = new Thickness(0),
             Background = Brushes.Transparent,
             Foreground = metrics.Foreground,
+            CaretBrush = metrics.Foreground,
             FontSize = metrics.FontSize,
             FontWeight = metrics.FontWeight,
             TextWrapping = TextWrapping.Wrap,
@@ -449,13 +450,14 @@ public partial class MindMapEditor
         var noteForeground = metrics.IsTextOnly
             ? GetSecondaryTextBrush()
             : IsRootNode(node)
-                ? GetResourceBrush(MindViewStyleKeys.RootNoteForegroundBrushResource, "#D1D5DB", "#DBEAFE")
+                ? GetResourceBrush(MindViewStyleKeys.RootNoteForegroundBrushResource, "#F8FAFC", "#F8FAFC")
                 : GetResourceBrush(MindViewStyleKeys.NoteForegroundBrushResource, "#6B7280", "#CBD5E1");
         var noteBox = new TextBox
         {
             BorderThickness = new Thickness(0),
             Background = Brushes.Transparent,
             Foreground = noteForeground,
+            CaretBrush = noteForeground,
             FontSize = MindMapLayoutMetrics.NoteFontSize,
             TextWrapping = TextWrapping.Wrap,
             AcceptsReturn = true,

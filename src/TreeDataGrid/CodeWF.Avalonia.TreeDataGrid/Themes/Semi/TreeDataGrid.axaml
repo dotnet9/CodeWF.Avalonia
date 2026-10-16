@@ -9,6 +9,8 @@
         </StackPanel>
     </Design.PreviewWith>
     <ControlTheme x:Key="{x:Type TreeDataGrid}" TargetType="TreeDataGrid">
+        <Setter Property="Background" Value="{DynamicResource TreeDataGridBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource TreeDataGridForeground}" />
         <Setter Property="Template">
             <ControlTemplate TargetType="TreeDataGrid">
                 <Border
@@ -49,7 +51,7 @@
     </ControlTheme>
 
     <ControlTheme x:Key="{x:Type TreeDataGridColumnHeader}" TargetType="TreeDataGridColumnHeader">
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Background" Value="{DynamicResource TreeDataGridColumnHeaderBackground}" />
         <Setter Property="MinHeight" Value="32" />
         <Setter Property="Padding" Value="8 2 0 2" />
         <Setter Property="Cursor" Value="Hand" />
@@ -115,16 +117,20 @@
             </ControlTemplate>
         </Setter>
 
+        <Style Selector="^:pointerover">
+            <Setter Property="Foreground" Value="{DynamicResource TreeDataGridHeaderPointerOverForeground}" />
+        </Style>
         <Style Selector="^:pointerover /template/ Border#DataGridBorder">
             <Setter Property="Background" Value="{DynamicResource TreeDataGridHeaderPointerOverBackground}" />
             <Setter Property="BorderBrush" Value="{DynamicResource TreeDataGridHeaderPointerOverBorderBrush}" />
-            <Setter Property="TextBlock.Foreground" Value="{DynamicResource TreeDataGridHeaderPointerOverForeground}" />
         </Style>
 
+        <Style Selector="^:pressed">
+            <Setter Property="Foreground" Value="{DynamicResource TreeDataGridHeaderPressedForeground}" />
+        </Style>
         <Style Selector="^:pressed /template/ Border#DataGridBorder">
             <Setter Property="Background" Value="{DynamicResource TreeDataGridHeaderPressedBackground}" />
             <Setter Property="BorderBrush" Value="{DynamicResource TreeDataGridHeaderPressedBorderBrush}" />
-            <Setter Property="TextBlock.Foreground" Value="{DynamicResource TreeDataGridHeaderPressedForeground}" />
         </Style>
 
         <Style Selector="^[SortDirection=Ascending] /template/ PathIcon#SortIcon">

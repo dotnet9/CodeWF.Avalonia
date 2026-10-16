@@ -5,9 +5,9 @@
     <SolidColorBrush x:Key="CodeWFWindowBackground">#202020</SolidColorBrush>
     <SolidColorBrush x:Key="CodeWFWindowForeground">#FFFFFF</SolidColorBrush>
     <SolidColorBrush x:Key="CodeWFWindowTitleBarBackground">Transparent</SolidColorBrush>
-    <SolidColorBrush x:Key="CodeWFWindowTitleBarForeground">#FFFFFFB3</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFWindowTitleBarForeground">#B3FFFFFF</SolidColorBrush>
     <SolidColorBrush x:Key="CodeWFWindowTitleBarBorderBrush">#33FFFFFF</SolidColorBrush>
-    <SolidColorBrush x:Key="CodeWFTitleBarForeground">#FFFFFFB3</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFTitleBarForeground">#B3FFFFFF</SolidColorBrush>
     <SolidColorBrush x:Key="TabControlSeparatorBorderBrush">#33FFFFFF</SolidColorBrush>
 
     <!--  12.1.4 启动窗口期 Semi 包字典不可达，窗口令牌一并字面量化  -->
@@ -73,4 +73,18 @@
     <SolidColorBrush x:Key="SemiColorDangerLightActive">#1FFFFFFF</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDangerActive">#FF8AA0</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorWhite">#FFFFFFFF</SolidColorBrush>
+    <StaticResource x:Key="GuideCardBackground" ResourceKey="CodeWFWindowBackground" />
+    <StaticResource x:Key="GuideCardBorderBrush" ResourceKey="SemiColorBorder" />
+    <StaticResource x:Key="GuideTextForeground" ResourceKey="SemiColorText0" />
+    <StaticResource x:Key="GuideSecondaryTextForeground" ResourceKey="SemiColorText2" />
+    <StaticResource x:Key="GuideIndicatorBrush" ResourceKey="SemiColorFill2" />
+    <StaticResource x:Key="GuidePrimaryBrush" ResourceKey="SemiColorPrimary" />
+    <StaticResource x:Key="GuidePrimaryHoverBrush" ResourceKey="SemiColorPrimary" />
+    <StaticResource x:Key="GuidePrimaryPressedBrush" ResourceKey="SemiColorPrimary" />
+    <StaticResource x:Key="GuidePrimaryForeground" ResourceKey="StatusBadgeLeftTextForeground" />
+    <StaticResource x:Key="GuideArrowBorderBrush" ResourceKey="SemiColorBorder" />
+    <StaticResource x:Key="GuideTargetBorderBrush" ResourceKey="SemiColorPrimary" />
+    <StaticResource x:Key="GuideCloseButtonHoverBackground" ResourceKey="SemiColorFill1" />
+    <StaticResource x:Key="GuideCloseButtonPressedBackground" ResourceKey="SemiColorFill2" />
+    <StaticResource x:Key="ColumnDisplayEditorRowSelectedForeground" ResourceKey="StatusBadgeLeftTextForeground" />
 </ResourceDictionary>

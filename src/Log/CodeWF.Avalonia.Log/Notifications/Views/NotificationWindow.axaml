@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:behaviors="using:CodeWF.Avalonia.Log.Notifications.Behaviors"
         xmlns:viewModels="using:CodeWF.Avalonia.Log.Notifications.ViewModels"
@@ -147,11 +147,28 @@
             <Setter Property="Foreground" Value="{DynamicResource CodeWFLogDesktopNotificationFatalForeground}" />
         </Style>
 
-        <Style Selector="Image.levelIcon">
-            <Setter Property="Source" Value="avares://CodeWF.Avalonia.Log/Assets/Notifications/error.png" />
+        <Style Selector="Path.levelIcon.debug">
+            <Setter Property="Data" Value="{DynamicResource CodeWFLogDesktopNotificationDebugIconData}" />
+            <Setter Property="Fill" Value="{DynamicResource CodeWFLogDesktopNotificationDebugForeground}" />
         </Style>
-        <Style Selector="Image.levelIcon.fatal">
-            <Setter Property="Source" Value="avares://CodeWF.Avalonia.Log/Assets/Notifications/critical.png" />
+        <Style Selector="Path.levelIcon.info">
+            <Setter Property="Data" Value="{DynamicResource CodeWFLogDesktopNotificationInfoIconData}" />
+            <Setter Property="Fill" Value="{DynamicResource CodeWFLogDesktopNotificationInfoForeground}" />
+        </Style>
+        <Style Selector="Path.levelIcon.warn">
+            <Setter Property="Data" Value="{DynamicResource CodeWFLogDesktopNotificationWarnIconData}" />
+            <Setter Property="Fill" Value="{DynamicResource CodeWFLogDesktopNotificationWarnForeground}" />
+        </Style>
+        <Style Selector="Path.levelIcon.error">
+            <Setter Property="Data" Value="{DynamicResource CodeWFLogDesktopNotificationErrorIconData}" />
+            <Setter Property="Fill" Value="{DynamicResource CodeWFLogDesktopNotificationErrorForeground}" />
+        </Style>
+        <Style Selector="Path.levelIcon.fatal">
+            <Setter Property="Data" Value="{DynamicResource CodeWFLogDesktopNotificationFatalIconData}" />
+            <Setter Property="Fill" Value="{DynamicResource CodeWFLogDesktopNotificationFatalForeground}" />
+        </Style>
+        <Style Selector="Button.navigation:disabled">
+            <Setter Property="Opacity" Value="0.4" />
         </Style>
     </Window.Styles>
 
@@ -192,10 +209,11 @@
                           IsVisible="{Binding IsNewLogVisible}">
                         <Border Background="{DynamicResource CodeWFLogDesktopNotificationNewLogBackground}"
                                 CornerRadius="2 0 0 2">
-                            <Image Width="16" Height="16"
+                            <Path Width="12" Height="12" Stretch="Uniform"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"
-                                   Source="avares://CodeWF.Avalonia.Log/Assets/Notifications/new-message.png" />
+                                   Fill="{DynamicResource CodeWFLogDesktopNotificationNewLogIconForeground}"
+                                   Data="M2,2 H14 V10 H8 L4,14 V10 H2 Z" />
                         </Border>
                         <Border Grid.Column="1"
                                 Width="73"
@@ -226,8 +244,7 @@
                             Margin="16 0 0 0"
                             Classes="titleClose"
                             Command="{Binding CloseCommand}">
-                        <Image Width="16" Height="16"
-                               Source="avares://CodeWF.Avalonia.Log/Assets/Notifications/close.png" />
+                        <Path Width="10" Height="10" Stretch="Uniform" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Data="M1,0 L6,5 L11,0 L12,1 L7,6 L12,11 L11,12 L6,7 L1,12 L0,11 L5,6 L0,1 Z" />
                     </Button>
                 </Grid>
             </Border>
@@ -253,7 +270,7 @@
                                         IconTarget="{Binding #LevelIcon}"
                                         TextTarget="{Binding #LevelText}" />
                                 </Interaction.Behaviors>
-                                <Image x:Name="LevelIcon"
+                                <Path x:Name="LevelIcon" Stretch="Uniform"
                                        Classes="levelIcon error"
                                        Width="32"
                                        Height="32"
@@ -295,17 +312,8 @@
                                   IsVisible="{Binding IsNavigationVisible}">
                                 <Button Classes="navigation previous"
                                         Command="{Binding PreviousCommand}"
-                                        IsHitTestVisible="{Binding CanPrevious}">
-                                    <Grid>
-                                        <Image Classes="navigationEnabled"
-                                               Width="28" Height="28"
-                                               IsVisible="{Binding CanPrevious}"
-                                               Source="avares://CodeWF.Avalonia.Log/Assets/Notifications/navigation-enabled-left.png" />
-                                        <Image Classes="navigationDisabled"
-                                               Width="28" Height="28"
-                                               IsVisible="{Binding IsPreviousDisabled}"
-                                               Source="avares://CodeWF.Avalonia.Log/Assets/Notifications/navigation-disabled.png" />
-                                    </Grid>
+                                        IsEnabled="{Binding CanPrevious}">
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Data="M10,2 L4,8 L10,14 Z" />
                                 </Button>
                                 <TextBlock Grid.Column="2"
                                            MinWidth="24"
@@ -319,17 +327,8 @@
                                 <Button Grid.Column="4"
                                         Classes="navigation next"
                                         Command="{Binding NextCommand}"
-                                        IsHitTestVisible="{Binding CanNext}">
-                                    <Grid>
-                                        <Image Classes="navigationEnabled"
-                                               Width="28" Height="28"
-                                               IsVisible="{Binding CanNext}"
-                                               Source="avares://CodeWF.Avalonia.Log/Assets/Notifications/navigation-enabled.png" />
-                                        <Image Classes="navigationDisabled"
-                                               Width="28" Height="28"
-                                               IsVisible="{Binding IsNextDisabled}"
-                                               Source="avares://CodeWF.Avalonia.Log/Assets/Notifications/navigation-disabled-right.png" />
-                                    </Grid>
+                                        IsEnabled="{Binding CanNext}">
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Data="M4,2 L10,8 L4,14 Z" />
                                 </Button>
                             </Grid>
                         </StackPanel>
@@ -352,7 +351,7 @@
                 <Button Grid.Column="2"
                         Classes="footerButton confirm"
                         Width="184"
-                        Content="确定"
+                        Content="{Binding ConfirmButtonText}"
                         Command="{Binding CloseCommand}" />
             </Grid>
         </Grid>

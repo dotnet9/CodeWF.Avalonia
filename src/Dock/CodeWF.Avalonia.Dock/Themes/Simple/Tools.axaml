@@ -14,6 +14,8 @@
             <Thickness x:Key="CodeWFToolTitleBarButtonPadding">0</Thickness>
             <x:Double x:Key="CodeWFToolTitleBarButtonSize">22</x:Double>
             <x:Double x:Key="CodeWFToolTitleBarIconSize">16</x:Double>
+            <!-- 矢量图标继承按钮前景色，深浅色切换时不再保留位图的固定深灰像素。 -->
+            <StreamGeometry x:Key="CodeWFToolPinIconGeometry">M 5,1 L 11,1 L 10,3 L 10,7 L 12,9 L 12,10 L 8.75,10 L 8.75,15 L 7.25,15 L 7.25,10 L 4,10 L 4,9 L 6,7 L 6,3 Z</StreamGeometry>
 
             <DataTemplate x:Key="CodeWFToolTitleBarContentTemplate" DataType="core:IDockable">
                 <Panel />
@@ -151,11 +153,9 @@
                                                         <TemplateBinding Property="IsFloating" Converter="{x:Static BoolConverters.Not}" />
                                                     </MultiBinding>
                                                 </Button.IsVisible>
-                                                <Viewbox Width="16" Height="16">
-                                                    <Image x:Name="PART_PinIcon"
-                                                           Source="avares://CodeWF.Avalonia.Dock/Themes/Assets/dock-ding.png"
-                                                           Stretch="Uniform" />
-                                                </Viewbox>
+                                                <PathIcon x:Name="PART_PinIcon"
+                                                          Width="16" Height="16"
+                                                          Data="{DynamicResource CodeWFToolPinIconGeometry}" />
                                             </Button>
                                             <Button x:Name="PART_CloseButton"
                                                     Command="{Binding Owner.Factory, Converter={x:Static codewfConverters:DockFactoryCommandConverter.CloseDockable}}"
@@ -176,11 +176,9 @@
                                                         </MultiBinding>
                                                     </MultiBinding>
                                                 </Button.IsVisible>
-                                                <Viewbox Width="16" Height="16">
-                                                    <Image x:Name="PART_CloseIcon"
-                                                           Source="avares://CodeWF.Avalonia.Dock/Themes/Assets/dock-close.png"
-                                                           Stretch="Uniform" />
-                                                </Viewbox>
+                                                <PathIcon x:Name="PART_CloseIcon"
+                                                          Width="12" Height="12"
+                                                          Data="{DynamicResource DockIconCloseGeometry}" />
                                             </Button>
                                         </StackPanel>
                                         <Border x:Name="PART_HeaderDivider"
@@ -286,13 +284,13 @@
                     <Setter Property="VerticalContentAlignment" Value="Center" />
                 </Style>
 
-                <Style Selector="^/template/ Image#PART_CloseIcon">
+                <Style Selector="^/template/ PathIcon#PART_CloseIcon">
                     <Setter Property="Opacity" Value="1" />
                 </Style>
-                <Style Selector="^:active /template/ Image#PART_CloseIcon">
+                <Style Selector="^:active /template/ PathIcon#PART_CloseIcon">
                     <Setter Property="Opacity" Value="1" />
                 </Style>
-                <Style Selector="^:disabled /template/ Image#PART_CloseIcon">
+                <Style Selector="^:disabled /template/ PathIcon#PART_CloseIcon">
                     <Setter Property="Opacity" Value="1" />
                 </Style>
                 <Style Selector="^/template/ Button#PART_CloseButton">
@@ -307,16 +305,17 @@
                     <Setter Property="Foreground" Value="{DynamicResource CodeWFDockHeaderSecondaryForegroundBrush}" />
                     <Setter Property="Opacity" Value="1" />
                 </Style>
-                <Style Selector="^/template/ Image#PART_PinIcon">
+                <Style Selector="^/template/ PathIcon#PART_PinIcon">
                     <Setter Property="Opacity" Value="1" />
                 </Style>
-                <Style Selector="^:active /template/ Image#PART_PinIcon">
+                <Style Selector="^:active /template/ PathIcon#PART_PinIcon">
                     <Setter Property="Opacity" Value="1" />
                 </Style>
-                <Style Selector="^:pinned /template/ Image#PART_PinIcon">
-                    <Setter Property="Opacity" Value="0.72" />
+                <Style Selector="^:pinned /template/ PathIcon#PART_PinIcon">
+                    <Setter Property="Opacity" Value="1" />
+                    <Setter Property="RenderTransform" Value="rotate(45deg)" />
                 </Style>
-                <Style Selector="^:active:pinned /template/ Image#PART_PinIcon">
+                <Style Selector="^:active:pinned /template/ PathIcon#PART_PinIcon">
                     <Setter Property="Opacity" Value="1" />
                 </Style>
                 <Style Selector="^/template/ Button#PART_PinButton">
@@ -324,9 +323,12 @@
                     <Setter Property="Opacity" Value="1" />
                     <Setter Property="(ToolTip.Tip)" Value="启用自动隐藏；窗口失去焦点后自动收起" />
                 </Style>
+                <Style Selector="^:active /template/ Button#PART_PinButton">
+                    <Setter Property="Foreground" Value="{DynamicResource CodeWFToolPinButtonActiveForegroundBrush}" />
+                </Style>
                 <Style Selector="^:pinned /template/ Button#PART_PinButton">
                     <Setter Property="Foreground" Value="{DynamicResource CodeWFDockHeaderSecondaryForegroundBrush}" />
-                    <Setter Property="Opacity" Value="0.82" />
+                    <Setter Property="Opacity" Value="1" />
                     <Setter Property="(ToolTip.Tip)" Value="固定工具窗口；失去焦点后保持展开" />
                 </Style>
             </ControlTheme>

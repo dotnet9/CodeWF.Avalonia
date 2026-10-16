@@ -1,4 +1,4 @@
-{
+﻿{
   "language": "简体中文",
   "description": "简体中文",
   "cultureName": "zh-CN",
@@ -6,7 +6,16 @@
     "View": {
       "Copy": "复制",
       "Clear": "清空",
-      "Location": "打开日志目录"
+      "Location": "打开日志目录",
+      "Notification": {
+        "Confirm": "确定",
+        "NewLogs": "{0}条新日志",
+        "FolderUnavailable": "未配置日志目录",
+        "FolderOpenFailed": "打开失败，请重试",
+        "FolderOpenError": "打开日志目录失败（{0}）：{1}",
+        "CountdownSeconds": "{0}秒",
+        "NewLog": "{0}条新日志"
+      }
     }
   }
 }

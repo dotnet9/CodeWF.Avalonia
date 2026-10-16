@@ -74,6 +74,46 @@ public sealed class StudioThemeTests
         Assert.Equal(0.4, Get("CheckBoxCheckedDisabledBackground").Opacity);
     }
 
+    [Fact]
+    public void TextRolesAndActionGradientsStayReadableOnEveryWorkspaceSurface()
+    {
+        var theme = new StudioTheme();
+        foreach (var palette in Enum.GetValues<StudioPalette>())
+        foreach (var dark in new[] { false, true })
+        {
+            var variant = StudioTheme.GetVariant(palette, dark);
+            object Get(string key)
+            {
+                Assert.True(theme.TryGetResource(key, variant, out var value), variant + "/" + key);
+                return value!;
+            }
+            Color ColorOf(string key) => Assert.IsAssignableFrom<ISolidColorBrush>(Get(key)).Color;
+            foreach (var surface in new[] { "StudioBackground", "StudioSurface", "StudioRaised" })
+            foreach (var foreground in new[] { "StudioText", "StudioMuted", "StudioAccent" })
+            {
+                var contrast = Contrast(ColorOf(foreground), ColorOf(surface));
+                Assert.True(contrast >= 4.5, $"{variant}/{foreground}/{surface} = {contrast:F3}:1");
+            }
+            var hover = ColorOf("StudioPrimaryHover");
+            var pressed = ColorOf("StudioPrimaryPressed");
+            Assert.NotEqual(ColorOf("StudioPrimary"), hover);
+            Assert.NotEqual(hover, pressed);
+            Assert.True(Contrast(ColorOf("StudioOnPrimary"), hover) >= 4.5, variant + "/Primary/Hover");
+            Assert.True(Contrast(ColorOf("StudioOnPrimary"), pressed) >= 4.5, variant + "/Primary/Pressed");
+            var gradient = Assert.IsType<LinearGradientBrush>(Get("StudioActionGradient"));
+            var first = gradient.GradientStops[0].Color;
+            var last = gradient.GradientStops[^1].Color;
+            // 除渐变端点外，也覆盖插值中的颜色，防止明亮副色使白字失去对比。
+            for (var step = 0; step <= 100; step++)
+            {
+                var amount = step / 100d;
+                byte Blend(byte a, byte b) => (byte)Math.Round(a + (b - a) * amount);
+                var background = Color.FromRgb(Blend(first.R, last.R), Blend(first.G, last.G), Blend(first.B, last.B));
+                Assert.True(Contrast(Colors.White, background) >= 4.5, variant + "/ActionGradient/" + step);
+            }
+        }
+    }
+
     private static double Contrast(Color first, Color second)
     {
         static double Linear(byte component)

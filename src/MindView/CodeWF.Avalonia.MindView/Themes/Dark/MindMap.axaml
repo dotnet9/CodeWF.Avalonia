@@ -1,12 +1,12 @@
-<ResourceDictionary xmlns="https://github.com/avaloniaui"
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <SolidColorBrush x:Key="CodeWFMindViewCanvasBackgroundBrush" Color="#111827" />
     <SolidColorBrush x:Key="CodeWFMindViewConnectorBrush" Color="#60A5FA" />
     <SolidColorBrush x:Key="CodeWFMindViewSelectionBrush" Color="#60A5FA" />
     <SolidColorBrush x:Key="CodeWFMindViewTextSelectionBrush" Color="#60A5FA" Opacity="0.38" />
-    <SolidColorBrush x:Key="CodeWFMindViewRootBackgroundBrush" Color="#148BFF" />
+    <SolidColorBrush x:Key="CodeWFMindViewRootBackgroundBrush" Color="#1264D7" />
     <SolidColorBrush x:Key="CodeWFMindViewRootForegroundBrush" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="CodeWFMindViewRootPlaceholderForegroundBrush" Color="#FFFFFF" Opacity="0.72" />
+    <SolidColorBrush x:Key="CodeWFMindViewRootPlaceholderForegroundBrush" Color="#FFFFFF" Opacity="0.92" />
     <SolidColorBrush x:Key="CodeWFMindViewBranchBackgroundBrush" Color="#1F2937" />
     <SolidColorBrush x:Key="CodeWFMindViewBranchBlendTargetBrush" Color="#111827" />
     <SolidColorBrush x:Key="CodeWFMindViewPrimaryTextBrush" Color="#F9FAFB" />
@@ -22,9 +22,9 @@
     <SolidColorBrush x:Key="CodeWFMindViewNodeMenuRowHoverBrush" Color="#1F2937" />
     <SolidColorBrush x:Key="CodeWFMindViewLeafHoverBackgroundBrush" Color="#18243A" />
     <SolidColorBrush x:Key="CodeWFMindViewLeafSelectedBackgroundBrush" Color="#233750" />
-    <SolidColorBrush x:Key="CodeWFMindViewRootNoteForegroundBrush" Color="#DBEAFE" />
+    <SolidColorBrush x:Key="CodeWFMindViewRootNoteForegroundBrush" Color="#F8FAFC" />
     <SolidColorBrush x:Key="CodeWFMindViewNoteForegroundBrush" Color="#CBD5E1" />
-    <SolidColorBrush x:Key="CodeWFMindViewRootNotePlaceholderForegroundBrush" Color="#FFFFFF" Opacity="0.62" />
+    <SolidColorBrush x:Key="CodeWFMindViewRootNotePlaceholderForegroundBrush" Color="#FFFFFF" Opacity="0.92" />
     <SolidColorBrush x:Key="CodeWFMindViewNotePlaceholderForegroundBrush" Color="#64748B" />
     <SolidColorBrush x:Key="CodeWFMindViewDropChildBrush" Color="#22C55E" />
     <SolidColorBrush x:Key="CodeWFMindViewMiniMapBackgroundBrush" Color="#0F172A" />

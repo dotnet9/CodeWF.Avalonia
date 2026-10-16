@@ -1,8 +1,7 @@
-<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Design.PreviewWith>
-        <Border Padding="20">
-            <!--  Add Controls for Previewer Here  -->
-        </Border>
-    </Design.PreviewWith>
-    <!--  Add Styles Here  -->
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:codewf="https://codewf.com">
+    <!-- 线条是独立绘制控件，同样需要跟随宿主的明暗资源。 -->
+    <Style Selector="codewf|LeftTop2RightBottomLine">
+        <Setter Property="BorderBrush" Value="{DynamicResource SemiColorText2}" />
+    </Style>
 </Styles>

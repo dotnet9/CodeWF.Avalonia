@@ -101,6 +101,90 @@ public sealed class MarkdownLiveEditorViewTests
     });
 
     [Fact]
+    public void EditingPreviewStartsWithCurrentContentAndLeavesReadOnlyPreviewUntilCommit() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView { TypographyTheme = "OrangeHeart", TypographySize = "Small" };
+        view.SetText("original **content**", "C:/documents/first.md");
+        var block = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Single();
+        var readOnlyPreview = block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single();
+        var originalPreviewText = readOnlyPreview.Markdown;
+
+        view.FocusBlock(0);
+        var editingPreview = block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single();
+        Assert.NotSame(readOnlyPreview, editingPreview);
+        Assert.Equal(originalPreviewText, editingPreview.Markdown);
+        Assert.Equal("C:/documents/first.md", editingPreview.ImageBasePath);
+        Assert.Equal("OrangeHeart", editingPreview.TypographyTheme);
+        Assert.Equal("Small", editingPreview.TypographySize);
+        block.ActiveEditor!.Text = "updated *content*";
+        Dispatcher.UIThread.RunJobs();
+        Assert.Contains("updated *content*", editingPreview.Markdown);
+        Assert.Equal(originalPreviewText, readOnlyPreview.Markdown);
+
+        block.CommitAndRender();
+        Assert.Same(readOnlyPreview, block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single());
+        Assert.Contains("updated *content*", readOnlyPreview.Markdown);
+        view.FocusBlock(0);
+        Assert.Contains("updated *content*", block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single().Markdown);
+    });
+
+    [Fact]
+    public void DocumentAndImageBasePathLoadTogetherAndStandalonePathChangePreservesSelection() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView();
+        var changed = 0;
+        view.MarkdownChanged += (_, _) => changed++;
+        const string source = "# Heading\r\n\r\n![Local](image.png)\r\n";
+        view.SetText(source, "C:/documents/first.md");
+        Assert.Equal(source, view.Text);
+        Assert.Equal("C:/documents/first.md", view.ImageBasePath);
+        Assert.All(view.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>(),
+            preview => Assert.Equal(view.ImageBasePath, preview.ImageBasePath));
+        view.FocusBlock(1);
+        var block = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Last();
+        block.ActiveEditor!.SelectionStart = 2;
+        block.ActiveEditor.SelectionEnd = 5;
+
+        view.ImageBasePath = "C:/other/second.md";
+        block = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Last();
+        Assert.True(block.IsEditing);
+        Assert.Equal(2, block.ActiveEditor!.SelectionStart);
+        Assert.Equal(5, block.ActiveEditor.SelectionEnd);
+        Assert.Equal(source, view.Text);
+        Assert.All(view.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>(),
+            preview => Assert.Equal("C:/other/second.md", preview.ImageBasePath));
+
+        view.SetText("replacement", null);
+        Assert.Equal("replacement", view.Text);
+        Assert.Null(view.ImageBasePath);
+        Assert.Equal(-1, view.ActiveBlockIndex);
+        Assert.Equal(0, changed);
+    });
+
+    [Fact]
+    public void PlainTableCellCreatesRichPreviewOnlyWhenItsContentNeedsIt() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView();
+        view.SetText("| A | B |\n| --- | --- |\n| plain | cell |");
+        var table = view.GetLogicalDescendants().OfType<MarkdownTableView>().Single();
+        var block = table.GetLogicalDescendants().OfType<MarkdownBlockView>().ElementAt(2);
+        Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
+        block.BeginEditAtEnd();
+        Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
+        block.ActiveEditor!.Text = "$x$";
+        Dispatcher.UIThread.RunJobs();
+        var preview = block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single();
+        Assert.True(preview.IsVisible);
+        Assert.Contains("$x$", preview.Markdown);
+        block.ActiveEditor.Text = "plain again";
+        Dispatcher.UIThread.RunJobs();
+        Assert.False(preview.IsVisible);
+        block.CommitAndRender();
+        Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
+        Assert.Contains("plain again", view.Text);
+    });
+
+    [Fact]
     public void UndoRedoAndTemporaryDocumentPreserveCrossBlockHistory() => _platform.Run(() =>
     {
         var view = new MarkdownLiveEditorView();

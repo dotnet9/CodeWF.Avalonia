@@ -103,7 +103,7 @@ public partial class MindMapEditor
                 MindMapLayoutMetrics.RootMaxWidth,
                 MindMapLayoutMetrics.RootMinHeight,
                 GetResourceCornerRadius(MindViewStyleKeys.RootCornerRadiusResource, new CornerRadius(8)),
-                GetResourceBrush(MindViewStyleKeys.RootBackgroundBrushResource, "#148BFF", "#148BFF"),
+                GetResourceBrush(MindViewStyleKeys.RootBackgroundBrushResource, "#1264D7", "#1264D7"),
                 Brushes.Transparent,
                 GetResourceThickness(MindViewStyleKeys.RootBorderThicknessResource, new Thickness(0)),
                 GetResourceThickness(MindViewStyleKeys.RootPaddingResource, new Thickness(10, 5)),

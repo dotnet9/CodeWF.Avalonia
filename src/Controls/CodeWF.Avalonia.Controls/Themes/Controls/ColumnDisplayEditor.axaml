@@ -45,6 +45,7 @@
                             SelectionMode="Single">
                             <ListBox.Styles>
                                 <Style Selector="ListBoxItem">
+                                    <Setter Property="Foreground" Value="{DynamicResource ColumnDisplayEditorRowForeground}" />
                                     <Setter Property="Padding" Value="0" />
                                     <Setter Property="Margin" Value="6,2" />
                                     <Setter Property="MinHeight" Value="34" />
@@ -56,6 +57,7 @@
                                             Value="{DynamicResource ColumnDisplayEditorRowHoverBackground}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:selected">
+                                    <Setter Property="Foreground" Value="{DynamicResource ColumnDisplayEditorRowSelectedForeground}" />
                                     <Setter Property="Background"
                                             Value="{DynamicResource ColumnDisplayEditorRowSelectedBackground}" />
                                 </Style>
@@ -83,7 +85,7 @@
                                             Background="Transparent"
                                             BorderThickness="0"
                                             Cursor="SizeAll"
-                                            Foreground="{DynamicResource SemiColorText2}">
+                                            Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}">
                                             <PathIcon
                                                 Width="15"
                                                 Height="15"
@@ -98,7 +100,7 @@
                                             Grid.Column="2"
                                             Margin="0,0,8,0"
                                             VerticalAlignment="Center"
-                                            Foreground="{DynamicResource ColumnDisplayEditorRowForeground}"
+                                            Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
                                             Text="{Binding DisplayText}" />
                                     </Grid>
                                 </DataTemplate>

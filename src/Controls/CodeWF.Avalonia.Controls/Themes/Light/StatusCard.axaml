@@ -1,6 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StaticResource x:Key="StatusCardTopTextForeground" ResourceKey="SemiColorText2" />
+    <SolidColorBrush x:Key="StatusCardTopTextForeground">#5C6370</SolidColorBrush>
     <StaticResource x:Key="StatusCardDebugBackground" ResourceKey="SemiColorInformationLight" />
     <StaticResource x:Key="StatusCardInfoBackground" ResourceKey="SemiColorSuccessLight" />
     <StaticResource x:Key="StatusCardWarnBackground" ResourceKey="SemiColorWarningLight" />
@@ -8,7 +8,7 @@
     <StaticResource x:Key="StatusCardFatalBackground" ResourceKey="SemiColorDangerLightActive" />
     <StaticResource x:Key="StatusCardDebugForeground" ResourceKey="SemiColorText0" />
     <StaticResource x:Key="StatusCardInfoForeground" ResourceKey="SemiColorText0" />
-    <StaticResource x:Key="StatusCardWarnForeground" ResourceKey="SemiColorWarning" />
-    <StaticResource x:Key="StatusCardErrorForeground" ResourceKey="SemiColorDanger" />
-    <StaticResource x:Key="StatusCardFatalForeground" ResourceKey="SemiColorDangerActive" />
+    <SolidColorBrush x:Key="StatusCardWarnForeground">#925C00</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardErrorForeground">#B42318</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardFatalForeground">#912018</SolidColorBrush>
 </ResourceDictionary>

@@ -295,11 +295,15 @@ public class MarkdownLiveEditorView : UserControl
     }
 
     /// <summary>替换全文（载入文档）；不触发 <see cref="MarkdownChanged"/>。</summary>
-    public void SetText(string? markdown)
+    public void SetText(string? markdown) => SetText(markdown, ImageBasePath);
+
+    /// <summary>同时载入正文和图片基址，只重建一次文档；不触发 <see cref="MarkdownChanged"/>。</summary>
+    public void SetText(string? markdown, string? imageBasePath)
     {
         _suppressChanged = true;
         try
         {
+            ImageBasePath = imageBasePath;
             _models.Clear();
             _activeIndex = -1;
             _models.AddRange(MarkdownBlockParser.Parse(markdown));
@@ -405,7 +409,7 @@ public class MarkdownLiveEditorView : UserControl
         if (change.Property == ImageBasePathProperty)
         {
             _blockOptions.ImageBasePath = ImageBasePath;
-            RebuildPreservingEdit();
+            if (!_suppressChanged) RebuildPreservingEdit();
         }
         if (change.Property == EditorFontSizeProperty) RebuildPreservingEdit();
         if (change.Property == TableHeaderBackgroundBrushProperty)
@@ -1019,8 +1023,7 @@ public class MarkdownLiveEditorView : UserControl
 
     private IBrush? ResolveBrush(string key, string fallbackKey)
     {
-        if (Application.Current is { } app
-            && app.TryGetResource(key, ActualThemeVariant, out var resource)
+        if (this.TryFindResource(key, ActualThemeVariant, out var resource)
             && resource is IBrush brush)
         {
             return brush;

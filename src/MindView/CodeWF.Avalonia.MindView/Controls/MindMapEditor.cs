@@ -238,8 +238,7 @@ public partial class MindMapEditor : UserControl
         Focusable = true;
         ActualThemeVariantChanged += (_, _) =>
         {
-            var variant = ActualThemeVariant;
-            SetCurrentValue(IsDarkThemeProperty, variant == global::Avalonia.Styling.ThemeVariant.Dark || variant.InheritVariant == global::Avalonia.Styling.ThemeVariant.Dark);
+            SetCurrentValue(IsDarkThemeProperty, MindViewThemeResources.IsDarkVariant(ActualThemeVariant));
             ApplyTheme();
             RecreateNodeChrome();
         };

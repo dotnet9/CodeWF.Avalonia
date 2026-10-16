@@ -5,6 +5,7 @@
     </ResourceDictionary.MergedDictionaries>
     <StaticResource x:Key="DataGridLineBrush" ResourceKey="SemiColorBorder" />
     <StaticResource x:Key="DataGridBackground" ResourceKey="SemiColorBackground1" />
+    <StaticResource x:Key="DataGridForeground" ResourceKey="SemiColorText0" />
     <SolidColorBrush x:Key="DataGridCellBackground" Color="Transparent" />
     <StaticResource x:Key="DataGridCellFocusBorderBrush" ResourceKey="SemiColorTertiaryLightActive" />
     <StaticResource x:Key="DataGridCellCurrentBorderBrush" ResourceKey="SemiColorBorder" />

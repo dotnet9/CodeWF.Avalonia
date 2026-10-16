@@ -110,7 +110,7 @@ public partial class MindMapEditor
         var icon = new global::Avalonia.Controls.Shapes.Path
         {
             Data = Geometry.Parse("M12 5v14M5 12h14"),
-            Stroke = Brushes.White,
+            Stroke = GetPrimaryTextBrush(),
             StrokeThickness = 2.2,
             Fill = Brushes.Transparent,
             Stretch = Stretch.Uniform,

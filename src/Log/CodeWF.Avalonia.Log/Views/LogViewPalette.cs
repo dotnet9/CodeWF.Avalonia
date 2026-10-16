@@ -11,10 +11,10 @@ internal sealed record LogViewPalette(
     IBrush ErrorForeground)
 {
     internal static LogViewPalette Light { get; } = new(
-        new SolidColorBrush(Color.Parse("#8C8C8C")),
+        new SolidColorBrush(Color.Parse("#667085")),
         new SolidColorBrush(Color.Parse("#262626")),
-        new SolidColorBrush(Color.Parse("#1890FF")),
-        new SolidColorBrush(Color.Parse("#52C41A")),
-        new SolidColorBrush(Color.Parse("#FAAD14")),
-        new SolidColorBrush(Color.Parse("#FF4D4F")));
+        new SolidColorBrush(Color.Parse("#0969DA")),
+        new SolidColorBrush(Color.Parse("#237B25")),
+        new SolidColorBrush(Color.Parse("#9A6700")),
+        new SolidColorBrush(Color.Parse("#CF222E")));
 }

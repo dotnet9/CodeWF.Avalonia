@@ -43,7 +43,8 @@ internal static class CodeHighlighter
             FontSize = fontSize,
             LineHeight = lineHeight,
             Margin = new Thickness(0, 0, 0, 6),
-            SelectionBrush = new ImmutableSolidColorBrush(Color.FromArgb(0xCC, 0x2F, 0x6F, 0xD6)),
+            // 选区使用不透明底色，避免与浅色代码背景合成后降低白字对比度。
+            SelectionBrush = new ImmutableSolidColorBrush(Color.FromRgb(0x24, 0x5F, 0xC0)),
             SelectionForegroundBrush = Brushes.White
         };
         textBlock.Classes.Add(MarkdownStyleKeys.CodeBlockText);
@@ -53,7 +54,7 @@ internal static class CodeHighlighter
         if (grammar is null)
         {
             textBlock.Inlines.Add(new Run(code) { Foreground = isDark ? Brushes.White : Brushes.Black });
-            return Wrap(textBlock);
+            return Wrap(textBlock, isDark);
         }
 
         foreach (var line in GetOrCreateHighlightedLines(code, NormalizeLanguage(language), themeName, grammar, theme, isDark))
@@ -66,10 +67,10 @@ internal static class CodeHighlighter
             textBlock.Inlines.Add(new LineBreak());
         }
 
-        return Wrap(textBlock);
+        return Wrap(textBlock, isDark);
     }
 
-    private static Control Wrap(Control content)
+    private static Control Wrap(Control content, bool isDark)
     {
         if (content is SelectableTextBlock textBlock)
         {
@@ -87,8 +88,8 @@ internal static class CodeHighlighter
                 FontFamily = textBlock.FontFamily,
                 FontSize = textBlock.FontSize,
                 LineHeight = textBlock.LineHeight,
-                Foreground = Brushes.Gray,
-                Opacity = 0.72,
+                // 依据实际代码背景选择行号颜色，不随窗口明暗误判，也不额外衰减透明度。
+                Foreground = new ImmutableSolidColorBrush(isDark ? Color.FromRgb(0xAD, 0xB7, 0xC5) : Color.FromRgb(0x52, 0x60, 0x75)),
                 TextAlignment = TextAlignment.Right,
                 Margin = new Thickness(0, 0, 12, 6),
                 IsHitTestVisible = false

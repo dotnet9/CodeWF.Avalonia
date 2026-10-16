@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- 颜色令牌与画刷遵循 Semi 的主题字典结构。 -->
     <Color x:Key="StudioBackgroundColor">#101724</Color>
@@ -28,6 +28,24 @@
     <LinearGradientBrush x:Key="StudioTextGradient" StartPoint="0%,0%" EndPoint="100%,0%">
         <GradientStop Offset="0" Color="{StaticResource StudioAccentColor}" />
         <GradientStop Offset="1" Color="{StaticResource StudioTextGradientEndColor}" />
+    </LinearGradientBrush>
+    <!-- 语义色保持状态含义；文字色与实色底分别定义，避免白字落在浅黄或浅绿上。 -->
+    <SolidColorBrush x:Key="StudioOnPrimary">White</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioPrimaryHover">#20569C</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioPrimaryPressed">#1C4C8A</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorSuccess">#75D496</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWarning">#F5CC80</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDanger">#FF9AAE</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerActive">#FFB5C2</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorSuccessLight">#17291D</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWarningLight">#2E2717</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLight">#2E1D21</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLightActive">#3A2429</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#13161C</SolidColorBrush>
+    <!-- 白字操作面使用独立渐变，装饰渐变保留明亮副色。 -->
+    <LinearGradientBrush x:Key="StudioActionGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Offset="0" Color="{StaticResource StudioPrimaryColor}" />
+        <GradientStop Offset="1" Color="#194C94" />
     </LinearGradientBrush>
     <ResourceDictionary x:Key="StudioPropertyGridTheme">
         <StaticResource x:Key="PgBackground" ResourceKey="StudioSurface" />
@@ -108,11 +126,11 @@
     <StaticResource x:Key="AdornerLayerBorderBrush" ResourceKey="StudioBorder" />
     <StaticResource x:Key="ButtonDefaultPrimaryForeground" ResourceKey="StudioAccent" />
     <StaticResource x:Key="ButtonSolidPrimaryBackground" ResourceKey="StudioPrimary" />
-    <StaticResource x:Key="ButtonSolidPrimaryPointeroverBackground" ResourceKey="StudioPrimary" />
-    <StaticResource x:Key="ButtonSolidPrimaryPressedBackground" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="ButtonSolidPrimaryPointeroverBackground" ResourceKey="StudioPrimaryHover" />
+    <StaticResource x:Key="ButtonSolidPrimaryPressedBackground" ResourceKey="StudioPrimaryPressed" />
     <StaticResource x:Key="ButtonSolidPrimaryBorderBrush" ResourceKey="StudioPrimary" />
-    <StaticResource x:Key="ButtonSolidPrimaryPointeroverBorderBrush" ResourceKey="StudioPrimary" />
-    <StaticResource x:Key="ButtonSolidPrimaryPressedBorderBrush" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="ButtonSolidPrimaryPointeroverBorderBrush" ResourceKey="StudioPrimaryHover" />
+    <StaticResource x:Key="ButtonSolidPrimaryPressedBorderBrush" ResourceKey="StudioPrimaryPressed" />
     <StaticResource x:Key="ButtonInputInnerPointeroverForeground" ResourceKey="StudioAccent" />
     <StaticResource x:Key="ButtonInputInnerPressedForeground" ResourceKey="StudioAccent" />
     <StaticResource x:Key="CalendarItemCalendarButtonSelectedBackground" ResourceKey="StudioPrimary" />
@@ -187,4 +205,171 @@
     <StaticResource x:Key="TextBoxBorderedPointeroverBorderBrush" ResourceKey="StudioAccent" />
     <StaticResource x:Key="ToggleButtonPrimaryIndeterminateBorderBrush" ResourceKey="StudioAccent" />
     <StaticResource x:Key="TreeViewItemSelectedBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="CodeWFTitleBarForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="SearchListBoxBackground" ResourceKey="StudioBackground" />
+    <StaticResource x:Key="SearchListBoxBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="SearchListBoxCounterForeground" ResourceKey="StudioMuted" />
+    <StaticResource x:Key="ColumnDisplayEditorBackground" ResourceKey="StudioBackground" />
+    <StaticResource x:Key="ColumnDisplayEditorBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="ColumnDisplayEditorHeaderBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="ColumnDisplayEditorHeaderForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="ColumnDisplayEditorRowForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="ColumnDisplayEditorRowHoverBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="ColumnDisplayEditorRowSelectedBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="ColumnDisplayEditorRowSelectedForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="StatusBadgeRightTextForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="StatusBadgeDebugBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="StatusBadgeInfoBorderBrush" ResourceKey="SemiColorSuccess" />
+    <StaticResource x:Key="StatusBadgeWarnBorderBrush" ResourceKey="SemiColorWarning" />
+    <StaticResource x:Key="StatusBadgeErrorBorderBrush" ResourceKey="SemiColorDanger" />
+    <StaticResource x:Key="StatusBadgeFatalBorderBrush" ResourceKey="SemiColorDangerActive" />
+    <StaticResource x:Key="StatusBadgeDebugBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="StatusBadgeInfoBackground" ResourceKey="SemiColorSuccessLight" />
+    <StaticResource x:Key="StatusBadgeWarnBackground" ResourceKey="SemiColorWarningLight" />
+    <StaticResource x:Key="StatusBadgeErrorBackground" ResourceKey="SemiColorDangerLight" />
+    <StaticResource x:Key="StatusBadgeFatalBackground" ResourceKey="SemiColorDangerLightActive" />
+    <StaticResource x:Key="StatusCardTopTextForeground" ResourceKey="StudioMuted" />
+    <StaticResource x:Key="StatusCardDebugBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="StatusCardInfoBackground" ResourceKey="SemiColorSuccessLight" />
+    <StaticResource x:Key="StatusCardWarnBackground" ResourceKey="SemiColorWarningLight" />
+    <StaticResource x:Key="StatusCardErrorBackground" ResourceKey="SemiColorDangerLight" />
+    <StaticResource x:Key="StatusCardFatalBackground" ResourceKey="SemiColorDangerLightActive" />
+    <StaticResource x:Key="StatusCardDebugForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="StatusCardInfoForeground" ResourceKey="SemiColorSuccess" />
+    <StaticResource x:Key="StatusCardWarnForeground" ResourceKey="SemiColorWarning" />
+    <StaticResource x:Key="StatusCardErrorForeground" ResourceKey="SemiColorDanger" />
+    <StaticResource x:Key="StatusCardFatalForeground" ResourceKey="SemiColorDangerActive" />
+    <StaticResource x:Key="GuideCardBackground" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="GuideCardBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="GuideTextForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="GuideSecondaryTextForeground" ResourceKey="StudioMuted" />
+    <StaticResource x:Key="GuideIndicatorBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="GuidePrimaryBrush" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="GuidePrimaryHoverBrush" ResourceKey="StudioPrimaryHover" />
+    <StaticResource x:Key="GuidePrimaryPressedBrush" ResourceKey="StudioPrimaryPressed" />
+    <StaticResource x:Key="GuidePrimaryForeground" ResourceKey="StudioOnPrimary" />
+    <StaticResource x:Key="GuideArrowBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="GuideTargetBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="GuideCloseButtonHoverBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="GuideCloseButtonPressedBackground" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="TabItemLineHeaderForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="TabItemLineHeaderSelectedForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="TabItemLineHeaderPointeroverForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="TabItemLinePipeBackground" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="ComboBoxSelectorBackground" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="ComboBoxSelectorPointeroverBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="ComboBoxSelectorFocusBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="ComboBoxSelectorPressedBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="ComboBoxPopupBackground" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="ComboBoxPopupBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="ComboBoxItemForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="ComboBoxItemPointeroverForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="ComboBoxItemFocusForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="ComboBoxItemPressedForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="ComboBoxItemSelectedForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="ComboBoxItemPointeroverBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="ComboBoxItemFocusBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="ComboBoxItemPressedBackground" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="ButtonSolidForeground" ResourceKey="StudioOnPrimary" />
+    <StaticResource x:Key="ButtonSolidPrimaryPressedForeground" ResourceKey="StudioOnPrimary" />
+    <!-- 表格状态使用当前配色，正文和选中行共享可读的文字色。 -->
+    <StaticResource x:Key="SemiColorPrimaryLightPointerover" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="SemiColorPrimaryLightActive" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="DataGridBackground" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="DataGridForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="DataGridLineBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="DataGridCellFocusBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="DataGridCellCurrentBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="DataGridCellErrorBrush" ResourceKey="SemiColorDangerLight" />
+    <StaticResource x:Key="DataGridColumnHeaderForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="DataGridColumnHeaderBackground" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="DataGridColumnHeaderPointeroverBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="DataGridColumnHeaderPressedBackground" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="DataGridRowErrorBackground" ResourceKey="SemiColorDangerLight" />
+    <StaticResource x:Key="DataGridRowPointeroverBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="DataGridRowSelectedBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="DataGridRowSelectedPointeroverBackground" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="DataGridRowGroupHeaderExpandIconForeground" ResourceKey="StudioMuted" />
+    <StaticResource x:Key="DataGridRowGroupHeaderBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="DataGridRowGroupHeaderCurrentBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="DataGridDisabledBackground" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="DataGridScrollBarsSeparatorBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="DataGridDropLocationIndicatorBackground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="TreeDataGridBackground" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="TreeDataGridForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="TreeDataGridGridLinesBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="TreeDataGridColumnHeaderBackground" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="TreeDataGridColumnHeaderForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="TreeDataGridHeaderPointerOverBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="TreeDataGridHeaderPressedBackground" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="TreeDataGridHeaderPointerOverForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="TreeDataGridHeaderPressedForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="TreeDataGridCellSelectedBackground" ResourceKey="StudioRaised" />
+    <!-- Dock 标题、工具按钮和浮动窗口跟随当前配色。 -->
+    <StaticResource x:Key="CodeWFDockHeaderBackgroundBrush" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="CodeWFDockHeaderForegroundBrush" ResourceKey="StudioText" />
+    <StaticResource x:Key="CodeWFDockHeaderSecondaryForegroundBrush" ResourceKey="StudioMuted" />
+    <StaticResource x:Key="CodeWFDockHeaderPointerOverBackgroundBrush" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="CodeWFDockHeaderDividerBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CodeWFDockActiveBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CodeWFDockDocumentTabSelectedBackgroundBrush" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="CodeWFToolTabStripBackgroundBrush" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="CodeWFToolTabPointerOverBackgroundBrush" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="CodeWFToolTabSelectedBackgroundBrush" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="CodeWFToolTabSelectedForegroundBrush" ResourceKey="StudioText" />
+    <StaticResource x:Key="CodeWFToolTabBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CodeWFToolPinButtonForegroundBrush" ResourceKey="StudioMuted" />
+    <StaticResource x:Key="CodeWFToolPinButtonActiveForegroundBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CodeWFToolTitleBarButtonPressedBackgroundBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CodeWFDockSplitterBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CodeWFDockSplitterPointerOverBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="DockWindowChromeTitleBarBackgroundBrush" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="DockWindowChromeBorderBrush" ResourceKey="StudioBorder" />
+    <!-- 日志与独立通知窗口共享品牌和语义令牌；默认资源仍由日志包独立提供。 -->
+    <StaticResource x:Key="CodeWFLogDesktopNotificationWindowBackground" ResourceKey="StudioBackground" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationWindowBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationTitleBarBackground" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationTitleBarBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationTitleForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationContentForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationMutedForeground" ResourceKey="StudioMuted" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationNewLogBackground" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationNewLogLabelBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationNewLogLabelBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationNewLogForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationNewLogIconForeground" ResourceKey="StudioOnPrimary" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationNavigationBackground" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationNavigationPointerOverBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationNavigationBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationNavigationForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationOpenLogFolderBackground" ResourceKey="StudioSurface" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationOpenLogFolderPointerOverBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationOpenLogFolderPressedBackground" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationOpenLogFolderBorderBrush" ResourceKey="StudioBorder" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationOpenLogFolderPointerOverBorderBrush" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationOpenLogFolderForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationConfirmBackground" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationConfirmBorderBrush" ResourceKey="StudioPrimary" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationConfirmPointerOverBackground" ResourceKey="StudioPrimaryHover" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationConfirmPressedBackground" ResourceKey="StudioPrimaryPressed" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationConfirmForeground" ResourceKey="StudioOnPrimary" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationCloseForeground" ResourceKey="StudioMuted" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationClosePointerOverBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationClosePointerOverForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationDebugBackground" ResourceKey="StudioRaised" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationDebugForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationInfoBackground" ResourceKey="SemiColorSuccessLight" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationInfoForeground" ResourceKey="SemiColorSuccess" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationWarnBackground" ResourceKey="SemiColorWarningLight" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationWarnForeground" ResourceKey="SemiColorWarning" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationErrorBackground" ResourceKey="SemiColorDangerLight" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationErrorForeground" ResourceKey="SemiColorDanger" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationFatalBackground" ResourceKey="SemiColorDangerLightActive" />
+    <StaticResource x:Key="CodeWFLogDesktopNotificationFatalForeground" ResourceKey="SemiColorDangerActive" />
+    <StaticResource x:Key="CodeWFLogViewTimestampForeground" ResourceKey="StudioMuted" />
+    <StaticResource x:Key="CodeWFLogViewContentForeground" ResourceKey="StudioText" />
+    <StaticResource x:Key="CodeWFLogViewTraceForeground" ResourceKey="StudioAccent" />
+    <StaticResource x:Key="CodeWFLogViewInformationForeground" ResourceKey="SemiColorSuccess" />
+    <StaticResource x:Key="CodeWFLogViewWarningForeground" ResourceKey="SemiColorWarning" />
+    <StaticResource x:Key="CodeWFLogViewErrorForeground" ResourceKey="SemiColorDanger" />
 </ResourceDictionary>

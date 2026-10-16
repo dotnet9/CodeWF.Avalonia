@@ -5,6 +5,9 @@ using Avalonia.Threading;
 using CodeWF.Toolkit.Logging;
 using CodeWF.Toolkit.Logging.Extensions;
 using CodeWF.Avalonia.Log.Platform;
+using CodeWF.Avalonia.Log.I18n;
+using CodeWF.Toolkit.Lang;
+using CodeWF.Toolkit.Lang.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,6 +20,7 @@ namespace CodeWF.Avalonia.Log.Notifications.ViewModels;
 internal sealed class NotificationWindowViewModel : INotifyPropertyChanged
 {
     private const int MaxLogCount = 100;
+    private static readonly JsonLocalizer Localization = new(typeof(NotificationWindowViewModel).Assembly);
     private const int MaxContentLength = 4000;
     private static readonly TimeSpan DefaultDuration = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan MaxSessionDuration = TimeSpan.FromMinutes(2);
@@ -31,7 +35,8 @@ internal sealed class NotificationWindowViewModel : INotifyPropertyChanged
     private string _logContent = string.Empty;
     private string _countText = string.Empty;
     private string _newLogText = string.Empty;
-    private string _openLogFolderButtonText = "打开日志目录";
+    private string _openLogFolderButtonText = string.Empty;
+    private string _openLogFolderTextKey = ResourceKeys.Location;
     private LogLevel _level = LogLevel.Error;
     private LogNotificationContent? _selectedLog;
     private IDataTemplate? _contentTemplate;
@@ -62,6 +67,7 @@ internal sealed class NotificationWindowViewModel : INotifyPropertyChanged
         NextCommand = new NotificationCommand(SelectNext);
         CloseCommand = new NotificationCommand(RequestClose);
         OpenLogFolderCommand = new NotificationCommand(OpenLogFolder);
+        RefreshLocalizedText();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -73,6 +79,7 @@ internal sealed class NotificationWindowViewModel : INotifyPropertyChanged
     public ICommand NextCommand { get; }
     public ICommand CloseCommand { get; }
     public ICommand OpenLogFolderCommand { get; }
+    public string ConfirmButtonText => Localization.GetResource(ResourceKeys.Notification.Confirm);
 
     public string ApplicationName
     {
@@ -249,7 +256,7 @@ internal sealed class NotificationWindowViewModel : INotifyPropertyChanged
         if (_isOpened && !wasEmpty)
         {
             _newLogCount += logEntries.Count;
-            NewLogText = $"{_newLogCount}条新日志";
+            UpdateNewLogText();
         }
         var highestLevel = logEntries[0].Entry.Level;
         foreach (var logEntry in logEntries)
@@ -272,7 +279,13 @@ internal sealed class NotificationWindowViewModel : INotifyPropertyChanged
 
     public void OnOpened()
     {
+        if (!_isOpened)
+        {
+            I18nManager.Instance.CultureChanged += OnLanguageChanged;
+            I18nManager.Instance.ResourcesChanged += OnLanguageChanged;
+        }
         _isOpened = true;
+        RefreshLocalizedText();
         PlacementRequested?.Invoke(this, EventArgs.Empty);
         if (_hasPendingAttention)
         {
@@ -286,6 +299,8 @@ internal sealed class NotificationWindowViewModel : INotifyPropertyChanged
 
     public void OnClosed()
     {
+        I18nManager.Instance.CultureChanged -= OnLanguageChanged;
+        I18nManager.Instance.ResourcesChanged -= OnLanguageChanged;
         _countdownTimer.Stop();
         _isOpened = false;
         _logs.Clear();
@@ -326,15 +341,16 @@ internal sealed class NotificationWindowViewModel : INotifyPropertyChanged
                         Logger.LogDirectory;
         try
         {
-            OpenLogFolderButtonText = LogFolderLauncher.Open(directory)
-                ? "打开日志目录"
-                : "未配置日志目录";
+            _openLogFolderTextKey = LogFolderLauncher.Open(directory)
+                ? ResourceKeys.Location
+                : ResourceKeys.Notification.FolderUnavailable;
         }
         catch (Exception ex)
         {
-            OpenLogFolderButtonText = "打开失败，请重试";
-            System.Diagnostics.Trace.TraceError($"打开日志目录失败（{directory}）：{ex}");
+            _openLogFolderTextKey = ResourceKeys.Notification.FolderOpenFailed;
+            System.Diagnostics.Trace.TraceError(Localization.Format(ResourceKeys.Notification.FolderOpenError, directory, ex));
         }
+        OpenLogFolderButtonText = Localization.GetResource(_openLogFolderTextKey);
     }
 
     private void TrimLogs()
@@ -482,8 +498,28 @@ internal sealed class NotificationWindowViewModel : INotifyPropertyChanged
         if (_countdownSeconds == seconds) return;
 
         _countdownSeconds = seconds;
-        CountdownText = seconds > 0 ? $"{seconds}s" : string.Empty;
+        CountdownText = seconds > 0 ? Localization.Format(ResourceKeys.Notification.CountdownSeconds, seconds) : string.Empty;
     }
+
+    // 已打开的通知与宿主使用同一语言实例，资源同键覆盖也会立即更新。
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        if (Dispatcher.UIThread.CheckAccess()) RefreshLocalizedText();
+        else Dispatcher.UIThread.Post(RefreshLocalizedText);
+    }
+
+    private void RefreshLocalizedText()
+    {
+        OpenLogFolderButtonText = Localization.GetResource(_openLogFolderTextKey);
+        OnPropertyChanged(nameof(ConfirmButtonText));
+        UpdateNewLogText();
+        _countdownSeconds = -1;
+        UpdateSelectedLog();
+    }
+
+    private void UpdateNewLogText() => NewLogText = _newLogCount > 0
+        ? Localization.Format(_newLogCount == 1 ? ResourceKeys.Notification.NewLog : ResourceKeys.Notification.NewLogs, _newLogCount)
+        : string.Empty;
 
     private TimeSpan? GetRemainingTime()
     {

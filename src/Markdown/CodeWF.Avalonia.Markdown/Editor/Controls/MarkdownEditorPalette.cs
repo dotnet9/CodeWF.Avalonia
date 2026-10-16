@@ -31,13 +31,13 @@ public static class MarkdownEditorPalette
         [ForegroundKey] = Color.Parse("#101828"),
         [CurrentLineBackgroundKey] = Color.Parse("#F4F7FB"),
         [CurrentLineBorderKey] = Color.Parse("#E4E9F2"),
-        [AccentKey] = Color.Parse("#1677FF"),
+        [AccentKey] = Color.Parse("#1264D7"),
         [CodeKey] = Color.Parse("#B42318"),
         [QuoteKey] = Color.Parse("#667085"),
-        [LinkKey] = Color.Parse("#1677FF"),
+        [LinkKey] = Color.Parse("#1264D7"),
         [ImageKey] = Color.Parse("#7C3AED"),
         [WarningKey] = Color.Parse("#B54708"),
-        [DangerKey] = Color.Parse("#DC2626"),
+        [DangerKey] = Color.Parse("#CF222E"),
         [SeparatorKey] = Color.Parse("#F2F4F7"),
     };
 

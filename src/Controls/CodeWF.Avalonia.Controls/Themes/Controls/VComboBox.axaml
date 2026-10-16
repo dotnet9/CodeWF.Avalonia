@@ -1,6 +1,8 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <ControlTheme x:Key="CodeWFVComboBoxBaseTheme" TargetType="ComboBox">
+        <Setter Property="Foreground" Value="{DynamicResource SemiColorText0}" />
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource ComboBoxSelectorPlaceHolderForeground}" />
         <Setter Property="FocusAdorner" Value="{x:Null}" />
         <Setter Property="MaxDropDownHeight" Value="{DynamicResource ComboBoxPopupMaxDropDownHeight}" />
         <Setter Property="Background" Value="{DynamicResource ComboBoxSelectorBackground}" />
@@ -11,7 +13,7 @@
         <Setter Property="CornerRadius" Value="{DynamicResource ComboBoxSelectorCornerRadius}" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Top" />
@@ -34,10 +36,9 @@
                             Margin="{TemplateBinding Padding}"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            Foreground="{TemplateBinding Foreground}"
+                            Foreground="{TemplateBinding PlaceholderForeground}"
                             IsVisible="{TemplateBinding SelectionBoxItem,
                                                         Converter={x:Static ObjectConverters.IsNull}}"
-                            Opacity="0.3"
                             Text="{TemplateBinding PlaceholderText}"
                             TextTrimming="CharacterEllipsis" />
                         <ContentPresenter
@@ -46,6 +47,7 @@
                             HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                             Content="{TemplateBinding SelectionBoxItem}"
+                            Foreground="{TemplateBinding Foreground}"
                             ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" />
                         <Button
                             Name="ClearButton"
@@ -155,7 +157,7 @@
         <Style Selector="^:disabled">
             <Setter Property="Background" Value="{DynamicResource ComboBoxSelectorDisabledBackground}" />
             <Setter Property="BorderBrush" Value="{DynamicResource ComboBoxSelectorDisabledBorderBrush}" />
-            <Style Selector="^ /template/ ContentControl#ContentPresenter">
+            <Style Selector="^ /template/ ContentPresenter#ContentPresenter">
                 <Setter Property="Foreground" Value="{DynamicResource ComboBoxDisabledForeground}" />
             </Style>
             <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
@@ -206,7 +208,7 @@
                     <Setter Property="Background" Value="{DynamicResource ComboBoxSelectorDisabledBackground}" />
                     <Setter Property="BorderBrush" Value="{DynamicResource ComboBoxSelectorBorderBrush}" />
                 </Style>
-                <Style Selector="^ /template/ ContentControl#ContentPresenter">
+                <Style Selector="^ /template/ ContentPresenter#ContentPresenter">
                     <Setter Property="Foreground" Value="{DynamicResource ComboBoxDisabledForeground}" />
                 </Style>
                 <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">

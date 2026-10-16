@@ -5,9 +5,9 @@
     <SolidColorBrush x:Key="CodeWFWindowBackground">#2D3236</SolidColorBrush>
     <SolidColorBrush x:Key="CodeWFWindowForeground">#FFFFFF</SolidColorBrush>
     <SolidColorBrush x:Key="CodeWFWindowTitleBarBackground">Transparent</SolidColorBrush>
-    <SolidColorBrush x:Key="CodeWFWindowTitleBarForeground">#FFFFFFB3</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFWindowTitleBarForeground">#B3FFFFFF</SolidColorBrush>
     <SolidColorBrush x:Key="CodeWFWindowTitleBarBorderBrush">#33FFFFFF</SolidColorBrush>
-    <SolidColorBrush x:Key="CodeWFTitleBarForeground">#FFFFFFB3</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFTitleBarForeground">#B3FFFFFF</SolidColorBrush>
     <SolidColorBrush x:Key="TabControlSeparatorBorderBrush">#33FFFFFF</SolidColorBrush>
 
     <!--  12.1.4 启动窗口期 Semi 包字典不可达，窗口令牌一并字面量化  -->
@@ -39,7 +39,7 @@
     <SolidColorBrush x:Key="StatusBadgeErrorBackground">#1FFFFFFF</SolidColorBrush>
     <SolidColorBrush x:Key="StatusBadgeFatalBackground">#1FFFFFFF</SolidColorBrush>
 
-    <SolidColorBrush x:Key="StatusCardTopTextForeground">#A6A6A6</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardTopTextForeground">#C1C1C1</SolidColorBrush>
     <SolidColorBrush x:Key="StatusCardDebugBackground">#1FFFFFFF</SolidColorBrush>
     <SolidColorBrush x:Key="StatusCardInfoBackground">#1FFFFFFF</SolidColorBrush>
     <SolidColorBrush x:Key="StatusCardWarnBackground">#1FFFFFFF</SolidColorBrush>
@@ -48,8 +48,8 @@
     <SolidColorBrush x:Key="StatusCardDebugForeground">#FFFFFF</SolidColorBrush>
     <SolidColorBrush x:Key="StatusCardInfoForeground">#FFFFFF</SolidColorBrush>
     <SolidColorBrush x:Key="StatusCardWarnForeground">#F1C46B</SolidColorBrush>
-    <SolidColorBrush x:Key="StatusCardErrorForeground">#FF8AA0</SolidColorBrush>
-    <SolidColorBrush x:Key="StatusCardFatalForeground">#FF8AA0</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardErrorForeground">#FFB5C2</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardFatalForeground">#FFB5C2</SolidColorBrush>
     <!--  同变体控件主题与 Controls/Guide.axaml 以 StaticResource 引用下列 Semi 令牌；
           高对比变体下 Semi 不提供数字令牌，故逐变体字面量化（对齐该变体的既有字面色值）。  -->
     <SolidColorBrush x:Key="SemiColorBorder">#33FFFFFF</SolidColorBrush>
@@ -73,4 +73,18 @@
     <SolidColorBrush x:Key="SemiColorDangerLightActive">#1FFFFFFF</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDangerActive">#FF8AA0</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorWhite">#FFFFFFFF</SolidColorBrush>
+    <StaticResource x:Key="GuideCardBackground" ResourceKey="CodeWFWindowBackground" />
+    <StaticResource x:Key="GuideCardBorderBrush" ResourceKey="SemiColorBorder" />
+    <StaticResource x:Key="GuideTextForeground" ResourceKey="SemiColorText0" />
+    <StaticResource x:Key="GuideSecondaryTextForeground" ResourceKey="SemiColorText2" />
+    <StaticResource x:Key="GuideIndicatorBrush" ResourceKey="SemiColorFill2" />
+    <StaticResource x:Key="GuidePrimaryBrush" ResourceKey="SemiColorPrimary" />
+    <StaticResource x:Key="GuidePrimaryHoverBrush" ResourceKey="SemiColorPrimary" />
+    <StaticResource x:Key="GuidePrimaryPressedBrush" ResourceKey="SemiColorPrimary" />
+    <StaticResource x:Key="GuidePrimaryForeground" ResourceKey="StatusBadgeLeftTextForeground" />
+    <StaticResource x:Key="GuideArrowBorderBrush" ResourceKey="SemiColorBorder" />
+    <StaticResource x:Key="GuideTargetBorderBrush" ResourceKey="SemiColorPrimary" />
+    <StaticResource x:Key="GuideCloseButtonHoverBackground" ResourceKey="SemiColorFill1" />
+    <StaticResource x:Key="GuideCloseButtonPressedBackground" ResourceKey="SemiColorFill2" />
+    <StaticResource x:Key="ColumnDisplayEditorRowSelectedForeground" ResourceKey="StatusBadgeLeftTextForeground" />
 </ResourceDictionary>

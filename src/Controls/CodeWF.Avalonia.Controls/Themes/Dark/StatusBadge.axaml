@@ -1,6 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StaticResource x:Key="StatusBadgeLeftTextForeground" ResourceKey="SemiColorWhite" />
+    <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#13161C</SolidColorBrush>
     <StaticResource x:Key="StatusBadgeRightTextForeground" ResourceKey="SemiColorText0" />
     <StaticResource x:Key="StatusBadgeDebugBorderBrush" ResourceKey="SemiColorInformation" />
     <StaticResource x:Key="StatusBadgeInfoBorderBrush" ResourceKey="SemiColorSuccess" />

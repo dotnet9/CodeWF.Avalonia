@@ -33,6 +33,11 @@ public class MindMapMiniMap : Control
     public MindMapMiniMap()
     {
         ClipToBounds = true;
+        ActualThemeVariantChanged += (_, _) =>
+        {
+            SetCurrentValue(IsDarkThemeProperty, MindViewThemeResources.IsDarkVariant(ActualThemeVariant));
+            InvalidateVisual();
+        };
     }
 
     public ObservableCollection<MindMapNode>? Roots

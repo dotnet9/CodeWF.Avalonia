@@ -12,6 +12,7 @@
     <PackageReference Include="Avalonia.Headless" />
     <PackageReference Include="TreeDataGrid.Avalonia" />
     <PackageReference Include="Avalonia.Skia" />
+    <PackageReference Include="Dock.Model.ReactiveUI" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
@@ -27,6 +28,8 @@
     <ProjectReference Include="..\..\src\Markdown\CodeWF.Avalonia.Markdown.Lite\CodeWF.Avalonia.Markdown.Lite.csproj" />
     <ProjectReference Include="..\..\src\Markdown\CodeWF.Avalonia.Markdown\CodeWF.Avalonia.Markdown.csproj" />
     <ProjectReference Include="..\..\src\TreeDataGrid\CodeWF.Avalonia.TreeDataGrid\CodeWF.Avalonia.TreeDataGrid.csproj" />
+    <ProjectReference Include="..\..\src\DataGrid\CodeWF.Avalonia.DataGrid\CodeWF.Avalonia.DataGrid.csproj" />
+    <ProjectReference Include="..\..\src\Dock\CodeWF.Avalonia.Dock\CodeWF.Avalonia.Dock.csproj" />
     <ProjectReference Include="..\..\src\Lang\CodeWF.Avalonia.Lang\CodeWF.Avalonia.Lang.csproj" />
     <ProjectReference Include="..\..\src\Lang\CodeWF.Avalonia.Lang.Generator\CodeWF.Avalonia.Lang.Generator.csproj" />
     <ProjectReference Include="..\..\src\Log\CodeWF.Avalonia.Log\CodeWF.Avalonia.Log.csproj" />

@@ -19,11 +19,14 @@
             <ControlTemplate TargetType="{x:Type c:StatusBadge}">
                 <Border
                     Name="PART_OuterBorder"
+                    Background="{DynamicResource StatusBadgeDebugBackground}"
+                    BorderBrush="{DynamicResource StatusBadgeDebugBorderBrush}"
                     BorderThickness="1"
                     CornerRadius="{TemplateBinding CornerRadius}">
                     <Grid ColumnDefinitions="Auto auto">
                         <Border
                             Name="PART_LeftTextBorder"
+                            Background="{DynamicResource StatusBadgeDebugBorderBrush}"
                             CornerRadius="{TemplateBinding CornerRadius, Converter={StaticResource StatusBadgeLeftTextBorderCornerRadiusConverter}}"
                             Padding="{TemplateBinding Padding}">
                             <SelectableTextBlock

@@ -106,20 +106,16 @@
                         <Button
                             Name="PART_MoveLeftToRightButton"
                             Theme="{StaticResource TransferActionButton}">
-                            <Image
-                                Width="{StaticResource TransferActionButtonSize}"
-                                Height="{StaticResource TransferActionButtonSize}"
-                                Source="avares://CodeWF.Avalonia.Controls/Themes/Assets/btn-arrow-r.png"
-                                Stretch="Fill" />
+                            <PathIcon Width="22" Height="22"
+                                      Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Data="M3,2 L13,12 L3,22 L1,20 L9,12 L1,4 Z M11,2 L21,12 L11,22 L9,20 L17,12 L9,4 Z" />
                         </Button>
                         <Button
                             Name="PART_MoveRightToLeftButton"
                             Theme="{StaticResource TransferActionButton}">
-                            <Image
-                                Width="{StaticResource TransferActionButtonSize}"
-                                Height="{StaticResource TransferActionButtonSize}"
-                                Source="avares://CodeWF.Avalonia.Controls/Themes/Assets/btn-arrow-l.png"
-                                Stretch="Fill" />
+                            <PathIcon Width="22" Height="22"
+                                      Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Data="M19,2 L9,12 L19,22 L21,20 L13,12 L21,4 Z M11,2 L1,12 L11,22 L13,20 L5,12 L13,4 Z" />
                         </Button>
                     </StackPanel>
 

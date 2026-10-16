@@ -1,0 +1,16 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- 引导资源跟随主题字典，避免控件模板的静态别名固定在浅色主题。 -->
+    <StaticResource x:Key="GuideCardBackground" ResourceKey="CodeWFWindowBackground" />
+    <StaticResource x:Key="GuideCardBorderBrush" ResourceKey="SemiColorBorder" />
+    <StaticResource x:Key="GuideTextForeground" ResourceKey="SemiColorText0" />
+    <StaticResource x:Key="GuideSecondaryTextForeground" ResourceKey="SemiColorText1" />
+    <StaticResource x:Key="GuideIndicatorBrush" ResourceKey="SemiColorFill2" />
+    <SolidColorBrush x:Key="GuidePrimaryBrush">#0064FA</SolidColorBrush>
+    <SolidColorBrush x:Key="GuidePrimaryHoverBrush">#005AE1</SolidColorBrush>
+    <SolidColorBrush x:Key="GuidePrimaryPressedBrush">#0050C8</SolidColorBrush>
+    <SolidColorBrush x:Key="GuidePrimaryForeground">White</SolidColorBrush>
+    <StaticResource x:Key="GuideArrowBorderBrush" ResourceKey="SemiColorBorder" />
+    <StaticResource x:Key="GuideTargetBorderBrush" ResourceKey="SemiColorPrimary" />
+    <StaticResource x:Key="GuideCloseButtonHoverBackground" ResourceKey="SemiColorFill1" />
+    <StaticResource x:Key="GuideCloseButtonPressedBackground" ResourceKey="SemiColorFill2" />
+</ResourceDictionary>

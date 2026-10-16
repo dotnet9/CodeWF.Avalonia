@@ -10,5 +10,6 @@
         <ResourceInclude Source="StatusBadge.axaml" />
         <ResourceInclude Source="StatusCard.axaml" />
         <ResourceInclude Source="TabItem.axaml" />
+        <ResourceInclude Source="Guide.axaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

@@ -1,4 +1,4 @@
-{
+﻿{
   "language": "English",
   "description": "English",
   "cultureName": "en-US",
@@ -6,7 +6,16 @@
     "View": {
       "Copy": "Copy",
       "Clear": "Clear",
-      "Location": "Open log folder"
+      "Location": "Open log folder",
+      "Notification": {
+        "Confirm": "OK",
+        "NewLogs": "{0} new logs",
+        "FolderUnavailable": "Log folder is not configured",
+        "FolderOpenFailed": "Could not open folder. Retry",
+        "FolderOpenError": "Could not open log folder ({0}): {1}",
+        "CountdownSeconds": "{0}s",
+        "NewLog": "{0} new log"
+      }
     }
   }
 }

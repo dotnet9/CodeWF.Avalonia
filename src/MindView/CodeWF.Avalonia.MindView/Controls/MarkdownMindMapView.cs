@@ -215,7 +215,7 @@ public sealed class MarkdownMindMapView : UserControl
     {
         if (_canvas is null) return;
         _canvas.Children.Clear(); _bounds.Clear(); _cards.Clear(); _branches.Clear();
-        var dark = ActualThemeVariant == ThemeVariant.Dark || ActualThemeVariant?.InheritVariant == ThemeVariant.Dark;
+        var dark = MindViewThemeResources.IsDarkVariant(ActualThemeVariant);
         var line = LineBrush ?? Brush.Parse(dark ? "#3A3D50" : "#E3E5F0");
         var background = CardBrush ?? Brush.Parse(dark ? "#242633" : "#FFFFFF");
         var foreground = TextBrush ?? Brush.Parse(dark ? "#E8E9F2" : "#323445");
@@ -243,7 +243,7 @@ public sealed class MarkdownMindMapView : UserControl
             var color = _branches[node];
             var body = new StackPanel { Spacing = 5, VerticalAlignment = VerticalAlignment.Center };
             if (root) body.Children.Add(new TextBlock { Text = MindViewLocalization.GetResource(MindViewL.MarkdownDocument), FontSize = 9, Foreground = MindViewThemeResources.AccentForeground(AccentColor), Opacity = .75 });
-            if (!root && heading) body.Children.Add(new TextBlock { Text = $"H{node.HeadingLevel}", FontSize = 9, Foreground = new SolidColorBrush(color) });
+            if (!root && heading) body.Children.Add(new TextBlock { Text = $"H{node.HeadingLevel}", FontSize = 9, Foreground = foreground });
             body.Children.Add(new TextBlock
             {
                 Text = node.Title, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, MaxLines = root ? 1 : 4,

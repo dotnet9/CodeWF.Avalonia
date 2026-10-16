@@ -716,12 +716,11 @@ public class MarkdownEditorView : UserControl
 
     /// <summary>
     /// 先查宿主资源（<paramref name="key"/>），再查内置调色板（同名键）。
-    /// 必须走 Application 级查找：控件级 TryGetResource 只查自身 Resources，主题色永远解析失败。
+    /// 沿控件、容器、窗口和应用依次查找，保留宿主的局部主题覆盖。
     /// </summary>
     private IBrush? ResolveBrush(string key)
     {
-        if (Application.Current is { } app
-            && app.TryGetResource(key, ActualThemeVariant, out var resource)
+        if (this.TryFindResource(key, ActualThemeVariant, out var resource)
             && resource is IBrush brush)
         {
             return brush;

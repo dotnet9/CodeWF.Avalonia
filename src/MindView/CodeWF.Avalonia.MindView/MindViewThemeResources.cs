@@ -1,5 +1,6 @@
 using System.Globalization;
 using global::Avalonia;
+using global::Avalonia.Controls;
 using global::Avalonia.Media;
 using global::Avalonia.Styling;
 using CodeWF.Avalonia.MindView.Controls;
@@ -139,17 +140,27 @@ internal static class MindViewThemeResources
         {
             MindMapEditor editor => editor.IsDarkTheme,
             MindMapMiniMap miniMap => miniMap.IsDarkTheme,
-            StyledElement styledElement => styledElement.ActualThemeVariant == ThemeVariant.Dark || styledElement.ActualThemeVariant?.InheritVariant == ThemeVariant.Dark,
+            StyledElement styledElement => IsDarkVariant(styledElement.ActualThemeVariant),
             _ => false
         };
+    }
+
+    internal static bool IsDarkVariant(ThemeVariant? variant)
+    {
+        while (variant is not null && variant != ThemeVariant.Dark && variant != ThemeVariant.Light)
+            variant = variant.InheritVariant;
+        return variant == ThemeVariant.Dark;
     }
 
     private static bool TryGetResource(AvaloniaObject? owner, string key, out object? value)
     {
         if (owner is StyledElement styledElement)
         {
-            var themeVariant = IsDark(owner) ? ThemeVariant.Dark : styledElement.ActualThemeVariant;
-            if (styledElement.TryGetResource(key, themeVariant, out value))
+            // 自定义变体保留自身资源；显式明暗属性仍可选择标准变体。
+            var themeVariant = styledElement.ActualThemeVariant;
+            if (IsDark(owner) != IsDarkVariant(themeVariant))
+                themeVariant = IsDark(owner) ? ThemeVariant.Dark : ThemeVariant.Light;
+            if (styledElement.TryFindResource(key, themeVariant, out value))
             {
                 return true;
             }

@@ -115,7 +115,7 @@
     <Setter Property="Padding" Value="14,10" />
   </Style>
   <Style Selector="Border.studio-flow-node.active">
-    <Setter Property="Background" Value="{DynamicResource StudioGradient}" />
+    <Setter Property="Background" Value="{DynamicResource StudioActionGradient}" />
   </Style>
   <Style Selector="Border.studio-flow-node.active TextBlock">
     <Setter Property="Foreground" Value="White" />

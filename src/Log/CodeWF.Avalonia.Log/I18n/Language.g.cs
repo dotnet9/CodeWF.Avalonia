@@ -6,4 +6,14 @@ public static class ResourceKeys
     public const string @Clear = "Log.View.Clear";
     public const string @Copy = "Log.View.Copy";
     public const string @Location = "Log.View.Location";
+    public static class @Notification
+    {
+        public const string @Confirm = "Log.View.Notification.Confirm";
+        public const string @CountdownSeconds = "Log.View.Notification.CountdownSeconds";
+        public const string @FolderOpenError = "Log.View.Notification.FolderOpenError";
+        public const string @FolderOpenFailed = "Log.View.Notification.FolderOpenFailed";
+        public const string @FolderUnavailable = "Log.View.Notification.FolderUnavailable";
+        public const string @NewLog = "Log.View.Notification.NewLog";
+        public const string @NewLogs = "Log.View.Notification.NewLogs";
+    }
 }

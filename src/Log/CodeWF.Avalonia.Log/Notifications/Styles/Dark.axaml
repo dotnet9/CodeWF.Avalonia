@@ -1,0 +1,49 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationWindowBackground">#1F2229</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationWindowBorderBrush">#4B5563</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationTitleBarBackground">#282C35</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationTitleBarBorderBrush">Transparent</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationTitleForeground">#F3F4F6</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationContentForeground">#F3F4F6</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationMutedForeground">#AEB8C8</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationNewLogBackground">#7B61B8</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationNewLogLabelBackground">#312943</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationNewLogLabelBorderBrush">#64547D</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationNewLogForeground">#E9DEFF</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationNewLogIconForeground">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationNavigationBackground">Transparent</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationNavigationPointerOverBackground">#343B48</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationNavigationBorderBrush">Transparent</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationNavigationForeground">#E5E7EB</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationOpenLogFolderBackground">#282F3B</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationOpenLogFolderPointerOverBackground">#343E4E</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationOpenLogFolderPressedBackground">#3D4B60</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationOpenLogFolderBorderBrush">#64748B</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationOpenLogFolderPointerOverBorderBrush">#93BFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationOpenLogFolderForeground">#F3F4F6</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationConfirmBackground">#253348</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationConfirmBorderBrush">#8FC1FF</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationConfirmPointerOverBackground">#2B4260</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationConfirmPressedBackground">#365574</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationConfirmForeground">#B9D8FF</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationCloseForeground">#C3CBD8</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationClosePointerOverBackground">#364152</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationClosePointerOverForeground">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationDebugBackground">#183B52</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationDebugForeground">#9CDFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationInfoBackground">#173D2B</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationInfoForeground">#98E0B2</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationWarnBackground">#493813</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationWarnForeground">#F9DC88</SolidColorBrush>
+    <LinearGradientBrush x:Key="CodeWFLogDesktopNotificationErrorBackground" StartPoint="50%, 0%" EndPoint="50%, 100%">
+        <GradientStop Color="#48232B" Offset="0" />
+        <GradientStop Color="#001F2229" Offset="1" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationErrorForeground">#FF9AA2</SolidColorBrush>
+    <LinearGradientBrush x:Key="CodeWFLogDesktopNotificationFatalBackground" StartPoint="50%, 0%" EndPoint="50%, 100%">
+        <GradientStop Color="#592631" Offset="0" />
+        <GradientStop Color="#001F2229" Offset="1" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationFatalForeground">#FFACB1</SolidColorBrush>
+</ResourceDictionary>
