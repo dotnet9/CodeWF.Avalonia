@@ -180,7 +180,7 @@ Each Dock document contains its demonstration and property panel; both move toge
 
 Windows x64 NativeAOT Demo：标题栏仅保留平铺八色点，模式复用 Ursa 三态按钮，语言图标弹出列表，默认 .NET 紫，共八套配色；浅色、深色与跟随系统分别选择。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
 
-`12.1.4.25` 修复真实控件在浅深色及八套配色下的前景/背景组合、交互状态、Markdown/脑图/通知的动态主题资源，并优化实时编辑器重复构建。本机正式 Windows NativeAOT、1024 组原生页面渲染、848 次原生对比测量和原样式安装器构建已通过，具体范围见[原生演示台文档](docs/NativeDemo.md)。
+当前版本 `12.1.4.26`，新增统一 .NET 紫原生安装器与双语维护流程；安装器和平台边界见[安装器说明](scripts/installer/README.md)。`12.1.4.25` 修复真实控件在浅深色及八套配色下的前景/背景组合、交互状态、Markdown/脑图/通知的动态主题资源，并优化实时编辑器重复构建。本机正式 Windows NativeAOT、1024 组原生页面渲染、848 次原生对比测量和原样式安装器构建已通过，具体范围见[原生演示台文档](docs/NativeDemo.md)。
 
 以下为 `12.1.4.25` 的 Dock 文档分屏、浮动与重新停靠效果（真实 Windows NativeAOT + Skia 离屏渲染），来源见[截图记录](docs/recheck25-native-media.md)：
 
@@ -229,3 +229,7 @@ dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0 -- --smoke
 ## 思维导图接入
 
 `CodeWF.Avalonia.MindView` 的控件和主题合并为一个包，版本随本仓统一版本。宿主可使用 Semi、Ursa 或其它 Avalonia 主题。编辑型脑图使用 `MindMapEditor` / `MindMapMiniMap`，只读 Markdown 导图使用 `MarkdownMindMapView`。详细 API 和接入例子见 [MindView README](src/MindView/CodeWF.Avalonia.MindView/README.md)。
+
+## 统一安装体验
+
+安装包采用统一 .NET 品牌紫设计：Windows 使用异形原生向导、真实进度核心和双语许可；macOS 使用品牌 DMG 背景与 Finder 拖放布局；Linux 提供原生 DEB 及 AppStream 品牌信息。各仓库保存自包含安装器源码，交付 EXE / DEB / DMG 和 SHA-256，不以 ZIP 代替安装包。实现、维护流程与平台验收边界见 [安装器说明](scripts/installer/README.md)。
