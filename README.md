@@ -168,6 +168,8 @@ public class MyMarkdownThemes : MarkdownThemes
 
 ## 演示应用 / Demo
 
+八套配色的深浅资源、真实控件交互态和对比度回归见[配色验证说明](docs/ThemeVerification.md)。统一 .NET 紫安装体验见[单文件交互原型](design/CodeWF.安装器原型.html)，当前为待验收设计，尚未应用于实际安装器。
+
 Demo 保留 Ribbon + Dock，按输入与选择、反馈与引导、数据展示、布局与导航、Markdown、开发工具分类；每个主菜单对应一个具体控件或 API。首页先展示目录，组合工作流集中到“综合示例”。新增展开动画独立页，块编辑、平面表格增强与状态卡片提供具体用例。共享主题接口、MVVM 约定与截图检查见 [原生演示台文档](docs/NativeDemo.md)。
 
 文档内使用 Grid + GridSplitter 放置演示与独立属性面板，浮动时整体移动。命令区进一步按状态、引导、表格、窗口、布局动效、Markdown 阅读 / 编辑 / 导出等用途分组。参数与演示优先展示，源码按需打开；长 API 名保持完整，窄窗口可横向滚动。仓库通过 `global.json` 选择稳定版 .NET 10 SDK。
@@ -178,15 +180,15 @@ Each Dock document contains its demonstration and property panel; both move toge
 
 Windows x64 NativeAOT Demo：标题栏仅保留平铺八色点，模式复用 Ursa 三态按钮，语言图标弹出列表，默认 .NET 紫，共八套配色；浅色、深色与跟随系统分别选择。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
 
-`12.1.4.23` 修复属性编辑器响应外部值、校验回退和旧数据解绑，并补齐 Semi/Ursa 内建菜单的全局切语与宿主覆盖验证。本机正式 Windows NativeAOT、原生 UI 和安装器构建已通过，具体范围见[原生演示台文档](docs/NativeDemo.md)。
+`12.1.4.25` 修复真实控件在浅深色及八套配色下的前景/背景组合、交互状态、Markdown/脑图/通知的动态主题资源，并优化实时编辑器重复构建。本机正式 Windows NativeAOT、1024 组原生页面渲染、848 次原生对比测量和原样式安装器构建已通过，具体范围见[原生演示台文档](docs/NativeDemo.md)。
 
-以下为 `12.1.4.22` 的 Dock 文档分屏、浮动与重新停靠效果（真实 Windows NativeAOT + Skia 离屏渲染）：
+以下为 `12.1.4.25` 的 Dock 文档分屏、浮动与重新停靠效果（真实 Windows NativeAOT + Skia 离屏渲染），来源见[截图记录](docs/recheck25-native-media.md)：
 
 ![文档与属性面板同步停靠](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-dock-redocked.png)
 
 ![浮动文档保留属性面板](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-dock-floating.png)
 
-快捷入口采用 16×16 图标与 30×30 点击热区，Ribbon 主命令使用 32×32 图标。每个文档内的演示和属性面板通过 GridSplitter 调整宽度，属性默认行高 31px、名称列宽 118px。下列截图来自 `12.1.4.24` 的真实控件，普通页面通过 Skia 离屏采集，浮动与回停状态来自 NativeAOT 验证器。
+快捷入口采用 16×16 图标与 30×30 点击热区，Ribbon 主命令使用 32×32 图标。每个文档内的演示和属性面板通过 GridSplitter 调整宽度，属性默认行高 31px、名称列宽 118px。下列普通页面 PNG 和 GIF 保留 `12.1.4.24` 的真实控件媒体，通过 Skia 离屏采集；本轮两张 Dock 图单独更新为上述版本。
 
 ![.NET 紫色原生演示台](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-dotnet.png)
 
