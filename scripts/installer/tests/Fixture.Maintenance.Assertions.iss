@@ -1,4 +1,4 @@
-﻿{ 纯逻辑断言仅供 CodeWFSetupFixture 使用；InitializeSetup 返回 False，安装向导不会创建。 }
+{ 纯逻辑断言仅供 CodeWFSetupFixture 使用；InitializeSetup 返回 False，安装向导不会创建。 }
 #ifndef CodeWFSetupFixture
 #error Maintenance logic assertions require CodeWFSetupFixture
 #endif
