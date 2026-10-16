@@ -24,10 +24,11 @@ const standalone = standaloneFixture(path.resolve(__dirname, '../CodeWF.安装�
         const dialog = element.querySelector('.dialog').getBoundingClientRect();
         return {
           inset: [backdrop.left - frame.left, backdrop.top - frame.top, frame.right - backdrop.right, frame.bottom - backdrop.bottom],
+          expectedInset: element.closest('[data-installer-platform="windows"]') ? [1, 60, 1, 17] : [1, 43, 1, 1],
           dialogFits: dialog.left >= backdrop.left && dialog.right <= backdrop.right && dialog.top >= backdrop.top && dialog.bottom <= backdrop.bottom,
         };
       });
-      geometry.inset.forEach((value, index) => assert.ok(Math.abs(value - (index === 1 ? 43 : 1)) <= 1, name + ': modal stays within window content'));
+      geometry.inset.forEach((value, index) => assert.ok(Math.abs(value - geometry.expectedInset[index]) <= 1, name + ': modal stays within window content'));
       assert.equal(geometry.dialogFits, true, name + ': dialog fits the backdrop');
       await page.locator('#installerWindow').screenshot({ path: path.join(output, name + '.png') });
       results.push(name + ': modal geometry');
@@ -246,6 +247,42 @@ const standalone = standaloneFixture(path.resolve(__dirname, '../CodeWF.安装�
     assert.equal((await state()).step, 'welcome');
     assert.equal((await state()).scenario, 'new');
     results.push('Accessibility: system appearance, reduced motion and reset');
+
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.evaluate(() => CodeWFInstallerPrototype.set({ platform: 'windows', language: 'zh', theme: 'dark', scenario: 'new', reduced: false }));
+    assert.equal(await page.locator('#installerWindow').evaluate(element => getComputedStyle(element).getPropertyValue('--purple').trim()), '#512bd4');
+    assert.notEqual(await page.locator('#installerWindow').evaluate(element => getComputedStyle(element).clipPath), 'none');
+    assert.equal(await page.locator('#installerWindow').evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      return element.contains(document.elementFromPoint(rect.left + 60, rect.top + 35));
+    }), false, 'The top-left cutout has a real transparent hit region');
+    assert.equal(await page.locator('#reactorLabel').innerText(), '.NET');
+    await page.screenshot({ path: path.join(output, 'sculpted-welcome-dark.png'), fullPage: true });
+    const canvasImage = () => page.locator('#reactorCanvas').evaluate(canvas => canvas.toDataURL());
+    const idleImage = await canvasImage();
+    await page.clock.runFor(120);
+    assert.notEqual(await canvasImage(), idleImage, 'Idle particle field animates');
+    await page.locator('#effectsButton').click();
+    await page.clock.runFor(1260);
+    assert.equal((await state()).step, 'installing');
+    assert.ok((await state()).progress > 0);
+    assert.equal(await page.locator('#reactorLabel').innerText(), (await state()).progress + '%');
+    await page.screenshot({ path: path.join(output, 'sculpted-installing-dark.png'), fullPage: true });
+    await page.locator('#reducedMotion').check();
+    const reducedImage = await canvasImage();
+    await page.clock.runFor(120);
+    assert.equal(await canvasImage(), reducedImage, 'Reduce motion stops canvas particle animation');
+    assert.equal(await page.locator('.reactor-core').evaluate(element => getComputedStyle(element).animationName), 'none');
+    await page.clock.runFor(2800);
+    assert.equal((await state()).step, 'complete');
+    await page.screenshot({ path: path.join(output, 'sculpted-complete-dark.png'), fullPage: true });
+    results.push('Sculpted .NET: brand purple, transparent cutout, idle particles, progress-synchronized energy core, completion, reduced-motion pause');
+
+    await page.locator('[data-platform="macos"]').click();
+    assert.equal(await page.locator('#effectsButton').isVisible(), false, 'Windows-only motion preview stays outside native macOS flow');
+    await page.locator('[data-platform="linux"]').click();
+    assert.equal(await page.locator('#effectsButton').isVisible(), false);
+    results.push('Native platforms: sculpted motion preview does not replace DMG or DEB behavior');
 
     await standalone.verify(page);
     assert.deepEqual(errors, [], 'No script or browser errors');
