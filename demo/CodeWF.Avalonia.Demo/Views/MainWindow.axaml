@@ -70,11 +70,11 @@
               ToolTip.Tip="{codewf:I18n Demo.Shell.NotifyDemo}">
         <Panel>
           <PathIcon Width="16" Height="16" Data="{DynamicResource SemiIconBellStroked}" />
-          <Border Width="14" Height="14" CornerRadius="7" Margin="0,-14,-12,0"
+          <Border x:Name="NotificationCountBadge" MinWidth="16" Height="16" Padding="3,0" CornerRadius="8" Margin="0,-14,-12,0"
                   HorizontalAlignment="Right" VerticalAlignment="Top"
-                  Background="{DynamicResource SemiColorDanger}"
+                  Background="{DynamicResource SemiColorDangerLight}"
                   IsVisible="{Binding HasNotifications}">
-            <TextBlock Text="{Binding NotificationCount}" FontSize="8.5" Foreground="White"
+            <TextBlock x:Name="NotificationCountText" Text="{Binding NotificationCount}" FontSize="10" Foreground="{DynamicResource SemiColorDanger}"
                        HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
         </Panel>
@@ -192,7 +192,7 @@
             BorderThickness="0,1,0,0">
       <Grid ColumnDefinitions="Auto,Auto,*,Auto">
         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-          <TextBlock Text="●" FontSize="10" Foreground="#26a34a" VerticalAlignment="Center" />
+          <TextBlock Text="●" FontSize="10" Foreground="{DynamicResource SemiColorSuccess}" VerticalAlignment="Center" />
           <TextBlock Text="{codewf:I18n Demo.Shell.DemoShell}" FontWeight="SemiBold" FontSize="11.5"
                      VerticalAlignment="Center" />
         </StackPanel>

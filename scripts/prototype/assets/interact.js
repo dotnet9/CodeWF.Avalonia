@@ -115,6 +115,13 @@ function log2both(msg, lv) {
  }
  setStatus(msg);
 }
+// 铃铛计数与通知卡片共用状态，关闭、超时和上限淘汰后立即刷新。
+function updateNotificationCount() {
+ var box = $("nc"), count = $("notificationCount");
+ if (!box || !count) return;
+ count.textContent = String(box.children.length);
+ count.hidden = box.children.length === 0;
+}
 function notify(kind, title, body) {
  var box = $("nc"); if (!box) return;
  var k = kind === "ok" ? "s" : kind === "warn" ? "w" : kind === "err" ? "e" : "i";
@@ -122,10 +129,11 @@ function notify(kind, title, body) {
  card.className = "ncard " + k;
  card.innerHTML = '<span>●</span><div style="flex:1"><div class="nt">' + esc(title) + '</div><div class="nb">' + esc(body || "") + "</div></div>" +
   '<button class="nx" title="' + esc(tt("g.close")) + '">✕</button>';
- card.querySelector(".nx").onclick = function () { if (card.parentNode === box) box.removeChild(card); };
+ card.querySelector(".nx").onclick = function () { if (card.parentNode === box) box.removeChild(card); updateNotificationCount(); };
  box.appendChild(card);
  while (box.children.length > 4) box.removeChild(box.children[0]);
- setTimeout(function () { if (card.parentNode === box) box.removeChild(card); }, 6000);
+ updateNotificationCount();
+ setTimeout(function () { if (card.parentNode === box) box.removeChild(card); updateNotificationCount(); }, 6000);
 }
 var _dlgYes = null;
 function confirmDlg(title, body, onYes, danger) {
@@ -1290,6 +1298,7 @@ function setDensity(v) {
 function setLang(l) {
  LANG = l;
  document.documentElement.lang = l;
+ $("notificationDemo").title = l === "en-US" ? "Notification demo" : "通知演示";
  SELF_PROPS[3].value = (l === "en-US" ? "English" : "简体中文");
  document.querySelectorAll("[data-i18n]").forEach(function (n) { n.textContent = tt(n.dataset.i18n); });
  var cp = $("cpmQ"); if (cp) cp.placeholder = tt("cmd.ph");
@@ -1458,6 +1467,7 @@ function bindShell() {
  $("darkBtn2").onclick = toggleDark;
  $("langBtn").onclick = function () { setLang(LANG === "zh-CN" ? "en-US" : "zh-CN"); };
  $("langBtn2").onclick = $("langBtn").onclick;
+ $("notificationDemo").onclick = function () { notify("ok", tt("nc.ok"), LANG === "en-US" ? "Notification demo" : "通知演示"); };
  $("qkGuide").onclick = guideOpen;
  $("qkCmd").onclick = cpmOpen;
  $("qkDensity").onclick = function () { setDensity(document.documentElement.dataset.density === "compact" ? "cozy" : "compact"); };

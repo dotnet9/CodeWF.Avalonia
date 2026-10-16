@@ -60,13 +60,14 @@ public partial class CodeWFWindowPage : DemoPageBase
 
         if (customTitleContent)
         {
-            window.LeftContent = new TextBlock
+            var titleIcon = new TextBlock
             {
                 Text = "◆",
-                Foreground = Brushes.DodgerBlue,
                 VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
                 Margin = new Thickness(10, 0, 0, 0),
             };
+            titleIcon.Bind(TextBlock.ForegroundProperty, titleIcon.GetResourceObservable("StudioAccent"));
+            window.LeftContent = titleIcon;
             var search = new TextBox { Width = 160, Height = 26, PlaceholderText = L.Instance.GetResource(DemoResources.Content.CodeWFWindow.ShowSample.Search) };
             DockPanel.SetDock(search, global::Avalonia.Controls.Dock.Right);
             window.RightContent = search;
@@ -78,16 +79,15 @@ public partial class CodeWFWindowPage : DemoPageBase
             var hero = new Border
             {
                 Height = 72,
-                Background = Brushes.DodgerBlue,
-                Opacity = 0.85,
                 Child = new TextBlock
                 {
                     Text = L.Instance.GetResource(DemoResources.Content.CodeWFWindow.ShowSample.ThisContentExtendsIntoTheTitleBarContentExtendsIntoTitleBar),
-                    Foreground = Brushes.White,
                     VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
                     HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center,
                 },
             };
+            hero.Bind(Border.BackgroundProperty, hero.GetResourceObservable("StudioPrimary"));
+            ((TextBlock)hero.Child).Foreground = Brushes.White;
             contentPanel.Children.Add(hero);
         }
 

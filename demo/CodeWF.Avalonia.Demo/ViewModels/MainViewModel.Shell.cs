@@ -42,14 +42,10 @@ public sealed class DemoNotification
 
     public DateTimeOffset CreatedAt { get; }
 
-    /// <summary>卡片左侧色带（对应原型 ok / warn / err / info 四色）。</summary>
-    public string Accent => Kind switch
-    {
-        DemoNotificationKind.Success => "#26a346",
-        DemoNotificationKind.Warning => "#e8a103",
-        DemoNotificationKind.Error => "#e34d4d",
-        _ => "#0064fa",
-    };
+    /// <summary>通知语义由视图映射为动态主题资源，现有卡片也可随主题切换。</summary>
+    public bool IsSuccess => Kind == DemoNotificationKind.Success;
+    public bool IsWarning => Kind == DemoNotificationKind.Warning;
+    public bool IsError => Kind == DemoNotificationKind.Error;
 
     public string Glyph => Kind switch
     {
@@ -439,10 +435,11 @@ public partial class MainViewModel
 
     // ───────────────────────── 布局记忆（对应原型 localStorage） ─────────────────────────
 
-    /// <summary>布局存档路径（`%LOCALAPPDATA%\CodeWF.Avalonia.Demo\layout.json`）。</summary>
+    /// <summary>布局存档路径；自动验证可指定独立数据目录，避免读取或覆盖用户布局。</summary>
     public static string LayoutPath { get; } = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "CodeWF.Avalonia.Demo",
+        Environment.GetEnvironmentVariable("CODEWF_AVALONIA_DEMO_DATA_DIRECTORY") is { Length: > 0 } dataDirectory
+            ? Path.GetFullPath(dataDirectory)
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CodeWF.Avalonia.Demo"),
         "layout.json");
 
     /// <summary>保存布局：色板 / 深浅 / 密度 / 语言 / 面板显隐 / 文档与激活项 / 重命名。</summary>

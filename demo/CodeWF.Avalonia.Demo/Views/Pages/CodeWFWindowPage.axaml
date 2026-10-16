@@ -33,7 +33,7 @@
                     BorderBrush="{DynamicResource TabControlSeparatorBorderBrush}">
               <codewf:CodeWFTitleBar Title="{codewf:I18n Demo.Content.CodeWFWindow.View.DocumentDesignNotes}" Height="36">
                 <codewf:CodeWFTitleBar.LeftContent>
-                  <TextBlock Text="◆" Foreground="DodgerBlue" VerticalAlignment="Center" Margin="10,0,0,0" />
+                  <TextBlock Text="◆" Foreground="{DynamicResource StudioAccent}" VerticalAlignment="Center" Margin="10,0,0,0" />
                 </codewf:CodeWFTitleBar.LeftContent>
                 <codewf:CodeWFTitleBar.RightContent>
                   <TextBox Width="140" Height="24" PlaceholderText="{codewf:I18n Demo.Content.CodeWFWindow.View.Search}" VerticalAlignment="Center" Margin="0,0,10,0" />

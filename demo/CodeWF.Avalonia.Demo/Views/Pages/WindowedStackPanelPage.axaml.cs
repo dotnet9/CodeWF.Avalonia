@@ -3,7 +3,6 @@ using L = global::CodeWF.Toolkit.Lang.I18nManager;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia;
-using Avalonia.Media;
 using Avalonia.Threading;
 using CodeWF.Avalonia.Controls.Controls;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
@@ -118,18 +117,19 @@ public partial class WindowedStackPanelPage : DemoPageBase
         BlocksPanel.ClearItems();
         for (var i = 1; i <= BlockCount; i++)
         {
-            BlocksPanel.AddItem(new Border
+            var block = new Border
             {
                 Height = 44,
                 CornerRadius = new CornerRadius(6),
-                Background = new SolidColorBrush(Color.FromArgb(24, 0x80, 0x80, 0x90)),
                 Padding = new Thickness(12, 0),
                 Child = new TextBlock
                 {
                     Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource(DemoResources.Content.WindowedStackPanel.OnGenerate.BlockFormat), i, BlockCount),
                     VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
                 },
-            });
+            };
+            block.Bind(Border.BackgroundProperty, block.GetResourceObservable("StudioRaised"));
+            BlocksPanel.AddItem(block);
         }
 
         Logger.Info(string.Format(System.Globalization.CultureInfo.CurrentCulture, L.Instance.GetResource(DemoResources.Content.WindowedStackPanel.OnGenerate.WindowedStackPanelGeneratedBlocksFormat), BlockCount));

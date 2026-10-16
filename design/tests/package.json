@@ -1,6 +1,6 @@
 {
   "name": "codewf-prototype-audit",
   "private": true,
-  "scripts": { "test": "node audit-prototype.cjs" },
+  "scripts": { "test": "node audit-prototype.cjs && node audit-palette.cjs", "test:palette": "node audit-palette.cjs" },
   "devDependencies": { "playwright": "1.62.1" }
 }

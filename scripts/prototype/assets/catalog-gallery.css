@@ -17,7 +17,21 @@
 
 .cmds{flex-wrap:nowrap}.cbtn{flex:0 0 auto;width:auto;height:62px}.rbn{overflow-x:auto;overflow-y:hidden}.catalog-header .catalog-description{color:var(--tx2);font-size:12px;margin-top:6px;line-height:1.7}
 
-.catalog-status[data-level="Debug"]{--status-color:#54a9ff}.catalog-status[data-level="Info"]{--status-color:var(--ok)}.catalog-status[data-level="Warn"]{--status-color:var(--warn)}.catalog-status[data-level="Error"],.catalog-status[data-level="Fatal"]{--status-color:var(--err)}.catalog-status{border-color:var(--status-color);background:color-mix(in srgb,var(--status-color) 12%,var(--bg2))}.catalog-status strong{background:var(--status-color)}.catalog-status.card strong{background:transparent;color:var(--status-color)}
+.catalog-status[data-level="Debug"]{--status-color:var(--badge-debug);--status-bg:var(--badge-debug-bg);--card-color:var(--card-debug);--card-bg:var(--card-debug-bg)}
+.catalog-status[data-level="Info"]{--status-color:var(--badge-info);--status-bg:var(--badge-info-bg);--card-color:var(--card-info);--card-bg:var(--card-info-bg)}
+.catalog-status[data-level="Warn"]{--status-color:var(--badge-warn);--status-bg:var(--badge-warn-bg);--card-color:var(--card-warn);--card-bg:var(--card-warn-bg)}
+.catalog-status[data-level="Error"]{--status-color:var(--badge-error);--status-bg:var(--badge-error-bg);--card-color:var(--card-error);--card-bg:var(--card-error-bg)}
+.catalog-status[data-level="Fatal"]{--status-color:var(--badge-fatal);--status-bg:var(--badge-fatal-bg);--card-color:var(--card-fatal);--card-bg:var(--card-fatal-bg)}
+.catalog-status{border-color:var(--status-color);background:var(--status-bg)}.catalog-status strong{background:var(--status-color);color:var(--badge-text)}
+.catalog-status.card{background:var(--card-bg);border-color:var(--card-bg);color:var(--card-color)}.catalog-status.card strong{background:transparent;color:var(--card-top)}.catalog-status.card .catalog-status-icon{color:var(--card-color)}
+
+/* 主色实底与强调文字使用不同令牌，深色主题也保持可读的前景。 */
+.flow .st.cur .n{background:var(--button-bg);color:var(--on-primary)}.flow .st.done .n{color:var(--badge-text)}
+.studio-action.primary:hover{background:var(--button-hover);border-color:var(--button-hover);color:var(--on-primary)}
+.studio-action.primary:active{background:var(--button-pressed);border-color:var(--button-pressed);color:var(--on-primary)}
+.studio-node.active{background:var(--action-gradient);color:var(--on-primary)}.studio-node.active code{color:var(--on-primary)}
+.cpm .it.on{background:var(--sel);color:var(--tx)}.cpm .it.on .g,.cpm .it.on .k{color:var(--tx2)}
+.guide-tip .nav button{color:var(--tx)}
 
 .catalog-grid{width:100%;border-collapse:collapse;table-layout:fixed}.catalog-grid td,.catalog-grid th{padding:9px;border-bottom:1px solid var(--line);text-align:left}.catalog-grid th{cursor:pointer}.catalog-grid td span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.catalog-grid tr.selected{background:color-mix(in srgb,var(--pri) 16%,transparent)}
 .catalog-expand{overflow:hidden;transition:width .3s ease,height .3s ease,opacity .3s ease;background:var(--bg2);border-radius:10px}.catalog-expand>div{padding:18px;min-width:100px}.catalog-expand.horizontal{height:140px}.catalog-expand.vertical{width:100%}

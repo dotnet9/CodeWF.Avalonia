@@ -3,15 +3,15 @@
              xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
              x:Class="CodeWF.Avalonia.Demo.Views.ShellOverlay"
              x:DataType="vm:MainViewModel"
-             x:CompileBindings="True">
+             x:CompileBindings="True" Foreground="{DynamicResource StudioText}">
   <!--  外壳浮层：命令面板（Ctrl+K）+ 通知中心（右下角卡片），与 design 原型一一对应  -->
   <Panel>
     <!--  命令面板：锁定焦点、↑↓ 选择、Enter 执行、Esc 关闭  -->
     <Border x:Name="CommandMask" IsVisible="{Binding CommandPaletteOpen}" Background="#66000000">
       <Border x:Name="CommandBox" Width="620" MaxHeight="520" Margin="0,80,0,0"
               VerticalAlignment="Top" HorizontalAlignment="Center"
-              Background="{DynamicResource SemiColorWhite}"
-              BorderBrush="{DynamicResource SemiColorBorder}" BorderThickness="1"
+              Background="{DynamicResource StudioSurface}"
+              BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1"
               CornerRadius="10" ClipToBounds="True">
         <StackPanel>
           <TextBox x:Name="CommandInput"
@@ -19,26 +19,26 @@
                    PlaceholderText="{Binding CommandPlaceholder}"
                    FontSize="14" MinHeight="42" CornerRadius="0"
                    BorderThickness="0,0,0,1" Padding="14,0" />
-          <ScrollViewer MaxHeight="360">
-            <ItemsControl ItemsSource="{Binding FilteredCommands}">
-              <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="vm:DemoCommandEntry">
-                  <Button Classes="cpm-item"
-                          Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).RunCommandEntryCommand}"
-                          CommandParameter="{Binding}">
-                    <Grid ColumnDefinitions="Auto,*,Auto">
-                      <TextBlock Text="{Binding Icon}" FontSize="14" VerticalAlignment="Center" Opacity="0.85" />
-                      <TextBlock Grid.Column="1" Text="{Binding Title}" Margin="10,0,0,0"
-                                 VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                      <TextBlock Grid.Column="2" Text="{Binding Group}" FontSize="10.5"
-                                 VerticalAlignment="Center" Opacity="0.6" />
-                    </Grid>
-                  </Button>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </ScrollViewer>
-          <TextBlock Text="{Binding CommandHint}" FontSize="10.5" Opacity="0.6" Margin="14,6" />
+          <ListBox x:Name="CommandResults" Classes="command-results" MaxHeight="360"
+                   ItemsSource="{Binding FilteredCommands}" SelectionMode="AlwaysSelected"
+                   SelectedIndex="{Binding CommandIndex, Mode=OneWay}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:DemoCommandEntry">
+                <Button Classes="cpm-item"
+                        Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).RunCommandEntryCommand}"
+                        CommandParameter="{Binding}">
+                  <Grid ColumnDefinitions="Auto,*,Auto">
+                    <TextBlock Text="{Binding Icon}" FontSize="14" VerticalAlignment="Center" Opacity="0.85" />
+                    <TextBlock Grid.Column="1" Text="{Binding Title}" Margin="10,0,0,0"
+                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Classes="command-group" Grid.Column="2" Text="{Binding Group}" FontSize="10.5"
+                               VerticalAlignment="Center" />
+                  </Grid>
+                </Button>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <TextBlock x:Name="CommandHintText" Text="{Binding CommandHint}" FontSize="10.5" Foreground="{DynamicResource StudioMuted}" Margin="14,6" />
         </StackPanel>
       </Border>
     </Border>
@@ -50,19 +50,20 @@
                   Margin="0,0,18,44" Width="330">
       <ItemsControl.ItemTemplate>
         <DataTemplate x:DataType="vm:DemoNotification">
-          <Border Margin="0,0,0,8" Padding="9,7" CornerRadius="8"
-                  Background="{DynamicResource SemiColorWhite}"
-                  BorderBrush="{DynamicResource SemiColorBorder}"
+          <Border Classes="notification-card" Classes.success="{Binding IsSuccess}"
+                  Classes.warning="{Binding IsWarning}" Classes.error="{Binding IsError}"
+                  Margin="0,0,0,8" Padding="9,7" CornerRadius="8"
+                  Background="{DynamicResource StudioSurface}"
+                  BorderBrush="{DynamicResource StudioBorder}"
                   BorderThickness="1,1,1,1" BoxShadow="0 8 26 0 #40000000">
             <Grid ColumnDefinitions="Auto,Auto,*,Auto">
-              <Border Width="3" CornerRadius="2" Margin="0,1,9,1"
-                      Background="{Binding Accent}" />
-              <TextBlock Grid.Column="1" Text="{Binding Glyph}" FontSize="12" FontWeight="Bold"
-                         VerticalAlignment="Top" Margin="0,1,8,0" Foreground="{Binding Accent}" />
+              <Border Classes="notification-accent" Width="3" CornerRadius="2" Margin="0,1,9,1" />
+              <TextBlock Classes="notification-glyph" Grid.Column="1" Text="{Binding Glyph}" FontSize="12" FontWeight="Bold"
+                         VerticalAlignment="Top" Margin="0,1,8,0" />
               <StackPanel Grid.Column="2">
                 <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="12" />
-                <TextBlock Text="{Binding Body}" FontSize="11" Opacity="0.75" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding TimeText}" FontSize="10" Opacity="0.5" Margin="0,2,0,0" />
+                <TextBlock Text="{Binding Body}" FontSize="11" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding TimeText}" FontSize="10" Foreground="{DynamicResource StudioMuted}" Margin="0,2,0,0" />
               </StackPanel>
               <Button Grid.Column="3" Content="✕" FontSize="11" Padding="4,0"
                       VerticalAlignment="Top" Background="Transparent"
@@ -86,9 +87,64 @@
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="CornerRadius" Value="0" />
       <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="Foreground" Value="{DynamicResource StudioText}" />
     </Style>
-    <Style Selector="Button.cpm-item:pointerover">
-      <Setter Property="Background" Value="#140064FA" />
+    <Style Selector="ListBox.command-results">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="ListBox.command-results ListBoxItem">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="Foreground" Value="{DynamicResource StudioText}" />
+    </Style>
+    <Style Selector="ListBox.command-results ListBoxItem:selected">
+      <Setter Property="Background" Value="{DynamicResource SemiColorPrimaryLight}" />
+    </Style>
+    <Style Selector="ListBox.command-results ListBoxItem:selected:pointerover">
+      <Setter Property="Background" Value="{DynamicResource SemiColorPrimaryLightPointerover}" />
+    </Style>
+    <Style Selector="Button.cpm-item /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource StudioText}" />
+    </Style>
+    <Style Selector="Button.cpm-item:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SemiColorPrimaryLight}" />
+    </Style>
+    <Style Selector="Button.cpm-item:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SemiColorPrimaryLightActive}" />
+    </Style>
+    <Style Selector="TextBlock.command-group">
+      <Setter Property="Foreground" Value="{DynamicResource StudioMuted}" />
+    </Style>
+    <Style Selector="Button.cpm-item:pressed TextBlock.command-group">
+      <Setter Property="Foreground" Value="{DynamicResource StudioText}" />
+    </Style>
+    <Style Selector="Border.notification-card Border.notification-accent">
+      <Setter Property="Background" Value="{DynamicResource SemiColorInformation}" />
+    </Style>
+    <Style Selector="Border.notification-card TextBlock.notification-glyph">
+      <Setter Property="Foreground" Value="{DynamicResource SemiColorInformation}" />
+    </Style>
+    <Style Selector="Border.notification-card.success Border.notification-accent">
+      <Setter Property="Background" Value="{DynamicResource SemiColorSuccess}" />
+    </Style>
+    <Style Selector="Border.notification-card.success TextBlock.notification-glyph">
+      <Setter Property="Foreground" Value="{DynamicResource SemiColorSuccess}" />
+    </Style>
+    <Style Selector="Border.notification-card.warning Border.notification-accent">
+      <Setter Property="Background" Value="{DynamicResource SemiColorWarning}" />
+    </Style>
+    <Style Selector="Border.notification-card.warning TextBlock.notification-glyph">
+      <Setter Property="Foreground" Value="{DynamicResource SemiColorWarning}" />
+    </Style>
+    <Style Selector="Border.notification-card.error Border.notification-accent">
+      <Setter Property="Background" Value="{DynamicResource SemiColorDanger}" />
+    </Style>
+    <Style Selector="Border.notification-card.error TextBlock.notification-glyph">
+      <Setter Property="Foreground" Value="{DynamicResource SemiColorDanger}" />
     </Style>
   </UserControl.Styles>
 </UserControl>

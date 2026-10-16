@@ -56,6 +56,9 @@ jobs:
       - name: 验证同一控件动态切语与业务资源覆盖
         run: artifacts\aot-localization\LocalizationVerification.exe artifacts/localization-fixture
 
+      - name: 验证原生控件与通知交互配色
+        run: artifacts\aot-localization\LocalizationVerification.exe --palette-audit artifacts/native-palette
+
   prototype-audit:
     name: 原型路由与语言审计
     runs-on: ubuntu-latest

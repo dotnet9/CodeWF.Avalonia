@@ -39,7 +39,7 @@
                                    ShowLineNumbers="False" EditorPadding="10,8" EditorLineHeight="20"
                                    EditorBackgroundKey="StudioBackground" EditorForegroundKey="StudioText"
                                    AccentKey="StudioAccent" CodeKey="StudioAccent" QuoteKey="StudioMuted"
-                                   LinkKey="StudioSecondary" SeparatorKey="StudioBorder" />
+                                   LinkKey="StudioAccent" SeparatorKey="StudioBorder" />
         <Border Grid.Row="1" Grid.Column="1" Margin="12,0,0,0" CornerRadius="8" Background="{DynamicResource StudioRaised}">
          <codewf:MarkdownViewer Markdown="{Binding Markdown}" Margin="13,10" Classes="studio-preview"
                                 ParagraphFontSize="12" ParagraphLineHeight="22" Heading1FontSize="17"

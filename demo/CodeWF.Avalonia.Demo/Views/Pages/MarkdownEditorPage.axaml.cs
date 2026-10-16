@@ -36,7 +36,7 @@ public partial class MarkdownEditorPage : DemoPageBase
             EditorBackgroundKey = "StudioBackground", EditorForegroundKey = "StudioText",
             CurrentLineBackgroundKey = "StudioSurface", CurrentLineBorderKey = "StudioBorder",
             AccentKey = "StudioAccent", CodeKey = "StudioAccent", QuoteKey = "StudioMuted",
-            LinkKey = "StudioSecondary", SeparatorKey = "StudioBorder"
+            LinkKey = "StudioAccent", SeparatorKey = "StudioBorder"
         };
         _editor.SetText(SampleMarkdown);
         _editor.MarkdownChanged += (_, _) => UpdateStatus();

@@ -486,6 +486,7 @@ d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"
 </script>
 <link rel="stylesheet" href="assets/studio.css">
 <link rel="stylesheet" href="assets/catalog-gallery.css">
+<link rel="stylesheet" href="assets/palette-tokens.css">
 </head>
 <body data-product="avalonia">
 
@@ -504,6 +505,7 @@ d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"
       <button class="wb" id="langBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="languageMenu" title="Language"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18z"/></svg></button>
       <div id="languageMenu" role="menu" hidden></div>
     </div>
+    <button class="wb notification-entry" id="notificationDemo" type="button" title="通知演示"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 16h14l-2-3V9a5 5 0 0 0-10 0v4zM10 20h4"/></svg><span id="notificationCount" class="notification-count" hidden></span></button>
     <button class="wb" data-window-action="minimize" title="最小化"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6h8"/></svg></button>
     <button class="wb" data-window-action="maximize" title="最大化"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" rx="1.2"/></svg></button>
     <button class="wb cls" data-window-action="close" title="关闭"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>

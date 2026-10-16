@@ -20,6 +20,14 @@ using DemoKeys = CodeWF.Avalonia.Demo.I18n.ResourceKeys;
 using PropertyKeys = CodeWF.Avalonia.TreeDataGrid.PropertyGrid.I18n.ResourceKeys;
 using ReactiveUI.Avalonia;
 
+// 验证器只使用本次输出目录，初始化真实窗口时也不读取用户布局。
+var outputArgument = args.FirstOrDefault() == "--palette-audit" ? args.Skip(1).FirstOrDefault() : args.FirstOrDefault();
+var verificationOutput = Path.GetFullPath(outputArgument is { Length: > 0 } && !outputArgument.StartsWith("--", StringComparison.Ordinal)
+    ? outputArgument : Path.Combine(Path.GetTempPath(), "CodeWF.Avalonia.Verification", Guid.NewGuid().ToString("N")));
+var verificationData = Path.Combine(verificationOutput, "isolated-data");
+Directory.CreateDirectory(verificationData);
+Environment.SetEnvironmentVariable("CODEWF_AVALONIA_DEMO_DATA_DIRECTORY", verificationData);
+
 // 离屏运行真实 Demo 主题与控件，锁屏时也可验证 NativeAOT 动态语言切换。
 AppBuilder.Configure<CodeWF.Avalonia.Demo.App>().UseSkia().WithInterFont().UseReactiveUI(_ => { })
     .With(new FontManagerOptions { FontFallbacks = [
@@ -29,6 +37,9 @@ AppBuilder.Configure<CodeWF.Avalonia.Demo.App>().UseSkia().WithInterFont().UseRe
     ] })
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false }).SetupWithoutStarting();
 DemoBootstrapper.Initialize();
+Require(MainViewModel.LayoutPath == Path.Combine(verificationData, "layout.json"), "Window initialization uses the isolated layout directory.");
+if (args.FirstOrDefault() == "--palette-audit")
+    return DemoPaletteVerification.Run(args.Skip(1).ToArray());
 VerifyThirdPartyLocales();
 VerifyHiddenPropertyRows();
 VerifyPropertyEditors();
@@ -58,11 +69,8 @@ manager.CultureChanged += OnCultureChanged;
 try
 {
     // 在同一批真实模板上连续切换主题，检查控件资源不会停留在 Semi 默认蓝色。
-    foreach (var variant in new[] { StudioTheme.DotNetLight, StudioTheme.DotNetDark,
-                 StudioTheme.AuroraLight, StudioTheme.AuroraDark, StudioTheme.EmberLight, StudioTheme.EmberDark,
-                 StudioTheme.AquaticLight, StudioTheme.AquaticDark, StudioTheme.DesertLight, StudioTheme.DesertDark,
-                 StudioTheme.DuskLight, StudioTheme.DuskDark, StudioTheme.NightSkyLight, StudioTheme.NightSkyDark,
-                 StudioTheme.DotNetLight })
+    foreach (var variant in Enum.GetValues<StudioPalette>().SelectMany(palette =>
+                 new[] { StudioTheme.GetVariant(palette, false), StudioTheme.GetVariant(palette, true) }))
     {
         window.RequestedThemeVariant = variant;
         Dispatcher.UIThread.RunJobs();

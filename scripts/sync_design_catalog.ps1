@@ -1,7 +1,7 @@
 param([switch] $Check)
 $ErrorActionPreference = 'Stop'
 
-# Generated files are checked in; a normal dotnet build does not require PowerShell.
+# 生成文件随源码提交，正常 dotnet build 不依赖 PowerShell。
 function Write-GeneratedFile([string] $Path, [string] $Content) {
     if ($Check) {
         if (-not (Test-Path -LiteralPath $Path) -or
@@ -111,5 +111,68 @@ $($factories -join "`n")
 }
 "@ + "`n"
 Write-GeneratedFile (Join-Path $repoRoot 'demo/CodeWF.Avalonia.Demo/ViewModels/DemoCatalog.g.cs') $code
+
+# 浏览器直接复用控件主题令牌，避免深浅模式、语义色和按钮状态维护两份色值。
+function Read-PrototypeColor([hashtable] $Resources, [string] $Key) {
+    $visited = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    while ($visited.Add($Key)) {
+        $resource = $Resources[$Key]
+        if ($null -eq $resource) { throw "原型颜色资源不存在：$Key" }
+        if ($resource.LocalName -eq 'StaticResource') {
+            $Key = $resource.GetAttribute('ResourceKey')
+            continue
+        }
+        $value = $resource.GetAttribute('Color')
+        if (-not $value) { $value = $resource.InnerText.Trim() }
+        if ($value -match '^\{StaticResource (.+)\}$') { $Key = $Matches[1]; continue }
+        if ($value -notmatch '^(#[0-9A-Fa-f]{6}|White|Black)$') { throw "原型颜色值不受支持：$Key = $value" }
+        return $value.ToLowerInvariant()
+    }
+    throw "原型颜色资源循环引用：$Key"
+}
+$paletteCss = [Collections.Generic.List[string]]::new()
+$paletteCss.Add('/* 生成来源：Themes/Studio/Tokens；执行 scripts/sync_design_catalog.ps1 更新。 */')
+$paletteNames = [ordered]@{ DotNet = 'dotnet'; Aurora = 'aurora'; Ember = 'ember'; Default = 'default'; Aquatic = 'aqua'; Desert = 'desert'; Dusk = 'dusk'; NightSky = 'night' }
+$roles = [ordered]@{
+    'bg' = 'StudioBackgroundColor'; 'bg2' = 'StudioSurfaceColor'; 'bg3' = 'StudioRaisedColor'
+    'tx' = 'StudioTextColor'; 'tx2' = 'StudioMutedColor'; 'tx3' = 'StudioMutedColor'
+    'bd' = 'StudioBorderColor'; 'bd2' = 'StudioBorderColor'; 'line' = 'StudioBorderColor'
+    'hov' = 'StudioRaisedColor'; 'sel' = 'StudioRaisedColor'; 'workbg' = 'StudioRaisedColor'
+    'pri' = 'StudioAccentColor'; 'pri-h' = 'StudioAccentColor'; 'brand' = 'StudioPrimaryColor'
+    'glow' = 'StudioAccentColor'; 'secondary' = 'StudioSecondaryColor'; 'text-gradient-end' = 'StudioTextGradientEndColor'
+    'button-bg' = 'StudioPrimaryColor'; 'button-hover' = 'StudioPrimaryHover'; 'button-pressed' = 'StudioPrimaryPressed'; 'on-primary' = 'StudioOnPrimary'
+    'ok' = 'SemiColorSuccess'; 'warn' = 'SemiColorWarning'; 'err' = 'SemiColorDanger'
+    'badge-text' = 'StatusBadgeLeftTextForeground'; 'card-top' = 'StatusCardTopTextForeground'
+}
+foreach ($palette in $paletteNames.Keys) {
+    foreach ($mode in @('Light', 'Dark')) {
+        $file = if ($palette -eq 'Default') { "$mode.axaml" } else { "$palette$mode.axaml" }
+        [xml] $tokens = Get-Content -LiteralPath (Join-Path $repoRoot "src/Controls/CodeWF.Avalonia.Controls/Themes/Studio/Tokens/$file") -Raw -Encoding utf8
+        $resources = @{}
+        foreach ($node in $tokens.DocumentElement.ChildNodes) {
+            if ($node -isnot [Xml.XmlElement]) { continue }
+            $key = $node.GetAttribute('Key', 'http://schemas.microsoft.com/winfx/2006/xaml')
+            if ($key) {
+                if ($resources.ContainsKey($key)) { throw "主题资源键重复：$file/$key" }
+                $resources[$key] = $node
+            }
+        }
+        $paletteCss.Add(':root[data-theme=' + $mode.ToLowerInvariant() + '][data-palette=' + $paletteNames[$palette] + '] {')
+        foreach ($role in $roles.Keys) { $paletteCss.Add('  --' + $role + ':' + (Read-PrototypeColor $resources $roles[$role]) + ';') }
+        foreach ($kind in @('Debug', 'Info', 'Warn', 'Error', 'Fatal')) {
+            foreach ($entry in @(
+                @(('badge-' + $kind.ToLowerInvariant()), "StatusBadge${kind}BorderBrush"),
+                @(('badge-' + $kind.ToLowerInvariant() + '-bg'), "StatusBadge${kind}Background"),
+                @(('card-' + $kind.ToLowerInvariant()), "StatusCard${kind}Foreground"),
+                @(('card-' + $kind.ToLowerInvariant() + '-bg'), "StatusCard${kind}Background")
+            )) { $paletteCss.Add('  --' + $entry[0] + ':' + (Read-PrototypeColor $resources $entry[1]) + ';') }
+        }
+        $end = $resources['StudioActionGradient'].SelectSingleNode('*[local-name()="GradientStop"][@Offset="1"]').GetAttribute('Color')
+        $paletteCss.Add('  --action-gradient:linear-gradient(135deg,var(--button-bg),' + $end.ToLowerInvariant() + ');')
+        $paletteCss.Add('  --pri-lt:var(--bg3);')
+        $paletteCss.Add('}')
+    }
+}
+Write-GeneratedFile (Join-Path $repoRoot 'scripts/prototype/assets/palette-tokens.css') (($paletteCss -join "`n") + "`n")
 Write-Host "Catalog synchronized: $($catalog.Count) groups, $($items.Count) pages."
 & (Join-Path $PSScriptRoot 'build_standalone_prototype.ps1') -Check:$Check

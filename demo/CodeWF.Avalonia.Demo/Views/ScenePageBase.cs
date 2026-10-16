@@ -27,7 +27,6 @@ public abstract class ScenePageBase : DemoPageBase
     private readonly TextBlock _summaryText = new()
     {
         FontSize = 11.5,
-        Opacity = 0.66,
         VerticalAlignment = VerticalAlignment.Center,
         Margin = new Thickness(16, 0, 0, 0),
     };
@@ -36,6 +35,7 @@ public abstract class ScenePageBase : DemoPageBase
 
     protected ScenePageBase()
     {
+        _summaryText.Bind(TextBlock.ForegroundProperty, _summaryText.GetResourceObservable("StudioMuted"));
         // 语言切换时刷新步骤标题与状态栏文案
         I18nManager.Instance.CultureChanged += (_, _) =>
         {
@@ -148,10 +148,10 @@ public abstract class ScenePageBase : DemoPageBase
             var marker = new TextBlock { FontSize = 10, FontWeight = FontWeight.Bold };
             var markerHost = new Border
             {
+                Classes = { "step-no" },
                 Width = 16,
                 Height = 16,
                 CornerRadius = new CornerRadius(8),
-                Background = new SolidColorBrush(Color.Parse("#22000000")),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 Child = marker,
@@ -172,9 +172,7 @@ public abstract class ScenePageBase : DemoPageBase
                 Classes = { "scene-step" },
                 Padding = new Thickness(10, 4),
                 CornerRadius = new CornerRadius(14),
-                Background = Brushes.Transparent,
                 BorderThickness = new Thickness(1),
-                BorderBrush = new SolidColorBrush(Color.Parse("#22000000")),
                 Content = row,
             };
             button.Click += (_, _) => GoToStep(index);
@@ -198,14 +196,6 @@ public abstract class ScenePageBase : DemoPageBase
 
     private void RefreshStepStates()
     {
-        var accent = Color.Parse("#0064FA");
-        if (Application.Current is { } app
-            && app.TryFindResource("SystemAccentColor", app.ActualThemeVariant, out var value)
-            && value is Color color)
-        {
-            accent = color;
-        }
-
         for (var i = 0; i < _stepButtons.Count; i++)
         {
             var isActive = i == _stepIndex;
@@ -214,13 +204,10 @@ public abstract class ScenePageBase : DemoPageBase
             _stepMarkers[i].Text = isDone ? "✓" : (i + 1).ToString();
             _stepMarkers[i].Opacity = isActive || isDone ? 1 : 0.75;
 
-            _stepButtons[i].Background = isActive
-                ? new SolidColorBrush(Color.FromArgb(26, accent.R, accent.G, accent.B))
-                : Brushes.Transparent;
-            _stepButtons[i].BorderBrush = isActive
-                ? new SolidColorBrush(accent)
-                : new SolidColorBrush(Color.Parse("#22000000"));
-            _stepButtons[i].FontWeight = isActive ? FontWeight.SemiBold : FontWeight.Normal;
+            // 状态只控制样式类，颜色由动态主题资源统一更新。
+            _stepButtons[i].Classes.Set("active", isActive);
+            if (_stepMarkers[i].Parent is Border markerHost)
+                markerHost.Classes.Set("done", isDone);
         }
     }
 
