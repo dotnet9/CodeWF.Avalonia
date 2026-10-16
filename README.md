@@ -180,7 +180,7 @@ Each Dock document contains its demonstration and property panel; both move toge
 
 Windows x64 NativeAOT Demo：标题栏仅保留平铺八色点，模式复用 Ursa 三态按钮，语言图标弹出列表，默认 .NET 紫，共八套配色；浅色、深色与跟随系统分别选择。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
 
-当前版本 `12.1.4.26`，新增统一 .NET 紫原生安装器与双语维护流程；安装器和平台边界见[安装器说明](scripts/installer/README.md)。`12.1.4.25` 修复真实控件在浅深色及八套配色下的前景/背景组合、交互状态、Markdown/脑图/通知的动态主题资源，并优化实时编辑器重复构建。本机正式 Windows NativeAOT、1024 组原生页面渲染、848 次原生对比测量和原样式安装器构建已通过，具体范围见[原生演示台文档](docs/NativeDemo.md)。
+当前版本 `12.1.4.27`，修复原生安装器动态刷新闪烁并统一 CodeWF 品牌；安装器和平台边界见[安装器说明](scripts/installer/README.md)。`12.1.4.25` 修复真实控件在浅深色及八套配色下的前景/背景组合、交互状态、Markdown/脑图/通知的动态主题资源，并优化实时编辑器重复构建。本机正式 Windows NativeAOT、1024 组原生页面渲染、848 次原生对比测量和原样式安装器构建已通过，具体范围见[原生演示台文档](docs/NativeDemo.md)。
 
 以下为 `12.1.4.25` 的 Dock 文档分屏、浮动与重新停靠效果（真实 Windows NativeAOT + Skia 离屏渲染），来源见[截图记录](docs/recheck25-native-media.md)：
 

@@ -1,63 +1,57 @@
-﻿# 统一安装器实施与本机验证
+# 统一安装器实施与验证
 
-2026-10-16，已确认的第二版原型应用于 11 个桌面 App 和两个库 Demo。所有仓库直接在 main 维护本地安装器快照，不读取相邻仓库。
+2026-10-16，本轮修订将 CodeWF 品牌、安装动画和单文件原型同步到 11 个桌面 App 及两个库 Demo。所有仓库直接在 main 维护各自安装源码，打包不读取相邻仓库。
 
-## 交付与验证
+## 当前版本与发布入口
 
-| 产品 | 版本 | 本机 Windows 安装包 | 五平台下载 |
-| --- | --- | --- | --- |
-| AvaGithubDesktop | 0.118.0.19 | `AvaGithubDesktop-v0.118.0.19-win-x64-setup.exe` | [Release](https://github.com/dotnet9/AvaGithubDesktop/releases/tag/v0.118.0.19) |
-| ClearC | 0.2.13 | `ClearC-v0.2.13-win-x64-setup.exe` | [Release](https://github.com/dotnet9/ClearC/releases/tag/v0.2.13) |
-| CodeWF.Avalonia.Demo | 12.1.4.26 | `CodeWF.Avalonia.Demo-v12.1.4.26-win-x64-setup.exe` | [Release](https://github.com/dotnet9/CodeWF.Avalonia/releases/tag/v12.1.4.26) |
-| CodeWF.Toolbox | 12.0.18 | `CodeWF.Toolbox-v12.0.18-win-x64-setup.exe` | [Release](https://github.com/dotnet9/CodeWF.Toolbox/releases/tag/v12.0.18) |
-| CodeWF.Toolkit.Demo | 1.0.0.25 | `CodeWF.Toolkit.Demo-v1.0.0.25-win-x64-setup.exe` | [Release](https://github.com/dotnet9/CodeWF.Toolkit/releases/tag/v1.0.0.25) |
-| HomeLedger | 0.1.13 | `HomeLedger-v0.1.13-win-x64-setup.exe` | [Release](https://github.com/dotnet9/HomeLedger/releases/tag/v0.1.13) |
-| IEditor | 0.3.13 | `IEditor-v0.3.13-win-x64-setup.exe` | [Release](https://github.com/dotnet9/IEditor/releases/tag/v0.3.13) |
-| KidWall | 1.0.12 | `KidWall-v1.0.12-win-x64-setup.exe` | [Release](https://github.com/dotnet9/KidWall/releases/tag/v1.0.12) |
-| NexusDash | 0.1.15 | `NexusDash-v0.1.15-win-x64-setup.exe` | [Release](https://github.com/dotnet9/NexusDash/releases/tag/v0.1.15) |
-| QuickApp | 0.9.7 | `QuickApp-v0.9.7-win-x64-setup.exe` | [Release](https://github.com/dotnet9/QuickApp/releases/tag/v0.9.7) |
-| Vex | 1.5.8 | `Vex-v1.5.8-win-x64-setup.exe` | [Release](https://github.com/dotnet9/Vex/releases/tag/v1.5.8) |
-| Zhijian | 12.1.0.17 | `Zhijian-v12.1.0.17-win-x64-setup.exe` | [Release](https://github.com/dotnet9/Zhijian/releases/tag/v12.1.0.17) |
-| Zitie | 0.2.6 | `Zitie-v0.2.6-win-x64-setup.exe` | [Release](https://github.com/dotnet9/Zitie/releases/tag/v0.2.6) |
+| 产品 | 本轮版本 | 五平台下载 |
+| --- | --- | --- |
+| AvaGithubDesktop | 0.118.0.20 | [Release](https://github.com/dotnet9/AvaGithubDesktop/releases/tag/v0.118.0.20) |
+| ClearC | 0.2.14 | [Release](https://github.com/dotnet9/ClearC/releases/tag/v0.2.14) |
+| CodeWF.Avalonia.Demo | 12.1.4.27 | [Release](https://github.com/dotnet9/CodeWF.Avalonia/releases/tag/v12.1.4.27) |
+| CodeWF.Toolbox | 12.0.19 | [Release](https://github.com/dotnet9/CodeWF.Toolbox/releases/tag/v12.0.19) |
+| CodeWF.Toolkit.Demo | 1.0.0.26 | [Release](https://github.com/dotnet9/CodeWF.Toolkit/releases/tag/v1.0.0.26) |
+| HomeLedger | 0.1.14 | [Release](https://github.com/dotnet9/HomeLedger/releases/tag/v0.1.14) |
+| IEditor | 0.3.14 | [Release](https://github.com/dotnet9/IEditor/releases/tag/v0.3.14) |
+| KidWall | 1.0.13 | [Release](https://github.com/dotnet9/KidWall/releases/tag/v1.0.13) |
+| NexusDash | 0.1.16 | [Release](https://github.com/dotnet9/NexusDash/releases/tag/v0.1.16) |
+| QuickApp | 0.9.8 | [Release](https://github.com/dotnet9/QuickApp/releases/tag/v0.9.8) |
+| Vex | 1.5.9 | [Release](https://github.com/dotnet9/Vex/releases/tag/v1.5.9) |
+| Zhijian | 12.1.0.18 | [Release](https://github.com/dotnet9/Zhijian/releases/tag/v12.1.0.18) |
+| Zitie | 0.2.7 | [Release](https://github.com/dotnet9/Zitie/releases/tag/v0.2.7) |
 
-13 个 Windows 安装包均从各自已验证的 x64 NativeAOT 载荷编译，附 SHA-256。源清单摘要为 `64bc49d1991fd238a07e700acc7989150b8dadecda29764159442e7df7271ae8`，本机编译器为 Inno Setup 6.3.3 x86。安装器引擎架构与应用 x64 载荷互不混淆，Inno 7 条件编译显式保留 x86 引擎。
+本轮标签发布正在进行。上表为本轮下载入口，不表示全部工作流已经成功；以各仓正式发布结果和资产清单为准。上一轮 65 个安装包的成功记录属于各自历史版本，不能替代本轮验收。
 
-- 13 个独立克隆场景：只复制本仓安装源码、许可与语言资源，在中文及空格路径用受控载荷真实编译。未执行产品安装器。
-- 原生安装夹具：中英文各 34 项，包含真实异形区域、三态主题、只读系统外观、减少动态效果、Tab 与 Enter、许可门禁、路径与任务、进度及完成退出。夹具仅安装自己的 LICENSE，不创建注册、关联、快捷方式或产品进程。
-- 维护页：中英文各 26 项，检查修复／卸载选择、完整路径展示、只读可复制内容、切换更新和正常许可流程；不启动真实卸载器。
-- 维护逻辑：三个 AppId 各 57 项，共 171 项。实际预处理结果排除真实注册、ShellExec 与外部调用；向导不创建。生产分支及集成模板只编译。
-- 原生卸载夹具：英文 75、中文 75、静默 6、缺资源 6，共 162 项；四次专用卸载进程退出码为 0。检查真实 PBM 数值、深浅及跟随系统、精确 HWND、GDI 稳定、资源释放和未登记文件保留。进度来自夹具虚拟文件删除，不能当作真实产品卸载。
-- 单文件安装原型：199 项浏览器布局、状态与交互检查通过。
-- Avalonia 12.1.4.26 与 NexusDash 0.1.15 重新执行本机正式 AOT 脚本和实际 EXE 隔离自检；其余产品复核已有正式载荷哈希，不用重新编译冒充新增测试。
-- Vex 1.5.8 移除 Windows 启动时的隐式关联注册后，重新执行正式 AOT 与四语言、隔离偏好自检；只读核对 11 处关联及默认应用状态，确认前后不变，并重新编译安装包。
-- KidWall 1.0.12、Zitie 0.2.6、QuickApp 0.9.7 使用包含镜像占用重试的新源码，再次执行各自正式 Windows x64 AOT 发布脚本、正式 EXE 的安全运行自检与真实 Inno 编译。三个程序的版本、AMD64 架构及空 CLR 目录均已核对，安装包与 SHA-256 文件一致。
+## 本轮变更
 
-## 提交与云端检查
+- Windows 保留 .NET 紫 `#512BD4`、异形窗口和原生安装流程；核心字标改为 CodeWF。品牌使用可聚焦按钮，仅用户点击时打开 `https://codewf.com`，安装不会自动打开网页。
+- 品牌和进度在可复用离屏位图完成整帧，再一次提交；正常重绘与打印捕获均使用完整帧，禁止品牌背景擦除，百分比未变化时不重复更新文本。
+- 单文件安装原型保留动画节点，避免切换状态时重建核心或重启轨道；减少动态效果选项继续有效。各仓原型均在自己的 `design/` 维护，可独立演进。
+- macOS DMG 的三套背景同步 CodeWF 字标及官网文字。Linux 继续使用本机包管理器，不宣称复现 Windows 异形向导。
 
-13 个仓库已分别在 main 中文分批提交、推送并创建表中版本对应的新附注标签；CodeWF.Toolbox 沿用 `v12.0.18` 标签格式。没有移动既有标签，Zhijian 的 atomui 分支保留。
+Windows 生产来源清单 SHA-256：`5b541cb4099ec74a4ea764e7c425bafc1bb69f6bfb672d758ed34233d3b2bcab`；macOS 来源清单：`6c919cdfd26967f990e0a232c9353cfc3e95ca1923402157b570d6a481c3adc7`。
 
-Windows 独立安装器编译与 Linux 包装契约已在真实 GitHub 运行器验证。首轮 Linux 测试发现 `/usr/bin` 和 `/bin` 同时命中 `appstreamcli` 时返回多个命令，现已在各仓选择唯一应用路径并通过云端复测；Inno 编译器发现采用同样处理。测试修复直接提交 main，不改变已冻结的生产视觉资源。
+## 验证范围
 
-首次发布的 KidWall 1.0.11 与 Zitie 0.2.5 在正式 macOS 构建中暴露了临时镜像的 `Resource busy` 卸载失败，应用 AOT 编译已通过。13 仓 main 的共享打包脚本已增加有界重试：正常卸载及退出清理各最多五次，失败间隔为 1、2、4、8 秒；持续占用则保留挂载目录并终止打包，不强制卸载、不结束 Finder。13 份共享测试、13 个既有及补充包装入口、26 次 shell 语法检查通过，156 个 macOS 源文件摘要一致；Windows 生产资源未变。
+- 同源 Windows 安装夹具中英文各 38 项通过，包含十二帧品牌稳定性、真实进度、三态主题、键盘、许可门禁、目录与完成退出；夹具不创建产品注册、快捷方式、文件关联或产品进程。
+- 安装原型每份 202 项检查及 13 份最终版本的 156 个变体通过；品牌点击和二十帧动效采样通过。macOS 背景已实际重新生成并检查，13 份来源快照一致。
+- HomeLedger 0.1.14、IEditor 0.3.14 已完成本轮正式 Windows NativeAOT 与隔离运行自检。Vex 1.5.9 继续重点进行实际窗口布局、拖拽、菜单、即时编辑、四语言、代码背景及最终 NativeAOT 检查，结果单独记录在 Vex 仓。
+- 按本轮维护决定，其余未完成的本机重复验证停止；后续使用标签触发各产品正式五平台 AOT 与打包。不将云端编译成功表述为实际系统安装通过。
 
-KidWall 1.0.12、Zitie 0.2.6 与 QuickApp 0.9.7 使用包含该修复的新标签；原标签保留，尚未发布且只剩 macOS 任务的旧构建经核对后取消。QuickApp 同时将版本及非空发布说明校验提前到五平台构建之前，避免旧版在全部编译完成后才因缺少发布说明而失败。新标签的产物与校验文件单独核验，不把旧版成功的平台当成新版本结果。
-
-上述 13 个版本的正式五平台 AOT 和打包任务均已成功，各仓 Release 精确包含 5 个安装包与 5 份 SHA-256，共 65 个安装包、65 份校验文件，无 ZIP。逐仓核对了标签对应提交、完整版本、五种架构、资产类型及数量；下载全部 65 份校验文件，同时验证其自身字节摘要、文件名及内容与 GitHub 服务端安装包摘要一致。未下载全部安装包主体，未将本机包与云端包的二进制摘要混用。下载入口见上表，各仓历史标签保持原提交。
+本机编译器为 Inno Setup 6.3.3 x86；安装器引擎与应用 Windows x64 NativeAOT 载荷架构分别维护。生产安装器在本机只编译，不执行真实安装、升级或卸载。
 
 ## 实际原生界面
 
-以下来自同源安全夹具的真实 Inno 窗口，标题为测试产品，不是浏览器绘制或实际产品安装记录。
+以下截图来自同源安全夹具，标题为测试产品，不能作为实际产品安装记录。
 
 ![原生异形欢迎页](images/installer-native-welcome.png)
 
-![真实进度与核心同步](images/installer-native-progress.png)
+![原生安装进度](images/installer-native-progress.png)
 
-## 平台与未验证边界
+## 交付和平台边界
 
-Windows 新包使用真实异形轮廓与原生安装／卸载引擎。Vex 的 Markdown 打开候选、图标与右键项统一受可选任务控制，默认勾选，不修改用户默认打开应用。四仓旧版递归清空安装目录规则已移除；新版不能修复旧安装器已经写入的卸载行为。
+正式交付 Windows x64 EXE、Linux x64/arm64 DEB、macOS x64/arm64 DMG，每包附 SHA-256，不生成便携 ZIP。发布完成后逐仓检查五个安装包和五份校验文件；本机及云端的二进制摘要分别记录，不混用。
 
-Linux 统一 DEB 的品牌、图标和 AppStream 元数据；macOS 统一 DMG 背景与 Finder 图标布局。五个平台交付 EXE / DEB / DMG 与 SHA-256，不生成便携 ZIP。跨平台脚本、失败传播与清单在受控环境检查，本轮五平台正式构建与发布资产核验也已通过；这些结果不能替代真实系统安装验收。
+尚未执行真实产品安装、升级、卸载，或真实 Linux/macOS 安装、多 DPI、跨屏、输入法、读屏、签名和公证验收。原型中的系统授权、可选 PKG 和个人数据删除开关不作为已实现功能声明。默认文件关联、用户偏好和业务数据未改动。
 
-尚未执行实际产品安装／升级／卸载，也未完成真实 Linux/macOS 安装、多 DPI、跨屏、输入法、读屏、签名与公证验收。原型中的系统授权、可选 PKG 和个人数据删除开关不作为已实现功能声明；系统窗口继续由平台管理。本机未设置或更改真实应用默认关联、用户偏好及业务数据。
-
-运行方式和测试约束见 [共享安装器说明](../scripts/installer/README.md)、[维护逻辑回归](../scripts/installer/tests/README.Maintenance.md) 与 [卸载隔离验证](../scripts/installer/tests/Uninstall.Fixture.md)。
+运行方式见 [共享安装器说明](../scripts/installer/README.md)、[维护逻辑回归](../scripts/installer/tests/README.Maintenance.md) 和 [卸载隔离验证](../scripts/installer/tests/Uninstall.Fixture.md)。

@@ -8,7 +8,8 @@ const standaloneFixture = require('./standalone-fixture.cjs');
 process.env.CODEWF_AUDIT_TEMP ||= 'E:/github/temp';
 const output = process.env.CODEWF_INSTALLER_AUDIT_OUTPUT || 'E:/github/temp/installer-prototype-audit';
 fs.mkdirSync(output, { recursive: true });
-const standalone = standaloneFixture(path.resolve(__dirname, '../CodeWF.安装器原型.html'));
+const source = process.env.CODEWF_INSTALLER_PROTOTYPE || path.resolve(__dirname, '../CodeWF.安装器原型.html');
+const standalone = standaloneFixture(source);
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
@@ -39,6 +40,13 @@ const standalone = standaloneFixture(path.resolve(__dirname, '../CodeWF.安装�
     await page.goto(standalone.url);
     await page.waitForFunction(() => window.CodeWFInstallerPrototype);
     assert.equal(await page.locator('#productSelect option').count(), 13);
+    const defaults = await page.evaluate(() => ({ config: CodeWFInstallerPrototype.config, state: CodeWFInstallerPrototype.state, products: CodeWFInstallerPrototype.products }));
+    const defaultProduct = defaults.products.find(product => product.id === defaults.config.defaultProduct);
+    assert.equal(defaults.state.product, defaults.config.defaultProduct, 'Standalone copy selects its own repository');
+    assert.equal(await page.locator('#productSelect').inputValue(), defaultProduct.id);
+    assert.equal(await page.locator('.release-version').innerText(), defaultProduct.version);
+    assert.ok((await page.title()).includes(defaultProduct.name));
+    results.push('Standalone defaults: repository product, embedded version and page title');
     await page.clock.install();
 
     const variants = [
@@ -256,14 +264,32 @@ const standalone = standaloneFixture(path.resolve(__dirname, '../CodeWF.安装�
       const rect = element.getBoundingClientRect();
       return element.contains(document.elementFromPoint(rect.left + 60, rect.top + 35));
     }), false, 'The top-left cutout has a real transparent hit region');
-    assert.equal(await page.locator('#reactorLabel').innerText(), '.NET');
+    assert.equal(await page.locator('#reactorLabel').innerText(), 'CodeWF');
+    for (const link of await page.locator('[data-brand-link]').evaluateAll(links => links.map(link => ({ href: link.href, rel: link.rel, label: link.getAttribute('aria-label') })))) {
+      assert.equal(link.href, 'https://codewf.com/');
+      assert.ok(link.rel.includes('noopener') && link.rel.includes('noreferrer'));
+      assert.ok(link.label);
+    }
+    assert.notEqual((await page.locator('.release-version').innerText()), '1.0.0');
+    results.push('Brand: CodeWF identity, accessible website links, embedded product version');
     await page.screenshot({ path: path.join(output, 'sculpted-welcome-dark.png'), fullPage: true });
     const canvasImage = () => page.locator('#reactorCanvas').evaluate(canvas => canvas.toDataURL());
     const idleImage = await canvasImage();
     await page.clock.runFor(120);
     assert.notEqual(await canvasImage(), idleImage, 'Idle particle field animates');
+    // 切换语言或步骤不能重建核心；更新进度不能重启阶段旋转图标。
+    await page.evaluate(() => { window.retainedMotion = { canvas: document.querySelector('#reactorCanvas'), core: document.querySelector('.reactor-core'), orbit: document.querySelector('.ring-two'), animation: document.querySelector('.ring-two').getAnimations()[0] }; });
+    await page.locator('#languageButton').click();
+    await page.locator('[data-jump="license"]').click();
+    assert.equal(await page.evaluate(() => retainedMotion.canvas === document.querySelector('#reactorCanvas') && retainedMotion.core === document.querySelector('.reactor-core') && retainedMotion.orbit === document.querySelector('.ring-two') && retainedMotion.animation === document.querySelector('.ring-two').getAnimations()[0]), true);
+    await page.locator('#languageButton').click();
     await page.locator('#effectsButton').click();
-    await page.clock.runFor(1260);
+    await page.evaluate(() => { window.retainedSpinner = document.querySelector('.phase.active .spinner'); });
+    await page.clock.runFor(360);
+    assert.equal(await page.evaluate(() => retainedSpinner === document.querySelector('.phase.active .spinner')), true, 'Progress ticks preserve the running spinner');
+    assert.equal(await page.evaluate(() => retainedMotion.canvas === document.querySelector('#reactorCanvas') && retainedMotion.core === document.querySelector('.reactor-core')), true);
+    results.push('Motion continuity: core/canvas/orbit survive render updates; spinner survives progress ticks');
+    await page.clock.runFor(900);
     assert.equal((await state()).step, 'installing');
     assert.ok((await state()).progress > 0);
     assert.equal(await page.locator('#reactorLabel').innerText(), (await state()).progress + '%');
@@ -276,7 +302,7 @@ const standalone = standaloneFixture(path.resolve(__dirname, '../CodeWF.安装�
     await page.clock.runFor(2800);
     assert.equal((await state()).step, 'complete');
     await page.screenshot({ path: path.join(output, 'sculpted-complete-dark.png'), fullPage: true });
-    results.push('Sculpted .NET: brand purple, transparent cutout, idle particles, progress-synchronized energy core, completion, reduced-motion pause');
+    results.push('Sculpted CodeWF: .NET purple, transparent cutout, idle particles, progress-synchronized energy core, completion, reduced-motion pause');
 
     await page.locator('[data-platform="macos"]').click();
     assert.equal(await page.locator('#effectsButton').isVisible(), false, 'Windows-only motion preview stays outside native macOS flow');
