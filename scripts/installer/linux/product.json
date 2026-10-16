@@ -1,0 +1,15 @@
+{
+  "id": "com.codewf.codewf.avalonia.demo",
+  "package": "codewf-avalonia-demo",
+  "command": "codewf-avalonia-demo",
+  "name": "CodeWF.Avalonia Demo",
+  "chineseName": "CodeWF.Avalonia 控件演示",
+  "summary": "Explore Avalonia controls and their live properties",
+  "chineseSummary": "体验 Avalonia 控件及其实时属性",
+  "description": "A catalog of CodeWF.Avalonia controls with interactive demos and adjustable properties.",
+  "chineseDescription": "通过交互演示和属性面板体验 CodeWF.Avalonia 控件库。",
+  "categories": [
+    "Development"
+  ],
+  "homepage": "https://github.com/dotnet9/CodeWF.Avalonia"
+}
