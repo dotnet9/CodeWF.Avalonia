@@ -89,7 +89,8 @@ begin
   if not CWUInitialized and (CWUBackgroundBrush = 0) and (CWUFormProc = 0) and
     (CWUGaugeProc = 0) and (CWUPageProc = 0) and (CWUFrames[0] = nil) and
     (CWUFrames[1] = nil) and (CWUReactors[0] = nil) and (CWUReactors[1] = nil) and
-    (CWUCores[0] = nil) and (CWUCores[1] = nil) then
+    (CWUCores[0] = nil) and (CWUCores[1] = nil) and (CWUBrandProc = 0) and
+    (CWUReactorFrame = nil) and (CWUProgressFrame = nil) then
     SaveStringToFile(Root + 'resources-released.txt', 'PASS', False)
   else SaveStringToFile(Root + 'resources-released.txt', 'FAIL', False);
 end;
