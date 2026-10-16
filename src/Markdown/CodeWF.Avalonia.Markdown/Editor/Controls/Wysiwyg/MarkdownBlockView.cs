@@ -34,7 +34,6 @@ internal sealed class MarkdownBlockView : UserControl
     private readonly MarkdownInputTextBox _editor = new();
     private readonly Border _root;
     private MarkdownViewer? _preview;
-    private MarkdownViewer? _editingPreview;
     private readonly bool _isCode;
     private readonly bool _isTableCell;
     private readonly MarkdownBlockViewOptions _options;
@@ -44,7 +43,6 @@ internal sealed class MarkdownBlockView : UserControl
     private bool _editing;
     private bool _syncingText;
     private string _editOriginalText = string.Empty;
-    private readonly Grid _editHost = new() { RowDefinitions = new RowDefinitions("Auto,Auto"), RowSpacing = 12 };
 
     public MarkdownBlockView(MarkdownBlockModel model, bool isCode, MarkdownBlockViewOptions options, bool isTableCell = false)
     {
@@ -77,7 +75,6 @@ internal sealed class MarkdownBlockView : UserControl
             if (_editing && e.Property.Name is "CaretIndex" or "SelectionStart" or "SelectionEnd") EditorSelectionChanged?.Invoke();
         };
 
-        _editHost.Children.Add(_editor);
         _root = new Border { Child = _richText };
         Content = _root;
 
@@ -170,7 +167,7 @@ internal sealed class MarkdownBlockView : UserControl
         _syncingText = false;
         _editing = true;
         UpdateRichText();
-        _root.Child = _editHost;
+        _root.Child = _editor;
         _editor.Focus();
         _editor.CaretIndex = Math.Clamp(caretIndex, 0, _editor.Text?.Length ?? 0);
         EditingStarted?.Invoke(this);
@@ -269,46 +266,29 @@ internal sealed class MarkdownBlockView : UserControl
 
     private void UpdateRichText()
     {
+        // 活动块只显示源码输入框；其他块继续渲染，避免编辑时重复占用文档空间。
+        if (_editing) return;
         var useViewer = !_isTableCell || ModelText.Contains("![", StringComparison.Ordinal) || ModelText.Contains('$');
         if (useViewer)
         {
-            MarkdownViewer preview;
-            if (_editing)
-            {
-                if (_editingPreview is null)
-                {
-                    // 编辑预览只在首次进入该块的编辑态时创建，避免每个只读块都预建第二份视图。
-                    _editingPreview = CreatePreview();
-                    Grid.SetRow(_editingPreview, 1);
-                    _editHost.Children.Add(_editingPreview);
-                }
-
-                preview = _editingPreview;
-                preview.IsVisible = true;
-            }
-            else
-            {
-                // 普通表格单元格使用富文本，不需要创建 MarkdownViewer。
-                preview = _preview ??= CreatePreview();
-            }
+            var preview = _preview ??= CreatePreview();
 
             preview.ImageBasePath = _options.ImageBasePath;
             preview.TypographyTheme = _options.TypographyTheme;
             preview.TypographySize = _options.TypographySize;
             preview.Markdown = Model.Kind == MarkdownBlockKind.ListItem || RenderQuoteAsParagraph
                 ? Model.Text : MarkdownBlockParser.WriteCanonical([Model]);
-            if (!_editing) _root.Child = preview;
+            _root.Child = preview;
             return;
         }
 
-        if (_editingPreview is not null) _editingPreview.IsVisible = false;
         _richText.BindPalette(_options);
         _richText.FontWeight = Model.HeadingLevel > 0 ? FontWeight.Bold : FontWeight.Normal;
         _richText.RunFontSize = _runFontSize;
         _richText.SetRuns(_isCode
             ? MarkdownTextRunParser.Plain(Model.Text, code: true)
             : MarkdownTextRunParser.Parse(Model.Text));
-        if (!_editing) _root.Child = _richText;
+        _root.Child = _richText;
     }
 
     private static MarkdownViewer CreatePreview() => new() { DocumentBottomPadding = 0, IsTaskEditingEnabled = false };

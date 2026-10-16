@@ -1434,7 +1434,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         if (GetValue(CodeBackgroundBrushProperty) is ISolidColorBrush solid
             && solid.Color.A > 0)
         {
-            return GetPerceivedLuminance(solid.Color) < 0.5;
+            return GetPerceivedLuminance(ResolveVisibleCodeBackground(solid)) < 0.5;
         }
 
         // 排版主题未定义代码背景资源（如 Simple）时解析失败，默认按深色底处理：
@@ -1442,10 +1442,46 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         if (TryGetResource(MarkdownStyleKeys.CodeBackgroundBrushResource, ActualThemeVariant, out var resource)
             && resource is ISolidColorBrush themeBrush)
         {
-            return GetPerceivedLuminance(themeBrush.Color) < 0.5;
+            return GetPerceivedLuminance(ResolveVisibleCodeBackground(themeBrush)) < 0.5;
         }
 
         return true;
+    }
+
+    /// <summary>将半透明代码底色与实际文档背景合成，避免浅底透明黑被误判为深色。</summary>
+    private Color ResolveVisibleCodeBackground(ISolidColorBrush codeBrush)
+    {
+        static Color Over(Color foreground, Color background, double opacity = 1)
+        {
+            var alpha = foreground.A / 255d * opacity;
+            var backAlpha = background.A / 255d * (1 - alpha);
+            var total = alpha + backAlpha;
+            if (total <= 0) return Colors.Transparent;
+            byte Channel(byte first, byte second) => (byte)Math.Round((first * alpha + second * backAlpha) / total);
+            return Color.FromArgb((byte)Math.Round(total * 255), Channel(foreground.R, background.R),
+                Channel(foreground.G, background.G), Channel(foreground.B, background.B));
+        }
+
+        var background = Colors.Transparent;
+        foreach (var ancestor in this.GetVisualAncestors().Prepend(this))
+        {
+            var brush = ancestor switch
+            {
+                Border border => border.Background,
+                Panel panel => panel.Background,
+                TemplatedControl control => control.Background,
+                _ => null
+            };
+            if (brush is ISolidColorBrush solid)
+                background = Over(background, Over(solid.Color, Colors.Transparent, solid.Opacity));
+            if (background.A == 255) break;
+        }
+        // 尚未附加到可视树时仍依据主题基座选择画布，不以透明色 RGB 判断明暗。
+        var variant = ActualThemeVariant;
+        while (variant.InheritVariant is { } inherited) variant = inherited;
+        var canvas = variant == ThemeVariant.Dark ? Colors.Black : Colors.White;
+        background = Over(background, canvas);
+        return Over(codeBrush.Color, background, codeBrush.Opacity);
     }
 
     private static double GetPerceivedLuminance(Color color)

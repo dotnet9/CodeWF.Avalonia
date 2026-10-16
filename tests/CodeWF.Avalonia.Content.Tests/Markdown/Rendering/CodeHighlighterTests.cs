@@ -5,6 +5,10 @@ using global::Avalonia.LogicalTree;
 using global::Avalonia.Media;
 using CodeWF.Avalonia.Markdown.Rendering;
 using CodeWF.Avalonia.Markdown.Controls;
+using CodeWF.Avalonia.Markdown.Highlighting;
+using global::Avalonia.Styling;
+using global::Avalonia.Threading;
+using global::Avalonia.Controls.Templates;
 using Xunit;
 
 namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
@@ -12,6 +16,44 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 [Collection("AvaloniaPlatform")]
 public sealed class CodeHighlighterTests(AvaloniaPlatformFixture platform)
 {
+    [Theory]
+    [InlineData("#0D000000", "#FFFFFF", false)]
+    [InlineData("#14FFFFFF", "#14161A", true)]
+    [InlineData("#14FFFFFF", "#EFEAF8", false)]
+    [InlineData("#202020", "#FFFFFF", true)]
+    public void ActualCodeBackgroundComposesTransparencyBeforeChoosingTokens(string codeColor, string pageColor, bool dark) => platform.Run(() =>
+    {
+        var viewer = new MarkdownViewer
+        {
+            CodeBackgroundBrush = Brush.Parse(codeColor),
+            Template = new FuncControlTemplate<MarkdownViewer>((_, scope) =>
+            {
+                var host = new StackPanel();
+                scope.Register("PART_DocumentHost", host);
+                return host;
+            }),
+            Markdown = "```text\nproject/\n  src/\n```"
+        }.UseHighlighting();
+        var window = new Window { Width = 800, Height = 500, RequestedThemeVariant = new ThemeVariant("Custom", dark ? ThemeVariant.Dark : ThemeVariant.Light),
+            Content = new Border { Background = Brush.Parse(pageColor), Child = viewer } };
+        window.Show();
+        try
+        {
+            Dispatcher.UIThread.RunJobs();
+            var document = Markdig.Markdown.Parse(viewer.Markdown!);
+            var rendered = new CodeBlockRenderer().TryRender(document[0], viewer.Markdown, viewer)!;
+            var text = rendered.GetLogicalDescendants().OfType<SelectableTextBlock>()
+                .Single(block => block.Classes.Contains(MarkdownStyleKeys.CodeBlockText));
+            var front = Color.Parse(codeColor); var back = Color.Parse(pageColor);
+            byte Blend(byte f, byte b) => (byte)Math.Round(f * front.A / 255d + b * (1 - front.A / 255d));
+            var visibleBackground = Color.FromRgb(Blend(front.R, back.R), Blend(front.G, back.G), Blend(front.B, back.B));
+            foreach (var run in text.Inlines!.OfType<Run>()) AssertReadable(run.Foreground!, visibleBackground, 1);
+            var numbers = rendered.GetLogicalDescendants().OfType<SelectableTextBlock>().Single(block => block.Text?.StartsWith("1" + Environment.NewLine) == true);
+            AssertReadable(numbers.Foreground!, visibleBackground, 1);
+        }
+        finally { window.Close(); }
+    });
+
     [Theory]
     [InlineData(false, "#F6F8FA")]
     [InlineData(false, "#F7F7F7")]

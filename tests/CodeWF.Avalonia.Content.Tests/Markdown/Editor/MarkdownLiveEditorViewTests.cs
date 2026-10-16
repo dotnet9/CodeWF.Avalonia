@@ -83,7 +83,7 @@ public sealed class MarkdownLiveEditorViewTests
     });
 
     [Fact]
-    public void EditingRendersImmediatelyAndEscapeRestoresOriginalBlock() => _platform.Run(() =>
+    public void EditingShowsOnlySourceAndEscapeRestoresOriginalBlock() => _platform.Run(() =>
     {
         var view = new MarkdownLiveEditorView { TypographyTheme = "Simple" };
         view.SetText("# 标题\r\n\r\n原文\r\n");
@@ -92,8 +92,9 @@ public sealed class MarkdownLiveEditorViewTests
         var block = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Last();
         block.ActiveEditor!.Text = "**实时内容**";
         Dispatcher.UIThread.RunJobs();
-        Assert.Contains(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>(),
-            preview => preview.Markdown?.Contains("**实时内容**", StringComparison.Ordinal) == true);
+        Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
+        Assert.Contains("**实时内容**", view.Text);
+        Assert.Single(view.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
         block.ActiveEditor.RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = Key.Escape });
         Dispatcher.UIThread.RunJobs();
         Assert.Equal(original, view.Text);
@@ -101,7 +102,7 @@ public sealed class MarkdownLiveEditorViewTests
     });
 
     [Fact]
-    public void EditingPreviewStartsWithCurrentContentAndLeavesReadOnlyPreviewUntilCommit() => _platform.Run(() =>
+    public void BlockSourceEditingPreservesOtherBlocksAndRendersOnlyAfterCommit() => _platform.Run(() =>
     {
         var view = new MarkdownLiveEditorView { TypographyTheme = "OrangeHeart", TypographySize = "Small" };
         view.SetText("original **content**", "C:/documents/first.md");
@@ -110,22 +111,22 @@ public sealed class MarkdownLiveEditorViewTests
         var originalPreviewText = readOnlyPreview.Markdown;
 
         view.FocusBlock(0);
-        var editingPreview = block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single();
-        Assert.NotSame(readOnlyPreview, editingPreview);
-        Assert.Equal(originalPreviewText, editingPreview.Markdown);
-        Assert.Equal("C:/documents/first.md", editingPreview.ImageBasePath);
-        Assert.Equal("OrangeHeart", editingPreview.TypographyTheme);
-        Assert.Equal("Small", editingPreview.TypographySize);
+        Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
+        Assert.Equal("original **content**", block.ActiveEditor!.Text);
         block.ActiveEditor!.Text = "updated *content*";
         Dispatcher.UIThread.RunJobs();
-        Assert.Contains("updated *content*", editingPreview.Markdown);
+        Assert.Contains("updated *content*", view.Text);
         Assert.Equal(originalPreviewText, readOnlyPreview.Markdown);
 
         block.CommitAndRender();
         Assert.Same(readOnlyPreview, block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single());
         Assert.Contains("updated *content*", readOnlyPreview.Markdown);
+        Assert.Equal("C:/documents/first.md", readOnlyPreview.ImageBasePath);
+        Assert.Equal("OrangeHeart", readOnlyPreview.TypographyTheme);
+        Assert.Equal("Small", readOnlyPreview.TypographySize);
         view.FocusBlock(0);
-        Assert.Contains("updated *content*", block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single().Markdown);
+        Assert.Equal("updated *content*", block.ActiveEditor!.Text);
+        Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
     });
 
     [Fact]
@@ -173,12 +174,15 @@ public sealed class MarkdownLiveEditorViewTests
         Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
         block.ActiveEditor!.Text = "$x$";
         Dispatcher.UIThread.RunJobs();
+        Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
+        block.CommitAndRender();
         var preview = block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single();
         Assert.True(preview.IsVisible);
         Assert.Contains("$x$", preview.Markdown);
-        block.ActiveEditor.Text = "plain again";
+        block.BeginEditAtEnd();
+        block.ActiveEditor!.Text = "plain again";
         Dispatcher.UIThread.RunJobs();
-        Assert.False(preview.IsVisible);
+        Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
         block.CommitAndRender();
         Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
         Assert.Contains("plain again", view.Text);

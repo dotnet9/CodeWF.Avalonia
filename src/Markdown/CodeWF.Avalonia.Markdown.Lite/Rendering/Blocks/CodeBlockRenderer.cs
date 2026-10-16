@@ -48,11 +48,12 @@ internal sealed class CodeBlockRenderer : IMarkdownBlockRenderer
         var copyButton = new Button
         {
             Content = MarkdownLocalization.GetResource(MarkdownL.Copy),
-            Tag = code
+            Tag = code,
+            MinHeight = 0,
+            Background = Brushes.Transparent
         };
         context.AddMarkdownClass(copyButton, MarkdownStyleKeys.CopyButton);
-        context.BindTheme(copyButton, Button.BackgroundProperty, MarkdownViewer.AccentBrushProperty);
-        context.BindTheme(copyButton, Button.ForegroundProperty, MarkdownViewer.AccentForegroundBrushProperty);
+        context.BindTheme(copyButton, Button.ForegroundProperty, MarkdownViewer.TextBrushProperty);
         copyButton.Click += (_, _) =>
         {
             context.CopyCodeToClipboard(code);
