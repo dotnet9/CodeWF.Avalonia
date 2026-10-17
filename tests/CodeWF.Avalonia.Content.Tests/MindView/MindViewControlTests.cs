@@ -60,6 +60,7 @@ public class MindViewControlTests(AvaloniaPlatformFixture platform)
             var state = view.CaptureViewport();
             view.Root = MarkdownMindMapDocument.Parse("# 演示\n\n正文");
             view.RestoreViewport(state, onNextRoot: true);
+            view.Root = null;
             view.Root = MarkdownMindMapDocument.Parse(source);
             Assert.Equal(.9, view.Zoom, 4);
             Assert.True(view.Root.Children[0].IsCollapsed);
@@ -106,6 +107,7 @@ public class MindViewControlTests(AvaloniaPlatformFixture platform)
         try
         {
             Assert.Equal(481, view.VisibleNodeCount);
+            Assert.True(view.RealizedNodeCount < 100);
             view.CollapseAll(); Assert.Equal(121, view.VisibleNodeCount);
             var last = root.Children.Last(); view.RevealNode(last.Id); window.UpdateLayout();
             window.Width = 980; window.Height = 640; window.UpdateLayout(); Dispatcher.UIThread.RunJobs();

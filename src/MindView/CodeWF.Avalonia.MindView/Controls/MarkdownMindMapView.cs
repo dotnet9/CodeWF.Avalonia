@@ -13,6 +13,19 @@ namespace CodeWF.Avalonia.MindView.Controls;
 /// <summary>只读文档导图。节点选择、折叠、平移与缩放不会修改 Markdown。</summary>
 public sealed class MarkdownMindMapView : UserControl
 {
+    /// <summary>宿主处理章节编辑意图；控件本身不写入 Markdown。</summary>
+    public bool IsChapterEditingEnabled { get; set; }
+    public bool PreserveViewportOnRootChange { get; set; }
+    public sealed record ChapterAction(MarkdownMindMapNode Node, string Action);
+    public sealed record ChapterMove(MarkdownMindMapNode Node, MarkdownMindMapNode Target, string Position);
+    public event EventHandler<ChapterAction>? ChapterActionRequested;
+    public event EventHandler<ChapterMove>? ChapterMoveRequested;
+    public Rect? GetNodeBounds(string id)
+    {
+        var node = _bounds.Keys.FirstOrDefault(node => node.Id == id);
+        return node is not null && _bounds.TryGetValue(node, out var rect)
+            ? new Rect(rect.X * Zoom + _translate.X, rect.Y * Zoom + _translate.Y, rect.Width * Zoom, rect.Height * Zoom) : null;
+    }
     public static readonly StyledProperty<MarkdownMindMapNode?> RootProperty =
         AvaloniaProperty.Register<MarkdownMindMapView, MarkdownMindMapNode?>(nameof(Root));
     public static readonly StyledProperty<Color> AccentColorProperty =
@@ -51,6 +64,10 @@ public sealed class MarkdownMindMapView : UserControl
     private double? _fitMinimum;
     private Size _lastViewportSize;
     private ViewportState? _pendingViewport;
+    private Rect _realizedRegion;
+    private bool _draggingChapter;
+    /// <summary>实际创建的节点卡片数；完整的章节几何仍保留用于定位与移动。</summary>
+    public int RealizedNodeCount => _cards.Count;
 
     public MarkdownMindMapNode? Root { get => GetValue(RootProperty); set => SetValue(RootProperty, value); }
     public Color AccentColor { get => GetValue(AccentColorProperty); set => SetValue(AccentColorProperty, value); }
@@ -63,6 +80,13 @@ public sealed class MarkdownMindMapView : UserControl
     public event EventHandler? VisibleNodesChanged;
     public int VisibleNodeCount => _bounds.Count;
     public void ClearSelection() { _selected = null; Rebuild(); }
+    /// <summary>同步宿主选区，不改变视口、不再次发送用户选择事件。</summary>
+    public void SelectNode(string? id)
+    {
+        var selected = id is null ? null : Flatten(Root).FirstOrDefault(node => node.Id == id);
+        if (ReferenceEquals(_selected, selected)) return;
+        _selected = selected; Rebuild();
+    }
 
     /// <summary>展开祖先、选择并居中节点。用于文档大纲导航。</summary>
     public bool RevealNode(string id)
@@ -72,6 +96,7 @@ public sealed class MarkdownMindMapView : UserControl
         Reveal(Root!); _selected = node; Rebuild(); _fitMinimum = null;
         if (_bounds.TryGetValue(node, out var rect))
         { _translate.X = Bounds.Width / 2 - rect.Center.X * Zoom; _translate.Y = Bounds.Height / 2 - rect.Center.Y * Zoom; _hasViewport = true; }
+        Rebuild(false);
         NodeSelected?.Invoke(this, node);
         return true;
         bool Reveal(MarkdownMindMapNode current)
@@ -94,6 +119,7 @@ public sealed class MarkdownMindMapView : UserControl
         _translate.X = state.X; _translate.Y = state.Y;
         _hasViewport = true;
         _fitMinimum = null;
+        Rebuild(false);
         ZoomChanged?.Invoke(this, EventArgs.Empty);
         if (_selected is { } selected) NodeSelected?.Invoke(this, selected);
     }
@@ -122,9 +148,10 @@ public sealed class MarkdownMindMapView : UserControl
             { _translate.X += (next.Width - _lastViewportSize.Width) / 2; _translate.Y += (next.Height - _lastViewportSize.Height) / 2; }
             _lastViewportSize = next;
             EnsureViewport();
+            Rebuild(false);
         };
         ActualThemeVariantChanged += (_, _) => Rebuild();
-        AttachedToVisualTree += (_, _) => { Rebuild(); Fit(minimum: .75); };
+        AttachedToVisualTree += (_, _) => { Rebuild(); EnsureViewport(); };
         _viewport.PointerPressed += (_, e) =>
         {
             if (e.Handled || !e.GetCurrentPoint(_viewport).Properties.IsLeftButtonPressed) return;
@@ -137,6 +164,7 @@ public sealed class MarkdownMindMapView : UserControl
             _fitMinimum = null;
             var delta = e.GetPosition(_viewport) - start;
             _translate.X = _panOffset.X + delta.X; _translate.Y = _panOffset.Y + delta.Y;
+            Rebuild(false);
         };
         _viewport.PointerReleased += (_, e) => { _pan = null; e.Pointer.Capture(null); };
         _viewport.PointerCaptureLost += (_, _) => _pan = null;
@@ -144,10 +172,16 @@ public sealed class MarkdownMindMapView : UserControl
         {
             if (e.KeyModifiers.HasFlag(KeyModifiers.Control)) SetZoom(Zoom * Math.Pow(1.12, e.Delta.Y), e.GetPosition(_viewport));
             else { _fitMinimum = null; _translate.X += e.Delta.X * 40; _translate.Y += e.Delta.Y * 40; }
+            Rebuild(false);
             e.Handled = true;
         };
         KeyDown += (_, e) =>
         {
+            if (IsChapterEditingEnabled && _selected is { } chapter && e.KeyModifiers == KeyModifiers.None)
+            {
+                var action = e.Key switch { Key.Enter => ReferenceEquals(chapter, Root) ? "child" : "sibling", Key.Tab => "child", Key.F2 => "rename", Key.Delete => "delete", _ => null };
+                if (action is not null) { ChapterActionRequested?.Invoke(this, new(chapter, action)); e.Handled = true; return; }
+            }
             if (e.Key == Key.Enter && _selected is { } node) { SourceRequested?.Invoke(this, node); e.Handled = true; }
             if (e.Key == Key.Space && _selected is { Children.Count: > 0 } selected)
             { ToggleCollapse(selected); e.Handled = true; }
@@ -161,13 +195,13 @@ public sealed class MarkdownMindMapView : UserControl
         {
             var oldRoot = change.GetOldValue<MarkdownMindMapNode?>();
             var newRoot = Root;
-            var sameDocument = oldRoot is not null && newRoot is not null && oldRoot.Id == newRoot.Id && oldRoot.Title == newRoot.Title;
+            var sameDocument = oldRoot is not null && newRoot is not null && (PreserveViewportOnRootChange || oldRoot.Id == newRoot.Id && oldRoot.Title == newRoot.Title);
             var collapsed = Flatten(oldRoot).Where(n => n.IsCollapsed).Select(n => n.Id).ToHashSet();
             foreach (var node in Flatten(newRoot)) node.IsCollapsed = collapsed.Contains(node.Id);
             _selected = Flatten(newRoot).FirstOrDefault(n => n.Id == _selected?.Id);
             Rebuild();
             if (!sameDocument) { _hasViewport = false; EnsureViewport(); }
-            if (_pendingViewport is { } pending) { _pendingViewport = null; RestoreViewport(pending); }
+            if (newRoot is not null && _pendingViewport is { } pending) { _pendingViewport = null; RestoreViewport(pending); }
         }
         else if (change.Property == AccentColorProperty || change.Property == EnableMotionProperty || change.Property == CanvasBrushProperty || change.Property == CardBrushProperty || change.Property == TextBrushProperty || change.Property == LineBrushProperty || change.Property == DotBrushProperty || change.Property == SuccessColorProperty || change.Property == WarningColorProperty) Rebuild();
     }
@@ -196,25 +230,32 @@ public sealed class MarkdownMindMapView : UserControl
         _translate.X = point.X - (point.X - _translate.X) * ratio;
         _translate.Y = point.Y - (point.Y - _translate.Y) * ratio;
         _scale.ScaleX = _scale.ScaleY = zoom;
+        Rebuild(false);
         ZoomChanged?.Invoke(this, EventArgs.Empty);
     }
     public void Fit(double minimum = .15)
     {
         if (_width <= 0 || Bounds.Width <= 0 || Bounds.Height <= 0) return;
-        var scale = Math.Clamp(Math.Min((Bounds.Width - 80) / _width, (Bounds.Height - 80) / _height), minimum, 1);
+        var scale = Math.Clamp(Math.Min((Bounds.Width - 64) / _width, (Bounds.Height - 84) / _height), minimum, 1);
         _scale.ScaleX = _scale.ScaleY = scale;
-        _translate.X = Math.Max(40, (Bounds.Width - _width * scale) / 2);
-        _translate.Y = Math.Max(40, (Bounds.Height - _height * scale) / 2);
+        _translate.X = Math.Max(minimum >= .75 ? 24 : 0, (Bounds.Width - _width * scale) / 2);
+        _translate.Y = (Bounds.Height - _height * scale) / 2;
         _hasViewport = true;
         _fitMinimum = minimum;
+        Rebuild(false);
         ZoomChanged?.Invoke(this, EventArgs.Empty);
     }
     public void EnsureViewport() { if (!_hasViewport && IsEffectivelyVisible) Fit(.75); }
 
-    private void Rebuild()
+    private void Rebuild(bool geometry = true)
     {
         if (_canvas is null) return;
-        _canvas.Children.Clear(); _bounds.Clear(); _cards.Clear(); _branches.Clear();
+        var viewport = new Rect(-_translate.X / Zoom, -_translate.Y / Zoom, Math.Max(0, Bounds.Width / Zoom), Math.Max(0, Bounds.Height / Zoom));
+        if (!geometry && (_bounds.Count < 200 || _draggingChapter || _realizedRegion.Contains(viewport))) return;
+        var buffer = 160 / Zoom;
+        _realizedRegion = new Rect(viewport.X - buffer, viewport.Y - buffer, viewport.Width + buffer * 2, viewport.Height + buffer * 2);
+        _canvas.Children.Clear(); _cards.Clear();
+        if (geometry) { _bounds.Clear(); _branches.Clear(); }
         var dark = MindViewThemeResources.IsDarkVariant(ActualThemeVariant);
         var line = LineBrush ?? Brush.Parse(dark ? "#3A3D50" : "#E3E5F0");
         var background = CardBrush ?? Brush.Parse(dark ? "#242633" : "#FFFFFF");
@@ -222,14 +263,14 @@ public sealed class MarkdownMindMapView : UserControl
         _viewport.Background = CanvasBrush ?? Brush.Parse(dark ? "#171821" : "#F7F8FC");
         _dots.Brush = DotBrush ?? line; _dots.InvalidateVisual();
         if (Root is null) { VisibleNodesChanged?.Invoke(this, EventArgs.Empty); return; }
-        double row = 0; _width = 0;
-        Place(Root, 0, AccentColor);
-        _height = Math.Max(90, row - 18);
+        double row = 54; _width = 0;
+        if (geometry) { Place(Root, 0, AccentColor); _height = Math.Max(90, row + 20); }
         foreach (var (node, rect) in _bounds)
         foreach (var child in node.Children)
         {
             if (!_bounds.TryGetValue(child, out var childRect)) continue;
             var a = new Point(rect.Right, rect.Center.Y); var b = new Point(childRect.Left, childRect.Center.Y);
+            if (_bounds.Count >= 200 && !new Rect(new Point(Math.Min(a.X, b.X), Math.Min(a.Y, b.Y)), new Size(Math.Abs(b.X - a.X) + 1, Math.Abs(b.Y - a.Y) + 1)).Intersects(_realizedRegion)) continue;
             _canvas.Children.Add(new global::Avalonia.Controls.Shapes.Path
             {
                 Data = Geometry.Parse(FormattableString.Invariant($"M {a.X},{a.Y} C {a.X + 40},{a.Y} {b.X - 40},{b.Y} {b.X},{b.Y}")),
@@ -238,25 +279,26 @@ public sealed class MarkdownMindMapView : UserControl
         }
         foreach (var (node, rect) in _bounds)
         {
+            if (_bounds.Count >= 200 && !rect.Intersects(_realizedRegion)) continue;
             var root = ReferenceEquals(node, Root);
             var heading = node.Kind == MarkdownMindMapNodeKind.Heading;
             var color = _branches[node];
-            var body = new StackPanel { Spacing = 5, VerticalAlignment = VerticalAlignment.Center };
-            if (root) body.Children.Add(new TextBlock { Text = MindViewLocalization.GetResource(MindViewL.MarkdownDocument), FontSize = 9, Foreground = MindViewThemeResources.AccentForeground(AccentColor), Opacity = .75 });
-            if (!root && heading) body.Children.Add(new TextBlock { Text = $"H{node.HeadingLevel}", FontSize = 9, Foreground = foreground });
+            var body = new StackPanel { Spacing = 4, VerticalAlignment = VerticalAlignment.Center };
+            if (root) body.Children.Add(new TextBlock { Text = MindViewLocalization.GetResource(MindViewL.MarkdownDocument), FontSize = 9, LineHeight = 14, Foreground = MindViewThemeResources.AccentForeground(AccentColor), Opacity = .75 });
+            if (!root && heading) body.Children.Add(new TextBlock { Text = $"H{node.HeadingLevel}", FontSize = 9, LineHeight = 14, Foreground = foreground });
             body.Children.Add(new TextBlock
             {
                 Text = node.Title, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, MaxLines = root ? 1 : 4,
-                FontSize = root ? 14 : heading ? 12 : 11.5, LineHeight = root ? 20 : 18,
+                FontSize = root || heading ? 13 : 12, LineHeight = 20,
                 FontWeight = root || heading ? FontWeight.SemiBold : FontWeight.Normal,
                 Foreground = root ? MindViewThemeResources.AccentForeground(AccentColor) : foreground
             });
             var content = new Grid();
-            content.Children.Add(new CardDecoration { IsSummary = !root && !heading, Stripe = !root && heading ? new SolidColorBrush(color) : null, Line = line, Margin = new Thickness(-16, -11), IsHitTestVisible = false });
+            content.Children.Add(new CardDecoration { IsSummary = !root && !heading, Stripe = !root && heading ? new SolidColorBrush(color) : null, Line = line, Margin = new Thickness(-12, -10), IsHitTestVisible = false });
             content.Children.Add(body);
             var card = new Border
             {
-                Width = rect.Width, Height = rect.Height, Padding = new Thickness(16, 11), CornerRadius = new CornerRadius(8),
+                Width = rect.Width, Height = rect.Height, Padding = new Thickness(12, 10), CornerRadius = new CornerRadius(8),
                 Background = root ? new SolidColorBrush(AccentColor) : background,
                 BorderBrush = node == _selected ? new SolidColorBrush(AccentColor) : !root && !heading ? Brushes.Transparent : line,
                 BorderThickness = new Thickness(node == _selected ? 2 : 1), Child = content,
@@ -266,6 +308,10 @@ public sealed class MarkdownMindMapView : UserControl
             if (EnableMotion) card.Transitions = new Transitions { new BrushTransition { Property = Border.BorderBrushProperty, Duration = TimeSpan.FromMilliseconds(160) } };
             ToolTip.SetTip(card, node.FullText);
             Canvas.SetLeft(card, rect.X); Canvas.SetTop(card, rect.Y);
+            Point? dragStart = null;
+            bool dragging = false;
+            MarkdownMindMapNode? dropTarget = null;
+            string dropPosition = "child";
             card.PointerPressed += (_, e) =>
             {
                 if (!e.GetCurrentPoint(card).Properties.IsLeftButtonPressed) return;
@@ -273,34 +319,78 @@ public sealed class MarkdownMindMapView : UserControl
                 { previousCard.BorderBrush = previous.Kind is MarkdownMindMapNodeKind.Heading or MarkdownMindMapNodeKind.Document ? line : Brushes.Transparent; previousCard.BorderThickness = new Thickness(1); }
                 _selected = node; card.BorderBrush = new SolidColorBrush(AccentColor); card.BorderThickness = new Thickness(2);
                 Focus(); NodeSelected?.Invoke(this, node);
-                if (e.ClickCount >= 2) SourceRequested?.Invoke(this, node);
+                if (e.ClickCount >= 2)
+                {
+                    if (IsChapterEditingEnabled && heading) ChapterActionRequested?.Invoke(this, new(node, "rename"));
+                    else SourceRequested?.Invoke(this, node);
+                }
+                else if (IsChapterEditingEnabled && heading && !root) { dragStart = e.GetPosition(_viewport); e.Pointer.Capture(card); }
                 e.Handled = true;
             };
+            card.PointerMoved += (_, e) =>
+            {
+                if (dragStart is not { } start) return;
+                var point = e.GetPosition(_viewport);
+                var distance = point - start;
+                if (!dragging && Math.Sqrt(distance.X * distance.X + distance.Y * distance.Y) < 6) return;
+                dragging = true; dropTarget = null;
+                _draggingChapter = true;
+                foreach (var (candidate, targetRect) in _bounds)
+                {
+                    if (candidate == node || candidate.Kind is not (MarkdownMindMapNodeKind.Document or MarkdownMindMapNodeKind.Heading)) continue;
+                    var local = new Point((point.X - _translate.X) / Zoom, (point.Y - _translate.Y) / Zoom);
+                    if (!targetRect.Contains(local)) continue;
+                    dropTarget = candidate;
+                    var ratio = (local.Y - targetRect.Top) / targetRect.Height;
+                    dropPosition = ReferenceEquals(candidate, Root) ? "child" : ratio < .25 ? "before" : ratio > .75 ? "after" : "child";
+                    break;
+                }
+                foreach (var (candidate, targetCard) in _cards)
+                {
+                    targetCard.BorderBrush = candidate == dropTarget ? new SolidColorBrush(AccentColor) : line;
+                    targetCard.BorderThickness = candidate == dropTarget
+                        ? dropPosition == "before" ? new Thickness(0, 3, 0, 0) : dropPosition == "after" ? new Thickness(0, 0, 0, 3) : new Thickness(3)
+                        : new Thickness(1);
+                }
+                e.Handled = true;
+            };
+            card.PointerReleased += (_, e) =>
+            {
+                var target = dropTarget; var moved = dragging;
+                dragStart = null; dragging = false; dropTarget = null; e.Pointer.Capture(null);
+                _draggingChapter = false;
+                if (moved) { Rebuild(); if (target is not null) ChapterMoveRequested?.Invoke(this, new(node, target, dropPosition)); e.Handled = true; }
+            };
+            card.PointerCaptureLost += (_, _) => { dragStart = null; dragging = false; dropTarget = null; _draggingChapter = false; };
             _cards[node] = card; _canvas.Children.Add(card);
             if (node.Children.Count > 0)
             {
                 var fold = new Button
                 {
-                    Content = node.IsCollapsed ? $"+{node.Children.Count}" : "−", Width = 22, Height = 22, MinWidth = 0, MinHeight = 0,
+                    Content = node.IsCollapsed ? $"+{node.Children.Count}" : "−", Width = 18, Height = 18, MinWidth = 0, MinHeight = 0,
                     Padding = new Thickness(0), FontSize = 10, CornerRadius = new CornerRadius(11), Background = background,
                     Foreground = foreground, BorderBrush = line, BorderThickness = new Thickness(1)
                 };
                 ToolTip.SetTip(fold, MindViewLocalization.GetResource(node.IsCollapsed ? MindViewL.ExpandBranch : MindViewL.CollapseBranch));
-                Canvas.SetLeft(fold, rect.Right - 8); Canvas.SetTop(fold, rect.Center.Y - 11);
+                Canvas.SetLeft(fold, rect.Right - 9); Canvas.SetTop(fold, rect.Center.Y - 9);
                 fold.Click += (_, e) => { ToggleCollapse(node); e.Handled = true; };
                 _canvas.Children.Add(fold);
             }
         }
-        VisibleNodesChanged?.Invoke(this, EventArgs.Empty);
+        if (geometry) VisibleNodesChanged?.Invoke(this, EventArgs.Empty);
 
         double Place(MarkdownMindMapNode node, int depth, Color branch)
         {
             var root = ReferenceEquals(node, Root);
             var heading = node.Kind == MarkdownMindMapNodeKind.Heading;
-            var height = root ? 60d : heading ? 64d : Math.Clamp(Math.Ceiling(new System.Globalization.StringInfo(node.Title).LengthInTextElements / 16d), 1, 4) * 18 + 24;
+            using var textLayout = new global::Avalonia.Media.TextFormatting.TextLayout(node.Title,
+                new Typeface(FontFamily, FontStyle.Normal, root || heading ? FontWeight.SemiBold : FontWeight.Normal),
+                root || heading ? 13 : 12, TextBrush ?? Brushes.Black, textWrapping: TextWrapping.Wrap,
+                maxWidth: root ? 188 : heading ? 196 : 198, lineHeight: 20);
+            var height = (root || heading ? 40 : 22) + Math.Clamp(textLayout.TextLines.Count, 1, 4) * 20;
             var start = row;
             double y;
-            if (node.IsCollapsed || node.Children.Count == 0) { y = row; row += height + 18; }
+            if (node.IsCollapsed || node.Children.Count == 0) { y = row; row += height + 14; }
             else
             {
                 var centers = new List<double>();
@@ -309,12 +399,12 @@ public sealed class MarkdownMindMapView : UserControl
                     var childColor = root ? (i % 5) switch { 1 => SuccessColor, 2 => WarningColor, 4 => Color.Parse(dark ? "#9398B3" : "#8B91A8"), _ => AccentColor } : branch;
                     centers.Add(Place(node.Children[i], depth + 1, childColor));
                 }
-                var subtreeHeight = row - start - 18;
+                var subtreeHeight = row - start - 14;
                 if (subtreeHeight < height) row += height - subtreeHeight;
                 y = Math.Max(start, (centers[0] + centers[^1]) / 2 - height / 2);
             }
-            var rect = new Rect(depth == 0 ? 0 : 294 + (depth - 1) * 304, y, root ? 214 : 224, height);
-            _bounds[node] = rect; _branches[node] = branch; _width = Math.Max(_width, rect.Right + 16);
+            var rect = new Rect(depth * 272 + 32, y, root ? 214 : 224, height);
+            _bounds[node] = rect; _branches[node] = branch; _width = Math.Max(_width, rect.Right + 32);
             return rect.Center.Y;
         }
     }
@@ -325,8 +415,8 @@ public sealed class MarkdownMindMapView : UserControl
         public override void Render(DrawingContext context)
         {
             using var opacity = context.PushOpacity(.55);
-            for (var y = 12d; y < Bounds.Height; y += 22)
-            for (var x = 12d; x < Bounds.Width; x += 22) context.DrawEllipse(Brush, null, new Point(x, y), .8, .8);
+            for (var y = 9d; y < Bounds.Height; y += 18)
+            for (var x = 9d; x < Bounds.Width; x += 18) context.DrawEllipse(Brush, null, new Point(x, y), .8, .8);
         }
     }
     private sealed class CardDecoration : Control
