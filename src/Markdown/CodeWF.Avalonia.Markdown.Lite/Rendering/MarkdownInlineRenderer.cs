@@ -202,6 +202,12 @@ internal sealed class MarkdownInlineRenderer(IMarkdownRenderContext context)
 
     private IEnumerable<Inline> CreateHtmlInline(string html)
     {
+        if (Regex.IsMatch(html, @"^<br\s*/?>$", RegexOptions.IgnoreCase))
+        {
+            yield return new LineBreak();
+            yield break;
+        }
+
         if (Regex.IsMatch(html, @"^</?(a|span)\b", RegexOptions.IgnoreCase))
         {
             yield break;

@@ -230,6 +230,10 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     public static readonly StyledProperty<double> CodeLanguageFontSizeProperty =
         AvaloniaProperty.Register<MarkdownViewer, double>(nameof(CodeLanguageFontSize), 12);
 
+    /// <summary>是否显示代码块顶部的语言与工具栏；专注阅读和即时编辑可关闭。</summary>
+    public static readonly StyledProperty<bool> ShowCodeBlockHeaderProperty =
+        AvaloniaProperty.Register<MarkdownViewer, bool>(nameof(ShowCodeBlockHeader), true);
+
     public static readonly StyledProperty<double> UnorderedListMarkerWidthProperty =
         AvaloniaProperty.Register<MarkdownViewer, double>(nameof(UnorderedListMarkerWidth), 24);
 
@@ -450,6 +454,12 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     {
         get => GetValue(CodeLanguageFontSizeProperty);
         set => SetValue(CodeLanguageFontSizeProperty, value);
+    }
+
+    public bool ShowCodeBlockHeader
+    {
+        get => GetValue(ShowCodeBlockHeaderProperty);
+        set => SetValue(ShowCodeBlockHeaderProperty, value);
     }
 
     public double UnorderedListMarkerWidth
@@ -924,7 +934,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
         var renderedNewBlocks = CreateRenderedBlocks(
             newModel.Blocks.Skip(diff.NewStartIndex).Take(diff.NewInsertCount),
-            text);
+            text, newModel.Blocks.Count);
         ReplaceRenderedBlocks(diff.ReplaceStartIndex, diff.ReplaceEndIndex, renderedNewBlocks, newModel);
 
         _renderedMarkdown = text;
@@ -933,11 +943,29 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         return true;
     }
 
-    private IReadOnlyList<RenderedBlock> CreateRenderedBlocks(IEnumerable<MarkdownDocumentBlock> modelBlocks, string markdown)
+    private IReadOnlyList<RenderedBlock> CreateRenderedBlocks(IEnumerable<MarkdownDocumentBlock> modelBlocks, string markdown, int? documentBlockCount = null)
     {
         var renderedBlocks = new List<RenderedBlock>();
         foreach (var modelBlock in modelBlocks)
         {
+            // 增量更新时当前快照仍是旧文档；从短节恢复全文须按新模型决定延迟创建。
+            if (_virtualizingHost is { EnableVirtualization: true } && (documentBlockCount ?? _renderedModel.Blocks.Count) >= 200)
+            {
+                var deferred = new DeferredMarkdownBlock(() => CreateBlockContent(modelBlock, markdown));
+                renderedBlocks.Add(RenderedBlock.FromModel(modelBlock, deferred, null,
+                    ContainsRemoteImage(modelBlock), TryGetTaskMarkerOffset(markdown, modelBlock)));
+                continue;
+            }
+            var (control, blockDisposables) = CreateBlockContent(modelBlock, markdown);
+            renderedBlocks.Add(RenderedBlock.FromModel(modelBlock, control, blockDisposables,
+                ContainsRemoteImage(modelBlock), TryGetTaskMarkerOffset(markdown, modelBlock)));
+        }
+
+        return renderedBlocks;
+    }
+
+    private (Control Control, List<IDisposable>? Bindings) CreateBlockContent(MarkdownDocumentBlock modelBlock, string markdown)
+    {
             var previousDisposableCount = _currentBlockDisposables.Count;
             var control = ConvertBlock(modelBlock.SyntaxBlock, markdown);
             if (control is null)
@@ -948,15 +976,32 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             }
 
             var blockDisposables = ExtractCurrentBlockDisposables(previousDisposableCount);
-            renderedBlocks.Add(RenderedBlock.FromModel(
-                modelBlock,
-                control,
-                blockDisposables,
-                ContainsRemoteImage(modelBlock),
-                TryGetTaskMarkerOffset(markdown, modelBlock)));
-        }
+            return (control, blockDisposables);
+    }
 
-        return renderedBlocks;
+    /// <summary>长文档只为视口内的块建立高亮、表格与公式控件，回收时释放绑定与子树。</summary>
+    private sealed class DeferredMarkdownBlock(Func<(Control Control, List<IDisposable>? Bindings)> create) : Decorator, IDisposable
+    {
+        private List<IDisposable>? _bindings;
+        private bool _disposed;
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            if (Child is null && !_disposed)
+            {
+                var content = create(); _bindings = content.Bindings; Child = content.Control;
+            }
+            return base.MeasureOverride(availableSize);
+        }
+        protected override void OnDetachedFromLogicalTree(global::Avalonia.LogicalTree.LogicalTreeAttachmentEventArgs e)
+        {
+            base.OnDetachedFromLogicalTree(e); ReleaseContent();
+        }
+        private void ReleaseContent()
+        {
+            if (_bindings is not null) { foreach (var binding in _bindings) binding.Dispose(); _bindings = null; }
+            Child = null;
+        }
+        public void Dispose() { _disposed = true; ReleaseContent(); }
     }
 
     private List<IDisposable>? ExtractCurrentBlockDisposables(int startIndex)
@@ -1733,6 +1778,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
         public void Cleanup()
         {
+            if (Control is DeferredMarkdownBlock deferred) deferred.Dispose();
             if (Bindings is not null)
             {
                 foreach (var d in Bindings)

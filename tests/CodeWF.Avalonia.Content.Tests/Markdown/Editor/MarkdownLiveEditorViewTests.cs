@@ -4,10 +4,12 @@ using CodeWF.Avalonia.Markdown.Editor.Services;
 using CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
 
 using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
+using global::Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Input;
 using global::Avalonia.LogicalTree;
 using global::Avalonia.Threading;
+using global::Avalonia.VisualTree;
 
 using Xunit;
 
@@ -83,7 +85,54 @@ public sealed class MarkdownLiveEditorViewTests
     });
 
     [Fact]
-    public void EditingShowsOnlySourceAndEscapeRestoresOriginalBlock() => _platform.Run(() =>
+    public void SourceNavigationRevealsDistantBlocksAndTheStartOfTallTables() => _platform.Run(() =>
+    {
+        var sections = Enumerable.Range(0, 240).Select(i => $"## Chapter {i}\n\nParagraph {i}. " + new string('x', i % 5 * 60));
+        var prefix = string.Join("\n\n", sections) + "\n\n";
+        var table = "| Target | Value |\n| --- | --- |\n" + string.Join('\n', Enumerable.Range(0, 80).Select(i => $"| Row {i} | Cell {i} |"));
+        var source = prefix + table + "\n\n## End\n\nLast paragraph.";
+        var view = new MarkdownLiveEditorView { DocumentMaxWidth = 810 };
+        view.SetText(source);
+        var panel = view.GetLogicalDescendants().OfType<CodeWF.Avalonia.Controls.Controls.WindowedStackPanel>().Single();
+        var scroll = view.GetLogicalDescendants().OfType<ScrollViewer>().Single();
+        scroll.Template = new global::Avalonia.Controls.Templates.FuncControlTemplate<ScrollViewer>((_, scope) =>
+        {
+            var presenter = new global::Avalonia.Controls.Presenters.ScrollContentPresenter { Content = scroll.Content };
+            scope.Register("PART_ScrollContentPresenter", presenter);
+            return presenter;
+        });
+        var window = new Window { Width = 1000, Height = 600, Content = view };
+        window.Show();
+        try
+        {
+            Dispatcher.UIThread.RunJobs();
+            // 此夹具没有主题，给普通块保留行高，避免零高预览使整个文档落入同一视口。
+            for (var i = 0; i < panel.ItemCount; i++)
+            {
+                panel.RealizeItem(i);
+                panel.GetRealizedItem(i)!.MinHeight = 40;
+            }
+            window.UpdateLayout();
+            Assert.True(scroll.Viewport.Height > 0);
+            foreach (var line in new[] { prefix.Count(c => c == '\n') + 1, 1, 701, 101 })
+            {
+                var index = MarkdownBlockParser.Parse(source).FindLastIndex(model => model.SourceLine <= line);
+                view.NavigateToSourceLine(line);
+                Dispatcher.UIThread.RunJobs();
+                var target = panel.GetRealizedItem(index);
+                Assert.NotNull(target);
+                var origin = target.TranslatePoint(default, scroll)!.Value;
+                Assert.InRange(origin.Y, -.5, scroll.Viewport.Height - 1);
+                Assert.True(panel.RealizedItemCount < 100, $"line={line}, realized={panel.RealizedItemCount}, offset={scroll.Offset.Y}, viewport={scroll.Viewport}, extent={scroll.Extent}");
+                Assert.Equal(-1, view.ActiveBlockIndex);
+                Assert.Equal(source, view.Text);
+            }
+        }
+        finally { window.Close(); }
+    });
+
+    [Fact]
+    public void EditingKeepsRichPreviewAndEscapeRestoresOriginalBlock() => _platform.Run(() =>
     {
         var view = new MarkdownLiveEditorView { TypographyTheme = "Simple" };
         view.SetText("# 标题\r\n\r\n原文\r\n");
@@ -92,7 +141,7 @@ public sealed class MarkdownLiveEditorViewTests
         var block = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Last();
         block.ActiveEditor!.Text = "**实时内容**";
         Dispatcher.UIThread.RunJobs();
-        Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
+        Assert.Single(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
         Assert.Contains("**实时内容**", view.Text);
         Assert.Single(view.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
         block.ActiveEditor.RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = Key.Escape });
@@ -102,21 +151,21 @@ public sealed class MarkdownLiveEditorViewTests
     });
 
     [Fact]
-    public void BlockSourceEditingPreservesOtherBlocksAndRendersOnlyAfterCommit() => _platform.Run(() =>
+    public void InlineEditingKeepsThePreviewAndUpdatesItsGeometryWhileTyping() => _platform.Run(() =>
     {
         var view = new MarkdownLiveEditorView { TypographyTheme = "OrangeHeart", TypographySize = "Small" };
         view.SetText("original **content**", "C:/documents/first.md");
+        view.FocusBlock(0);
         var block = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Single();
         var readOnlyPreview = block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single();
-        var originalPreviewText = readOnlyPreview.Markdown;
 
         view.FocusBlock(0);
-        Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
+        Assert.Same(readOnlyPreview, block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single());
         Assert.Equal("original **content**", block.ActiveEditor!.Text);
         block.ActiveEditor!.Text = "updated *content*";
         Dispatcher.UIThread.RunJobs();
         Assert.Contains("updated *content*", view.Text);
-        Assert.Equal(originalPreviewText, readOnlyPreview.Markdown);
+        Assert.Contains("updated *content*", readOnlyPreview.Markdown);
 
         block.CommitAndRender();
         Assert.Same(readOnlyPreview, block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single());
@@ -126,7 +175,7 @@ public sealed class MarkdownLiveEditorViewTests
         Assert.Equal("Small", readOnlyPreview.TypographySize);
         view.FocusBlock(0);
         Assert.Equal("updated *content*", block.ActiveEditor!.Text);
-        Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
+        Assert.Same(readOnlyPreview, block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single());
     });
 
     [Fact]
@@ -167,6 +216,7 @@ public sealed class MarkdownLiveEditorViewTests
     {
         var view = new MarkdownLiveEditorView();
         view.SetText("| A | B |\n| --- | --- |\n| plain | cell |");
+        view.FocusBlock(0);
         var table = view.GetLogicalDescendants().OfType<MarkdownTableView>().Single();
         var block = table.GetLogicalDescendants().OfType<MarkdownBlockView>().ElementAt(2);
         Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
@@ -174,7 +224,7 @@ public sealed class MarkdownLiveEditorViewTests
         Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
         block.ActiveEditor!.Text = "$x$";
         Dispatcher.UIThread.RunJobs();
-        Assert.Empty(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
+        Assert.Single(block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>());
         block.CommitAndRender();
         var preview = block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single();
         Assert.True(preview.IsVisible);
@@ -397,6 +447,7 @@ public sealed class MarkdownLiveEditorViewTests
     {
         var view = new MarkdownLiveEditorView();
         view.SetText("before\n\n| a | b |\n| :--- | ---: |\n| 1 | 2 |\n\nafter");
+        view.FocusBlock(1);
         var changed = 0;
         view.MarkdownChanged += (_, _) => changed++;
         var table = view.GetLogicalDescendants().OfType<MarkdownTableView>().Single();
@@ -422,10 +473,128 @@ public sealed class MarkdownLiveEditorViewTests
     });
 
     [Fact]
+    public void ParagraphBoundaryKeysNavigateAndMergeWithoutLosingMarkdown() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView(); view.SetText("first **bold**\n\nsecond");
+        view.FocusBlock(0);
+        var first = ActiveBox(view);
+        first.RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = Key.Right });
+        Assert.Equal(1, view.ActiveBlockIndex); Assert.Equal(0, ActiveBox(view).CaretIndex);
+        ActiveBox(view).RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = Key.Left });
+        Assert.Equal(0, view.ActiveBlockIndex); Assert.Equal(first.Text!.Length, ActiveBox(view).CaretIndex);
+        ActiveBox(view).RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = Key.Delete });
+        Assert.Equal(1, view.BlockCount); Assert.Equal("first **bold**second", view.Text);
+        view.ExecuteAsync(MarkdownEditorAction.Undo).GetAwaiter().GetResult();
+        Assert.Equal("first **bold**\n\nsecond", view.Text);
+    });
+
+    [Fact]
+    public void BackspaceAtAHeadingStartRemovesFormattingBeforeJoiningParagraphs() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView(); view.SetText("before\n\n## title"); view.FocusBlock(1);
+        var box = ActiveBox(view); box.CaretIndex = box.SelectionStart = box.SelectionEnd = 0;
+        box.RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = Key.Back });
+        Assert.Equal("before\n\ntitle", view.Text); Assert.Equal(2, view.BlockCount);
+        ActiveBox(view).RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = Key.Back });
+        Assert.Equal("beforetitle", view.Text); Assert.Equal(6, ActiveBox(view).CaretIndex);
+    });
+
+    [Fact]
+    public void FormattingToolbarUsesTheCurrentlyEditedTableCell() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView(); view.SetText("| A | B |\n| --- | --- |\n| one | two |"); view.FocusBlock(0);
+        var table = view.GetLogicalDescendants().OfType<MarkdownTableView>().Single();
+        var cell = table.GetLogicalDescendants().OfType<MarkdownBlockView>().Last(); cell.BeginEditAtEnd();
+        Assert.Single(table.GetLogicalDescendants().OfType<MarkdownBlockView>(), item => item.IsEditing);
+        cell.ActiveEditor!.SelectAll();
+        cell.CommitAndRender();
+        view.ExecuteAsync(MarkdownEditorAction.Bold).GetAwaiter().GetResult();
+        Dispatcher.UIThread.RunJobs();
+        Assert.Contains("**two**", view.Text); Assert.DoesNotContain("**one**", view.Text);
+    });
+
+    [Fact]
+    public void MeasuredBlocksKeepTheFirstScreenAndTheScrolledAnchorStable() => _platform.Run(() =>
+    {
+        var panel = new CodeWF.Avalonia.Controls.Controls.WindowedStackPanel { EnableVirtualization = false };
+        var items = Enumerable.Range(0, 30).Select(_ => new Border { Height = 40 }).ToArray();
+        foreach (var item in items) panel.AddItem(item);
+        var presenter = new global::Avalonia.Controls.Presenters.ScrollContentPresenter { Content = panel };
+        var scroll = new ScrollViewer
+        {
+            Template = new global::Avalonia.Controls.Templates.FuncControlTemplate<ScrollViewer>((_, scope) =>
+            {
+                scope.Register("PART_ScrollContentPresenter", presenter);
+                return presenter;
+            })
+        };
+        panel.ScrollHost = scroll;
+        var window = new Window { Width = 800, Height = 500, Content = scroll };
+        try
+        {
+            window.Show(); Dispatcher.UIThread.RunJobs(); window.UpdateLayout();
+            items[5].Height = 120;
+            window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
+            Assert.Equal(0, scroll.Offset.Y, 1);
+            scroll.Offset = new global::Avalonia.Vector(0, 400);
+            window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
+            items[0].Height = 80;
+            window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
+            Assert.Equal(440, scroll.Offset.Y, 1);
+        }
+        finally { window.Close(); }
+    });
+
+    private static TextBox ActiveBox(MarkdownLiveEditorView view) =>
+        view.GetLogicalDescendants().OfType<MarkdownBlockView>().Single(block => block.IsEditing).ActiveEditor!;
+
+    [Fact]
+    public void CodeLanguageAppearsBelowOnlyDuringEditingAndEscapeRestoresIt() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView(); view.SetText("```csharp\nvar value = 1;\n```"); view.FocusBlock(0);
+        var block = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Single();
+        var language = block.GetLogicalDescendants().OfType<TextBox>().Single(input => input.Classes.Contains("MdCodeLanguageInput"));
+        var preview = block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single();
+        Assert.False(preview.ShowCodeBlockHeader); Assert.Equal("csharp", language.Text);
+        language.Text = "javascript"; Dispatcher.UIThread.RunJobs();
+        Assert.StartsWith("```javascript", view.Text);
+        language.RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = Key.Escape });
+        Assert.StartsWith("```csharp", view.Text); Assert.False(block.IsEditing);
+        Assert.False(language.IsEffectivelyVisible);
+    });
+
+    [Fact]
     public async Task Platform_RunFromDifferentWorkersUsesOneUiThread()
     {
         var firstThread = _platform.Run(() => Environment.CurrentManagedThreadId);
         var secondThread = await Task.Run(() => _platform.Run(() => Environment.CurrentManagedThreadId));
         Assert.Equal(firstThread, secondThread);
     }
+
+    [Fact]
+    public void SelectionSurvivesCommittingForAMenuOrDialog() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView(); view.SetText("# Heading\n\nA paragraph here."); view.FocusBlock(1);
+        var block = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Single(item => item.IsEditing);
+        block.ActiveEditor!.SelectionStart = 2; block.ActiveEditor.SelectionEnd = 11;
+        var selection = view.Selection;
+        block.CommitAndRender();
+        Assert.Equal(selection, view.Selection);
+        var saved = view.CaptureState(); view.RestoreState(saved);
+        Assert.Equal(selection, view.Selection);
+    });
+
+    [Fact]
+    public void HostCodeFontIsSharedByPreviewAndInlineEditing() => _platform.Run(() =>
+    {
+        var font = new global::Avalonia.Media.FontFamily("Arial");
+        var view = new MarkdownLiveEditorView { CodeFontFamily = font };
+        view.SetText("```text\nhello\n```"); view.FocusBlock(0);
+        var block = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Single();
+        var preview = block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single();
+        Assert.Equal(font, preview.CodeFontFamily);
+        Assert.Equal(font, block.ActiveEditor!.FontFamily);
+        view.CodeFontFamily = new global::Avalonia.Media.FontFamily("Consolas");
+        Assert.Equal("Consolas", view.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single().CodeFontFamily.Name);
+    });
 }

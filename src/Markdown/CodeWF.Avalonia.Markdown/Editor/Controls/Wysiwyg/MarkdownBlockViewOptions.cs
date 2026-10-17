@@ -12,6 +12,7 @@ internal sealed class MarkdownBlockViewOptions
     public string? TypographyTheme { get; set; }
     public string? TypographySize { get; set; }
     public double FontSize { get; set; } = 15;
+    public FontFamily CodeFontFamily { get; set; } = MarkdownWysiwygPalette.CodeFontFamily;
     public IBrush? TableHeaderBackgroundBrush { get; set; }
 
     public IBrush TextBrush { get; private set; } = Brushes.Black;

@@ -4,6 +4,9 @@ using global::Avalonia.Controls.Documents;
 using global::Avalonia.Controls.Primitives;
 using global::Avalonia.Media;
 using global::Avalonia.Media.Immutable;
+using global::Avalonia.Media.TextFormatting;
+using global::Avalonia.Utilities;
+using global::Avalonia.VisualTree;
 using CodeWF.Toolkit.Lang;
 using System.Globalization;
 using TextMateSharp.Grammars;
@@ -34,53 +37,54 @@ internal static class CodeHighlighter
     {
         var themeName = isDark ? ThemeName.DarkPlus : ThemeName.LightPlus;
         var (grammar, theme) = GetOrCreateGrammar(NormalizeLanguage(language), themeName);
+        var lines = grammar is null ? null : GetOrCreateHighlightedLines(code, NormalizeLanguage(language), themeName, grammar, theme, isDark);
+        var normalized = code.Replace("\r\n", "\n");
 
-        var textBlock = new SelectableTextBlock
-        {
-            Inlines = new InlineCollection(),
-            TextWrapping = TextWrapping.NoWrap,
-            FontFamily = fontFamily,
-            FontSize = fontSize,
-            LineHeight = lineHeight,
-            Margin = new Thickness(0, 0, 0, 6),
+        // 长代码以文本样式区间排版，避免为每个 token 建立参与主题匹配的逻辑树节点。
+        SelectableTextBlock textBlock = lines is { Length: >= 64 }
+            ? new HighlightedCodeTextBlock(normalized, lines)
+            : new SelectableTextBlock();
+        textBlock.TextWrapping = TextWrapping.NoWrap;
+        textBlock.FontFamily = fontFamily;
+        textBlock.FontSize = fontSize;
+        textBlock.LineHeight = lineHeight;
             // 选区使用不透明底色，避免与浅色代码背景合成后降低白字对比度。
-            SelectionBrush = new ImmutableSolidColorBrush(Color.FromRgb(0x24, 0x5F, 0xC0)),
-            SelectionForegroundBrush = Brushes.White
-        };
+        textBlock.SelectionBrush = new ImmutableSolidColorBrush(Color.FromRgb(0x24, 0x5F, 0xC0));
+        textBlock.SelectionForegroundBrush = Brushes.White;
         textBlock.Classes.Add(MarkdownStyleKeys.CodeBlockText);
         TextOptions.SetBaselinePixelAlignment(textBlock, BaselinePixelAlignment.Aligned);
         textBlock.ContextMenu = CreateCopyContextMenu(textBlock, hasGlobalSelection, copyGlobalSelectionAsync);
+        var lineCount = normalized.Count(character => character == '\n') + 1;
+        if (textBlock is HighlightedCodeTextBlock) return Wrap(textBlock, isDark, lineCount);
+        // SelectableTextBlock 每次收到 Inlines 变化都会重新拼接全文来校正选区。
+        // 先在未绑定的集合内完成构造，避免长代码的 token 数量带来平方级复制。
+        var inlines = new InlineCollection();
 
         if (grammar is null)
         {
-            textBlock.Inlines.Add(new Run(code) { Foreground = isDark ? Brushes.White : Brushes.Black });
-            return Wrap(textBlock, isDark);
+            inlines.Add(new Run(code) { Foreground = isDark ? Brushes.White : Brushes.Black });
+            textBlock.Inlines = inlines;
+            return Wrap(textBlock, isDark, lineCount);
         }
 
-        foreach (var line in GetOrCreateHighlightedLines(code, NormalizeLanguage(language), themeName, grammar, theme, isDark))
+        for (var index = 0; index < lines!.Length; index++)
         {
-            foreach (var token in line.Tokens)
+            if (index > 0) inlines.Add(new LineBreak());
+            foreach (var token in lines[index].Tokens)
             {
-                textBlock.Inlines.Add(token.CreateRun());
+                inlines.Add(token.CreateRun());
             }
 
-            textBlock.Inlines.Add(new LineBreak());
         }
 
-        return Wrap(textBlock, isDark);
+        textBlock.Inlines = inlines;
+        return Wrap(textBlock, isDark, lineCount);
     }
 
-    private static Control Wrap(Control content, bool isDark)
+    private static Control Wrap(Control content, bool isDark, int lineCount)
     {
         if (content is SelectableTextBlock textBlock)
         {
-            var lineBreakCount = textBlock.Inlines?.OfType<LineBreak>().Count() ?? 0;
-            var plainText = textBlock.Inlines is null
-                ? string.Empty
-                : string.Concat(textBlock.Inlines.OfType<Run>().Select(run => run.Text ?? string.Empty));
-            var lineCount = lineBreakCount > 0
-                ? lineBreakCount
-                : Math.Max(1, plainText.Replace("\r\n", "\n").Split('\n').Length);
             var lineNumbers = new SelectableTextBlock
             {
                 Text = string.Join(Environment.NewLine, Enumerable.Range(1, lineCount).Select(i => i.ToString())),
@@ -91,7 +95,7 @@ internal static class CodeHighlighter
                 // 依据实际代码背景选择行号颜色，不随窗口明暗误判，也不额外衰减透明度。
                 Foreground = new ImmutableSolidColorBrush(isDark ? Color.FromRgb(0xAD, 0xB7, 0xC5) : Color.FromRgb(0x52, 0x60, 0x75)),
                 TextAlignment = TextAlignment.Right,
-                Margin = new Thickness(0, 0, 12, 6),
+                Margin = new Thickness(0, 0, 12, 0),
                 IsHitTestVisible = false
             };
 
@@ -116,6 +120,16 @@ internal static class CodeHighlighter
             VerticalScrollBarVisibility = ScrollBarVisibility.Disabled
         };
         scrollViewer.Classes.Add(MarkdownStyleKeys.CodeBlockScrollViewer);
+        scrollViewer.ScrollChanged += (_, _) =>
+        {
+            // Semi 的横向滚动条覆盖内容；溢出时预留实际轨道高度，最后一行仍可见。
+            var height = scrollViewer.Extent.Width > scrollViewer.Viewport.Width + .5
+                ? Math.Max(16, scrollViewer.GetVisualDescendants().OfType<ScrollBar>()
+                    .FirstOrDefault(bar => bar.Orientation == global::Avalonia.Layout.Orientation.Horizontal)?.Bounds.Height ?? 0)
+                : 0;
+            var margin = content.Margin;
+            if (Math.Abs(margin.Bottom - height) > .5) content.Margin = new Thickness(margin.Left, margin.Top, margin.Right, height);
+        };
         return scrollViewer;
     }
 
@@ -301,6 +315,46 @@ internal static class CodeHighlighter
     }
 
     private sealed record HighlightedLine(IReadOnlyList<HighlightedToken> Tokens);
+
+    private sealed class HighlightedCodeTextBlock : SelectableTextBlock
+    {
+        private readonly IReadOnlyList<HighlightedLine> _lines;
+        protected override Type StyleKeyOverride => typeof(SelectableTextBlock);
+        public HighlightedCodeTextBlock(string text, IReadOnlyList<HighlightedLine> lines)
+        { _lines = lines; Text = text; }
+
+        protected override TextLayout CreateTextLayout(string? text)
+        {
+            var styles = new List<ValueSpan<TextRunProperties>>();
+            var start = 0;
+            var selectionStart = Math.Min(SelectionStart, SelectionEnd);
+            var selectionEnd = Math.Max(SelectionStart, SelectionEnd);
+            foreach (var line in _lines)
+            {
+                foreach (var token in line.Tokens)
+                {
+                    var end = start + token.Text.Length;
+                    var cutStart = Math.Clamp(selectionStart, start, end);
+                    var cutEnd = Math.Clamp(selectionEnd, start, end);
+                    Add(start, cutStart, token.Foreground);
+                    Add(cutStart, cutEnd, SelectionForegroundBrush ?? token.Foreground);
+                    Add(cutEnd, end, token.Foreground);
+                    start = end;
+                    void Add(int from, int to, IBrush? foreground)
+                    {
+                        if (to <= from) return;
+                        styles.Add(new(from, to - from, new GenericTextRunProperties(
+                            new Typeface(FontFamily, token.FontStyle, token.FontWeight, FontStretch), FontSize,
+                            foregroundBrush: foreground, backgroundBrush: token.Background)));
+                    }
+                }
+                start++; // 源文本使用 LF；每行末尾的换行沿用默认样式。
+            }
+            return new TextLayout(text ?? string.Empty, new Typeface(FontFamily, FontStyle, FontWeight, FontStretch),
+                FontSize, Foreground, TextAlignment, TextWrapping, lineHeight: LineHeight,
+                letterSpacing: LetterSpacing, textStyleOverrides: styles);
+        }
+    }
 
     private sealed record HighlightedToken(
         string Text,

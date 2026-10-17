@@ -92,7 +92,7 @@ internal sealed class MarkdownRichTextView : TextBlock
 
             if (run.Code)
             {
-                textRun.FontFamily = MarkdownWysiwygPalette.CodeFontFamily;
+                textRun.FontFamily = _options.CodeFontFamily;
                 textRun.Foreground = _options.CodeBrush;
                 textRun.Background = _options.CodeBackgroundBrush;
             }

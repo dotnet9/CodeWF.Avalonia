@@ -7,6 +7,12 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Editor;
 public sealed class MarkdownTextRunParserTests
 {
     [Theory]
+    [InlineData("first\nsecond")]
+    [InlineData("first\r\nsecond")]
+    public void SoftLineBreakMatchesTheRenderedParagraph(string source) =>
+        Assert.Equal("first\nsecond", MarkdownTextRunParser.ToPlainText(MarkdownTextRunParser.Parse(source)));
+
+    [Theory]
     [InlineData("**[Dotnet9](#jump_8)**", "Dotnet9", "#jump_8", true, false)]
     [InlineData("[*italic* **bold**](https://x)", "bold", "https://x", true, false)]
     [InlineData("[*italic* **bold**](https://x)", "italic", "https://x", false, true)]

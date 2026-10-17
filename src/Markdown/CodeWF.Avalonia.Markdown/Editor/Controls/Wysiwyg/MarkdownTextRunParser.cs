@@ -81,6 +81,19 @@ public static class MarkdownTextRunParser
         return markdown.Length;
     }
 
+    /// <summary>源码选区映射到预览文字，格式标记本身不占可见宽度。</summary>
+    public static int GetTextOffset(string markdown, int sourceOffset)
+    {
+        var visible = 0;
+        foreach (var run in Parse(markdown))
+        {
+            if (sourceOffset <= run.SourceStart + run.Text.Length)
+                return visible + Math.Clamp(sourceOffset - run.SourceStart, 0, run.Text.Length);
+            visible += run.Text.Length;
+        }
+        return visible;
+    }
+
     private static bool AppendInlines(
         List<MarkdownTextRun> runs,
         Markdig.Syntax.Inlines.ContainerInline? container,
@@ -114,11 +127,16 @@ public static class MarkdownTextRunParser
         switch (inline)
         {
             case Markdig.Syntax.Inlines.LiteralInline literal:
-                runs.Add(new MarkdownTextRun(literal.Content.ToString(), bold, italic, strike, LinkUrl: linkUrl, SourceStart: literal.Span.Start));
+                runs.Add(new MarkdownTextRun(literal.Content.ToString(), bold, italic, strike, LinkUrl: linkUrl, SourceStart: literal.Span.Start + (literal.IsFirstCharacterEscaped ? 1 : 0)));
                 return true;
 
             case Markdig.Syntax.Inlines.CodeInline code:
-                runs.Add(new MarkdownTextRun(code.Content, bold, italic, strike, Code: true, LinkUrl: linkUrl, SourceStart: code.Span.Start + 1));
+                var padding = code.Span.Length - code.DelimiterCount * 2 == code.Content.Length + 2 ? 1 : 0;
+                runs.Add(new MarkdownTextRun(code.Content, bold, italic, strike, Code: true, LinkUrl: linkUrl, SourceStart: code.Span.Start + code.DelimiterCount + padding));
+                return true;
+
+            case Markdig.Syntax.Inlines.HtmlEntityInline entity:
+                runs.Add(new MarkdownTextRun(entity.Transcoded.ToString(), bold, italic, strike, LinkUrl: linkUrl, SourceStart: entity.Span.Start));
                 return true;
 
             case Markdig.Syntax.Inlines.EmphasisInline emphasis:
@@ -137,7 +155,8 @@ public static class MarkdownTextRunParser
                 return AppendInlines(runs, link, bold, italic, strike, link.IsImage ? null : link.Url);
 
             case Markdig.Syntax.Inlines.LineBreakInline lineBreak:
-                runs.Add(new MarkdownTextRun(lineBreak.IsHard ? "\n" : " "));
+                // 预览保留软换行，输入层必须使用相同换行规则，避免点入时整段重排。
+                runs.Add(new MarkdownTextRun("\n", SourceStart: lineBreak.Span.Start));
                 return true;
 
             case Markdig.Syntax.Inlines.ContainerInline nested:

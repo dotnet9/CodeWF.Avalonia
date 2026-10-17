@@ -89,7 +89,8 @@ public partial class MarkdownViewer
         var offset = host.Offset.Y;
         var viewportHeight = Math.Max(1, host.Viewport.Height);
         var documentHeight = Math.Max(viewportHeight, host.Extent.Height);
-        var probeOffset = offset + viewportHeight / 2;
+        // 视口中心换算到文档坐标，兼容宿主留白及演示缩放。
+        var probeOffset = host.TranslatePoint(new Point(0, viewportHeight / 2), _documentHost)?.Y ?? offset + viewportHeight / 2;
 
         for (var i = 0; i < _renderedBlocks.Count; i++)
         {
@@ -106,7 +107,8 @@ public partial class MarkdownViewer
                 continue;
             }
 
-            var top = origin.Y - offset;
+            // origin 与 probeOffset 都在文档坐标中；不能再减一次滚动偏移。
+            var top = origin.Y;
             var height = Math.Max(1, control.Bounds.Height);
             if (probeOffset > top + height)
             {
@@ -114,12 +116,12 @@ public partial class MarkdownViewer
             }
 
             var ratioInBlock = Math.Clamp((probeOffset - top) / height, 0d, 1d);
-            var documentRatio = Math.Clamp(probeOffset / documentHeight, 0d, 1d);
+            var documentRatio = Math.Clamp((offset + viewportHeight / 2) / documentHeight, 0d, 1d);
             return new MarkdownReadingPosition(i, ratioInBlock, documentRatio);
         }
 
         var lastIndex = _renderedBlocks.Count - 1;
-        return new MarkdownReadingPosition(lastIndex, 1, Math.Clamp(probeOffset / documentHeight, 0d, 1d));
+        return new MarkdownReadingPosition(lastIndex, 1, Math.Clamp((offset + viewportHeight / 2) / documentHeight, 0d, 1d));
     }
 
     /// <summary>
@@ -139,19 +141,24 @@ public partial class MarkdownViewer
         }
 
         var index = Math.Clamp(value.BlockIndex, 0, _renderedBlocks.Count - 1);
-        // 虚拟化下目标块可能未物化：先物化并把布局推进到最新，否则 TranslatePoint 拿到的是旧位置。
+        // 定位完成前固定目标，避免布局按旧视口立即回收；滚动后由现有锚点策略管理。
+        _virtualizingHost?.PinItem(index);
         _virtualizingHost?.RealizeItem(index);
-        UpdateLayout();
-
-        if (_renderedBlocks[index].Control.TranslatePoint(new Point(0, 0), _documentHost) is not { } origin)
+        // 恢复全文时前面的离屏块仍用估高。先滚到锚点，再量测新视口，
+        // 按同一块内位置校正；只设一次像素偏移会在新块量测后落到相邻章节。
+        for (var pass = 0; pass < 4; pass++)
         {
-            return false;
+            host.UpdateLayout();
+            var viewportHeight = Math.Max(1, host.Viewport.Height);
+            var point = _renderedBlocks[index].Control.TranslatePoint(
+                new Point(0, _renderedBlocks[index].Control.Bounds.Height * value.BlockRatio), host);
+            if (point is null) return false;
+            var target = Math.Clamp(host.Offset.Y + point.Value.Y - viewportHeight / 2,
+                0, Math.Max(0, host.Extent.Height - viewportHeight));
+            if (Math.Abs(target - host.Offset.Y) < .5) return true;
+            host.Offset = new Vector(host.Offset.X, target);
         }
-
-        var viewportHeight = Math.Max(1, host.Viewport.Height);
-        var maxOffset = Math.Max(0, host.Extent.Height - viewportHeight);
-        var target = origin.Y + _renderedBlocks[index].Control.Bounds.Height * value.BlockRatio - viewportHeight / 2;
-        host.Offset = new Vector(host.Offset.X, Math.Clamp(target, 0, maxOffset));
+        host.UpdateLayout();
         return true;
     }
 
@@ -271,7 +278,9 @@ public partial class MarkdownViewer
 
         // 虚拟化宿主下目标块可能未物化：先物化，并把布局推进到最新，
         // 否则 TranslatePoint 拿到的是上一轮的位置（宿主滚动定位会出现「跳不准」）。
-        _virtualizingHost?.RealizeItem(_renderedBlocks.IndexOf(renderedBlock));
+        var blockIndex = _renderedBlocks.IndexOf(renderedBlock);
+        _virtualizingHost?.PinItem(blockIndex);
+        _virtualizingHost?.RealizeItem(blockIndex);
         UpdateLayout();
 
         if (renderedBlock.Control.TranslatePoint(new Point(0, 0), this) is not { } topLeft)

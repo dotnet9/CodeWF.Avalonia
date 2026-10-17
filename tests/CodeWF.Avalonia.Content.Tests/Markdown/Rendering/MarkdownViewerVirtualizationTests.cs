@@ -7,6 +7,7 @@ using global::Avalonia.Controls.Presenters;
 using global::Avalonia.Controls.Templates;
 using global::Avalonia.Headless;
 using global::Avalonia.Threading;
+using global::Avalonia.VisualTree;
 using System.Text;
 using Xunit;
 
@@ -19,6 +20,142 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 [Collection("AvaloniaPlatform")]
 public sealed class MarkdownViewerVirtualizationTests(AvaloniaPlatformFixture platform)
 {
+    [Fact]
+    public void LargeDocumentsCreateTextControlsOnlyInsideRealizedBlocks() => platform.Run(() =>
+    {
+        var created = 0;
+        var source = string.Join("\n\n", Enumerable.Range(0, 600).Select(i => $"```text\ncode {i}\n```"));
+        var (window, viewer, panel, scroll) = CreateViewer(source, viewer => viewer.CodeBlockToolRender += (_, _) => created++);
+        try
+        {
+            Assert.InRange(created, 1, 99);
+            Assert.True(viewer.GetVisualDescendants().OfType<SelectableTextBlock>().Count() < 100);
+            ScrollToBottom(panel, scroll);
+            Assert.True(viewer.GetVisualDescendants().OfType<SelectableTextBlock>().Count() < 100);
+            scroll.Offset = default; Dispatcher.UIThread.RunJobs();
+            Assert.NotNull(panel.GetRealizedItem(0));
+            Assert.True(viewer.GetVisualDescendants().OfType<SelectableTextBlock>().Count() < 100);
+        }
+        finally { window.Close(); }
+    });
+
+    [Fact]
+    public void SwitchingFromShortSectionToLargeDocumentDefersOffscreenContent() => platform.Run(() =>
+    {
+        var created = 0;
+        var shortSection = "# Section\n\nOpening paragraph.";
+        var largeDocument = shortSection + "\n\n" + string.Join("\n\n", Enumerable.Range(0, 600).Select(i => $"```text\ncode {i}\n```"));
+        var (window, viewer, panel, _) = CreateViewer(shortSection, viewer => viewer.CodeBlockToolRender += (_, _) => created++);
+        try
+        {
+            for (var pass = 0; pass < 3; pass++)
+            {
+                var before = created;
+                viewer.Markdown = largeDocument; WaitForRender(viewer, largeDocument);
+                Assert.InRange(created - before, 1, 99);
+                Assert.True(panel.IsVirtualizing);
+                Assert.True(panel.RealizedItemCount < 100);
+                viewer.Markdown = shortSection; WaitForRender(viewer, shortSection);
+            }
+        }
+        finally { window.Close(); }
+    });
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(1.5)]
+    public void ReadingPositionRoundTripsAfterScrolling(double scale) => platform.Run(() =>
+    {
+        var source = BuildDocument(codeBlockFirst: false, blocks: 100);
+        var (window, viewer, _, scroll) = CreateViewer(source, scale: scale);
+        try
+        {
+            scroll.Offset = new Vector(0, 1200); Dispatcher.UIThread.RunJobs();
+            var before = scroll.Offset.Y;
+            var position = viewer.SaveReadingPosition();
+            Assert.NotNull(position);
+            scroll.Offset = default; Dispatcher.UIThread.RunJobs();
+            Assert.True(viewer.RestoreReadingPosition(position)); Dispatcher.UIThread.RunJobs();
+            // 视口中心若位于块间留白，定位到下一块顶端，误差不超过一个块间距。
+            Assert.InRange(Math.Abs(scroll.Offset.Y - before), 0, 8);
+        }
+        finally { window.Close(); }
+    });
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(1.5)]
+    public void ReadingPositionSurvivesASectionPresentationInALargeMixedDocument(double scale) => platform.Run(() =>
+    {
+        var source = string.Join("\n\n", Enumerable.Range(0, 500).Select(i =>
+            $"## Chapter {i}\n\nParagraph {i}. " + new string('x', i % 7 * 80) +
+            $"\n\n```text\n{string.Join('\n', Enumerable.Range(0, i % 12 + 1).Select(n => $"code {i} line {n}"))}\n```"));
+        var (window, viewer, panel, scroll) = CreateViewer(source, scale: scale);
+        try
+        {
+            for (var i = 0; i < 45; i++) { scroll.Offset = new Vector(0, scroll.Offset.Y + 480); Dispatcher.UIThread.RunJobs(); }
+            var position = viewer.SaveReadingPosition();
+            Assert.NotNull(position);
+            Assert.InRange(position.Value.BlockIndex, 30, 1400);
+            viewer.Markdown = "# Presentation\n\nA short section."; WaitForRender(viewer, viewer.Markdown);
+            viewer.Markdown = source; WaitForRender(viewer, source);
+            Assert.True(viewer.RestoreReadingPosition(position)); Dispatcher.UIThread.RunJobs();
+            var restored = viewer.SaveReadingPosition();
+            Assert.NotNull(restored);
+            Assert.Equal(position.Value.BlockIndex, restored.Value.BlockIndex);
+            Assert.InRange(Math.Abs(position.Value.BlockRatio - restored.Value.BlockRatio), 0, .05);
+            Assert.True(panel.RealizedItemCount < 100);
+        }
+        finally { window.Close(); }
+    });
+
+    [Fact]
+    public void SourceNavigationCanLocateAnOffscreenBlockBeforeScrolling() => platform.Run(() =>
+    {
+        var source = string.Join("\n\n", Enumerable.Range(0, 600).Select(i => $"Paragraph {i}."));
+        var (window, viewer, panel, scroll) = CreateViewer(source);
+        try
+        {
+            Assert.False(viewer.IsBlockRealized(450));
+            Assert.True(viewer.TryGetSourceLineBounds(901, out var bounds));
+            Assert.True(bounds.Y > scroll.Viewport.Height);
+            Assert.True(viewer.IsBlockRealized(450));
+            scroll.Offset = new Vector(0, bounds.Y); Dispatcher.UIThread.RunJobs();
+            Assert.Contains(viewer.GetVisualDescendants().OfType<SelectableTextBlock>(), text => (text.Text ?? text.Inlines?.Text) == "Paragraph 450.");
+            Assert.True(panel.RealizedItemCount < 100);
+        }
+        finally { window.Close(); }
+    });
+
+    [Fact]
+    public void RecycledBlocksKeepMeasuredHeightIncludingMargins() => platform.Run(() =>
+    {
+        var panel = new WindowedStackPanel { EstimatedItemHeight = 56, KeepAliveBudget = 0, KeepAliveUnknownCount = 0 };
+        for (var i = 0; i < 100; i++) panel.AddItem(new Border { Height = 40, Margin = new Thickness(0, 8) });
+        var presenter = new ScrollContentPresenter { Content = panel };
+        var scroll = new ScrollViewer { Template = new FuncControlTemplate<ScrollViewer>((_, scope) =>
+        {
+            scope.Register("PART_ScrollContentPresenter", presenter); return presenter;
+        }) };
+        panel.ScrollHost = scroll;
+        var window = new Window { Width = 600, Height = 400, Content = scroll };
+        window.Show();
+        try
+        {
+            Dispatcher.UIThread.RunJobs();
+            Assert.Equal(56, panel.GetItemHeight(0));
+            for (var pass = 0; pass < 4; pass++)
+            {
+                for (var offset = 0; offset <= 5600; offset += 200) { scroll.Offset = new Vector(0, offset); Dispatcher.UIThread.RunJobs(); }
+                Assert.Null(panel.GetRealizedItem(0));
+                Assert.Equal(56, panel.GetItemHeight(0));
+                for (var offset = 5600; offset >= 0; offset -= 200) { scroll.Offset = new Vector(0, offset); Dispatcher.UIThread.RunJobs(); }
+                Assert.Equal(5600, scroll.Extent.Height);
+            }
+        }
+        finally { window.Close(); }
+    });
+
     [Fact]
     public void HeavyBlockScrolledOutOfView_StaysRealized() => platform.Run(() =>
     {
@@ -74,7 +211,7 @@ public sealed class MarkdownViewerVirtualizationTests(AvaloniaPlatformFixture pl
     });
 
     private static (Window Window, MarkdownViewer Viewer, WindowedStackPanel Panel, ScrollViewer ScrollViewer)
-        CreateViewer(string source)
+        CreateViewer(string source, Action<MarkdownViewer>? configure = null, double scale = 1)
     {
         var panel = new WindowedStackPanel
         {
@@ -87,7 +224,7 @@ public sealed class MarkdownViewerVirtualizationTests(AvaloniaPlatformFixture pl
 
         // 测试宿主不带控件主题，这里直接给出 ScrollViewer 的最小模板（内容呈现器），
         // 让其正常计算 Extent/Viewport 并支持 Offset 滚动。
-        var presenter = new ScrollContentPresenter { Content = panel };
+        var presenter = new ScrollContentPresenter { Content = scale == 1 ? panel : new LayoutTransformControl { Child = panel, LayoutTransform = new global::Avalonia.Media.ScaleTransform(scale, scale), Margin = new Thickness(20, 40) } };
         var scrollViewer = new ScrollViewer
         {
             Template = new FuncControlTemplate<ScrollViewer>((_, scope) =>
@@ -101,6 +238,7 @@ public sealed class MarkdownViewerVirtualizationTests(AvaloniaPlatformFixture pl
         var viewer = new MarkdownViewer
         {
             Markdown = source,
+            ScrollHost = scrollViewer,
             Template = new FuncControlTemplate<MarkdownViewer>((_, scope) =>
             {
                 scope.Register("PART_DocumentHost", panel);
@@ -108,6 +246,7 @@ public sealed class MarkdownViewerVirtualizationTests(AvaloniaPlatformFixture pl
             })
         };
 
+        configure?.Invoke(viewer);
         var window = new Window { Width = 600, Height = 500, Content = viewer };
         window.Show();
         Dispatcher.UIThread.RunJobs();

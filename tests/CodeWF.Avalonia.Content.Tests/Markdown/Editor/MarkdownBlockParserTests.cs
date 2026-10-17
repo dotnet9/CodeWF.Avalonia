@@ -11,6 +11,20 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Editor;
 /// </summary>
 public sealed class MarkdownBlockParserTests
 {
+    [Theory]
+    [InlineData("# Title\n\nRead [link][site] and note[^n].\n\n[site]: https://example.com\n[^n]: Footnote text.\n\n## Next\n\nBody\n")]
+    [InlineData("# Title\r\n\r\nRead [link][site] and note[^n].\r\n\r\nBody\r\n\r\n[site]: https://example.com\r\n[^n]: Footnote text.\r\n")]
+    [InlineData("[site]: https://example.com\n\n[^n]: Footnote text.\n")]
+    public void SyntheticReferenceGroupsPreserveSourceAndDoNotBreakEditing(string markdown)
+    {
+        var blocks = MarkdownBlockParser.Parse(markdown);
+        Assert.Equal(markdown, MarkdownBlockParser.Write(blocks));
+        var body = blocks.FirstOrDefault(block => block.Text == "Body");
+        if (body is null) return;
+        body.Text = "Edited body";
+        Assert.Equal(markdown.Replace("Body", "Edited body"), MarkdownBlockParser.Write(blocks));
+    }
+
     [Fact]
     public void Parse_MultilineQuoteRemovesPhysicalMarkers()
     {

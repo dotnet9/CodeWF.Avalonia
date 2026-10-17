@@ -4,6 +4,7 @@ using Markdig;
 using Markdig.Extensions.Tables;
 using Markdig.Extensions.TaskLists;
 using Markdig.Extensions.Mathematics;
+using Markdig.Extensions.Footnotes;
 using Markdig.Helpers;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
@@ -44,7 +45,10 @@ public static class MarkdownBlockParser
 
         var document = Markdig.Markdown.Parse(text, Pipeline);
         var sourceCursor = 0;
-        foreach (var block in document)
+        // Markdig 把链接定义和脚注整理为合成分组；其 Span 可能从 0 开始，
+        // 且脚注组被移动到文档末尾。定义保留在源文 trivia 中，不能当作顺序正文切片。
+        var sourceBlocks = document.Where(block => block is not LinkReferenceDefinitionGroup and not FootnoteGroup).ToList();
+        foreach (var block in sourceBlocks)
         {
             var firstModel = blocks.Count;
             switch (block)
@@ -130,7 +134,7 @@ public static class MarkdownBlockParser
             var group = blocks.GetRange(firstModel, blocks.Count - firstModel);
             var source = new MarkdownBlockSource(text[sourceCursor..block.Span.Start], text[block.Span.Start..end],
                 WriteCanonical(group).TrimEnd('\n'), text.Contains("\r\n", StringComparison.Ordinal) ? "\r\n" : "\n",
-                block == document.LastOrDefault() ? text[end..] : string.Empty);
+                block == sourceBlocks.LastOrDefault() ? text[end..] : string.Empty);
             foreach (var model in group)
             {
                 model.Source = source;

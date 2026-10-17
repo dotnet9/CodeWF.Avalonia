@@ -1,5 +1,7 @@
 ﻿using Avalonia;
 using global::Avalonia.Controls;
+using global::Avalonia.Controls.Presenters;
+using global::Avalonia.VisualTree;
 using global::Avalonia.Input;
 using global::Avalonia.Input.Platform;
 using global::Avalonia.Interactivity;
@@ -8,6 +10,7 @@ using global::Avalonia.Media;
 using global::Avalonia.Styling;
 
 using CodeWF.Avalonia.Controls.Text;
+using CodeWF.Avalonia.Controls.Controls;
 
 using CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
 using CodeWF.Avalonia.Markdown.Editor.Services;
@@ -23,7 +26,7 @@ namespace CodeWF.Avalonia.Markdown.Editor.Controls;
 /// 只有用户编辑才回抛。
 /// </para>
 /// </summary>
-public class MarkdownLiveEditorView : UserControl
+public partial class MarkdownLiveEditorView : UserControl
 {
     private const string DefaultEditorBackgroundKey = "CodeWFMarkdownEditorBackgroundBrush";
     private const string DefaultEditorForegroundKey = "CodeWFMarkdownEditorForegroundBrush";
@@ -32,7 +35,8 @@ public class MarkdownLiveEditorView : UserControl
     private readonly MarkdownEditorOptions _options;
     private readonly IMarkdownEditorLocalizer _localizer;
     private readonly MarkdownBlockViewOptions _blockOptions;
-    private readonly StackPanel _blockHost = new();
+    private readonly WindowedStackPanel _blockHost = new() { EstimatedItemHeight = 55, OverscanViewports = 1 };
+    private readonly List<int> _hostIndices = [];
     private readonly List<Control> _blockViews = [];
     private readonly List<MarkdownBlockModel> _models = [];
     private readonly Border _container;
@@ -75,7 +79,7 @@ public class MarkdownLiveEditorView : UserControl
         var index = parsed.FindLastIndex(model => model.SourceLine <= Math.Max(1, line));
         index = Math.Clamp(index, 0, _blockViews.Count - 1);
         if (index < 0) return;
-        _blockViews[index].BringIntoView();
+        RevealBlock(index);
         if (beginEdit) FocusBlock(index);
     }
 
@@ -97,7 +101,6 @@ public class MarkdownLiveEditorView : UserControl
         _localizer = localizer ?? new MarkdownEditorLocalizer();
         _blockOptions = new MarkdownBlockViewOptions();
 
-        _blockHost.Orientation = Orientation.Vertical;
         _blockHost.Spacing = DocumentBlockSpacing;
         _blockHost.Margin = DocumentPadding;
         Focusable = true;
@@ -112,6 +115,7 @@ public class MarkdownLiveEditorView : UserControl
         ActualThemeVariantChanged += (_, _) => ApplyThemedVisuals();
         AttachedToVisualTree += (_, _) => ApplyThemedVisuals();
         ApplyThemedVisuals();
+        InitializeDocumentSelection();
         AddHandler(KeyDownEvent, (_, e) =>
         {
             if (e.KeyModifiers == KeyModifiers.Control && e.Key is Key.Z or Key.Y)
@@ -198,6 +202,15 @@ public class MarkdownLiveEditorView : UserControl
         set => SetValue(EditorFontSizeProperty, value);
     }
 
+    public static readonly StyledProperty<FontFamily> CodeFontFamilyProperty =
+        AvaloniaProperty.Register<MarkdownLiveEditorView, FontFamily>(nameof(CodeFontFamily), MarkdownWysiwygPalette.CodeFontFamily);
+    /// <summary>源码字体由宿主配置，预览、行内代码与原位编辑使用同一字体。</summary>
+    public FontFamily CodeFontFamily
+    {
+        get => GetValue(CodeFontFamilyProperty);
+        set => SetValue(CodeFontFamilyProperty, value);
+    }
+
     public static readonly StyledProperty<string?> TypographyThemeProperty =
         AvaloniaProperty.Register<MarkdownLiveEditorView, string?>(nameof(TypographyTheme));
     public static readonly StyledProperty<string?> TypographySizeProperty =
@@ -243,30 +256,21 @@ public class MarkdownLiveEditorView : UserControl
     /// <summary>当前处于编辑态的块序号；无则 -1。</summary>
     public int ActiveBlockIndex => _activeIndex;
 
-    public string SelectedText => ActiveTextBox?.SelectedText ?? string.Empty;
+    public string SelectedText => _documentSelection is { } range ? Text.Substring(range.Start, range.Length) : ActiveTextBox?.SelectedText ?? string.Empty;
     private TextBox? ActiveTextBox => _activeIndex >= 0 && _activeIndex < _blockViews.Count ? FindActiveEditor(_blockViews[_activeIndex]) : null;
+    private TextBox? SelectionTextBox => _activeIndex >= 0 && _activeIndex < _blockViews.Count ? FindBlockView(_blockViews[_activeIndex])?.EditingInput : null;
 
     /// <summary>当前活动块的选择映射到原始 Markdown；无选择时返回插入点。</summary>
     public (int Start, int Length) Selection
     {
         get
         {
-            var text = Text;
-            var cursor = 0;
-            for (var i = 0; i <= _activeIndex && i < _models.Count; i++)
-            {
-                var content = _models[i].Kind == MarkdownBlockKind.Raw ? _models[i].Raw : _models[i].Text;
-                var found = text.IndexOf(content, Math.Min(cursor, text.Length), StringComparison.Ordinal);
-                if (found < 0) found = Math.Min(cursor, text.Length);
-                if (i == _activeIndex)
-                {
-                    var box = ActiveTextBox;
-                    var start = Math.Min(box?.SelectionStart ?? 0, box?.SelectionEnd ?? 0);
-                    return (Math.Min(text.Length, found + start), Math.Abs((box?.SelectionEnd ?? 0) - (box?.SelectionStart ?? 0)));
-                }
-                cursor = found + content.Length;
-            }
-            return (0, 0);
+            if (_documentSelection is { } range) return range;
+            if (_activeIndex < 0 || _activeIndex >= _models.Count) return (0, 0);
+            var found = GetContentStart(_activeIndex);
+            var box = SelectionTextBox;
+            var start = Math.Min(box?.SelectionStart ?? 0, box?.SelectionEnd ?? 0);
+            return (Math.Min(_selectionMappedText.Length, found + start), Math.Abs((box?.SelectionEnd ?? 0) - (box?.SelectionStart ?? 0)));
         }
     }
 
@@ -277,7 +281,7 @@ public class MarkdownLiveEditorView : UserControl
         _undo.Clear(); _undo.AddRange(state.Undo);
         _redo.Clear(); _redo.AddRange(state.Redo);
     }
-    private MarkdownLiveEditorSnapshot CaptureSnapshot() => new(Text, _activeIndex, ActiveTextBox?.SelectionStart ?? 0, ActiveTextBox?.SelectionEnd ?? 0);
+    private MarkdownLiveEditorSnapshot CaptureSnapshot() => new(Text, _activeIndex, SelectionTextBox?.SelectionStart ?? 0, SelectionTextBox?.SelectionEnd ?? 0);
     private void RestoreSnapshot(MarkdownLiveEditorSnapshot snapshot)
     {
         _restoringHistory = true;
@@ -303,6 +307,8 @@ public class MarkdownLiveEditorView : UserControl
         _suppressChanged = true;
         try
         {
+            ClearDocumentSelection();
+            _selectionContentStarts = null;
             ImageBasePath = imageBasePath;
             _models.Clear();
             _activeIndex = -1;
@@ -326,6 +332,7 @@ public class MarkdownLiveEditorView : UserControl
     /// <summary>在当前活动块插入文本；无活动块时追加一个段落块。</summary>
     public void InsertText(string text)
     {
+        if (_documentSelection is not null) { ReplaceDocumentSelection(text); return; }
         if (string.IsNullOrEmpty(text))
         {
             return;
@@ -382,6 +389,7 @@ public class MarkdownLiveEditorView : UserControl
         }
 
         _activeIndex = index;
+        RevealBlock(index);
         FindBlockView(_blockViews[index])?.BeginEditAtEnd();
 
         RaiseSelectionChanged();
@@ -412,6 +420,11 @@ public class MarkdownLiveEditorView : UserControl
             if (!_suppressChanged) RebuildPreservingEdit();
         }
         if (change.Property == EditorFontSizeProperty) RebuildPreservingEdit();
+        if (change.Property == CodeFontFamilyProperty)
+        {
+            _blockOptions.CodeFontFamily = CodeFontFamily;
+            RebuildPreservingEdit();
+        }
         if (change.Property == TableHeaderBackgroundBrushProperty)
         {
             _blockOptions.TableHeaderBackgroundBrush = TableHeaderBackgroundBrush;
@@ -438,6 +451,7 @@ public class MarkdownLiveEditorView : UserControl
             VerticalScrollBarVisibility = global::Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
             Content = _container
         };
+        _blockHost.ScrollHost = scroll;
         Grid.SetRow(scroll, 1);
         host.Children.Add(scroll);
         return host;
@@ -498,8 +512,9 @@ public class MarkdownLiveEditorView : UserControl
 
     private void RebuildBlocks()
     {
-        _blockHost.Children.Clear();
+        _blockHost.ClearItems();
         _blockViews.Clear();
+        _hostIndices.Clear();
 
         for (var index = 0; index < _models.Count; index++)
         {
@@ -516,18 +531,49 @@ public class MarkdownLiveEditorView : UserControl
                 var paragraphs = new StackPanel();
                 for (; index < end; index++)
                 {
-                    var paragraph = BuildBlockView(index);
-                    FindBlockView(paragraph)!.RenderQuoteAsParagraph = true;
+                    var paragraph = CreateLazyBlock(index, quote: true);
                     paragraphs.Children.Add(paragraph);
                 }
                 var quote = new Border { Classes = { "MdQuote", "MdLiveQuote" }, Child = paragraphs };
                 quote.SetValue(Border.BorderBrushProperty, _blockOptions.AccentBrush, global::Avalonia.Data.BindingPriority.Style);
                 quote.SetValue(Border.BackgroundProperty, _blockOptions.CodeBackgroundBrush, global::Avalonia.Data.BindingPriority.Style);
-                _blockHost.Children.Add(quote);
+                _blockHost.AddItem(quote);
                 index--;
             }
-            else _blockHost.Children.Add(BuildBlockView(index));
+            else _blockHost.AddItem(CreateLazyBlock(index));
         }
+    }
+
+    private Control CreateLazyBlock(int index, bool quote = false)
+    {
+        var lazy = new LazyLiveBlock(() =>
+        {
+            var content = BuildBlockView(index);
+            if (quote && FindBlockView(content) is { } block) block.RenderQuoteAsParagraph = true;
+            return content;
+        });
+        _hostIndices.Add(_blockHost.ItemCount); _blockViews.Add(lazy); return lazy;
+    }
+    private void RevealBlock(int index)
+    {
+        if (index < 0 || index >= _hostIndices.Count) return;
+        var hostIndex = _hostIndices[index];
+        _blockHost.DetachAllPinned(); _blockHost.PinItem(hostIndex); _blockHost.RealizeItem(hostIndex);
+        if (_blockHost.ScrollHost is not { } scroll) return;
+        // 新物化的块尚无有效 Bounds；先推进布局，再按实际坐标定位。
+        // 新视口量测会修正前面块的估高，因此按同一目标做有限次校正。
+        for (var pass = 0; pass < 4; pass++)
+        {
+            scroll.UpdateLayout();
+            if (scroll.Viewport.Height <= 0 || _blockViews[index].TranslatePoint(default, scroll) is not { } origin) return;
+            var height = _blockViews[index].Bounds.Height;
+            var shift = origin.Y < 0 || height >= scroll.Viewport.Height ? origin.Y
+                : Math.Max(0, origin.Y + height - scroll.Viewport.Height);
+            var target = Math.Clamp(scroll.Offset.Y + shift, 0, Math.Max(0, scroll.Extent.Height - scroll.Viewport.Height));
+            if (Math.Abs(target - scroll.Offset.Y) < .5) return;
+            scroll.Offset = new Vector(scroll.Offset.X, target);
+        }
+        scroll.UpdateLayout();
     }
 
     private Control BuildBlockView(int index)
@@ -540,6 +586,8 @@ public class MarkdownLiveEditorView : UserControl
             var table = new MarkdownTableView(model, _blockOptions)
             {
                 CellsChanged = _ => RaiseChanged(),
+                CellEditingStarted = _ => { _activeIndex = index; _blockHost.DetachAllPinned(); _blockHost.PinItem(_hostIndices[index]); RaiseSelectionChanged(); },
+                CellSelectionChanged = RaiseSelectionChanged,
                 StructureChangeRequested = (tableView, action) =>
                 {
                     if (MarkdownTableEditor.ChangeStructure(model, action))
@@ -549,7 +597,6 @@ public class MarkdownLiveEditorView : UserControl
                     }
                 }
             };
-            _blockViews.Add(table);
             return table;
         }
 
@@ -561,7 +608,6 @@ public class MarkdownLiveEditorView : UserControl
                 Margin = new Thickness(0, 8, 0, 8),
                 Background = _blockOptions.SeparatorBrush
             };
-            _blockViews.Add(rule);
             return rule;
         }
 
@@ -569,7 +615,9 @@ public class MarkdownLiveEditorView : UserControl
         {
             TextCommitted = OnBlockTextCommitted,
             NavigateRequested = direction => FocusBlock(Math.Clamp(index + direction, 0, _models.Count - 1)),
-            EditingStarted = _ => { _activeIndex = index; RaiseSelectionChanged(); },
+            BoundaryNavigateRequested = (direction, x) => FocusAdjacentBlock(index, direction, x),
+            MergeRequested = direction => MergeBlock(index, direction),
+            EditingStarted = _ => { _activeIndex = index; _blockHost.DetachAllPinned(); _blockHost.PinItem(_hostIndices[index]); RaiseSelectionChanged(); },
             SplitRequested = SplitBlock
         };
         AttachAutoPair(view);
@@ -589,7 +637,6 @@ public class MarkdownLiveEditorView : UserControl
         };
 
         var root = DecorateBlock(model, view);
-        _blockViews.Add(root);
         return root;
     }
 
@@ -652,6 +699,48 @@ public class MarkdownLiveEditorView : UserControl
     private void OnBlockTextCommitted(MarkdownBlockView view, string text)
     {
         RaiseChanged();
+    }
+
+    private bool FocusAdjacentBlock(int index, int direction, double? x)
+    {
+        var next = index + direction;
+        if (next < 0 || next >= _blockViews.Count || _models[next].Kind is MarkdownBlockKind.Table or MarkdownBlockKind.ThematicBreak) return false;
+        FindBlockView(_blockViews[index])?.CommitAndRender();
+        FocusBlock(next);
+        if (ActiveTextBox is { } box)
+        {
+            var caret = direction < 0 ? box.Text?.Length ?? 0 : 0;
+            if (x is { } horizontal && box.GetVisualDescendants().OfType<TextPresenter>().FirstOrDefault() is { } presenter)
+            {
+                box.UpdateLayout();
+                var y = direction < 0 ? Math.Max(0, presenter.TextLayout.Height - 1) : 0;
+                caret = presenter.TextLayout.HitTestPoint(new Point(horizontal, y)).TextPosition;
+            }
+            box.CaretIndex = box.SelectionStart = box.SelectionEnd = caret;
+        }
+        return true;
+    }
+
+    private bool MergeBlock(int index, int direction)
+    {
+        var current = _models[index];
+        if (current.Kind is MarkdownBlockKind.Code or MarkdownBlockKind.Raw) return false;
+        if (direction < 0 && current.Kind is MarkdownBlockKind.Heading or MarkdownBlockKind.ListItem or MarkdownBlockKind.Quote)
+        {
+            current.Kind = MarkdownBlockKind.Paragraph; current.HeadingLevel = current.QuoteDepth = current.IndentLevel = 0;
+            current.IsTask = current.IsOrdered = false;
+            RebuildBlocks(); RaiseChanged(); FocusBlock(index);
+            if (ActiveTextBox is { } plain) plain.CaretIndex = plain.SelectionStart = plain.SelectionEnd = 0;
+            return true;
+        }
+        var adjacent = index + direction;
+        if (adjacent < 0 || adjacent >= _models.Count || _models[adjacent].Kind is not (MarkdownBlockKind.Paragraph or MarkdownBlockKind.Heading or MarkdownBlockKind.ListItem or MarkdownBlockKind.Quote)) return false;
+        var first = Math.Min(index, adjacent); var left = _models[first]; var right = _models[first + 1];
+        var caret = left.Text.Length;
+        left.Text += right.Text; _models.RemoveAt(first + 1);
+        RebuildBlocks(); RaiseChanged(); FocusBlock(first);
+        if (ActiveTextBox is { } box) box.CaretIndex = box.SelectionStart = box.SelectionEnd = caret;
+        return true;
     }
 
     private void SplitBlock(MarkdownBlockView view, int caret)
@@ -735,6 +824,7 @@ public class MarkdownLiveEditorView : UserControl
 
     private void RaiseChanged()
     {
+        _selectionContentStarts = null;
         if (_suppressChanged)
         {
             return;
@@ -758,7 +848,8 @@ public class MarkdownLiveEditorView : UserControl
     private void RaiseSelectionChanged()
     {
         if (_suppressChanged) return;
-        var text = Text;
+        EnsureSelectionMap();
+        var text = _selectionMappedText;
         var offset = Math.Clamp(Selection.Start, 0, text.Length);
         var line = 1 + text.AsSpan(0, offset).Count('\n');
         var previous = offset == 0 ? -1 : text.LastIndexOf('\n', offset - 1);
@@ -771,6 +862,7 @@ public class MarkdownLiveEditorView : UserControl
 
     private void ApplyAction(MarkdownEditorAction action)
     {
+        if (ApplyDocumentSelectionAction(action)) return;
         if (action is not MarkdownEditorAction.Undo and not MarkdownEditorAction.Redo and not MarkdownEditorAction.FocusEditor)
         {
             if (_activeIndex < 0) FocusEditor();
@@ -917,8 +1009,8 @@ public class MarkdownLiveEditorView : UserControl
         }
 
         var text = box.Text ?? string.Empty;
-        var start = Math.Clamp(box.SelectionStart, 0, text.Length);
-        var selectionEnd = Math.Clamp(box.SelectionEnd, start, text.Length);
+        var start = Math.Clamp(Math.Min(box.SelectionStart, box.SelectionEnd), 0, text.Length);
+        var selectionEnd = Math.Clamp(Math.Max(box.SelectionStart, box.SelectionEnd), start, text.Length);
         var length = selectionEnd - start;
         var selected = length > 0
             ? text.Substring(start, length)
@@ -985,6 +1077,8 @@ public class MarkdownLiveEditorView : UserControl
 
     private static MarkdownBlockView? FindBlockView(Control control) => control switch
     {
+        LazyLiveBlock lazy => FindBlockView(lazy.Realize()),
+        MarkdownTableView table => table.ActiveCell ?? table.FirstCell,
         MarkdownBlockView view => view,
         Panel panel => panel.Children.Select(FindBlockView).FirstOrDefault(view => view is not null),
         Border { Child: Control child } => FindBlockView(child),
@@ -992,6 +1086,13 @@ public class MarkdownLiveEditorView : UserControl
     };
 
     private static TextBox? FindActiveEditor(Control control) => FindBlockView(control)?.ActiveEditor;
+
+    /// <summary>只在面板物化并量测此块时创建表格、渲染器和输入控件。</summary>
+    private sealed class LazyLiveBlock(Func<Control> factory) : Decorator
+    {
+        public Control Realize() => Child ??= factory();
+        protected override Size MeasureOverride(Size availableSize) { Realize(); return base.MeasureOverride(availableSize); }
+    }
 
     #endregion
 

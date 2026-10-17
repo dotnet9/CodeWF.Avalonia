@@ -51,7 +51,7 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
         return CreateMermaidBlock(ExtractSource(fenced));
     }
 
-    private static Control CreateMermaidBlock(string source)
+    internal static Control CreateMermaidBlock(string source)
     {
         var image = new Image
         {
@@ -64,6 +64,15 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
         border.Classes.Add("MdMermaid");
 
         CancellationTokenSource? cts = null;
+        ScrollViewer? sizeHost = null;
+        Application? themeHost = null;
+        var attached = false;
+
+        void CancelRender()
+        {
+            var previous = cts; cts = null;
+            previous?.Cancel(); previous?.Dispose();
+        }
 
         // 主题切换时 SVG 里的颜色是烘焙进文本的，必须重渲。
         void OnThemeChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
@@ -76,47 +85,37 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
             _ = ApplyThemeAsync();
         }
 
-        Application.Current?.PropertyChanged += OnThemeChanged;
-
         // ScrollViewer 会给子项传递无穷可用宽度：钳制 MaxWidth 到视口宽度并随尺寸变化更新。
-        image.AttachedToVisualTree += (_, _) =>
+        // 订阅属于整个图表块；虚拟化会反复挂载，不能在每次挂载时追加匿名清理回调。
+        border.AttachedToVisualTree += (_, _) =>
         {
-            var scrollViewer = image.FindAncestorOfType<ScrollViewer>();
-            if (scrollViewer is null)
-            {
-                return;
-            }
-
-            scrollViewer.SizeChanged += OnSizeChanged;
-            image.DetachedFromLogicalTree += (_, _) =>
-            {
-                scrollViewer.SizeChanged -= OnSizeChanged;
-                Application.Current?.PropertyChanged -= OnThemeChanged;
-                cts?.Cancel();
-                cts?.Dispose();
-            };
-            Update();
-
-            void Update()
-            {
-                var width = scrollViewer.Viewport.Width;
-                if (width > 0)
-                {
-                    image.MaxWidth = Math.Min(width, 800);
-                }
-            }
-
-            void OnSizeChanged(object? sender, SizeChangedEventArgs e) => Update();
+            if (attached) return;
+            attached = true;
+            themeHost = Application.Current;
+            if (themeHost is not null) themeHost.PropertyChanged += OnThemeChanged;
+            sizeHost = border.FindAncestorOfType<ScrollViewer>();
+            if (sizeHost is not null) sizeHost.SizeChanged += OnSizeChanged;
+            UpdateWidth(); _ = ApplyThemeAsync();
         };
-
-        _ = ApplyThemeAsync();
+        border.DetachedFromVisualTree += (_, _) =>
+        {
+            attached = false;
+            if (sizeHost is not null) sizeHost.SizeChanged -= OnSizeChanged;
+            if (themeHost is not null) themeHost.PropertyChanged -= OnThemeChanged;
+            sizeHost = null; themeHost = null; CancelRender();
+        };
+        void UpdateWidth()
+        {
+            if (sizeHost?.Viewport.Width is > 0 and var width) image.MaxWidth = Math.Min(width, 800);
+        }
+        void OnSizeChanged(object? sender, SizeChangedEventArgs e) => UpdateWidth();
 
         // Mermaid 解析渲染与 SkiaSharp SVG 加载都是 CPU 密集操作，放后台线程；
         // CTS 用于主题快速切换时取消在途渲染。
         async Task ApplyThemeAsync()
         {
-            cts?.Cancel();
-            cts?.Dispose();
+            if (!attached) return;
+            CancelRender();
             var localCts = cts = new CancellationTokenSource();
             var token = localCts.Token;
 
@@ -197,6 +196,7 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
         lock (DiagramCacheGate)
         {
             DiagramCache[cacheKey] = svgSource;
+            DiagramCacheOrder.Remove(cacheKey);
             DiagramCacheOrder.AddLast(cacheKey);
             while (DiagramCacheOrder.Count > MaxCachedDiagrams && DiagramCacheOrder.First is { } oldest)
             {

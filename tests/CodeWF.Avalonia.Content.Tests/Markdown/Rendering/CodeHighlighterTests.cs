@@ -16,6 +16,42 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 [Collection("AvaloniaPlatform")]
 public sealed class CodeHighlighterTests(AvaloniaPlatformFixture platform)
 {
+    [Fact]
+    public void LongHighlightedCodeDoesNotRebuildTheFullTextForEveryToken() => platform.Run(() =>
+    {
+        const string line = "public int Compute(int value) => value * 42; // comment";
+        CodeHighlighter.Render(line, "csharp", false, FontFamily.Default, 13, 22);
+        var source = string.Join('\n', Enumerable.Repeat(line, 400));
+        var before = GC.GetAllocatedBytesForCurrentThread();
+        var control = CodeHighlighter.Render(source, "csharp", false, FontFamily.Default, 13, 22);
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+        var code = control.GetLogicalDescendants().OfType<SelectableTextBlock>()
+            .Single(block => block.Classes.Contains(MarkdownStyleKeys.CodeBlockText));
+        Assert.Equal(source, (code.Text ?? code.Inlines!.Text).Replace("\r\n", "\n"));
+        Assert.True(allocated < 64L * 1024 * 1024, $"400 code lines allocated {allocated / 1048576d:F1} MiB");
+        code.Measure(new global::Avalonia.Size(800, double.PositiveInfinity));
+        Assert.Equal(400 * 22, code.DesiredSize.Height, 1);
+        code.SelectionStart = source.IndexOf("Compute", StringComparison.Ordinal);
+        code.SelectionEnd = code.SelectionStart + 7;
+        Assert.Equal("Compute", code.SelectedText);
+        Assert.True(code.GetLogicalDescendants().Count() < 10, "Long code should not create a logical element for every token");
+    });
+
+    [Theory]
+    [InlineData("var value = 1;", 1)]
+    [InlineData("first\nsecond", 2)]
+    [InlineData("first\n\n", 3)]
+    public void CodeHeightAndLineNumbersMatchTheActualLines(string source, int lineCount) => platform.Run(() =>
+    {
+        var control = CodeHighlighter.Render(source, "csharp", false, FontFamily.Default, 13, 22);
+        var blocks = control.GetLogicalDescendants().OfType<SelectableTextBlock>().ToArray();
+        var code = blocks.Single(block => block.Classes.Contains(MarkdownStyleKeys.CodeBlockText));
+        var numbers = blocks.Single(block => !block.Classes.Contains(MarkdownStyleKeys.CodeBlockText));
+        code.Measure(new global::Avalonia.Size(800, double.PositiveInfinity));
+        Assert.Equal(lineCount * 22, code.DesiredSize.Height, 1);
+        Assert.Equal(string.Join(Environment.NewLine, Enumerable.Range(1, lineCount)), numbers.Text);
+    });
+
     [Theory]
     [InlineData("#0D000000", "#FFFFFF", false)]
     [InlineData("#14FFFFFF", "#14161A", true)]

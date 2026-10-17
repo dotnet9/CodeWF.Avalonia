@@ -38,6 +38,7 @@ internal sealed class CodeBlockRenderer : IMarkdownBlockRenderer
             HorizontalAlignment = HorizontalAlignment.Right
         };
         context.AddMarkdownClass(header, MarkdownStyleKeys.CodeBlockHeader);
+        context.BindTheme(header, Control.IsVisibleProperty, MarkdownViewer.ShowCodeBlockHeaderProperty);
 
         var languageText = context.CreateSelectableText(MarkdownStyleKeys.CodeLanguage);
         languageText.Text = string.IsNullOrWhiteSpace(language) ? "text" : language;
