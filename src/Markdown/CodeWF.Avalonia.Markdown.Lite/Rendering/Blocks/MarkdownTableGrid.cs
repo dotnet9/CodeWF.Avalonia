@@ -25,6 +25,11 @@ internal sealed class MarkdownTableGrid : Grid
         }
 
         var naturalWidth = widths.Sum();
+        if (MarkdownTableLayout.GetFillAvailableWidth(this) && naturalWidth > 0 &&
+            double.IsFinite(availableSize.Width) && naturalWidth < availableSize.Width)
+        {
+            for (var index = 0; index < widths.Length; index++) widths[index] *= availableSize.Width / naturalWidth;
+        }
         if (double.IsFinite(availableSize.Width) && naturalWidth > availableSize.Width && widths.Length > 0)
         {
             // 极窄视口允许缩小保底宽度，避免列数多时溢出整个文档。

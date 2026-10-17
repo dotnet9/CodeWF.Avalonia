@@ -50,6 +50,25 @@ public sealed class MarkdownTableLayoutTests(AvaloniaPlatformFixture platform)
     });
 
     [Fact]
+    public void FillAvailableWidthRetainsContentProportionsAndFollowsResize() => platform.Run(() =>
+    {
+        var grid = new MarkdownTableGrid();
+        MarkdownTableLayout.SetFillAvailableWidth(grid, true);
+        foreach (var text in new[] { "ID", "Longer heading" })
+        {
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            var cell = new TextBlock { Text = text };
+            Grid.SetColumn(cell, grid.Children.Count); grid.Children.Add(cell);
+        }
+        foreach (var width in new[] { 1000d, 180d, 640d })
+        {
+            grid.Measure(new Size(width, 400)); grid.Arrange(new Rect(0, 0, width, grid.DesiredSize.Height));
+            Assert.InRange(grid.ColumnDefinitions.Sum(column => column.ActualWidth), width - 1, width + 1);
+            Assert.True(grid.ColumnDefinitions[1].ActualWidth > grid.ColumnDefinitions[0].ActualWidth * 2);
+        }
+    });
+
+    [Fact]
     public void SeveralShortColumnsDoNotExpandToEqualFractionsOfTheWindow() => platform.Run(() =>
     {
         var grid = new MarkdownTableGrid();

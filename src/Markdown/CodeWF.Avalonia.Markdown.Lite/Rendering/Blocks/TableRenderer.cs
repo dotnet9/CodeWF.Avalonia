@@ -30,10 +30,12 @@ internal sealed class TableRenderer : IMarkdownBlockRenderer
             grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
         }
 
+        var bodyRow = 0;
         for (var rowIndex = 0; rowIndex < rows.Count; rowIndex++)
         {
             grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
             var row = rows[rowIndex];
+            var alternate = !row.IsHeader && bodyRow++ % 2 == 1;
             for (var columnIndex = 0; columnIndex < row.Count; columnIndex++)
             {
                 if (row[columnIndex] is not TableCell cell)
@@ -42,6 +44,7 @@ internal sealed class TableRenderer : IMarkdownBlockRenderer
                 }
 
                 var cellBorder = CreateTableCell(cell, row.IsHeader, rowIndex, columnIndex, context);
+                if (alternate) cellBorder.Classes.Add("MdTableAlternateCell");
                 Grid.SetRow(cellBorder, rowIndex);
                 Grid.SetColumn(cellBorder, columnIndex);
                 grid.Children.Add(cellBorder);
@@ -51,11 +54,11 @@ internal sealed class TableRenderer : IMarkdownBlockRenderer
         var container = new Border
         {
             Child = grid,
-            HorizontalAlignment = HorizontalAlignment.Left,
             ClipToBounds = true
         };
+        container.SetValue(Control.HorizontalAlignmentProperty, HorizontalAlignment.Left, global::Avalonia.Data.BindingPriority.Style);
         context.AddMarkdownClass(container, MarkdownStyleKeys.TableContainer);
-        context.BindTheme(container, Border.BorderBrushProperty, MarkdownViewer.BorderLineBrushProperty);
+        context.BindTheme(container, Border.BorderBrushProperty, MarkdownViewer.BorderLineBrushProperty, global::Avalonia.Data.BindingPriority.Style);
         return container;
     }
 
@@ -66,7 +69,7 @@ internal sealed class TableRenderer : IMarkdownBlockRenderer
             BorderThickness = new Thickness(columnIndex == 0 ? 0 : 1, rowIndex == 0 ? 0 : 1, 0, 0)
         };
         context.AddMarkdownClass(border, isHeader ? MarkdownStyleKeys.TableHeaderCell : MarkdownStyleKeys.TableCell);
-        context.BindTheme(border, Border.BorderBrushProperty, MarkdownViewer.BorderLineBrushProperty);
+        context.BindTheme(border, Border.BorderBrushProperty, MarkdownViewer.BorderLineBrushProperty, global::Avalonia.Data.BindingPriority.Style);
         if (isHeader)
         {
             context.BindTheme(border, Border.BackgroundProperty, MarkdownViewer.TableHeaderBackgroundBrushProperty);

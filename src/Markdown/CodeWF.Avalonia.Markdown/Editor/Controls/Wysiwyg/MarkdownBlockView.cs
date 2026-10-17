@@ -531,15 +531,18 @@ internal sealed class MarkdownTableView : UserControl
     {
         _model = model;
         _options = options;
+        _grid.Classes.Add("MdTable");
         Rebuild();
-        Content = new Border
+        var container = new Border
         {
-            BorderBrush = _options.SeparatorBrush,
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(6),
-            HorizontalAlignment = HorizontalAlignment.Left,
             Child = _grid
         };
+        container.Classes.Add("MdTableContainer");
+        container.SetValue(Border.BorderBrushProperty, _options.SeparatorBrush, global::Avalonia.Data.BindingPriority.Style);
+        container.SetValue(Control.HorizontalAlignmentProperty, HorizontalAlignment.Left, global::Avalonia.Data.BindingPriority.Style);
+        Content = container;
         var menu = new ContextMenu();
         for (var action = 0; action < MenuResourceKeys.Length; action++)
         {
@@ -641,8 +644,11 @@ internal sealed class MarkdownTableView : UserControl
                     MoveFocus(next / columnCount, next % columnCount);
                 };
                 var cell = new Border { Padding = new Thickness(10, 8), Child = box,
-                    BorderBrush = _options.SeparatorBrush, BorderThickness = new Thickness(0, 0, 1, 1),
-                    Background = isHeader ? _options.TableHeaderBackgroundBrush ?? _options.CodeBackgroundBrush : Brushes.Transparent };
+                    BorderThickness = new Thickness(0, 0, 1, 1) };
+                cell.Classes.Add(isHeader ? "MdTableHeaderCell" : "MdTableCell");
+                if (!isHeader && (row - (_model.HasHeader ? 1 : 0)) % 2 == 1) cell.Classes.Add("MdTableAlternateCell");
+                if (isHeader) cell.Background = _options.TableHeaderBackgroundBrush ?? _options.CodeBackgroundBrush;
+                cell.SetValue(Border.BorderBrushProperty, _options.SeparatorBrush, global::Avalonia.Data.BindingPriority.Style);
                 Grid.SetRow(cell, row);
                 Grid.SetColumn(cell, column);
                 _grid.Children.Add(cell);
