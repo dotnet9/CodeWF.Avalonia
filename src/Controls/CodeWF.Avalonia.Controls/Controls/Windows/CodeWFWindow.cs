@@ -64,6 +64,10 @@ public class CodeWFWindow : Window
         AvaloniaProperty.Register<CodeWFWindow, double>(nameof(CaptionButtonWidth), 32,
             validate: value => double.IsFinite(value) && value > 0);
 
+    public static readonly StyledProperty<double> CaptionGlyphSizeProperty =
+        AvaloniaProperty.Register<CodeWFWindow, double>(nameof(CaptionGlyphSize), 12,
+            validate: value => double.IsFinite(value) && value > 0);
+
     public static readonly StyledProperty<IBrush?> TitleBarBackgroundProperty =
         AvaloniaProperty.Register<CodeWFWindow, IBrush?>(nameof(TitleBarBackground));
 
@@ -187,6 +191,13 @@ public class CodeWFWindow : Window
     {
         get => GetValue(CaptionButtonWidthProperty);
         set => SetValue(CaptionButtonWidthProperty, value);
+    }
+
+    /// <summary>标题栏操作图标尺寸，可独立于按钮的命中区域调整。</summary>
+    public double CaptionGlyphSize
+    {
+        get => GetValue(CaptionGlyphSizeProperty);
+        set => SetValue(CaptionGlyphSizeProperty, value);
     }
 
     public double TitleBarHeight

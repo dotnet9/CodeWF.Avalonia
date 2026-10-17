@@ -69,6 +69,7 @@ public class WindowedStackPanel : Panel
     private bool[] _candidateBuffer = [];
     private double _anchorOffsetY = double.NaN;
     private double _anchorTop;
+    private int _anchorIndex;
     private double _lastOffsetY = double.NaN;
     private bool _scrollDown = true;
 
@@ -238,6 +239,8 @@ public class WindowedStackPanel : Panel
 
     public void ClearItems()
     {
+        _anchorOffsetY = double.NaN;
+        _anchorIndex = 0;
         _entries.Clear();
         Children.Clear();
         InvalidateMeasure();
@@ -336,6 +339,7 @@ public class WindowedStackPanel : Panel
 
     protected override Size MeasureOverride(Size availableSize)
     {
+        PrepareAnchor();
         var width = double.IsFinite(availableSize.Width) ? availableSize.Width : _lastWidth;
         if (!double.IsFinite(width))
         {
@@ -649,28 +653,31 @@ public class WindowedStackPanel : Panel
     }
 
     /// <summary>
-    /// 取「位置已确定」的锚点：自下而上跳过尚未测量（占位高度还会变化）的子项，
-    /// 返回第一个已测量子项的顶边。一个都没量测过时锚在文档顶部。
+    /// 在量测前记录视口顶端所在项。不能锚定文档末尾，否则后续块变高会把首屏推向末尾。
     /// </summary>
+    private void PrepareAnchor()
+    {
+        var host = _subscribedScrollHost ?? ScrollHost;
+        if (host is null) return;
+        if (double.IsFinite(_anchorOffsetY) && Math.Abs(_anchorOffsetY - host.Offset.Y) < .5) return;
+        _anchorOffsetY = host.Offset.Y;
+        var offset = Math.Max(0, host.Offset.Y - Margin.Top);
+        var top = 0d; _anchorIndex = 0;
+        for (var i = 0; i < _entries.Count; i++)
+        {
+            if (top > offset) break;
+            _anchorIndex = i;
+            top += ResolveSize(_entries[i]) + Spacing;
+        }
+        _anchorTop = FindAnchorTop();
+    }
+
     private double FindAnchorTop()
     {
-        for (var i = _entries.Count - 1; i >= 0; i--)
-        {
-            if (!_entries[i].Measured)
-            {
-                continue;
-            }
-
-            var top = 0d;
-            for (var j = 0; j < i; j++)
-            {
-                top += ResolveSize(_entries[j]) + Spacing;
-            }
-
-            return top;
-        }
-
-        return 0d;
+        var top = 0d;
+        for (var i = 0; i < Math.Min(_anchorIndex, _entries.Count); i++)
+            top += ResolveSize(_entries[i]) + Spacing;
+        return top;
     }
 
     private void SetRealized(ItemEntry entry, bool realized)
@@ -687,12 +694,8 @@ public class WindowedStackPanel : Panel
         }
         else
         {
-            if (entry.Control.Bounds.Height > 0)
-            {
-                entry.Size = entry.Control.Bounds.Height;
-                entry.Measured = true;
-            }
-
+            // Size 缓存 Measure 得到的 DesiredSize（包含 Margin）。Bounds 不含 Margin，
+            // 用它覆盖会在回收/物化之间反复缩小/增大 extent，触发锚点补偿和无限布局循环。
             Children.Remove(entry.Control);
             entry.Realized = false;
         }

@@ -101,7 +101,7 @@
                                                         Classes="caption-button"
                                                         IsVisible="{TemplateBinding IsFullScreenButtonVisible}"
                                                         WindowDecorationProperties.ElementRole="FullScreenButton">
-                                                        <Grid Width="12" Height="12">
+                                                        <Grid Width="{TemplateBinding CaptionGlyphSize}" Height="{TemplateBinding CaptionGlyphSize}">
                                                             <Path
                                                                 Classes="fullscreen-glyph"
                                                                 Data="M 1 5 L 1 1 L 5 1 M 7 1 L 11 1 L 11 5 M 11 7 L 11 11 L 7 11 M 5 11 L 1 11 L 1 7"
@@ -125,7 +125,7 @@
                                                         IsVisible="{TemplateBinding IsMinimizeButtonVisible}"
                                                         WindowDecorationProperties.ElementRole="MinimizeButton">
                                                         <Border
-                                                            Width="12"
+                                                            Width="{TemplateBinding CaptionGlyphSize}"
                                                             Height="1.6"
                                                             Background="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                             CornerRadius="1" />
@@ -135,7 +135,7 @@
                                                         Classes="caption-button"
                                                         IsVisible="{TemplateBinding IsRestoreButtonVisible}"
                                                         WindowDecorationProperties.ElementRole="MaximizeButton">
-                                                        <Grid Width="12" Height="12">
+                                                        <Grid Width="{TemplateBinding CaptionGlyphSize}" Height="{TemplateBinding CaptionGlyphSize}">
                                                             <Path
                                                                 Classes="maximize-glyph"
                                                                 Data="M 1 1 L 11 1 L 11 11 L 1 11 Z"
@@ -157,8 +157,8 @@
                                                         IsVisible="{TemplateBinding IsCloseButtonVisible}"
                                                         WindowDecorationProperties.ElementRole="CloseButton">
                                                         <Path
-                                                            Width="12"
-                                                            Height="12"
+                                                            Width="{TemplateBinding CaptionGlyphSize}"
+                                                            Height="{TemplateBinding CaptionGlyphSize}"
                                                             Data="M 1 1 L 11 11 M 11 1 L 1 11"
                                                             Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                             StrokeLineCap="Round"
