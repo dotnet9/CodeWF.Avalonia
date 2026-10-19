@@ -16,6 +16,9 @@ namespace CodeWF.Avalonia.Markdown.Rendering;
 /// </summary>
 internal sealed class CodeBlockRenderer : IMarkdownBlockRenderer
 {
+    /// <summary>行数达到该阈值的代码块才显示折叠按钮（短代码折叠无收益）。</summary>
+    internal const int FoldableLineThreshold = 8;
+
     public Control? TryRender(Block block, string? sourceMarkdown, IMarkdownRenderContext context)
     {
         if (block is not CodeBlock codeBlock)
@@ -25,6 +28,8 @@ internal sealed class CodeBlockRenderer : IMarkdownBlockRenderer
 
         var code = codeBlock.Lines.ToString();
         var language = codeBlock is FencedCodeBlock fenced ? fenced.Info ?? "text" : "text";
+        var blockKey = Math.Max(codeBlock.Span.Start, 0);
+        var isFolded = context.IsCodeBlockFolded(blockKey);
 
         var border = new Border();
         context.AddMarkdownClass(border, MarkdownStyleKeys.CodeBlock);
@@ -33,6 +38,7 @@ internal sealed class CodeBlockRenderer : IMarkdownBlockRenderer
 
         var stack = new StackPanel { Orientation = Orientation.Vertical };
         context.AddMarkdownClass(stack, MarkdownStyleKeys.CodeBlockContent);
+        stack.IsVisible = !isFolded;
         var header = new StackPanel
         {
             Orientation = Orientation.Horizontal,
@@ -40,6 +46,21 @@ internal sealed class CodeBlockRenderer : IMarkdownBlockRenderer
         };
         context.AddMarkdownClass(header, MarkdownStyleKeys.CodeBlockHeader);
         context.BindTheme(header, Control.IsVisibleProperty, MarkdownViewer.ShowCodeBlockHeaderProperty);
+
+        if (codeBlock.Lines.Count >= FoldableLineThreshold)
+        {
+            var foldButton = new Button
+            {
+                Content = isFolded ? "▸" : "▾",
+                Tag = "CodeFold",
+                MinHeight = 0,
+                Background = Brushes.Transparent
+            };
+            global::Avalonia.Automation.AutomationProperties.SetName(foldButton,
+                $"{language} {(isFolded ? "▸" : "▾")}");
+            foldButton.Click += (_, _) => context.SetCodeBlockFolded(blockKey, !isFolded);
+            header.Children.Add(foldButton);
+        }
 
         var languageText = context.CreateSelectableText(MarkdownStyleKeys.CodeLanguage);
         languageText.Text = string.IsNullOrWhiteSpace(language) ? "text" : language;

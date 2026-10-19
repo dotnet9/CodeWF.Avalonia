@@ -96,6 +96,13 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         AvaloniaProperty.Register<MarkdownViewer, Streaming.MarkdownStreamingDocument?>(nameof(StreamingSource));
 
     /// <summary>
+    /// 启用代码块折叠：可折叠长代码块在头部显示折叠按钮，状态按块键保留
+    /// （重新渲染、虚拟化回收、明暗主题切换后不丢失，更换文档时重置）。
+    /// </summary>
+    public static readonly StyledProperty<bool> EnableCodeBlockFoldingProperty =
+        AvaloniaProperty.Register<MarkdownViewer, bool>(nameof(EnableCodeBlockFolding), true);
+
+    /// <summary>
     /// 文档宿主的块虚拟化开关；关闭后所有块始终物化，可在异常场景退回非虚拟化宿主。
     /// </summary>
     public static readonly StyledProperty<bool> EnableVirtualizationProperty =
@@ -111,6 +118,12 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     {
         get => GetValue(EnableVirtualizationProperty);
         set => SetValue(EnableVirtualizationProperty, value);
+    }
+
+    public bool EnableCodeBlockFolding
+    {
+        get => GetValue(EnableCodeBlockFoldingProperty);
+        set => SetValue(EnableCodeBlockFoldingProperty, value);
     }
 
     public int VirtualizationThreshold
@@ -906,6 +919,12 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         DisposePendingBlockDisposables(0);
         // 整篇重建后块序号全部失效，先清掉上一次的滚动锚点固定。
         _virtualizingHost?.DetachAllPinned();
+        // 换文档时折叠状态（按源码偏移键控）随之失效；同文档重渲染（主题/字号）保留。
+        if (!string.Equals(text, _renderedMarkdown, StringComparison.Ordinal))
+        {
+            _codeBlockFoldedStates.Clear();
+        }
+
         ClearBlockControls();
         _renderedBlocks.Clear();
         _renderedMarkdown = text;
@@ -1781,6 +1800,39 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
     void Rendering.IMarkdownRenderContext.RaiseLinkClicked(MarkdownLinkClickEventArgs args) =>
         LinkClicked?.Invoke(this, args);
+
+    // 代码块折叠状态：键 = 块源码起始偏移。存放在 Viewer 而非控件上，
+    // 因此虚拟化回收、块重建、主题切换（同文档全量重渲染）都不丢状态。
+    private readonly Dictionary<int, bool> _codeBlockFoldedStates = [];
+
+    /// <summary>查询折叠状态（宿主与渲染器共用；未折叠过返回 false）。</summary>
+    public bool IsCodeBlockFolded(int blockKey) =>
+        EnableCodeBlockFolding && _codeBlockFoldedStates.TryGetValue(blockKey, out var folded) && folded;
+
+    /// <summary>切换折叠状态并就地位刷新该代码块。</summary>
+    public void SetCodeBlockFolded(int blockKey, bool folded)
+    {
+        _codeBlockFoldedStates[blockKey] = folded;
+
+        var index = _renderedBlocks.FindIndex(
+            rendered => rendered.Start == blockKey && rendered.Kind == MarkdownBlockKind.Code);
+        if (index < 0 || _documentHost is null || _renderedModel.Blocks.Count <= index)
+        {
+            return;
+        }
+
+        var renderedNew = CreateRenderedBlocks(
+            [_renderedModel.Blocks[index]], Markdown ?? string.Empty, _renderedModel.Blocks.Count);
+        if (renderedNew.Count > 0)
+        {
+            ReplaceRenderedBlocks(index, index + 1, renderedNew, _renderedModel);
+        }
+    }
+
+    bool Rendering.IMarkdownRenderContext.IsCodeBlockFolded(int blockKey) => IsCodeBlockFolded(blockKey);
+
+    void Rendering.IMarkdownRenderContext.SetCodeBlockFolded(int blockKey, bool folded) =>
+        SetCodeBlockFolded(blockKey, folded);
 
     string? Rendering.IMarkdownRenderContext.MarkdownText => Markdown;
 

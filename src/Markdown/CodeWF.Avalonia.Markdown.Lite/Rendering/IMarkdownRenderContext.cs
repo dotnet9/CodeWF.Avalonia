@@ -59,6 +59,14 @@ public interface IMarkdownRenderContext
     /// </summary>
     void RaiseLinkClicked(MarkdownLinkClickEventArgs args);
 
+    /// <summary>
+    /// 代码块折叠状态（按块键 = 源码起始偏移存储，跨重渲染/虚拟化回收保留）。
+    /// </summary>
+    bool IsCodeBlockFolded(int blockKey);
+
+    /// <summary>更新折叠状态并就地位刷新该代码块。</summary>
+    void SetCodeBlockFolded(int blockKey, bool folded);
+
     IDisposable BindTheme<T>(
         AvaloniaObject target,
         AvaloniaProperty<T> targetProperty,
