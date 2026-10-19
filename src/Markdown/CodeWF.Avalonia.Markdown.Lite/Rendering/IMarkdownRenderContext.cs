@@ -53,6 +53,12 @@ public interface IMarkdownRenderContext
         Markdig.Syntax.Inlines.ContainerInline? container,
         bool stripTaskPrefix);
 
+    /// <summary>
+    /// 链接被点击（打开之前触发）：宿主可弹确认框（<see cref="MarkdownLinkClickEventArgs.RequiresConfirmation"/>
+    /// 为 true 表示文字与目标疑似不符）并置 <see cref="MarkdownLinkClickEventArgs.Cancel"/> 阻止打开。
+    /// </summary>
+    void RaiseLinkClicked(MarkdownLinkClickEventArgs args);
+
     IDisposable BindTheme<T>(
         AvaloniaObject target,
         AvaloniaProperty<T> targetProperty,

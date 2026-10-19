@@ -1770,7 +1770,17 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         SelectableTextBlock textBlock,
         Markdig.Syntax.Inlines.ContainerInline? container,
         bool stripTaskPrefix) =>
-        MarkdownLinkInteraction.AttachLinkInteraction(textBlock, MarkdownLinkInteraction.ExtractLinkSpans(container, stripTaskPrefix));
+        MarkdownLinkInteraction.AttachLinkInteraction(textBlock, MarkdownLinkInteraction.ExtractLinkSpans(container, stripTaskPrefix), this);
+
+    /// <summary>
+    /// 链接被点击（打开之前触发）：<see cref="MarkdownLinkClickEventArgs.RequiresConfirmation"/>
+    /// 为 true 时建议宿主先弹确认框（防钓鱼），置 <see cref="MarkdownLinkClickEventArgs.Cancel"/>
+    /// 可阻止打开。未订阅时链接按白名单策略直接打开。
+    /// </summary>
+    public event EventHandler<MarkdownLinkClickEventArgs>? LinkClicked;
+
+    void Rendering.IMarkdownRenderContext.RaiseLinkClicked(MarkdownLinkClickEventArgs args) =>
+        LinkClicked?.Invoke(this, args);
 
     string? Rendering.IMarkdownRenderContext.MarkdownText => Markdown;
 
