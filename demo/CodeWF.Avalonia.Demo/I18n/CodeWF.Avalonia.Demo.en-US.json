@@ -992,7 +992,12 @@
           "EditMarkdownSource": "Edit Markdown source",
           "Apply": "Apply",
           "AppendParagraphIncremental": "Append paragraph (incremental)",
-          "ResetSample": "Reset sample"
+          "ResetSample": "Reset sample",
+          "StreamingHeader": "Streaming (StreamingSource)",
+          "StreamingDescription": "Appends text in chunks; the viewer parses only content beyond the frozen boundary. Same sample text as above.",
+          "StartStreaming": "Start streaming",
+          "CompleteStreaming": "Complete streaming",
+          "ExitStreaming": "Exit streaming"
         },
         "Properties": {
           "TypographyTheme": "Typography theme",

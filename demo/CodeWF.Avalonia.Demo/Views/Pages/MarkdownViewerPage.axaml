@@ -20,15 +20,15 @@
         </StackPanel>
       </Expander>
 
-      <!-- 流式演示：按钮文案暂用字面量（避免为 demo 扩 i18n 键），接入方式与生产一致 -->
-      <Expander Header="流式渲染（StreamingSource）" IsExpanded="False" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+      <!-- 流式演示：文案走 i18n 资源（CI 门禁：Demo 源码不得内嵌中文） -->
+      <Expander Header="{codewf:I18n Demo.Content.MarkdownViewer.View.StreamingHeader}" IsExpanded="False" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
         <StackPanel Spacing="8">
           <TextBlock TextWrapping="Wrap" Opacity="0.75" FontSize="12"
-                     Text="逐片追加文本，Viewer 只解析冻结边界之外的新内容；演示文本与上方示例相同。" />
+                     Text="{codewf:I18n Demo.Content.MarkdownViewer.View.StreamingDescription}" />
           <StackPanel Orientation="Horizontal" Spacing="8">
-            <Button Classes="demo-action" Content="开始流式输出" Click="OnStartStreamingClick" />
-            <Button Classes="demo-action" Content="完成流式" Click="OnCompleteStreamingClick" />
-            <Button Classes="demo-action" Content="退出流式" Click="OnExitStreamingClick" />
+            <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownViewer.View.StartStreaming}" Click="OnStartStreamingClick" />
+            <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownViewer.View.CompleteStreaming}" Click="OnCompleteStreamingClick" />
+            <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownViewer.View.ExitStreaming}" Click="OnExitStreamingClick" />
           </StackPanel>
         </StackPanel>
       </Expander>
