@@ -1,5 +1,14 @@
 ﻿# 更新日志
 
+## 12.1.4.30 (2026-10-19)
+
+- 新增流式渲染：`MarkdownViewer.StreamingSource` 绑定 `MarkdownStreamingDocument`，逐片追加只解析冻结边界之外的新内容（20KB 文档按 4 字符/token 流完，1278ms→30ms、2.5GB→106MB 分配）；尾部半截语法自动容错呈现，`Complete` 后整篇收敛；与 `Markdown` 整串赋值互斥，后设置生效。
+- 新增链接防钓鱼：`LinkClicked` 事件在打开前触发，链接文字与实际目标主机不符时携带 `RequiresConfirmation`，宿主置 `Cancel` 阻止打开（Vex"链接点击策略"待办的库层落地）。
+- 新增代码块折叠：≥8 行显示折叠按钮，折叠状态按块键保留（重渲染、虚拟化回收、主题切换不丢，换文档重置），`EnableCodeBlockFolding` 可关闭。
+- 新增图片磁盘缓存（`MarkdownImageDiskCache.CacheDirectory`，二次打开秒出、断网可看）与本地图片白名单（`MarkdownImageSourceLoader.SetAllowedLocalImageRoots`，白名单外拒绝加载）。
+- 新增无障碍基线：Viewer 根 Document 角色与纯文本名称，代码块按钮带语言前缀命名（边界：Avalonia 无公开 TextPattern）。
+- 工程基建：`docs/决策记录.md`、`docs/流式规则.md`、`docs/基准报告.md` 与 AGENTS.md 改动同步清单；`bench/` 基准工具；流式等价性矩阵（21 语料 × 固定/随机分片）与 20 条 remend fixture 回放。
+
 ## 12.1.4.29 (2026-10-17)
 
 - 新增 `MarkdownTableLayout.FillAvailableWidth` 附加属性，阅读和即时编辑表格可按内容比例铺满正文，窄窗继续换行；默认保持原有紧凑列宽。
