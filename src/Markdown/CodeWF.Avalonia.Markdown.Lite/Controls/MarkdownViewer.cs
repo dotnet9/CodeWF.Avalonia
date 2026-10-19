@@ -1,4 +1,6 @@
 ﻿using Avalonia;
+using global::Avalonia.Automation;
+using global::Avalonia.Automation.Peers;
 using global::Avalonia.Controls;
 using global::Avalonia.Controls.Documents;
 using global::Avalonia.Controls.Metadata;
@@ -643,6 +645,13 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         AddHandler(PointerReleasedEvent, OnViewerPointerReleased, RoutingStrategies.Tunnel);
         AddHandler(KeyDownEvent, OnViewerKeyDown, RoutingStrategies.Tunnel);
     }
+
+    /// <summary>
+    /// 根自动化 peer：文档角色 + 纯文本名称（能力边界见
+    /// <see cref="Automation.MarkdownViewerAutomationPeer"/>）。
+    /// </summary>
+    protected override AutomationPeer OnCreateAutomationPeer() =>
+        new Automation.MarkdownViewerAutomationPeer(this);
 
     /// <summary>
     /// 复制当前渲染结果的纯文本，作为跨多个渲染块选择时的兜底复制方式。

@@ -1,4 +1,5 @@
-﻿using global::Avalonia.Controls;
+﻿using global::Avalonia.Automation;
+using global::Avalonia.Controls;
 using global::Avalonia.Controls.Documents;
 using global::Avalonia.Controls.Primitives;
 using global::Avalonia.Layout;
@@ -53,6 +54,9 @@ internal sealed class CodeBlockRenderer : IMarkdownBlockRenderer
             MinHeight = 0,
             Background = Brushes.Transparent
         };
+        // 多代码块场景下读屏器需要可区分的按钮名称："语言 复制"。
+        AutomationProperties.SetName(copyButton,
+            $"{(string.IsNullOrWhiteSpace(language) ? "text" : language)} {MarkdownLocalization.GetResource(MarkdownL.Copy)}");
         context.AddMarkdownClass(copyButton, MarkdownStyleKeys.CopyButton);
         context.BindTheme(copyButton, Button.ForegroundProperty, MarkdownViewer.TextBrushProperty);
         copyButton.Click += (_, _) =>
