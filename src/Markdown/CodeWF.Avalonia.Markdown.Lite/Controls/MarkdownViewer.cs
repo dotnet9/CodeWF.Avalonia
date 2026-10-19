@@ -86,6 +86,14 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         AvaloniaProperty.Register<MarkdownViewer, string?>(nameof(ImageBasePath));
 
     /// <summary>
+    /// 流式文档源：设置后 Viewer 持续应用其快照（追加型输入只解析增量），
+    /// 适合 AI 输出、文件下载等逐片到达的场景；此后对 <see cref="Markdown"/>
+    /// 赋值会解除流式绑定并回退到整串渲染。
+    /// </summary>
+    public static readonly StyledProperty<Streaming.MarkdownStreamingDocument?> StreamingSourceProperty =
+        AvaloniaProperty.Register<MarkdownViewer, Streaming.MarkdownStreamingDocument?>(nameof(StreamingSource));
+
+    /// <summary>
     /// 文档宿主的块虚拟化开关；关闭后所有块始终物化，可在异常场景退回非虚拟化宿主。
     /// </summary>
     public static readonly StyledProperty<bool> EnableVirtualizationProperty =
@@ -253,12 +261,20 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         AvaloniaProperty.Register<MarkdownViewer, Thickness>(nameof(ListNestedParagraphMargin), new Thickness(0, 2, 0, 2));
 
     /// <summary>
-    /// Markdown 原文；控件只暴露这一处文本输入入口。
+    /// Markdown 原文；控件只暴露这一处文本输入入口。与 <see cref="StreamingSource"/>
+    /// 互斥：后设置的生效，赋值本属性会解除流式绑定。
     /// </summary>
     public string? Markdown
     {
         get => GetValue(MarkdownProperty);
         set => SetValue(MarkdownProperty, value);
+    }
+
+    /// <summary>流式文档源；语义见 <see cref="StreamingSourceProperty"/>。</summary>
+    public Streaming.MarkdownStreamingDocument? StreamingSource
+    {
+        get => GetValue(StreamingSourceProperty);
+        set => SetValue(StreamingSourceProperty, value);
     }
 
     /// <summary>
@@ -509,7 +525,20 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
     static MarkdownViewer()
     {
-        MarkdownProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) => viewer.QueueRenderDocument(MarkdownRenderMode.Incremental));
+        MarkdownProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) =>
+        {
+            // 整串赋值优先：解除流式绑定，回退编辑驱动渲染。
+            if (viewer.StreamingSource is not null)
+            {
+                viewer.SetCurrentValue(StreamingSourceProperty, null);
+            }
+
+            viewer.QueueRenderDocument(MarkdownRenderMode.Incremental);
+        });
+        StreamingSourceProperty.Changed.AddClassHandler<MarkdownViewer>(
+            (viewer, args) => viewer.OnStreamingSourceChanged(
+                args.OldValue as Streaming.MarkdownStreamingDocument,
+                args.NewValue as Streaming.MarkdownStreamingDocument));
         TypographyThemeProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) => viewer.QueueRenderDocument(MarkdownRenderMode.Full));
         TypographySizeProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) => viewer.QueueRenderDocument(MarkdownRenderMode.Full));
         ImageBasePathProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) => viewer.QueueRenderDocument(MarkdownRenderMode.Full));

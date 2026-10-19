@@ -7,17 +7,32 @@
              x:CompileBindings="True">
   <Grid RowDefinitions="Auto,*,Auto" Margin="12,10">
 
-    <Expander Grid.Row="0" Header="{codewf:I18n Demo.Catalog.Input}" IsExpanded="False" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-      <StackPanel Spacing="8">
-        <TextBox Text="{Binding Source}" Height="96" AcceptsReturn="True"
-                 TextWrapping="Wrap" PlaceholderText="{codewf:I18n Demo.Content.MarkdownViewer.View.EditMarkdownSource}" />
-        <StackPanel Orientation="Horizontal" Spacing="8">
-          <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownViewer.View.Apply}" Command="{Binding ApplyCommand}" />
-          <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownViewer.View.AppendParagraphIncremental}" Command="{Binding AppendCommand}" />
-          <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownViewer.View.ResetSample}" Command="{Binding ResetCommand}" />
+    <StackPanel Grid.Row="0" Spacing="6">
+      <Expander Header="{codewf:I18n Demo.Catalog.Input}" IsExpanded="False" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+        <StackPanel Spacing="8">
+          <TextBox Text="{Binding Source}" Height="96" AcceptsReturn="True"
+                   TextWrapping="Wrap" PlaceholderText="{codewf:I18n Demo.Content.MarkdownViewer.View.EditMarkdownSource}" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownViewer.View.Apply}" Command="{Binding ApplyCommand}" />
+            <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownViewer.View.AppendParagraphIncremental}" Command="{Binding AppendCommand}" />
+            <Button Classes="demo-action" Content="{codewf:I18n Demo.Content.MarkdownViewer.View.ResetSample}" Command="{Binding ResetCommand}" />
+          </StackPanel>
         </StackPanel>
-      </StackPanel>
-    </Expander>
+      </Expander>
+
+      <!-- 流式演示：按钮文案暂用字面量（避免为 demo 扩 i18n 键），接入方式与生产一致 -->
+      <Expander Header="流式渲染（StreamingSource）" IsExpanded="False" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+        <StackPanel Spacing="8">
+          <TextBlock TextWrapping="Wrap" Opacity="0.75" FontSize="12"
+                     Text="逐片追加文本，Viewer 只解析冻结边界之外的新内容；演示文本与上方示例相同。" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Classes="demo-action" Content="开始流式输出" Click="OnStartStreamingClick" />
+            <Button Classes="demo-action" Content="完成流式" Click="OnCompleteStreamingClick" />
+            <Button Classes="demo-action" Content="退出流式" Click="OnExitStreamingClick" />
+          </StackPanel>
+        </StackPanel>
+      </Expander>
+    </StackPanel>
 
     <codewf:MarkdownViewer Grid.Row="1" x:Name="Viewer" Margin="0,10,0,0"
                            Markdown="{Binding AppliedMarkdown}"

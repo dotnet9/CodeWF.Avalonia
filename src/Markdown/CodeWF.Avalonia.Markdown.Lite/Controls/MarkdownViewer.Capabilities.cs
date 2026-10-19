@@ -252,6 +252,58 @@ public partial class MarkdownViewer
         System.Diagnostics.Debug.WriteLine($"Markdown parse failed: {exception}");
     }
 
+    /// <summary>
+    /// 流式源绑定切换：退订旧文档、订阅新文档并立即应用其当前快照。
+    /// </summary>
+    private void OnStreamingSourceChanged(Streaming.MarkdownStreamingDocument? oldValue, Streaming.MarkdownStreamingDocument? newValue)
+    {
+        if (ReferenceEquals(oldValue, newValue))
+        {
+            return;
+        }
+
+        if (oldValue is not null)
+        {
+            oldValue.SnapshotReady -= OnStreamingSnapshotReady;
+        }
+
+        if (newValue is null)
+        {
+            return;
+        }
+
+        newValue.SnapshotReady += OnStreamingSnapshotReady;
+        if (newValue.Latest.Source.Length > 0)
+        {
+            OnStreamingSnapshotReady(newValue, newValue.Latest);
+        }
+        else
+        {
+            RenderDocumentFull(string.Empty);
+        }
+    }
+
+    private void OnStreamingSnapshotReady(object? sender, Streaming.MarkdownStreamingSnapshot snapshot)
+    {
+        if (_documentHost is null)
+        {
+            return;
+        }
+
+        // 文档已被换绑的过期快照直接丢弃。
+        if (!ReferenceEquals(sender, StreamingSource))
+        {
+            return;
+        }
+
+        _lastParseDuration = snapshot.ParseDuration;
+        var text = snapshot.Model.Source;
+        if (!TryRenderIncremental(text, snapshot.Model, null))
+        {
+            RenderDocumentFull(text, snapshot.Model);
+        }
+    }
+
     private ScrollViewer? ResolveScrollHost()
     {
         if (ScrollHost is not null)
