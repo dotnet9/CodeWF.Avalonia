@@ -35,7 +35,7 @@ public static class MarkdownImageSourceLoader
 		{
 			if (uri.Scheme is "http" or "https")
 			{
-				var bytes = ReadRemoteBytes(uri, maxRemoteImageBytes);
+				var bytes = ReadRemoteBytesWithDiskCache(uri, maxRemoteImageBytes);
 				return new MarkdownImageSource(
 					bytes,
 					ResolveFileName(normalizedSource),
@@ -79,7 +79,7 @@ public static class MarkdownImageSourceLoader
 		{
 			if (uri.Scheme is "http" or "https")
 			{
-				var bytes = await ReadRemoteBytesAsync(uri, maxRemoteImageBytes, cancellationToken);
+				var bytes = await ReadRemoteBytesWithDiskCacheAsync(uri, maxRemoteImageBytes, cancellationToken);
 				return new MarkdownImageSource(
 					bytes,
 					ResolveFileName(normalizedSource),
@@ -216,6 +216,7 @@ public static class MarkdownImageSourceLoader
 
 	private static MarkdownImageSource LoadLocalFile(string path, string displayPath, long maxImageBytes)
 	{
+		EnsureLocalPathAllowed(path);
 		if (!File.Exists(path))
 		{
 			throw new FileNotFoundException("Markdown image file was not found.", displayPath);
@@ -239,6 +240,7 @@ public static class MarkdownImageSourceLoader
 		long maxImageBytes,
 		CancellationToken cancellationToken)
 	{
+		EnsureLocalPathAllowed(path);
 		if (!File.Exists(path))
 		{
 			throw new FileNotFoundException("Markdown image file was not found.", displayPath);
@@ -263,6 +265,81 @@ public static class MarkdownImageSourceLoader
 		response.EnsureSuccessStatusCode();
 		using var source = response.Content.ReadAsStream();
 		return ReadRemoteResponseBytes(source, response.Content.Headers.ContentLength, maxRemoteImageBytes);
+	}
+
+	/// <summary>远程读取附带磁盘缓存：命中免网络，未命中取回后回存。</summary>
+	private static byte[] ReadRemoteBytesWithDiskCache(Uri uri, long maxRemoteImageBytes)
+	{
+		var cacheKey = "remote|" + uri.ToString();
+		var cached = MarkdownImageDiskCache.TryRead(cacheKey);
+		if (cached is not null)
+		{
+			return cached;
+		}
+
+		var bytes = ReadRemoteBytes(uri, maxRemoteImageBytes);
+		MarkdownImageDiskCache.Store(cacheKey, bytes);
+		return bytes;
+	}
+
+	private static async Task<byte[]> ReadRemoteBytesWithDiskCacheAsync(
+		Uri uri, long maxRemoteImageBytes, CancellationToken cancellationToken)
+	{
+		var cacheKey = "remote|" + uri.ToString();
+		var cached = MarkdownImageDiskCache.TryRead(cacheKey);
+		if (cached is not null)
+		{
+			return cached;
+		}
+
+		var bytes = await ReadRemoteBytesAsync(uri, maxRemoteImageBytes, cancellationToken);
+		MarkdownImageDiskCache.Store(cacheKey, bytes);
+		return bytes;
+	}
+
+	// 本地图片白名单：配置后只允许读取根目录之内的本地图片（file:// 与
+	// 相对路径解析共用此约束）。TKCode 式做法：不可信文档的本地图片
+	// 只能来自已添加的项目目录。大小写不敏感，根按目录边界匹配。
+	private static volatile string[] _allowedLocalImageRoots = [];
+
+	/// <summary>当前允许的本地图片根目录（绝对路径；空数组 = 不限制）。</summary>
+	public static IReadOnlyList<string> AllowedLocalImageRoots => _allowedLocalImageRoots;
+
+	/// <summary>设置本地图片白名单根目录（传空集合表示不限制）。</summary>
+	public static void SetAllowedLocalImageRoots(IEnumerable<string> roots)
+	{
+		ArgumentNullException.ThrowIfNull(roots);
+		_allowedLocalImageRoots = roots
+			.Where(root => !string.IsNullOrWhiteSpace(root))
+			.Select(root => Path.GetFullPath(root.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)))
+			.Distinct(StringComparer.OrdinalIgnoreCase)
+			.OrderByDescending(root => root.Length)
+			.ToArray();
+	}
+
+	/// <summary>清空白名单（恢复不限制）。</summary>
+	public static void ClearAllowedLocalImageRoots() => _allowedLocalImageRoots = [];
+
+	private static void EnsureLocalPathAllowed(string path)
+	{
+		var roots = _allowedLocalImageRoots;
+		if (roots.Length == 0)
+		{
+			return;
+		}
+
+		var fullPath = Path.GetFullPath(path);
+		foreach (var root in roots)
+		{
+			if (string.Equals(fullPath, root, StringComparison.OrdinalIgnoreCase)
+				|| fullPath.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+				|| fullPath.StartsWith(root + Path.AltDirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+			{
+				return;
+			}
+		}
+
+		throw new UnauthorizedAccessException($"本地图片不在允许的根目录内：{fullPath}");
 	}
 
 	private static async Task<byte[]> ReadRemoteBytesAsync(Uri uri, long maxRemoteImageBytes, CancellationToken cancellationToken)
