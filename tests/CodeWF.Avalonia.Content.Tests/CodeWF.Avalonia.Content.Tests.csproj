@@ -37,6 +37,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\embedded.json" />
+    <EmbeddedResource Include="Markdown\Streaming\Fixtures\**\*.json" />
   </ItemGroup>
 
 </Project>

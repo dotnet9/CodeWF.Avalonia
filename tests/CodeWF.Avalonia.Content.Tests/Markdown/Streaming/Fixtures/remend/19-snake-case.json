@@ -1,0 +1,1 @@
+{ "name": "下划线：snake_case 不参与补全", "tail": "变量名 snake_case_value 保持", "remended": "变量名 snake_case_value 保持" }
