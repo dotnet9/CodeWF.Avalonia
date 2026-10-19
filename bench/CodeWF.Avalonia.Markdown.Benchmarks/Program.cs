@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 
 using CodeWF.Avalonia.Markdown.Shared.Rendering;
+using CodeWF.Avalonia.Markdown.Streaming;
 
 using Markdig;
 
@@ -41,6 +42,11 @@ internal static class Program
 		{
 			results.Add(BenchTokenStreaming(20, tokenLength: 4));
 			results.Add(BenchTokenStreaming(20, tokenLength: 32));
+		}
+
+		if (mode is "all" or "streaming")
+		{
+			results.Add(BenchStreamingEngine(20, tokenLength: 4));
 		}
 
 		Console.WriteLine();
@@ -131,6 +137,52 @@ internal static class Program
 		}
 
 		return (total, diffTotal);
+	}
+
+	/// <summary>
+	/// 流式内核（MarkdownStreamingDocument）：同样按 tokenLength 字符逐片追加，
+	/// 引擎在后台合并解析（冻结边界之外的尾部才重解析）。统计从开始追加到
+	/// 终局快照发布的墙钟时间与总分配；轮询粒度 ~1ms。
+	/// </summary>
+	private static string BenchStreamingEngine(int sizeKb, int tokenLength)
+	{
+		var document = DocumentBuilder.Build(sizeKb * 1024);
+		var steps = document.Length / tokenLength;
+
+		RunStreamingEngine(document, tokenLength);
+
+		GC.Collect();
+		GC.WaitForPendingFinalizers();
+		GC.Collect();
+		var allocatedBefore = GC.GetTotalAllocatedBytes(precise: true);
+
+		var start = Stopwatch.GetTimestamp();
+		RunStreamingEngine(document, tokenLength);
+		var total = Stopwatch.GetElapsedTime(start);
+
+		var allocated = GC.GetTotalAllocatedBytes(precise: true) - allocatedBefore;
+		return $"流式内核追加 {sizeKb,4} KB / {tokenLength,2} 字符 | 步数 {steps,6} | 墙钟 {total.TotalMilliseconds,9:0} ms | 总分配 {allocated / 1024.0 / 1024.0,8:0.0} MB";
+	}
+
+	private static void RunStreamingEngine(string document, int tokenLength)
+	{
+		using var streaming = new MarkdownStreamingDocument();
+		for (var offset = 0; offset < document.Length; offset += tokenLength)
+		{
+			streaming.Append(document[offset..Math.Min(offset + tokenLength, document.Length)]);
+		}
+
+		streaming.Complete();
+		var deadline = DateTime.UtcNow.AddSeconds(60);
+		while (!streaming.Latest.IsComplete)
+		{
+			if (DateTime.UtcNow > deadline)
+			{
+				throw new TimeoutException("流式引擎未在 60s 内完成");
+			}
+
+			Thread.Sleep(1);
+		}
 	}
 }
 
