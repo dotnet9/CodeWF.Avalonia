@@ -38,6 +38,10 @@ public sealed class MarkdownStreamSegmenter
 	// 也只在零缩进时识别（缩进 1-3 的结构行可能是容器内容）。
 	private bool _containerOpen;
 
+	// HTML Type 6 原始块开启中（到空行才结束）：期间一切结构行都并入块内，
+	// 必须抑制全部顶层冻结判定。
+	private bool _htmlBlockOpen;
+
 	// 待判定的空行结束偏移：该空行是否可冻结取决于下一行的形态。
 	private int _pendingBlankEnd = -1;
 
@@ -84,6 +88,7 @@ public sealed class MarkdownStreamSegmenter
 		_prevLineBlank = true;
 		_prevParagraphish = false;
 		_containerOpen = false;
+		_htmlBlockOpen = false;
 		_pendingBlankEnd = -1;
 		_scanned = 0;
 		FrozenBoundary = 0;
@@ -132,6 +137,7 @@ public sealed class MarkdownStreamSegmenter
 			_prevLineBlank = true;
 			_prevParagraphish = false;
 			_containerOpen = false;
+			_htmlBlockOpen = false;
 			return;
 		}
 
@@ -145,7 +151,18 @@ public sealed class MarkdownStreamSegmenter
 			}
 		}
 
+		// 本行是否紧跟空行/文档起始（数学块与原始 HTML 块只在此时开启）。
+		// 注意先捕获再清理：分类阶段之后 _prevLineBlank 服务于下一行。
+		var followsBlank = _prevLineBlank;
 		_prevLineBlank = false;
+
+		// HTML Type 6 原始块开启期间：一切结构行（围栏/标题/分隔线/setext）
+		// 都并入块内，禁止任何顶层冻结判定，空行规则兜底收尾。
+		if (_htmlBlockOpen)
+		{
+			_prevParagraphish = true;
+			return;
+		}
 
 		// 容器开启期间，顶层结构识别只认零缩进行（缩进 1-3 的行可能是容器内容）。
 		var structuralIndentLimit = _containerOpen ? 0 : 3;
@@ -220,7 +237,7 @@ public sealed class MarkdownStreamSegmenter
 
 		// 数学块与原始 HTML 块不能打断段落，只在空行/文档起始后识别
 		// （空行已关闭容器，此处 containerOpen 恒为 false）。
-		if (_prevLineBlank && indent <= structuralIndentLimit && IsMathOpen(trimmed, out var mathClosedInline))
+		if (followsBlank && indent <= structuralIndentLimit && IsMathOpen(trimmed, out var mathClosedInline))
 		{
 			if (mathClosedInline)
 			{
@@ -236,7 +253,7 @@ public sealed class MarkdownStreamSegmenter
 			return;
 		}
 
-		if (_prevLineBlank && indent <= structuralIndentLimit && IsHtmlRawOpen(trimmed, out var htmlCloseToken, out var htmlClosedInline))
+		if (followsBlank && indent <= structuralIndentLimit && IsHtmlRawOpen(trimmed, out var htmlCloseToken, out var htmlClosedInline))
 		{
 			if (htmlClosedInline)
 			{
@@ -252,9 +269,10 @@ public sealed class MarkdownStreamSegmenter
 			return;
 		}
 
-		if (_prevLineBlank && indent <= structuralIndentLimit && IsHtmlBlockStart(trimmed))
+		if (followsBlank && indent <= structuralIndentLimit && IsHtmlBlockStart(trimmed))
 		{
-			// HTML 原始块 Type 6：到空行结束，空行规则天然覆盖，无需状态。
+			// HTML 原始块 Type 6：到空行结束，期间抑制全部顶层冻结判定。
+			_htmlBlockOpen = true;
 			_prevParagraphish = false;
 			return;
 		}
