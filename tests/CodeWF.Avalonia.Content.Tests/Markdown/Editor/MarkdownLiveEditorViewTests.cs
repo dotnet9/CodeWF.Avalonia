@@ -604,6 +604,22 @@ public sealed class MarkdownLiveEditorViewTests
     });
 
     [Fact]
+    public void FontPreferencesPreserveCodeEditingAndUndo() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView { EditorFontSize = 18, CodeFontSize = 16 };
+        view.SetText("```text\nhello\n```"); view.FocusBlock(0);
+        view.InsertText("x");
+        var text = view.Text;
+        view.CodeFontSize = 19;
+        Assert.Equal(text, view.Text);
+        var block = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Single();
+        Assert.Equal(19, block.ActiveEditor!.FontSize);
+        Assert.Equal(19, block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single().CodeBlockFontSize);
+        view.ExecuteAsync(MarkdownEditorAction.Undo).GetAwaiter().GetResult();
+        Assert.Equal("```text\nhello\n```", view.Text.TrimEnd());
+    });
+
+    [Fact]
     public void HostCodeFontIsSharedByPreviewAndInlineEditing() => _platform.Run(() =>
     {
         var font = new global::Avalonia.Media.FontFamily("Arial");

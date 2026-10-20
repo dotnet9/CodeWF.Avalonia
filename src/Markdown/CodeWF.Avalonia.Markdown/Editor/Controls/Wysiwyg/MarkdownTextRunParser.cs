@@ -23,7 +23,7 @@ public static class MarkdownTextRunParser
         .Build();
 
     /// <summary>解析行内 Markdown（支持 **粗**、*斜*、`码`、~~删~~、[链接](url)）。</summary>
-    public static List<MarkdownTextRun> Parse(string? inlineMarkdown)
+    public static List<MarkdownTextRun> Parse(string? inlineMarkdown, MarkdownSyntaxOptions? syntaxOptions = null)
     {
         var runs = new List<MarkdownTextRun>();
         var text = inlineMarkdown ?? string.Empty;
@@ -32,7 +32,7 @@ public static class MarkdownTextRunParser
             return runs;
         }
 
-        var container = Markdig.Markdown.Parse(text, Pipeline);
+        var container = Markdig.Markdown.Parse(text, syntaxOptions?.CreatePipeline() ?? Pipeline);
         var added = false;
         foreach (var block in container)
         {

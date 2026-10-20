@@ -13,6 +13,8 @@ internal sealed class MarkdownBlockViewOptions
     public string? TypographyTheme { get; set; }
     public string? TypographySize { get; set; }
     public double FontSize { get; set; } = 15;
+    public double CodeFontSize { get; set; } = 13;
+    public FontFamily ContentFontFamily { get; set; } = FontFamily.Default;
     public FontFamily CodeFontFamily { get; set; } = MarkdownWysiwygPalette.CodeFontFamily;
     public IBrush? TableHeaderBackgroundBrush { get; set; }
 

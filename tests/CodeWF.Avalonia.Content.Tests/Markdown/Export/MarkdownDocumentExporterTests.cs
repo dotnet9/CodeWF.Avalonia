@@ -7,6 +7,42 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Export;
 
 public sealed class MarkdownDocumentExporterTests
 {
+	[Theory]
+	[InlineData("A4", 595, 842)]
+	[InlineData("Letter", 612, 792)]
+	[InlineData("A5", 420, 595)]
+	public void ExportPdf_UsesSelectedPaperAndWatermark(string paper, int width, int height)
+	{
+		var path = Path.Combine(Path.GetTempPath(), $"codewf-pdf-options-{Guid.NewGuid():N}.pdf");
+		try
+		{
+			MarkdownDocumentExporter.ExportPdf(new MarkdownExportDocument("# Page options\n\nSelectable body text."), path,
+				options: new MarkdownPdfExportOptions(PageSize: paper, MarginMillimeters: 20, WatermarkText: "Private 维刻", WatermarkOpacity: 0.12));
+			var pdf = Encoding.Latin1.GetString(File.ReadAllBytes(path));
+			Assert.Matches($@"/MediaBox\s*\[0\s+0\s+{width}\s+{height}\]", pdf);
+			Assert.Contains("/ExtGState", pdf);
+			Assert.Contains("/ToUnicode", pdf);
+			Assert.DoesNotContain("/Subtype /Image", pdf);
+		}
+		finally { File.Delete(path); }
+	}
+
+	[Fact]
+	public void ExportPdf_LargerMarginRepaginatesContent()
+	{
+		var first = Path.Combine(Path.GetTempPath(), $"codewf-pdf-margin-{Guid.NewGuid():N}.pdf");
+		var second = first + ".large.pdf";
+		try
+		{
+			var document = new MarkdownExportDocument(string.Join("\n\n", Enumerable.Repeat("A paragraph that wraps and stays inside the selected page content bounds.", 100)));
+			MarkdownDocumentExporter.ExportPdf(document, first, options: new MarkdownPdfExportOptions(MarginMillimeters: 10));
+			MarkdownDocumentExporter.ExportPdf(document, second, options: new MarkdownPdfExportOptions(MarginMillimeters: 30));
+			int Pages(string path) => System.Text.RegularExpressions.Regex.Matches(Encoding.Latin1.GetString(File.ReadAllBytes(path)), @"/Type /Page\b").Count;
+			Assert.True(Pages(second) > Pages(first));
+		}
+		finally { File.Delete(first); File.Delete(second); }
+	}
+
 	[Fact]
 	public void ExportPdf_WhenMarkdownContainsText_DoesNotEmbedWholePageImage()
 	{

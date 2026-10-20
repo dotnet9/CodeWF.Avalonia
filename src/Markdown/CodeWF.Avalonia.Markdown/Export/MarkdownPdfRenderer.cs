@@ -12,19 +12,12 @@ namespace CodeWF.Avalonia.Markdown;
 
 public sealed class MarkdownPdfRenderer
 {
-    private const float PageWidth = 595;
-    private const float PageHeight = 842;
-    private const float PageMargin = 36;
     private const float HeaderGap = 14;
     private const float HeaderHeight = 26;
     private const float HeaderFontSize = 10;
     private const float FooterGap = 14;
     private const float FooterHeight = 28;
     private const float FooterFontSize = 9;
-    private const float ContentTop = PageMargin + HeaderHeight + HeaderGap;
-    private const float ContentBottom = PageHeight - PageMargin - FooterGap - FooterHeight;
-    private const float ContentWidth = PageWidth - (PageMargin * 2);
-    private const float ContentHeight = ContentBottom - ContentTop;
     private const float ParagraphSpacing = 14;
     private const float NestedParagraphSpacing = 8;
     private const float ListMarkerWidth = 28;
@@ -56,8 +49,9 @@ public sealed class MarkdownPdfRenderer
         var footerTitle = ResolveFooterTitle(document, options);
 
         using var resources = new PdfRenderResources(style);
-        var layout = new PdfLayout(resources);
-        RenderDocument(document, style, layout);
+        var geometry = PdfPageGeometry.From(options);
+        var layout = new PdfLayout(resources, geometry);
+        RenderDocument(document, style, layout, options.SyntaxOptions);
 
         Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)) ?? ".");
 
@@ -76,11 +70,12 @@ public sealed class MarkdownPdfRenderer
                 var pageCount = layout.Pages.Count;
                 for (var pageIndex = 0; pageIndex < pageCount; pageIndex++)
                 {
-                    var canvas = pdf.BeginPage(PageWidth, PageHeight);
+                    var canvas = pdf.BeginPage(geometry.PageWidth, geometry.PageHeight);
                     canvas.Clear(pageBackgroundColor);
-                    DrawHeader(canvas, headerTitle, metadataTextColor, metadataLineColor);
+                    DrawHeader(canvas, headerTitle, metadataTextColor, metadataLineColor, geometry);
                     layout.Pages[pageIndex].Draw(canvas, resources);
-                    DrawFooter(canvas, footerTitle, pageIndex + 1, pageCount, metadataTextColor, metadataLineColor);
+                    DrawWatermark(canvas, options, geometry, resources);
+                    DrawFooter(canvas, footerTitle, pageIndex + 1, pageCount, metadataTextColor, metadataLineColor, geometry);
                     pdf.EndPage();
                 }
 
@@ -98,18 +93,18 @@ public sealed class MarkdownPdfRenderer
         }
     }
 
-    private static void RenderDocument(MarkdownExportDocument document, MarkdownExportStyle style, PdfLayout layout)
+    private static void RenderDocument(MarkdownExportDocument document, MarkdownExportStyle style, PdfLayout layout, MarkdownSyntaxOptions? syntax)
     {
-        var parsed = global::Markdig.Markdown.Parse(document.Markdown, Pipeline);
+        var parsed = global::Markdig.Markdown.Parse(document.Markdown, syntax?.CreatePipeline() ?? Pipeline);
         if (!parsed.Any())
         {
-            RenderParagraphText(layout, [new PdfInline(string.Empty, CreateBodyStyle(style, 0), null)], PageMargin, ContentWidth, ParagraphSpacing);
+            RenderParagraphText(layout, [new PdfInline(string.Empty, CreateBodyStyle(style, 0), null)], layout.Geometry.PageMargin, layout.Geometry.ContentWidth, ParagraphSpacing);
             return;
         }
 
         foreach (var block in parsed)
         {
-            RenderBlock(layout, block, document.FilePath, 0, PageMargin, ContentWidth, style);
+            RenderBlock(layout, block, document.FilePath, 0, layout.Geometry.PageMargin, layout.Geometry.ContentWidth, style);
         }
     }
 
@@ -325,7 +320,7 @@ public sealed class MarkdownPdfRenderer
 
             var chunkStart = index;
             var chunkHeight = paddingY * 2;
-            while (index < lines.Count && layout.Y + chunkHeight + lines[index].Height <= ContentBottom)
+            while (index < lines.Count && layout.Y + chunkHeight + lines[index].Height <= layout.Geometry.ContentBottom)
             {
                 chunkHeight += lines[index].Height;
                 index++;
@@ -608,11 +603,11 @@ public sealed class MarkdownPdfRenderer
 
         var imageWidth = Math.Min(width, bitmap.Width);
         var imageHeight = bitmap.Height * (imageWidth / bitmap.Width);
-        if (imageHeight > ContentHeight)
+        if (imageHeight > layout.Geometry.ContentHeight)
         {
-            var scale = ContentHeight / imageHeight;
+            var scale = layout.Geometry.ContentHeight / imageHeight;
             imageWidth *= scale;
-            imageHeight = ContentHeight;
+            imageHeight = layout.Geometry.ContentHeight;
         }
 
         layout.AddGap(4);
@@ -998,25 +993,43 @@ public sealed class MarkdownPdfRenderer
         }
     }
 
-    private static void DrawHeader(SKCanvas canvas, string title, SKColor textColor, SKColor lineColor)
+    private static void DrawWatermark(SKCanvas canvas, MarkdownPdfExportOptions options, PdfPageGeometry geometry, PdfRenderResources resources)
     {
-        var headerBottom = PageMargin + HeaderHeight;
+        if (string.IsNullOrWhiteSpace(options.WatermarkText) || !double.IsFinite(options.WatermarkOpacity) || options.WatermarkOpacity <= 0) return;
+        var text = string.Concat(options.WatermarkText.EnumerateRunes().Take(60).Select(r => r.ToString()));
+        var opacity = (byte)(Math.Clamp(options.WatermarkOpacity, 0, 0.5) * 255);
+        var style = CreateBodyStyle(resources.Style, 0) with { FontSize = 20, Color = new SKColor(36, 118, 107, opacity) };
+        canvas.Save();
+        canvas.ClipRect(new SKRect(geometry.PageMargin, geometry.ContentTop, geometry.PageWidth - geometry.PageMargin, geometry.ContentBottom));
+        for (float y = geometry.ContentTop + 80; y < geometry.ContentBottom; y += 150)
+        for (float x = geometry.PageMargin + 40; x < geometry.PageWidth; x += 260)
+        {
+            canvas.Save(); canvas.Translate(x, y); canvas.RotateDegrees(-25);
+            new PdfTextOperation(text, 0, 0, resources.MeasureText(text, style), style).Draw(canvas, resources);
+            canvas.Restore();
+        }
+        canvas.Restore();
+    }
+
+    private static void DrawHeader(SKCanvas canvas, string title, SKColor textColor, SKColor lineColor, PdfPageGeometry geometry)
+    {
+        var headerBottom = geometry.PageMargin + HeaderHeight;
         using var linePaint = CreateLinePaint(lineColor);
-        canvas.DrawLine(PageMargin, headerBottom, PageWidth - PageMargin, headerBottom, linePaint);
+        canvas.DrawLine(geometry.PageMargin, headerBottom, geometry.PageWidth - geometry.PageMargin, headerBottom, linePaint);
 
         using var textPaint = CreateTextPaint(textColor);
         using var font = CreateMetadataFont(HeaderFontSize);
 
-        var titleMaxWidth = PageWidth - (PageMargin * 2);
+        var titleMaxWidth = geometry.PageWidth - (geometry.PageMargin * 2);
         var visibleTitle = TrimToWidth(title, font, textPaint, titleMaxWidth);
-        canvas.DrawText(visibleTitle, PageMargin, PageMargin + 17, font, textPaint);
+        canvas.DrawText(visibleTitle, geometry.PageMargin, geometry.PageMargin + 17, font, textPaint);
     }
 
-    private static void DrawFooter(SKCanvas canvas, string title, int pageNumber, int pageCount, SKColor textColor, SKColor lineColor)
+    private static void DrawFooter(SKCanvas canvas, string title, int pageNumber, int pageCount, SKColor textColor, SKColor lineColor, PdfPageGeometry geometry)
     {
-        var footerTop = PageHeight - PageMargin - FooterHeight;
+        var footerTop = geometry.PageHeight - geometry.PageMargin - FooterHeight;
         using var linePaint = CreateLinePaint(lineColor);
-        canvas.DrawLine(PageMargin, footerTop, PageWidth - PageMargin, footerTop, linePaint);
+        canvas.DrawLine(geometry.PageMargin, footerTop, geometry.PageWidth - geometry.PageMargin, footerTop, linePaint);
 
         using var textPaint = CreateTextPaint(textColor);
         using var font = CreateMetadataFont(FooterFontSize);
@@ -1024,11 +1037,11 @@ public sealed class MarkdownPdfRenderer
         var baseline = footerTop + 18;
         var pageText = $"{pageNumber} / {pageCount}";
         var pageTextWidth = font.MeasureText(pageText, textPaint);
-        var pageTextX = PageWidth - PageMargin - pageTextWidth;
-        var titleMaxWidth = Math.Max(0, pageTextX - PageMargin - 24);
+        var pageTextX = geometry.PageWidth - geometry.PageMargin - pageTextWidth;
+        var titleMaxWidth = Math.Max(0, pageTextX - geometry.PageMargin - 24);
         var visibleTitle = TrimToWidth(title, font, textPaint, titleMaxWidth);
 
-        canvas.DrawText(visibleTitle, PageMargin, baseline, font, textPaint);
+        canvas.DrawText(visibleTitle, geometry.PageMargin, baseline, font, textPaint);
         canvas.DrawText(pageText, pageTextX, baseline, font, textPaint);
     }
 
@@ -1237,13 +1250,32 @@ public sealed class MarkdownPdfRenderer
         return ((lineHeight - fontSize) / 2) + (fontSize * 0.82f);
     }
 
-    private sealed class PdfLayout(PdfRenderResources resources)
+    private sealed record PdfPageGeometry(float PageWidth, float PageHeight, float PageMargin)
+    {
+        public float ContentTop => PageMargin + HeaderHeight + HeaderGap;
+        public float ContentBottom => PageHeight - PageMargin - FooterGap - FooterHeight;
+        public float ContentWidth => PageWidth - PageMargin * 2;
+        public float ContentHeight => ContentBottom - ContentTop;
+
+        public static PdfPageGeometry From(MarkdownPdfExportOptions options)
+        {
+            var (width, height) = options.PageSize.ToUpperInvariant() switch
+            {
+                "LETTER" => (612f, 792f), "A5" => (420f, 595f), _ => (595f, 842f)
+            };
+            var margin = options.MarginMillimeters is { } mm && double.IsFinite(mm) ? (float)(Math.Clamp(mm, 0, 50) * 72 / 25.4) : 36;
+            return new(width, height, margin);
+        }
+    }
+
+    private sealed class PdfLayout(PdfRenderResources resources, PdfPageGeometry geometry)
     {
         public PdfRenderResources Resources { get; } = resources;
+        public PdfPageGeometry Geometry { get; } = geometry;
 
         public List<PdfPage> Pages { get; } = [new PdfPage()];
 
-        public float Y { get; set; } = ContentTop;
+        public float Y { get; set; } = geometry.ContentTop;
 
         public void AddOperation(IPdfOperation operation)
         {
@@ -1252,9 +1284,9 @@ public sealed class MarkdownPdfRenderer
 
         public void EnsureSpace(float height)
         {
-            if (height > ContentHeight)
+            if (height > geometry.ContentHeight)
             {
-                if (Y >= ContentBottom)
+                if (Y >= geometry.ContentBottom)
                 {
                     NewPage();
                 }
@@ -1262,7 +1294,7 @@ public sealed class MarkdownPdfRenderer
                 return;
             }
 
-            if (Y + height > ContentBottom && Pages[^1].Operations.Count > 0)
+            if (Y + height > geometry.ContentBottom && Pages[^1].Operations.Count > 0)
             {
                 NewPage();
             }
@@ -1275,19 +1307,19 @@ public sealed class MarkdownPdfRenderer
                 return;
             }
 
-            Y = Math.Min(ContentBottom, Y + gap);
+            Y = Math.Min(geometry.ContentBottom, Y + gap);
         }
 
         public void NewPage()
         {
             if (Pages[^1].Operations.Count == 0)
             {
-                Y = ContentTop;
+                Y = geometry.ContentTop;
                 return;
             }
 
             Pages.Add(new PdfPage());
-            Y = ContentTop;
+            Y = geometry.ContentTop;
         }
 
         public PdfLayoutMark Mark()
@@ -1305,8 +1337,8 @@ public sealed class MarkdownPdfRenderer
             for (var pageIndex = start.PageIndex; pageIndex <= end.PageIndex; pageIndex++)
             {
                 var page = Pages[pageIndex];
-                var top = pageIndex == start.PageIndex ? start.Y : ContentTop;
-                var bottom = pageIndex == end.PageIndex ? end.Y : ContentBottom;
+                var top = pageIndex == start.PageIndex ? start.Y : geometry.ContentTop;
+                var bottom = pageIndex == end.PageIndex ? end.Y : geometry.ContentBottom;
                 if (bottom <= top)
                 {
                     continue;

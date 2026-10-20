@@ -68,6 +68,11 @@ public partial class MarkdownLiveEditorView : UserControl
         AvaloniaProperty.Register<MarkdownLiveEditorView, MarkdownSyntaxOptions?>(nameof(SyntaxOptions));
     public MarkdownSyntaxOptions? SyntaxOptions { get => GetValue(SyntaxOptionsProperty); set => SetValue(SyntaxOptionsProperty, value); }
 
+    /// <summary>代码块字号，独立于正文；默认保持原有 13px。</summary>
+    public static readonly StyledProperty<double> CodeFontSizeProperty =
+        AvaloniaProperty.Register<MarkdownLiveEditorView, double>(nameof(CodeFontSize), 13);
+    public double CodeFontSize { get => GetValue(CodeFontSizeProperty); set => SetValue(CodeFontSizeProperty, value); }
+
     /// <summary>正文最大宽度（含留白），默认不限制；宿主可控制阅读行长。</summary>
     public static readonly StyledProperty<double> DocumentMaxWidthProperty =
         AvaloniaProperty.Register<MarkdownLiveEditorView, double>(nameof(DocumentMaxWidth), double.PositiveInfinity);
@@ -429,7 +434,7 @@ public partial class MarkdownLiveEditorView : UserControl
             _blockOptions.ImageBasePath = ImageBasePath;
             if (!_suppressChanged) RebuildPreservingEdit();
         }
-        if (change.Property == EditorFontSizeProperty) RebuildPreservingEdit();
+        if (change.Property == EditorFontSizeProperty || change.Property == CodeFontSizeProperty || change.Property == FontFamilyProperty) RebuildPreservingEdit();
         if (change.Property == CodeFontFamilyProperty)
         {
             _blockOptions.CodeFontFamily = CodeFontFamily;
@@ -589,6 +594,8 @@ public partial class MarkdownLiveEditorView : UserControl
     private Control BuildBlockView(int index)
     {
         _blockOptions.FontSize = EditorFontSize;
+        _blockOptions.CodeFontSize = CodeFontSize;
+        _blockOptions.ContentFontFamily = FontFamily;
         var model = _models[index];
 
         if (model.Kind == MarkdownBlockKind.Table)
@@ -642,7 +649,7 @@ public partial class MarkdownLiveEditorView : UserControl
                 4 => EditorFontSize * 1.15,
                 _ => EditorFontSize
             },
-            MarkdownBlockKind.Code => 13d,
+            MarkdownBlockKind.Code => CodeFontSize,
             _ => EditorFontSize
         };
 

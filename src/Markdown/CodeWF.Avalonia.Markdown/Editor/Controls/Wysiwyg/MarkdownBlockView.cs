@@ -93,7 +93,7 @@ internal sealed class MarkdownBlockView : UserControl
 
         _editor.AcceptsReturn = true;
         _editor.TextWrapping = TextWrapping.Wrap;
-        _editor.FontFamily = isCode ? options.CodeFontFamily : FontFamily.Default;
+        _editor.FontFamily = isCode ? options.CodeFontFamily : options.ContentFontFamily;
         _editor.FontSize = _runFontSize;
         _editor.Foreground = options.TextBrush;
         _editor.CaretBrush = options.AccentBrush;
@@ -439,6 +439,9 @@ internal sealed class MarkdownBlockView : UserControl
             preview.ImageBasePath = _options.ImageBasePath;
             preview.TypographyTheme = _options.TypographyTheme;
             preview.TypographySize = _options.TypographySize;
+            preview.ContentFontFamily = _options.ContentFontFamily;
+            preview.ParagraphFontSize = _options.FontSize;
+            preview.CodeBlockFontSize = _options.CodeFontSize;
             preview.Markdown = Model.Kind == MarkdownBlockKind.ListItem || RenderQuoteAsParagraph
                 ? Model.Text : MarkdownBlockParser.WriteCanonical([Model]);
             SetDisplay(preview);
@@ -450,7 +453,7 @@ internal sealed class MarkdownBlockView : UserControl
         _richText.RunFontSize = _runFontSize;
         _richText.SetRuns(_isCode
             ? MarkdownTextRunParser.Plain(Model.Text, code: true)
-            : MarkdownTextRunParser.Parse(Model.Text));
+            : MarkdownTextRunParser.Parse(Model.Text, _options.SyntaxOptions));
         SetDisplay(_richText);
     }
 
