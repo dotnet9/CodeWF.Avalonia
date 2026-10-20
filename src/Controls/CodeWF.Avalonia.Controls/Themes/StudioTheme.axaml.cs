@@ -23,6 +23,22 @@ public sealed class StudioTheme : Styles
     public static ThemeVariant DuskDark { get; } = new(nameof(DuskDark), ThemeVariant.Dark);
     public static ThemeVariant NightSkyLight { get; } = new(nameof(NightSkyLight), ThemeVariant.Light);
     public static ThemeVariant NightSkyDark { get; } = new(nameof(NightSkyDark), ThemeVariant.Dark);
+    public static ThemeVariant WeftLight { get; } = new(nameof(WeftLight), ThemeVariant.Light);
+    public static ThemeVariant WeftDark { get; } = new(nameof(WeftDark), ThemeVariant.Dark);
+    public static ThemeVariant GraphiteLight { get; } = new(nameof(GraphiteLight), ThemeVariant.Light);
+    public static ThemeVariant GraphiteDark { get; } = new(nameof(GraphiteDark), ThemeVariant.Dark);
+    public static ThemeVariant OceanLight { get; } = new(nameof(OceanLight), ThemeVariant.Light);
+    public static ThemeVariant OceanDark { get; } = new(nameof(OceanDark), ThemeVariant.Dark);
+    public static ThemeVariant SandLight { get; } = new(nameof(SandLight), ThemeVariant.Light);
+    public static ThemeVariant SandDark { get; } = new(nameof(SandDark), ThemeVariant.Dark);
+    public static ThemeVariant RoseLight { get; } = new(nameof(RoseLight), ThemeVariant.Light);
+    public static ThemeVariant RoseDark { get; } = new(nameof(RoseDark), ThemeVariant.Dark);
+    public static ThemeVariant IrisLight { get; } = new(nameof(IrisLight), ThemeVariant.Light);
+    public static ThemeVariant IrisDark { get; } = new(nameof(IrisDark), ThemeVariant.Dark);
+    public static ThemeVariant OliveLight { get; } = new(nameof(OliveLight), ThemeVariant.Light);
+    public static ThemeVariant OliveDark { get; } = new(nameof(OliveDark), ThemeVariant.Dark);
+    public static ThemeVariant TerracottaLight { get; } = new(nameof(TerracottaLight), ThemeVariant.Light);
+    public static ThemeVariant TerracottaDark { get; } = new(nameof(TerracottaDark), ThemeVariant.Dark);
 
     /// <summary>获取配色与明暗模式对应的主题变体，不依赖颜色字符串判断。</summary>
     public static ThemeVariant GetVariant(StudioPalette palette, bool dark) => palette switch
@@ -35,6 +51,14 @@ public sealed class StudioTheme : Styles
         StudioPalette.Desert => dark ? DesertDark : DesertLight,
         StudioPalette.Dusk => dark ? DuskDark : DuskLight,
         StudioPalette.NightSky => dark ? NightSkyDark : NightSkyLight,
+        StudioPalette.Weft => dark ? WeftDark : WeftLight,
+        StudioPalette.Graphite => dark ? GraphiteDark : GraphiteLight,
+        StudioPalette.Ocean => dark ? OceanDark : OceanLight,
+        StudioPalette.Sand => dark ? SandDark : SandLight,
+        StudioPalette.Rose => dark ? RoseDark : RoseLight,
+        StudioPalette.Iris => dark ? IrisDark : IrisLight,
+        StudioPalette.Olive => dark ? OliveDark : OliveLight,
+        StudioPalette.Terracotta => dark ? TerracottaDark : TerracottaLight,
         _ => throw new ArgumentOutOfRangeException(nameof(palette)),
     };
 

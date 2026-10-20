@@ -1,17 +1,24 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="StudioPaperColor">#F4FCFC</Color>
+    <SolidColorBrush x:Key="StudioHover">#dbeef0</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioPressed">#cfe7ea</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioSelected">#dceef0</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioControlBorder">#738387</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioFocusRing">#016d7f</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioDisabled">#4c676f</SolidColorBrush>
     <!-- 颜色令牌与画刷遵循 Semi 的主题字典结构。 -->
     <Color x:Key="StudioBackgroundColor">#F4FCFC</Color>
     <Color x:Key="StudioSurfaceColor">#EBF7F8</Color>
-    <Color x:Key="StudioRaisedColor">#DCEFF1</Color>
+    <Color x:Key="StudioRaisedColor">#dbeef0</Color>
     <Color x:Key="StudioBorderColor">#BFDCE0</Color>
     <Color x:Key="StudioTextColor">#183B42</Color>
-    <Color x:Key="StudioMutedColor">#526F77</Color>
-    <Color x:Key="StudioAccentColor">#007184</Color>
-    <Color x:Key="StudioSecondaryColor">#159BA5</Color>
-    <Color x:Key="StudioPrimaryColor">#007D8F</Color>
-    <Color x:Key="StudioGradientStartColor">#007D8F</Color>
-    <Color x:Key="StudioTextGradientEndColor">#007184</Color>
+    <Color x:Key="StudioMutedColor">#4c676f</Color>
+    <Color x:Key="StudioAccentColor">#016d7f</Color>
+    <Color x:Key="StudioSecondaryColor">#007184</Color>
+    <Color x:Key="StudioPrimaryColor">#007184</Color>
+    <Color x:Key="StudioGradientStartColor">#007184</Color>
+    <Color x:Key="StudioTextGradientEndColor">#016d7f</Color>
     <SolidColorBrush x:Key="StudioBackground" Color="{StaticResource StudioBackgroundColor}" />
     <SolidColorBrush x:Key="StudioSurface" Color="{StaticResource StudioSurfaceColor}" />
     <SolidColorBrush x:Key="StudioRaised" Color="{StaticResource StudioRaisedColor}" />
@@ -30,22 +37,22 @@
         <GradientStop Offset="1" Color="{StaticResource StudioTextGradientEndColor}" />
     </LinearGradientBrush>
     <!-- 语义色保持状态含义；文字色与实色底分别定义，避免白字落在浅黄或浅绿上。 -->
-    <SolidColorBrush x:Key="StudioOnPrimary">White</SolidColorBrush>
-    <SolidColorBrush x:Key="StudioPrimaryHover">#007081</SolidColorBrush>
-    <SolidColorBrush x:Key="StudioPrimaryPressed">#006472</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorSuccess">#147537</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorWarning">#925C00</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDanger">#B42318</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerActive">#912018</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioOnPrimary">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioPrimaryHover">#006879</SolidColorBrush>
+    <SolidColorBrush x:Key="StudioPrimaryPressed">#005f6f</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorSuccess">#316C48</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWarning">#825B19</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDanger">#b33632</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerActive">#b33632</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorSuccessLight">#E4F5E8</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorWarningLight">#FDF3DC</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerLight">#FDECEC</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerLightActive">#F9DCDC</SolidColorBrush>
-    <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">White</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLight">#f0f0f0</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLightActive">#f0f0f0</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#FFFFFF</SolidColorBrush>
     <!-- 白字操作面使用独立渐变，装饰渐变保留明亮副色。 -->
     <LinearGradientBrush x:Key="StudioActionGradient" StartPoint="0%,0%" EndPoint="100%,100%">
         <GradientStop Offset="0" Color="{StaticResource StudioPrimaryColor}" />
-        <GradientStop Offset="1" Color="#006F80" />
+        <GradientStop Offset="1" Color="#007184" />
     </LinearGradientBrush>
     <ResourceDictionary x:Key="StudioPropertyGridTheme">
         <StaticResource x:Key="PgBackground" ResourceKey="StudioSurface" />
@@ -60,7 +67,7 @@
         <StaticResource x:Key="PgSelected" ResourceKey="StudioPrimary" />
         <StaticResource x:Key="PgSelectedSoft" ResourceKey="StudioRaised" />
         <StaticResource x:Key="PgEditorBackground" ResourceKey="StudioSurface" />
-        <SolidColorBrush x:Key="PgSelectedText">White</SolidColorBrush>
+        <SolidColorBrush x:Key="PgSelectedText">#FFFFFF</SolidColorBrush>
     </ResourceDictionary>
     <!-- 现有控件模板通过资源别名使用配色。 -->
     <StaticResource x:Key="CodeWFWindowBackground" ResourceKey="StudioBackground" />

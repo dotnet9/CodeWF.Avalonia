@@ -34,6 +34,8 @@ public static class MarkdownTypographyThemeRegistry
         Register(MarkdownTypographyThemes.CuteGreen, static () => new CuteGreenTypographyResources());
         Register(MarkdownTypographyThemes.FullStackBlue, static () => new FullStackBlueTypographyResources());
         Register(MarkdownTypographyThemes.WeChatFormat, static () => new WeChatFormatTypographyResources());
+        foreach (var typography in ArticleTypographyCatalog.All)
+            Register(typography.Key, typography.CreateResources);
     }
 
     public static IReadOnlyList<string> ThemeNames

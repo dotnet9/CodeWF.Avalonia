@@ -7,16 +7,16 @@ namespace CodeWF.Avalonia.Controls.Tests;
 
 public sealed class StudioThemeTests
 {
-    public static TheoryData<ThemeVariant> Variants => new()
+    public static TheoryData<ThemeVariant> Variants
     {
-        StudioTheme.DotNetLight, StudioTheme.DotNetDark,
-        StudioTheme.AuroraLight, StudioTheme.AuroraDark,
-        StudioTheme.EmberLight, StudioTheme.EmberDark,
-        StudioTheme.AquaticLight, StudioTheme.AquaticDark,
-        StudioTheme.DesertLight, StudioTheme.DesertDark,
-        StudioTheme.DuskLight, StudioTheme.DuskDark,
-        StudioTheme.NightSkyLight, StudioTheme.NightSkyDark,
-    };
+        get
+        {
+            var data = new TheoryData<ThemeVariant>();
+            foreach (var palette in Enum.GetValues<StudioPalette>())
+            foreach (var dark in new[] { false, true }) data.Add(StudioTheme.GetVariant(palette, dark));
+            return data;
+        }
+    }
 
     [Theory]
     [MemberData(nameof(Variants))]
@@ -42,11 +42,11 @@ public sealed class StudioThemeTests
     }
 
     [Fact]
-    public void ExistingPalettesKeepTheirSemiTemplateColors()
+    public void AllPalettesProvideNativeControlColors()
     {
         var theme = new StudioTheme();
-        Assert.False(theme.TryGetResource("SemiColorPrimary", ThemeVariant.Light, out _));
-        Assert.False(theme.TryGetResource("SemiColorPrimary", ThemeVariant.Dark, out _));
+        Assert.True(theme.TryGetResource("SemiColorPrimary", ThemeVariant.Light, out _));
+        Assert.True(theme.TryGetResource("SemiColorPrimary", ThemeVariant.Dark, out _));
         Assert.True(theme.TryGetResource("StudioSurface", ThemeVariant.Dark, out _));
     }
 
@@ -69,7 +69,7 @@ public sealed class StudioThemeTests
                      "ButtonSolidPrimaryBackground", "ButtonSolidPrimaryBorderBrush", "CalendarItemCalendarDayButtonSelectedBackground" })
         {
             Assert.Equal(Get("StudioPrimary").Color, Get(key).Color);
-            Assert.True(Contrast(Colors.White, Get(key).Color) >= 4.5, key);
+            Assert.True(Contrast(Get("StudioOnPrimary").Color, Get(key).Color) >= 4.5, key);
         }
         Assert.Equal(0.4, Get("CheckBoxCheckedDisabledBackground").Opacity);
     }
@@ -109,7 +109,7 @@ public sealed class StudioThemeTests
                 var amount = step / 100d;
                 byte Blend(byte a, byte b) => (byte)Math.Round(a + (b - a) * amount);
                 var background = Color.FromRgb(Blend(first.R, last.R), Blend(first.G, last.G), Blend(first.B, last.B));
-                Assert.True(Contrast(Colors.White, background) >= 4.5, variant + "/ActionGradient/" + step);
+                Assert.True(Contrast(ColorOf("StudioOnPrimary"), background) >= 4.5, variant + "/ActionGradient/" + step);
             }
         }
     }

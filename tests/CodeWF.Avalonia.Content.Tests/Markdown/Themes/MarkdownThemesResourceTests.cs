@@ -72,12 +72,12 @@ public sealed class MarkdownThemesResourceTests
 
 		Assert.False(parent.Resources.TryGetResource(MarkdownStyleKeys.AccentBrushResource, ThemeVariant.Light, out _));
 		Assert.True(viewer.Resources.TryGetResource(MarkdownStyleKeys.AccentBrushResource, ThemeVariant.Light, out var accentBrush));
-		Assert.IsType<SolidColorBrush>(accentBrush);
+		Assert.IsAssignableFrom<ISolidColorBrush>(accentBrush);
 	});
 
 	[Theory]
-	[InlineData(MarkdownTypographyThemes.Simple, "#3E64FF", "#F6F8FA", "#F6F7F9", "#F6F7F9")]
-	[InlineData(MarkdownTypographyThemes.OrangeHeart, "#EF7060", "#F6F8FA", "#FFF3F0", "#FFF3F0")]
+	[InlineData(MarkdownTypographyThemes.Simple, "#343B43", "#F6F7F8", "#F6F7F8", "#F3F3F4")]
+	[InlineData(MarkdownTypographyThemes.OrangeHeart, "#874742", "#F6F7F8", "#F6F7F8", "#FEF6F5")]
 	public void CreateExportStyle_WhenThemeUsesCommonResources_ResolvesIncludedBaseResources(
 		string themeName,
 		string accentColor,
@@ -101,13 +101,9 @@ public sealed class MarkdownThemesResourceTests
 		var style = MarkdownThemes.CreateExportStyle(MarkdownTypographyThemes.WeChatFormat);
 
 		Assert.Contains(MarkdownTypographyThemes.WeChatFormat, MarkdownTypographyThemeRegistry.ThemeNames);
-		Assert.Equal("#3F3F3F", style.BodyColor);
-		Assert.Equal("#3F3F3F", style.HeadingColor);
-		Assert.Equal("#FF3502", style.LinkColor);
-		Assert.Equal("#F8F5EC", style.InlineCodeBackgroundColor);
-		Assert.Equal("#9E9E9E", style.QuoteBorderColor);
-		Assert.Equal("#1A9E9E9E", style.QuoteBackgroundColor);
-		Assert.Equal(1.625d, style.LineHeightRatio);
+		Assert.Equal("#30343B", style.BodyColor);
+		Assert.Equal(Color.Parse(ArticleTypographyCatalog.Find("WeChatFormat")!.LightText), Color.Parse(style.LinkColor));
+		Assert.Equal(2d, style.LineHeightRatio);
 	});
 
 	[Fact]

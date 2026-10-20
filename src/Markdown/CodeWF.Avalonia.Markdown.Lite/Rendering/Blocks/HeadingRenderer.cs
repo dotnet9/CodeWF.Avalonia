@@ -6,6 +6,7 @@ using global::Avalonia.Media;
 using CodeWF.Avalonia.Markdown.Controls;
 using CodeWF.Avalonia.Markdown.Shared.Rendering;
 using Markdig.Syntax;
+using CodeWF.Avalonia.Markdown.Themes;
 
 namespace CodeWF.Avalonia.Markdown.Rendering;
 
@@ -31,7 +32,7 @@ internal sealed class HeadingRenderer : IMarkdownBlockRenderer
 
         var textBlock = context.CreateSelectableText(MarkdownStyleKeys.Heading, MarkdownStyleKeys.GetHeadingClass(heading.Level));
         textBlock.FontWeight = FontWeight.Bold;
-        context.BindTheme(textBlock, SelectableTextBlock.ForegroundProperty, MarkdownViewer.TextBrushProperty);
+        context.BindTheme(textBlock, SelectableTextBlock.ForegroundProperty, MarkdownViewer.TextBrushProperty, BindingPriority.Style);
         context.BindTheme(textBlock, SelectableTextBlock.FontFamilyProperty, MarkdownViewer.ContentFontFamilyProperty);
         context.BindTheme(textBlock, SelectableTextBlock.FontSizeProperty, GetHeadingFontSizeProperty(heading.Level));
 
@@ -41,6 +42,19 @@ internal sealed class HeadingRenderer : IMarkdownBlockRenderer
         }
 
         context.AttachLinkInteraction(textBlock, heading.Inline, false);
+
+        if (context is MarkdownViewer viewer && ArticleTypographyCatalog.Find(viewer.TypographyTheme) is not null)
+        {
+        var prefix = "CodeWFMarkdownHeading" + heading.Level;
+        border.Bind(Border.BorderThicknessProperty, border.GetResourceObservable(prefix + "BorderThickness"));
+        border.Bind(Border.PaddingProperty, border.GetResourceObservable(prefix + "Padding"));
+        border.Bind(Border.CornerRadiusProperty, border.GetResourceObservable(prefix + "CornerRadius"));
+        border.Bind(Border.BackgroundProperty, border.GetResourceObservable(prefix + "Background"));
+        border.Bind(Border.BorderBrushProperty, border.GetResourceObservable(prefix + "BorderBrush"));
+        textBlock.Bind(SelectableTextBlock.ForegroundProperty, textBlock.GetResourceObservable(prefix + "Foreground"));
+        textBlock.Bind(SelectableTextBlock.FontWeightProperty, textBlock.GetResourceObservable(prefix + "FontWeight"));
+        textBlock.Bind(SelectableTextBlock.TextAlignmentProperty, textBlock.GetResourceObservable(prefix + "TextAlignment"));
+        }
 
         border.Child = textBlock;
         return border;

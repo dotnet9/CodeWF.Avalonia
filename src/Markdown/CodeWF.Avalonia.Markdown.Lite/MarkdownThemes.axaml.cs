@@ -421,6 +421,14 @@ public class MarkdownThemes : Styles
             {
                 sizedResources[compactResource.Key] = compactResource.Value;
             }
+            // Compact article layouts reduce spacing while retaining a readable body size.
+            if (ArticleTypographyCatalog.Find(typographyTheme) is { } article)
+            {
+                sizedResources[MarkdownStyleKeys.ParagraphFontSizeResource] = Math.Max(16, article.BodySize * .93);
+                sizedResources[MarkdownStyleKeys.ParagraphLineHeightResource] = Math.Max(16, article.BodySize * .93) * 1.65;
+                for (var i = 0; i < article.Headings.Length; i++)
+                    sizedResources["CodeWFMarkdownHeading" + (i + 1) + "FontSize"] = article.Headings[i].Size * .93;
+            }
         }
 
         sizedResources[MarkdownStyleKeys.TypographyThemeResource] = typographyTheme ?? string.Empty;
