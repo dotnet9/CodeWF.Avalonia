@@ -26,7 +26,7 @@ public sealed class StudioThemeControllerTests(AvaloniaPlatformFixture platform)
         {
             using var controller = new StudioThemeController(application);
             var palettes = Enum.GetValues<StudioPalette>();
-            Assert.Equal(8, palettes.Length);
+            Assert.Equal(16, palettes.Length);
             foreach (var palette in palettes)
             {
                 controller.Palette = palette;
