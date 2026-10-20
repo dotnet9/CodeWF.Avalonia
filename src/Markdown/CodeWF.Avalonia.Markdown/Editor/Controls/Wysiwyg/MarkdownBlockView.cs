@@ -435,6 +435,7 @@ internal sealed class MarkdownBlockView : UserControl
         {
             var preview = _preview ??= CreatePreview();
 
+            preview.SyntaxOptions = _options.SyntaxOptions;
             preview.ImageBasePath = _options.ImageBasePath;
             preview.TypographyTheme = _options.TypographyTheme;
             preview.TypographySize = _options.TypographySize;

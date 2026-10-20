@@ -1,4 +1,4 @@
-﻿using CodeWF.Avalonia.Markdown;
+using CodeWF.Avalonia.Markdown;
 using CodeWF.Avalonia.Markdown.Editor.Controls;
 using CodeWF.Avalonia.Markdown.Editor.Services;
 using CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
@@ -24,6 +24,25 @@ public sealed class MarkdownLiveEditorViewTests
     private readonly AvaloniaPlatformFixture _platform;
 
     public MarkdownLiveEditorViewTests(AvaloniaPlatformFixture platform) => _platform = platform;
+
+    [Theory]
+    [InlineData(MarkdownEditorAction.Strikethrough, "~~")]
+    [InlineData(MarkdownEditorAction.Highlight, "==")]
+    [InlineData(MarkdownEditorAction.Superscript, "^")]
+    [InlineData(MarkdownEditorAction.Subscript, "~")]
+    public void ExtendedInlineActionsPreserveHistory(MarkdownEditorAction action, string marker) => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView();
+        view.SetText("文字"); view.FocusBlock(0);
+        var box = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Single().ActiveEditor!;
+        box.SelectionStart = 0; box.SelectionEnd = 2;
+        view.ExecuteAsync(action).GetAwaiter().GetResult();
+        Assert.Contains(marker + "文字" + marker, view.Text);
+        view.ExecuteAsync(MarkdownEditorAction.Undo).GetAwaiter().GetResult();
+        Assert.Equal("文字", view.Text);
+        view.ExecuteAsync(MarkdownEditorAction.Redo).GetAwaiter().GetResult();
+        Assert.Contains(marker + "文字" + marker, view.Text);
+    });
 
     [Theory]
     [InlineData("(", "()")]

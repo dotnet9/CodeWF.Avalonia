@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Controls.Presenters;
 using global::Avalonia.VisualTree;
@@ -62,6 +62,11 @@ public partial class MarkdownLiveEditorView : UserControl
         get => GetValue(ImageBasePathProperty);
         set => SetValue(ImageBasePathProperty, value);
     }
+
+    /// <summary>当前文档的预览语法选项；更改不修改正文或撤销历史。</summary>
+    public static readonly StyledProperty<MarkdownSyntaxOptions?> SyntaxOptionsProperty =
+        AvaloniaProperty.Register<MarkdownLiveEditorView, MarkdownSyntaxOptions?>(nameof(SyntaxOptions));
+    public MarkdownSyntaxOptions? SyntaxOptions { get => GetValue(SyntaxOptionsProperty); set => SetValue(SyntaxOptionsProperty, value); }
 
     /// <summary>正文最大宽度（含留白），默认不限制；宿主可控制阅读行长。</summary>
     public static readonly StyledProperty<double> DocumentMaxWidthProperty =
@@ -410,6 +415,11 @@ public partial class MarkdownLiveEditorView : UserControl
     {
         base.OnPropertyChanged(change);
         if (_paneHead is null) return;
+        if (change.Property == SyntaxOptionsProperty)
+        {
+            _blockOptions.SyntaxOptions = SyntaxOptions;
+            RebuildPreservingEdit();
+        }
         if (change.Property == DocumentBlockSpacingProperty) _blockHost.Spacing = DocumentBlockSpacing;
         if (change.Property == DocumentPaddingProperty) _blockHost.Margin = DocumentPadding;
         if (change.Property == DocumentMaxWidthProperty && _container is not null) _container.MaxWidth = DocumentMaxWidth;
@@ -919,6 +929,14 @@ public partial class MarkdownLiveEditorView : UserControl
             case MarkdownEditorAction.Italic:
                 WrapActive("*", "*");
                 break;
+            case MarkdownEditorAction.Strikethrough:
+                WrapActive("~~", "~~"); break;
+            case MarkdownEditorAction.Highlight:
+                WrapActive("==", "=="); break;
+            case MarkdownEditorAction.Superscript:
+                WrapActive("^", "^"); break;
+            case MarkdownEditorAction.Subscript:
+                WrapActive("~", "~"); break;
             case MarkdownEditorAction.InlineCode:
                 WrapActive("`", "`");
                 break;

@@ -42,6 +42,7 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
 
     public Control? TryRender(Block block, string? sourceMarkdown, IMarkdownRenderContext context)
     {
+        if (context is CodeWF.Avalonia.Markdown.Controls.MarkdownViewer { SyntaxOptions.Diagrams: false }) return null;
         if (block is not FencedCodeBlock fenced
             || !string.Equals(fenced.Info?.Trim(), "mermaid", StringComparison.OrdinalIgnoreCase))
         {

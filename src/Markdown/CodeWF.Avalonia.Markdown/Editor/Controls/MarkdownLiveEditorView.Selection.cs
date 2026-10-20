@@ -187,6 +187,10 @@ public partial class MarkdownLiveEditorView
             case MarkdownEditorAction.CopyPlainText: _ = CopyPlainTextAsync(); return true;
             case MarkdownEditorAction.Bold: ReplaceDocumentSelection("**" + SelectedText + "**"); return true;
             case MarkdownEditorAction.Italic: ReplaceDocumentSelection("*" + SelectedText + "*"); return true;
+            case MarkdownEditorAction.Strikethrough: ReplaceDocumentSelection("~~" + SelectedText + "~~"); return true;
+            case MarkdownEditorAction.Highlight: ReplaceDocumentSelection("==" + SelectedText + "=="); return true;
+            case MarkdownEditorAction.Superscript: ReplaceDocumentSelection("^" + SelectedText + "^"); return true;
+            case MarkdownEditorAction.Subscript: ReplaceDocumentSelection("~" + SelectedText + "~"); return true;
             case MarkdownEditorAction.InlineCode: ReplaceDocumentSelection("`" + SelectedText + "`"); return true;
             default: return false;
         }

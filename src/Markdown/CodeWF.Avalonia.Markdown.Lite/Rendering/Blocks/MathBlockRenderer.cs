@@ -18,6 +18,7 @@ internal sealed class MathBlockRenderer : IMarkdownBlockRenderer
 {
     public Control? TryRender(Block block, string? sourceMarkdown, IMarkdownRenderContext context)
     {
+        if (context is MarkdownViewer { SyntaxOptions.Math: false }) return null;
         var text = MarkdownSpecialBlocks.GetSpecialBlockText(block, sourceMarkdown) ?? string.Empty;
         if (string.IsNullOrWhiteSpace(text))
         {
@@ -36,6 +37,7 @@ internal sealed class MathBlockRenderer : IMarkdownBlockRenderer
     {
         if (MarkdownChemistry.TryParseLatex(latex, out var chemExpression))
         {
+            if (context is MarkdownViewer { SyntaxOptions.Chemistry: false }) return context.CreateFallbackText(latex, MarkdownStyleKeys.HtmlBlock);
             return CreateChemBlock(chemExpression, context);
         }
 

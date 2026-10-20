@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using global::Avalonia.Automation;
 using global::Avalonia.Automation.Peers;
 using global::Avalonia.Controls;
@@ -58,6 +58,11 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     internal static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
         .UseAdvancedExtensions()
         .Build();
+
+    private MarkdownPipeline _documentPipeline = Pipeline;
+    public static readonly StyledProperty<MarkdownSyntaxOptions?> SyntaxOptionsProperty =
+        AvaloniaProperty.Register<MarkdownViewer, MarkdownSyntaxOptions?>(nameof(SyntaxOptions));
+    public MarkdownSyntaxOptions? SyntaxOptions { get => GetValue(SyntaxOptionsProperty); set => SetValue(SyntaxOptionsProperty, value); }
 
     private readonly List<RenderedBlock> _renderedBlocks = [];
     private readonly List<IDisposable> _currentBlockDisposables = [];
@@ -540,6 +545,11 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
     static MarkdownViewer()
     {
+        SyntaxOptionsProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) =>
+        {
+            viewer._documentPipeline = viewer.SyntaxOptions?.CreatePipeline() ?? Pipeline;
+            viewer.QueueRenderDocument(MarkdownRenderMode.Full);
+        });
         MarkdownProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) =>
         {
             // 整串赋值优先：解除流式绑定，回退编辑驱动渲染。
@@ -687,7 +697,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
     public string GetRenderedText()
     {
-        return MarkdownParser.Parse(Markdown, Pipeline).PlainText;
+        return MarkdownParser.Parse(Markdown, _documentPipeline).PlainText;
     }
 
     public void Rerender()
@@ -929,7 +939,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         _renderedBlocks.Clear();
         _renderedMarkdown = text;
         var parseStart = System.Diagnostics.Stopwatch.GetTimestamp();
-        _renderedModel = parsedModel ?? MarkdownParser.Parse(text, Pipeline);
+        _renderedModel = parsedModel ?? MarkdownParser.Parse(text, _documentPipeline);
         if (parsedModel is null)
         {
             _lastParseDuration = System.Diagnostics.Stopwatch.GetElapsedTime(parseStart);
@@ -971,7 +981,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             return false;
         }
 
-        var newModel = parsedModel ?? MarkdownParser.Parse(text, Pipeline);
+        var newModel = parsedModel ?? MarkdownParser.Parse(text, _documentPipeline);
         var diff = dirtySpan is { Length: > 0 } span
             ? MarkdownDiffService.TryCompareWithinDirtySpan(_renderedModel, newModel, span)
               ?? MarkdownDiffService.Compare(_renderedModel, newModel)

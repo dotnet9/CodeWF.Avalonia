@@ -186,7 +186,7 @@ public partial class MarkdownViewer
     private MarkdownDocumentModel ParseMarkdownWithTiming(string text)
     {
         var start = System.Diagnostics.Stopwatch.GetTimestamp();
-        var model = MarkdownParser.Parse(text, Pipeline);
+        var model = MarkdownParser.Parse(text, _documentPipeline);
         _lastParseDuration = System.Diagnostics.Stopwatch.GetElapsedTime(start);
         return model;
     }

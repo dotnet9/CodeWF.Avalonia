@@ -1,6 +1,5 @@
 using CodeWF.Avalonia.Markdown;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 using global::Avalonia.Controls.Documents;
 using global::Avalonia.Media;
@@ -99,7 +98,7 @@ public sealed class MarkdownInlineStyleTests(AvaloniaPlatformFixture platform)
 
 	private static object CreateViewer()
 	{
-		return RuntimeHelpers.GetUninitializedObject(typeof(FullMarkdownViewer));
+		return new FullMarkdownViewer();
 	}
 
 	private static IReadOnlyList<Run> FlattenRuns(IEnumerable<AvaloniaInline> inlines)

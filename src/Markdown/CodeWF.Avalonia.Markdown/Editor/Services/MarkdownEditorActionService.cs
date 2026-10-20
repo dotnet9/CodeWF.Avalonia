@@ -68,6 +68,18 @@ public sealed class MarkdownEditorActionService : IMarkdownEditorActionService
             case MarkdownEditorAction.Italic:
                 WrapSelection(editor, "*", "*", _templates.ItalicPlaceholder, runTextMutation);
                 break;
+            case MarkdownEditorAction.Strikethrough:
+                WrapSelection(editor, "~~", "~~", _templates.BoldPlaceholder, runTextMutation);
+                break;
+            case MarkdownEditorAction.Highlight:
+                WrapSelection(editor, "==", "==", _templates.BoldPlaceholder, runTextMutation);
+                break;
+            case MarkdownEditorAction.Superscript:
+                WrapSelection(editor, "^", "^", _templates.BoldPlaceholder, runTextMutation);
+                break;
+            case MarkdownEditorAction.Subscript:
+                WrapSelection(editor, "~", "~", _templates.BoldPlaceholder, runTextMutation);
+                break;
             case MarkdownEditorAction.InlineCode:
                 WrapSelection(editor, "`", "`", _templates.InlineCodePlaceholder, runTextMutation);
                 break;

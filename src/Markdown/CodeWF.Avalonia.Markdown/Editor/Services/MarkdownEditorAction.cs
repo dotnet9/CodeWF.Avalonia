@@ -36,5 +36,9 @@ public enum MarkdownEditorAction
     SmartNewLine,
     Indent,
     Outdent,
-    FocusEditor
+    FocusEditor,
+    Strikethrough,
+    Highlight,
+    Superscript,
+    Subscript
 }

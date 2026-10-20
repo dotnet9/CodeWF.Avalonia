@@ -8,6 +8,7 @@ namespace CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
 /// </summary>
 internal sealed class MarkdownBlockViewOptions
 {
+    public MarkdownSyntaxOptions? SyntaxOptions { get; set; }
     public string? ImageBasePath { get; set; }
     public string? TypographyTheme { get; set; }
     public string? TypographySize { get; set; }

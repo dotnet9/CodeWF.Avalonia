@@ -66,9 +66,10 @@ internal sealed class MarkdownInlineRenderer(IMarkdownRenderContext context)
                 result.AddRange(CreateLiteralInlines(literalText));
                 return result;
 
-            case LineBreakInline:
+            case LineBreakInline lineBreak:
                 stripTaskPrefix = false;
-                result.Add(new LineBreak());
+                result.Add(!lineBreak.IsHard && _context is MarkdownViewer { SyntaxOptions.SoftBreaks: false }
+                    ? new Run(" ") : new LineBreak());
                 return result;
 
             case CodeInline code:
@@ -180,7 +181,7 @@ internal sealed class MarkdownInlineRenderer(IMarkdownRenderContext context)
         var index = 0;
         while (index < text.Length)
         {
-            if (TryReadInlineMath(text, index, out var latex, out var mathEnd))
+            if (_context is not MarkdownViewer { SyntaxOptions.Math: false } && TryReadInlineMath(text, index, out var latex, out var mathEnd))
             {
                 yield return CreateMathInline(latex);
                 index = mathEnd;
@@ -274,6 +275,9 @@ internal sealed class MarkdownInlineRenderer(IMarkdownRenderContext context)
 
     private Inline CreateMathInline(string latex)
     {
+        if (_context is MarkdownViewer { SyntaxOptions.Math: false }) return new Run("$" + latex + "$");
+        if (_context is MarkdownViewer { SyntaxOptions.Chemistry: false }
+            && (latex.Contains(@"\ce{", StringComparison.Ordinal) || latex.Contains(@"\pu{", StringComparison.Ordinal))) return new Run(latex);
         if (MarkdownChemistry.TryParseLatex(latex, out var chemExpression))
         {
             var span = new Span();
@@ -401,10 +405,18 @@ internal sealed class MarkdownInlineRenderer(IMarkdownRenderContext context)
             fontStyle = FontStyle.Italic;
         }
 
-        if (emphasis.DelimiterChar == '~')
+        if (emphasis.DelimiterChar == '~' && emphasis.DelimiterCount >= 2)
         {
             textDecorations = TextDecorations.Strikethrough;
         }
+
+        if (emphasis.DelimiterChar is '^' or '~' && emphasis.DelimiterCount == 1)
+        {
+            span.BaselineAlignment = emphasis.DelimiterChar == '^' ? BaselineAlignment.Superscript : BaselineAlignment.Subscript;
+            span.FontSize = _context.ParagraphFontSize * 0.75;
+        }
+        if (emphasis.DelimiterChar == '=' && emphasis.DelimiterCount == 2)
+            span.Background = new SolidColorBrush(Color.FromArgb(100, 255, 213, 79));
 
         foreach (var child in span.Inlines)
         {
