@@ -4,6 +4,7 @@ using global::Avalonia.Controls.Documents;
 using global::Avalonia.Controls.Primitives;
 using global::Avalonia.Layout;
 using global::Avalonia.Media;
+using global::Avalonia.LogicalTree;
 using CodeWF.Avalonia.Markdown.Controls;
 using CodeWF.Toolkit.Lang;
 using Markdig.Syntax;
@@ -88,8 +89,7 @@ internal sealed class CodeBlockRenderer : IMarkdownBlockRenderer
         header.Children.Add(languageText);
         header.Children.Add(copyButton);
         stack.Children.Add(header);
-        stack.Children.Add(
-            context.CodeHighlighter?.Invoke(
+        var codeView = context.CodeHighlighter?.Invoke(
                 code,
                 language,
                 context.CodeBlockIsDark,
@@ -98,7 +98,18 @@ internal sealed class CodeBlockRenderer : IMarkdownBlockRenderer
                 context.CodeBlockLineHeight,
                 () => context.HasSelection,
                 context.CopySelectionAsync)
-            ?? CreatePlainCodeFallback(code, context));
+            ?? CreatePlainCodeFallback(code, context);
+        if (context.CodeBlockWrap)
+        {
+            foreach (var text in codeView.GetLogicalDescendants().OfType<SelectableTextBlock>())
+            {
+                if (text.Tag as string == "CodeLineNumbers") text.IsVisible = false;
+                else text.TextWrapping = TextWrapping.Wrap;
+            }
+            foreach (var scroll in codeView.GetLogicalDescendants().OfType<ScrollViewer>().Prepend(codeView as ScrollViewer).OfType<ScrollViewer>())
+                scroll.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+        }
+        stack.Children.Add(codeView);
 
         context.RaiseCodeBlockToolRender(header, stack, codeBlock);
 

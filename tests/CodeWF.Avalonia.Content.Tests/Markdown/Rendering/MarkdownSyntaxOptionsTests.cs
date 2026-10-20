@@ -8,6 +8,7 @@ using global::Avalonia.Controls.Documents;
 using global::Avalonia.Controls.Templates;
 using global::Avalonia.Threading;
 using global::Avalonia.VisualTree;
+using global::Avalonia.LogicalTree;
 using Xunit;
 
 namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
@@ -34,6 +35,30 @@ public sealed class MarkdownSyntaxOptionsTests
 [Collection("AvaloniaPlatform")]
 public sealed class MarkdownSyntaxControlTests(AvaloniaPlatformFixture platform)
 {
+    [Fact]
+    public void CodeWrappingAndFontChangesUpdateExistingViewer() => platform.Run(() =>
+    {
+        var viewer = new MarkdownViewer { Markdown = "```text\nlong code line\n```" };
+        viewer.Template = new FuncControlTemplate<MarkdownViewer>((_, scope) =>
+        {
+            var panel = new StackPanel(); scope.Register("PART_DocumentHost", panel); return panel;
+        });
+        var window = new Window { Content = viewer, Width = 300, Height = 240 };
+        window.Show();
+        try
+        {
+            viewer.CodeBlockWrap = true; viewer.CodeBlockFontSize = 19; viewer.Rerender(); Dispatcher.UIThread.RunJobs();
+            var code = viewer.GetVisualDescendants().OfType<ScrollViewer>()
+                .SelectMany(scroll => scroll.GetLogicalDescendants()).OfType<SelectableTextBlock>()
+                .First(x => x.Classes.Contains("MdCodeBlockPlain") || x.Classes.Contains("MdCodeBlockText"));
+            Assert.Equal(global::Avalonia.Media.TextWrapping.Wrap, code.TextWrapping);
+            Assert.Equal(19, code.FontSize);
+            Assert.Equal("```text\nlong code line\n```", viewer.Markdown);
+        }
+        finally { window.Close(); }
+    });
+
+
     [Fact]
     public void ChangingOneViewerReparsesOnlyThatViewerWithoutChangingSource() => platform.Run(() =>
     {

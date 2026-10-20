@@ -115,7 +115,7 @@ public static class MarkdownSocialCopyRenderer
 			</html>
 			""";
 
-		var plainText = MarkdownParser.Parse(document.Markdown, Pipeline).PlainText;
+        var plainText = MarkdownParser.Parse(document.Markdown, resolvedOptions.SyntaxOptions?.CreatePipeline() ?? Pipeline).PlainText;
 		return new MarkdownHtmlCopyContent(plainText, html);
 	}
 
@@ -134,7 +134,7 @@ public static class MarkdownSocialCopyRenderer
 		MarkdownSocialCopyProfile profile,
 		MarkdownSocialCopyOptions options)
 	{
-		var parsed = Markdig.Markdown.Parse(document.Markdown, Pipeline);
+        var parsed = Markdig.Markdown.Parse(document.Markdown, options.SyntaxOptions?.CreatePipeline() ?? Pipeline);
 		EmbedLocalImages(parsed, document.FilePath);
 		var body = RenderSocialBlocks(parsed, style, profile, options);
 		if (profile.AppendSuffix)

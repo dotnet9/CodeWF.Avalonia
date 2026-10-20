@@ -87,6 +87,7 @@ internal static class CodeHighlighter
         {
             var lineNumbers = new SelectableTextBlock
             {
+                Tag = "CodeLineNumbers",
                 Text = string.Join(Environment.NewLine, Enumerable.Range(1, lineCount).Select(i => i.ToString())),
                 TextWrapping = TextWrapping.NoWrap,
                 FontFamily = textBlock.FontFamily,

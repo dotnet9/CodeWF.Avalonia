@@ -7,6 +7,20 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Export;
 
 public sealed class MarkdownDocumentExporterTests
 {
+	[Fact]
+	public void RichHtmlCopy_UsesDocumentSyntaxWithoutChangingGlobalPipeline()
+	{
+		var document = new MarkdownExportDocument("Text ==marked== and ~sub~.");
+		var disabled = MarkdownSocialCopyRenderer.Render(document, CopyKind.Wechat,
+			options: new MarkdownSocialCopyOptions { SyntaxOptions = new MarkdownSyntaxOptions(Highlight: false, Subscript: false) });
+		var enabled = MarkdownSocialCopyRenderer.Render(document, CopyKind.Wechat,
+			options: new MarkdownSocialCopyOptions { SyntaxOptions = new MarkdownSyntaxOptions() });
+		Assert.Contains("==marked==", disabled.Html);
+		Assert.DoesNotContain("==marked==", enabled.Html);
+		Assert.Contains("~sub~", disabled.Html);
+		Assert.DoesNotContain("~sub~", enabled.Html);
+	}
+
 	[Theory]
 	[InlineData("A4", 595, 842)]
 	[InlineData("Letter", 612, 792)]

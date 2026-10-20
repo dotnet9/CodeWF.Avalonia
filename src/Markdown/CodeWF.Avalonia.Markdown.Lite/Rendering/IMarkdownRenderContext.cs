@@ -122,6 +122,7 @@ public interface IMarkdownRenderContext
     FontFamily CodeFontFamily { get; }
 
     double CodeBlockFontSize { get; }
+    bool CodeBlockWrap => false;
 
     double CodeBlockLineHeight { get; }
 

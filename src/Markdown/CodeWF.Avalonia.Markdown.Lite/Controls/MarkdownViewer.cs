@@ -251,6 +251,9 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
     public static readonly StyledProperty<double> CodeBlockFontSizeProperty =
         AvaloniaProperty.Register<MarkdownViewer, double>(nameof(CodeBlockFontSize), 13);
+    public static readonly StyledProperty<bool> CodeBlockWrapProperty =
+        AvaloniaProperty.Register<MarkdownViewer, bool>(nameof(CodeBlockWrap));
+    public bool CodeBlockWrap { get => GetValue(CodeBlockWrapProperty); set => SetValue(CodeBlockWrapProperty, value); }
 
     public static readonly StyledProperty<double> CodeBlockLineHeightProperty =
         AvaloniaProperty.Register<MarkdownViewer, double>(nameof(CodeBlockLineHeight), 20);
@@ -570,6 +573,9 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         // 高亮 token 的颜色在生成时固定；代码背景资源变更也需重建，
         // 防止主题切换后仍保留与新底色相反的 token 配色。
         CodeBackgroundBrushProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) => viewer.QueueRenderDocument(MarkdownRenderMode.Full));
+        CodeBlockFontSizeProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) => viewer.QueueRenderDocument(MarkdownRenderMode.Full));
+        CodeFontFamilyProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) => viewer.QueueRenderDocument(MarkdownRenderMode.Full));
+        CodeBlockWrapProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) => viewer.QueueRenderDocument(MarkdownRenderMode.Full));
     }
 
     private MenuItem? _viewerCopyMenuItem;

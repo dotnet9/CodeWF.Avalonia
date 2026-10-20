@@ -94,6 +94,7 @@ internal sealed class MarkdownBlockView : UserControl
         _editor.AcceptsReturn = true;
         _editor.TextWrapping = TextWrapping.Wrap;
         _editor.FontFamily = isCode ? options.CodeFontFamily : options.ContentFontFamily;
+        if (isCode) _editor.TextWrapping = options.CodeWrap ? TextWrapping.Wrap : TextWrapping.NoWrap;
         _editor.FontSize = _runFontSize;
         _editor.Foreground = options.TextBrush;
         _editor.CaretBrush = options.AccentBrush;
@@ -442,6 +443,7 @@ internal sealed class MarkdownBlockView : UserControl
             preview.ContentFontFamily = _options.ContentFontFamily;
             preview.ParagraphFontSize = _options.FontSize;
             preview.CodeBlockFontSize = _options.CodeFontSize;
+            preview.CodeBlockWrap = _options.CodeWrap;
             preview.Markdown = Model.Kind == MarkdownBlockKind.ListItem || RenderQuoteAsParagraph
                 ? Model.Text : MarkdownBlockParser.WriteCanonical([Model]);
             SetDisplay(preview);

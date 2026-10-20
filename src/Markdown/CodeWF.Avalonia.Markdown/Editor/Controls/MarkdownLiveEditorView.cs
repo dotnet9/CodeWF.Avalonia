@@ -72,6 +72,8 @@ public partial class MarkdownLiveEditorView : UserControl
     public static readonly StyledProperty<double> CodeFontSizeProperty =
         AvaloniaProperty.Register<MarkdownLiveEditorView, double>(nameof(CodeFontSize), 13);
     public double CodeFontSize { get => GetValue(CodeFontSizeProperty); set => SetValue(CodeFontSizeProperty, value); }
+    public static readonly StyledProperty<bool> CodeWrapProperty = AvaloniaProperty.Register<MarkdownLiveEditorView, bool>(nameof(CodeWrap));
+    public bool CodeWrap { get => GetValue(CodeWrapProperty); set => SetValue(CodeWrapProperty, value); }
 
     /// <summary>正文最大宽度（含留白），默认不限制；宿主可控制阅读行长。</summary>
     public static readonly StyledProperty<double> DocumentMaxWidthProperty =
@@ -434,7 +436,7 @@ public partial class MarkdownLiveEditorView : UserControl
             _blockOptions.ImageBasePath = ImageBasePath;
             if (!_suppressChanged) RebuildPreservingEdit();
         }
-        if (change.Property == EditorFontSizeProperty || change.Property == CodeFontSizeProperty || change.Property == FontFamilyProperty) RebuildPreservingEdit();
+        if (change.Property == EditorFontSizeProperty || change.Property == CodeFontSizeProperty || change.Property == CodeWrapProperty || change.Property == FontFamilyProperty) RebuildPreservingEdit();
         if (change.Property == CodeFontFamilyProperty)
         {
             _blockOptions.CodeFontFamily = CodeFontFamily;
@@ -595,6 +597,7 @@ public partial class MarkdownLiveEditorView : UserControl
     {
         _blockOptions.FontSize = EditorFontSize;
         _blockOptions.CodeFontSize = CodeFontSize;
+        _blockOptions.CodeWrap = CodeWrap;
         _blockOptions.ContentFontFamily = FontFamily;
         var model = _models[index];
 

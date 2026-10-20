@@ -12,6 +12,7 @@ namespace CodeWF.Avalonia.Markdown;
 /// </summary>
 public sealed record MarkdownHtmlDocumentOptions
 {
+    public MarkdownSyntaxOptions? SyntaxOptions { get; init; }
 	/// <summary>文档语言（html lang 属性）；为空时使用当前 UI 区域。</summary>
 	public string? Language { get; init; }
 
@@ -125,6 +126,7 @@ public static class MarkdownHtmlExporter
 		var resolvedStyle = style ?? MarkdownExportStyle.Resolve(null, null);
 		var copyOptions = new MarkdownSocialCopyOptions
 		{
+            SyntaxOptions = resolvedOptions.SyntaxOptions,
 			Title = resolvedOptions.Title,
 			Language = ResolveLanguage(resolvedOptions.Language),
 			IncludeFragmentMarkers = resolvedOptions.IncludeFragmentMarkers

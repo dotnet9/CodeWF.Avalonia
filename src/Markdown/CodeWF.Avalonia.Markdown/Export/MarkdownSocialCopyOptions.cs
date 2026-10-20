@@ -5,6 +5,7 @@ namespace CodeWF.Avalonia.Markdown;
 /// </summary>
 public sealed record MarkdownSocialCopyOptions
 {
+    public MarkdownSyntaxOptions? SyntaxOptions { get; init; }
 	public string? Language { get; init; }
 
 	public string? Title { get; init; }

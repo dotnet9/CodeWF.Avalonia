@@ -611,9 +611,11 @@ public sealed class MarkdownLiveEditorViewTests
         view.InsertText("x");
         var text = view.Text;
         view.CodeFontSize = 19;
+        view.CodeWrap = true;
         Assert.Equal(text, view.Text);
         var block = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Single();
         Assert.Equal(19, block.ActiveEditor!.FontSize);
+        Assert.Equal(global::Avalonia.Media.TextWrapping.Wrap, block.ActiveEditor.TextWrapping);
         Assert.Equal(19, block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single().CodeBlockFontSize);
         view.ExecuteAsync(MarkdownEditorAction.Undo).GetAwaiter().GetResult();
         Assert.Equal("```text\nhello\n```", view.Text.TrimEnd());
