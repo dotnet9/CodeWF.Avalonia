@@ -1454,7 +1454,12 @@ window.CodeWFPrototypeResources = {
           "EditMarkdownSource": "编辑 Markdown 源文本",
           "Apply": "应用",
           "AppendParagraphIncremental": "追加段落（增量）",
-          "ResetSample": "重置示例"
+          "ResetSample": "重置示例",
+          "StreamingHeader": "流式渲染（StreamingSource）",
+          "StreamingDescription": "逐片追加文本，Viewer 只解析冻结边界之外的新内容；演示文本与上方示例相同。",
+          "StartStreaming": "开始流式输出",
+          "CompleteStreaming": "完成流式",
+          "ExitStreaming": "退出流式"
         },
         "Properties": {
           "TypographyTheme": "排版主题",
@@ -2366,7 +2371,12 @@ window.CodeWFPrototypeResources = {
           "EditMarkdownSource": "Edit Markdown source",
           "Apply": "Apply",
           "AppendParagraphIncremental": "Append paragraph (incremental)",
-          "ResetSample": "Reset sample"
+          "ResetSample": "Reset sample",
+          "StreamingHeader": "Streaming (StreamingSource)",
+          "StreamingDescription": "Appends text in chunks; the viewer parses only content beyond the frozen boundary. Same sample text as above.",
+          "StartStreaming": "Start streaming",
+          "CompleteStreaming": "Complete streaming",
+          "ExitStreaming": "Exit streaming"
         },
         "Properties": {
           "TypographyTheme": "Typography theme",

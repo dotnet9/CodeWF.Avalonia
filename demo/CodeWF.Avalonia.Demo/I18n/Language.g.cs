@@ -762,8 +762,13 @@ public static class ResourceKeys
             {
                 public const string @AppendParagraphIncremental = "Demo.Content.MarkdownViewer.View.AppendParagraphIncremental";
                 public const string @Apply = "Demo.Content.MarkdownViewer.View.Apply";
+                public const string @CompleteStreaming = "Demo.Content.MarkdownViewer.View.CompleteStreaming";
                 public const string @EditMarkdownSource = "Demo.Content.MarkdownViewer.View.EditMarkdownSource";
+                public const string @ExitStreaming = "Demo.Content.MarkdownViewer.View.ExitStreaming";
                 public const string @ResetSample = "Demo.Content.MarkdownViewer.View.ResetSample";
+                public const string @StartStreaming = "Demo.Content.MarkdownViewer.View.StartStreaming";
+                public const string @StreamingDescription = "Demo.Content.MarkdownViewer.View.StreamingDescription";
+                public const string @StreamingHeader = "Demo.Content.MarkdownViewer.View.StreamingHeader";
             }
         }
         public static class @MarkupExtension
