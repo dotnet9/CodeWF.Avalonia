@@ -43,7 +43,7 @@ internal sealed class HeadingRenderer : IMarkdownBlockRenderer
 
         context.AttachLinkInteraction(textBlock, heading.Inline, false);
 
-        if (context is MarkdownViewer viewer && ArticleTypographyCatalog.Find(viewer.TypographyTheme) is not null)
+        if (context is MarkdownViewer viewer && ArticleTypographyCatalog.Find(viewer.TypographyTheme) is { } article)
         {
         var prefix = "CodeWFMarkdownHeading" + heading.Level;
         border.Bind(Border.BorderThicknessProperty, border.GetResourceObservable(prefix + "BorderThickness"));
@@ -54,6 +54,8 @@ internal sealed class HeadingRenderer : IMarkdownBlockRenderer
         textBlock.Bind(SelectableTextBlock.ForegroundProperty, textBlock.GetResourceObservable(prefix + "Foreground"));
         textBlock.Bind(SelectableTextBlock.FontWeightProperty, textBlock.GetResourceObservable(prefix + "FontWeight"));
         textBlock.Bind(SelectableTextBlock.TextAlignmentProperty, textBlock.GetResourceObservable(prefix + "TextAlignment"));
+        var font = article.Headings[heading.Level - 1].Font == "system" ? article.Font : article.Headings[heading.Level - 1].Font;
+        if (font != "system") textBlock.FontFamily = ArticleTypography.ResolveFont(font);
         }
 
         border.Child = textBlock;

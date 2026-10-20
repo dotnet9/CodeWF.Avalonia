@@ -4,6 +4,7 @@ using global::Avalonia.Controls.Documents;
 using global::Avalonia.Layout;
 using CodeWF.Avalonia.Markdown.Controls;
 using Markdig.Syntax;
+using CodeWF.Avalonia.Markdown.Themes;
 
 namespace CodeWF.Avalonia.Markdown.Rendering;
 
@@ -27,6 +28,8 @@ internal sealed class ParagraphRenderer : IMarkdownBlockRenderer
         var textBlock = context.CreateSelectableText(MarkdownStyleKeys.Paragraph);
         context.BindTheme(textBlock, SelectableTextBlock.ForegroundProperty, MarkdownViewer.TextBrushProperty);
         context.BindTheme(textBlock, SelectableTextBlock.FontFamilyProperty, MarkdownViewer.ContentFontFamilyProperty);
+        if (context is MarkdownViewer viewer && ArticleTypographyCatalog.Find(viewer.TypographyTheme) is { Font: not "system" } article)
+            textBlock.FontFamily = ArticleTypography.ResolveFont(article.Font);
         context.BindTheme(textBlock, SelectableTextBlock.FontSizeProperty, MarkdownViewer.ParagraphFontSizeProperty);
         context.BindTheme(textBlock, SelectableTextBlock.LineHeightProperty, MarkdownViewer.ParagraphLineHeightProperty);
         if (marginOverride is { } margin)

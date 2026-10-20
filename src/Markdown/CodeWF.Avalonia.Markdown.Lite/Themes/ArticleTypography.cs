@@ -6,13 +6,19 @@ using global::Avalonia.Styling;
 namespace CodeWF.Avalonia.Markdown.Themes;
 
 public sealed record ArticleHeadingStyle(double Size, int Weight, string Alignment, string Border, string Padding,
-    double Tint, string Foreground, double Radius);
+    double Tint, string Foreground, double Radius, string Font = "system");
 
 /// <summary>正文、卡片和导出共用的文章排版定义；标题装饰与文字强调分别取色。</summary>
 public sealed record ArticleTypography(string Key, string Name, string EnglishName, string Purpose, bool Recommended,
     double BodySize, double Leading, string LightText, string DarkText, string LightDecoration, string DarkDecoration,
     string Font, ArticleHeadingStyle[] Headings, string ExportCss, string CompactExportCss)
 {
+    public static FontFamily ResolveFont(string font) => new(font switch
+    {
+        "serif" => "Noto Serif SC, Songti SC, SimSun, serif",
+        "mono" => "Cascadia Mono, Consolas, Menlo, monospace",
+        _ => "Segoe UI Variable Text, Segoe UI, Microsoft YaHei UI, PingFang SC, Noto Sans SC"
+    });
     public ResourceDictionary CreateResources()
     {
         var resources = new ResourceDictionary
