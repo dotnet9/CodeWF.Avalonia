@@ -1,12 +1,18 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Color x:Key="StudioPaperColor">#FFFFFF</Color>
-    <SolidColorBrush x:Key="StudioHover">#e7eefa</SolidColorBrush>
-    <SolidColorBrush x:Key="StudioPressed">#dae6f9</SolidColorBrush>
-    <SolidColorBrush x:Key="StudioSelected">#e6effd</SolidColorBrush>
-    <SolidColorBrush x:Key="StudioControlBorder">#7e8289</SolidColorBrush>
-    <SolidColorBrush x:Key="StudioFocusRing">#015ae0</SolidColorBrush>
-    <SolidColorBrush x:Key="StudioDisabled">#596579</SolidColorBrush>
+    <Color x:Key="StudioHoverColor">#e7eefa</Color>
+    <SolidColorBrush x:Key="StudioHover" Color="{StaticResource StudioHoverColor}"/>
+    <Color x:Key="StudioPressedColor">#dae6f9</Color>
+    <SolidColorBrush x:Key="StudioPressed" Color="{StaticResource StudioPressedColor}"/>
+    <Color x:Key="StudioSelectedColor">#e6effd</Color>
+    <SolidColorBrush x:Key="StudioSelected" Color="{StaticResource StudioSelectedColor}"/>
+    <Color x:Key="StudioControlBorderColor">#7e8289</Color>
+    <SolidColorBrush x:Key="StudioControlBorder" Color="{StaticResource StudioControlBorderColor}"/>
+    <Color x:Key="StudioFocusRingColor">#015ae0</Color>
+    <SolidColorBrush x:Key="StudioFocusRing" Color="{StaticResource StudioFocusRingColor}"/>
+    <Color x:Key="StudioDisabledColor">#596579</Color>
+    <SolidColorBrush x:Key="StudioDisabled" Color="{StaticResource StudioDisabledColor}"/>
     <!-- 颜色令牌与画刷遵循 Semi 的主题字典结构。 -->
     <Color x:Key="StudioBackgroundColor">#FFFFFF</Color>
     <Color x:Key="StudioSurfaceColor">#F8F9FB</Color>
