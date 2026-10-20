@@ -2,6 +2,7 @@ using global::Avalonia.Controls;
 using global::Avalonia.Data;
 using global::Avalonia.Layout;
 using CodeWF.Avalonia.Markdown.Controls;
+using CodeWF.Avalonia.Markdown.Themes;
 using Markdig.Syntax;
 
 namespace CodeWF.Avalonia.Markdown.Rendering;
@@ -22,6 +23,8 @@ internal sealed class QuoteRenderer : IMarkdownBlockRenderer
         context.AddMarkdownClass(border, MarkdownStyleKeys.Quote);
         context.BindTheme(border, Border.BorderBrushProperty, MarkdownViewer.BorderLineBrushProperty, BindingPriority.Style);
         context.BindTheme(border, Border.BackgroundProperty, MarkdownViewer.QuoteBackgroundBrushProperty);
+        var article = context is MarkdownViewer viewer ? ArticleTypographyCatalog.Find(viewer.TypographyTheme) : null;
+        if (article is not null) border.Bind(Border.BorderBrushProperty, border.GetResourceObservable("CodeWFMarkdownQuoteBorderBrush"));
 
         var stack = new StackPanel { Orientation = Orientation.Vertical };
         context.AddMarkdownClass(stack, MarkdownStyleKeys.QuoteContent);
@@ -30,6 +33,14 @@ internal sealed class QuoteRenderer : IMarkdownBlockRenderer
             var control = context.ConvertBlock(child, null);
             if (control is not null)
             {
+                if (article is not null && control is SelectableTextBlock text)
+                {
+                    text.Margin = default;
+                    text.TextAlignment = Enum.Parse<global::Avalonia.Media.TextAlignment>(article.Quote.Alignment);
+                    text.FontSize = article.BodySize * article.Quote.FontScale;
+                    text.FontStyle = article.Quote.Italic ? global::Avalonia.Media.FontStyle.Italic : global::Avalonia.Media.FontStyle.Normal;
+                    text.Bind(SelectableTextBlock.ForegroundProperty, text.GetResourceObservable("CodeWFMarkdownQuoteForeground"));
+                }
                 stack.Children.Add(control);
             }
         }

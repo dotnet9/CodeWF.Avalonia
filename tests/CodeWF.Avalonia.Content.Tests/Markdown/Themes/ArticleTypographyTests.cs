@@ -11,6 +11,17 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Themes;
 public sealed class ArticleTypographyTests(AvaloniaPlatformFixture platform)
 {
     [Fact]
+    public void NativeSpacingPreservesTheDocumentRules()
+    {
+        var simple = ArticleTypographyCatalog.Find("Simple")!;
+        Assert.Equal("0,0,0,17.6", simple.Headings[0].Margin);
+        Assert.Equal(46.4, simple.Headings[0].LineHeight, 4);
+        Assert.Equal("3,0,0,0", simple.Quote.Border);
+        Assert.Equal(.06, ArticleTypographyCatalog.Find("InkBlack")!.Quote.Tint);
+        Assert.Equal("0,1,0,1", ArticleTypographyCatalog.Find("Column")!.Quote.Border);
+        Assert.Equal("Center", ArticleTypographyCatalog.Find("WeChatFormat")!.Quote.Alignment);
+    }
+    [Fact]
     public void CatalogContains27IndependentNativeAndExportStyles()
     {
         platform.Run(() =>

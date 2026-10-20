@@ -6,12 +6,16 @@ using global::Avalonia.Styling;
 namespace CodeWF.Avalonia.Markdown.Themes;
 
 public sealed record ArticleHeadingStyle(double Size, int Weight, string Alignment, string Border, string Padding,
-    double Tint, string Foreground, double Radius, string Font = "system");
+    double Tint, string Foreground, double Radius, string Font, double LineHeight, string Margin);
+
+public sealed record ArticleQuoteStyle(string Border, string Padding, string Margin, double Radius,
+    double Tint, string Alignment, string Foreground, double FontScale, bool Italic);
 
 /// <summary>正文、卡片和导出共用的文章排版定义；标题装饰与文字强调分别取色。</summary>
 public sealed record ArticleTypography(string Key, string Name, string EnglishName, string Purpose, bool Recommended,
     double BodySize, double Leading, string LightText, string DarkText, string LightDecoration, string DarkDecoration,
-    string Font, ArticleHeadingStyle[] Headings, string ExportCss, string CompactExportCss)
+    string Font, ArticleHeadingStyle[] Headings, string ExportCss, string CompactExportCss,
+    ArticleQuoteStyle Quote, string ParagraphAlignment)
 {
     public static FontFamily ResolveFont(string font) => new(font switch
     {
@@ -26,17 +30,19 @@ public sealed record ArticleTypography(string Key, string Name, string EnglishNa
             [MarkdownStyleKeys.ParagraphFontSizeResource] = BodySize,
             [MarkdownStyleKeys.ParagraphLineHeightResource] = BodySize * Leading,
             ["CodeWFMarkdownBlockSpacing"] = 0d,
-            ["CodeWFMarkdownParagraphMargin"] = new Thickness(0, 0, 0, BodySize),
+            ["CodeWFMarkdownParagraphMargin"] = new Thickness(0, 0, 0, BodySize * .85),
             ["CodeWFMarkdownHeadingMargin"] = new Thickness(0, BodySize * 1.4, 0, BodySize * .45),
-            ["CodeWFMarkdownQuotePadding"] = new Thickness(16, 10),
-            ["CodeWFMarkdownQuoteMargin"] = new Thickness(0, 12, 0, 20),
-            ["CodeWFMarkdownQuoteBorderThickness"] = new Thickness(3, 0, 0, 0),
-            ["CodeWFMarkdownQuoteCornerRadius"] = new CornerRadius(4),
+            ["CodeWFMarkdownQuotePadding"] = Thickness.Parse(Quote.Padding),
+            ["CodeWFMarkdownQuoteMargin"] = Thickness.Parse(Quote.Margin),
+            ["CodeWFMarkdownQuoteBorderThickness"] = Thickness.Parse(Quote.Border),
+            ["CodeWFMarkdownQuoteCornerRadius"] = new CornerRadius(Quote.Radius),
         };
         for (var i = 0; i < Headings.Length; i++)
         {
             var h = Headings[i]; var prefix = "CodeWFMarkdownHeading" + (i + 1);
             resources[prefix + "FontSize"] = h.Size;
+            resources[prefix + "LineHeight"] = h.LineHeight;
+            resources[prefix + "Margin"] = Thickness.Parse(h.Margin);
             resources[prefix + "FontWeight"] = (FontWeight)h.Weight;
             resources[prefix + "TextAlignment"] = Enum.Parse<TextAlignment>(h.Alignment);
             resources[prefix + "BorderThickness"] = Thickness.Parse(h.Border);
@@ -60,7 +66,9 @@ public sealed record ArticleTypography(string Key, string Name, string EnglishNa
             [MarkdownStyleKeys.AccentBrushResource] = accent,
             [MarkdownStyleKeys.MutedTextBrushResource] = Brush.Parse(dark ? "#AFB4BB" : "#606770"),
             [MarkdownStyleKeys.BorderBrushResource] = Brush.Parse(dark ? "#484C53" : "#DDE1E5"),
-            [MarkdownStyleKeys.QuoteBackgroundBrushResource] = new SolidColorBrush(Mix(paper, decoration, .06)),
+            [MarkdownStyleKeys.QuoteBackgroundBrushResource] = Quote.Tint == 0 ? Brushes.Transparent : new SolidColorBrush(Mix(paper, decoration, Quote.Tint)),
+            ["CodeWFMarkdownQuoteBorderBrush"] = new SolidColorBrush(decoration),
+            ["CodeWFMarkdownQuoteForeground"] = Quote.Foreground.Contains("--muted)", StringComparison.Ordinal) ? Brush.Parse(dark ? "#AFB4BB" : "#606770") : accent,
             [MarkdownStyleKeys.CodeBackgroundBrushResource] = Brush.Parse(dark ? "#292B2F" : "#F6F7F8"),
             [MarkdownStyleKeys.InlineCodeBackgroundBrushResource] = Brush.Parse(dark ? "#292B2F" : "#F6F7F8"),
             [MarkdownStyleKeys.TableHeaderBackgroundBrushResource] = Brush.Parse(dark ? "#292B2F" : "#F6F7F8"),

@@ -28,8 +28,11 @@ internal sealed class ParagraphRenderer : IMarkdownBlockRenderer
         var textBlock = context.CreateSelectableText(MarkdownStyleKeys.Paragraph);
         context.BindTheme(textBlock, SelectableTextBlock.ForegroundProperty, MarkdownViewer.TextBrushProperty);
         context.BindTheme(textBlock, SelectableTextBlock.FontFamilyProperty, MarkdownViewer.ContentFontFamilyProperty);
-        if (context is MarkdownViewer viewer && ArticleTypographyCatalog.Find(viewer.TypographyTheme) is { Font: not "system" } article)
-            textBlock.FontFamily = ArticleTypography.ResolveFont(article.Font);
+        if (context is MarkdownViewer viewer && ArticleTypographyCatalog.Find(viewer.TypographyTheme) is { } article)
+        {
+            if (article.Font != "system") textBlock.FontFamily = ArticleTypography.ResolveFont(article.Font);
+            textBlock.TextAlignment = Enum.Parse<global::Avalonia.Media.TextAlignment>(article.ParagraphAlignment);
+        }
         context.BindTheme(textBlock, SelectableTextBlock.FontSizeProperty, MarkdownViewer.ParagraphFontSizeProperty);
         context.BindTheme(textBlock, SelectableTextBlock.LineHeightProperty, MarkdownViewer.ParagraphLineHeightProperty);
         if (marginOverride is { } margin)
