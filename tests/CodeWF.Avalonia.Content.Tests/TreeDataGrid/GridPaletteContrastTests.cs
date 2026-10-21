@@ -175,7 +175,7 @@ public sealed class GridPaletteContrastTests(AvaloniaPlatformFixture platform)
             if (!string.IsNullOrWhiteSpace(directory)) { Directory.CreateDirectory(directory); File.WriteAllText(Path.Combine(directory, "colors.json"), JsonSerializer.Serialize(evidence, new JsonSerializerOptions { WriteIndented = true })); }
             window.Close();
         }
-        Assert.Equal(32, evidence.Count);
+        Assert.Equal(StudioPalettes.All.Count * 2, evidence.Count);
         void Add(Control control, int column, int row) { Grid.SetColumn(control, column); Grid.SetRow(control, row); panel.Children.Add(control); }
     });
 

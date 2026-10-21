@@ -100,6 +100,11 @@ public sealed class StudioThemeController : AvaloniaObject, IDisposable
         foreach (var pair in extras) derived[pair.Key] = pair.Value;
         var dictionary = new ResourceDictionary();
         StudioTokens.Fill(dictionary, derived);
+        if (dictionary["StudioActionGradient"] is LinearGradientBrush action && action.GradientStops.Count == 0)
+        {
+            action.GradientStops.Add(new GradientStop(derived["StudioPrimaryColor"], 0));
+            action.GradientStops.Add(new GradientStop(derived["StudioGradientEndColor"], 1));
+        }
         dictionary["StudioPropertyGridTheme"] = dark ? "Dark" : "Light";
         dictionary["SystemAccentColor"] = derived["StudioAccentColor"];
         return dictionary;

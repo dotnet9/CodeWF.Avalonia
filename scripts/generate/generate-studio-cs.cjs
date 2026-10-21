@@ -26,8 +26,15 @@ const STATUS = {
 
 function derive(base, dark) {
   const paper = base.paper, surface = base.surface, ink = base.ink, accent = base.accent;
-  const soft = hex => over(paper, hex, dark ? 0.18 : 0.12);
-  const softPressed = hex => over(paper, hex, (dark ? 0.18 : 0.12) + 0.04);
+  const onPrimary = contrast('#FFFFFF', accent) > contrast('#000000', accent) ? '#FFFFFF' : '#000000';
+  // 状态软底（规则 §3 组件可读性约束）：浅色态向 paper 回退、深色态向状态色加深，保证状态文字 ≥4.5。
+  const softFor = (hex, alpha) => {
+    let a = alpha, bg = over(paper, hex, a);
+    while (contrast(hex, bg) < 4.5 && a > (dark ? 0.40 : 0.03)) { a += dark ? 0.01 : -0.01; bg = over(paper, hex, a); }
+    return bg;
+  };
+  const soft = hex => softFor(hex, dark ? 0.18 : 0.12);
+  const softPressed = hex => softFor(hex, (dark ? 0.18 : 0.12) + 0.04);
   const st = STATUS[dark ? 'dark' : 'light'];
   return {
     notificationMuted: over(paper, ink, 0.85),
@@ -43,14 +50,33 @@ function derive(base, dark) {
     StudioFocusRingColor: accent,
     StudioDisabledColor: over(paper, ink, 0.40),
     StudioTextColor: ink,
-    StudioMutedColor: over(paper, ink, 0.64),
+    StatusBadgeLeftTextForeground: dark ? '#000000' : '#FFFFFF',
+    // muted（规则 §3 派生表约束）：ink@64% 起步，对 bg/surface/raised 任一工作面不足 4.5 时按 1% 步进加深。
+    StudioMutedColor: (() => {
+      const bg = mix(paper, surface, 0.30), raised = over(paper, ink, dark ? 0.06 : 0.04);
+      const worst = m => Math.min(contrast(m, bg), contrast(m, surface), contrast(m, raised));
+      let muted = over(paper, ink, 0.64);
+      for (let a = 0.65; a <= 0.90 && worst(muted) < 4.5; a += 0.01) muted = over(paper, ink, a);
+      return muted;
+    })(),
     StudioAccentColor: accent,
     StudioSecondaryColor: accent,
     StudioPrimaryColor: accent,
     StudioGradientStartColor: accent,
     StudioTextGradientEndColor: dark ? mix(accent, paper, 0.20) : mix(accent, '#FFFFFF', 0.25),
-    StudioOnPrimary: contrast('#FFFFFF', accent) > contrast('#000000', accent) ? '#FFFFFF' : '#000000',
-    StudioPrimaryHover: dark ? mix(accent, '#FFFFFF', 0.08) : mix(accent, paper, 0.08),
+    StudioOnPrimary: onPrimary,
+    // 行动渐变端点（规则 §3 行动渐变端点约束）：规则值 mix(accent→paper,20%)，与 OnPrimary 对比不足 4.5 时向 accent 收敛。
+    StudioGradientEndColor: (() => {
+      let w = 0.20, end = mix(accent, paper, w);
+      while (contrast(onPrimary, end) < 4.5 && w > 0.005) { w -= 0.005; end = mix(accent, paper, w); }
+      return end;
+    })(),
+    StudioPrimaryHover: (() => {
+      const target = dark ? '#FFFFFF' : paper;
+      let w = 0.08, hover = mix(accent, target, w);
+      while (contrast(onPrimary, hover) < 4.5 && w > 0.005) { w -= 0.005; hover = mix(accent, target, w); }
+      return hover;
+    })(),
     StudioPrimaryPressed: dark ? mix(accent, '#000000', 0.12) : mix(accent, ink, 0.10),
     SemiColorSuccess: st.success,
     SemiColorWarning: st.warning,

@@ -28,6 +28,7 @@
                             Margin="{TemplateBinding IconMargin}"
                             Source="{TemplateBinding IconPath, Converter={StaticResource String2ImageConverter}}" />
                         <SelectableTextBlock
+                            Name="PART_TopText"
                             Grid.Row="0"
                             Grid.Column="1"
                             Margin="{TemplateBinding TopTextMargin}"
@@ -52,11 +53,17 @@
         <Style Selector="^:debug /template/ Border#PART_Root">
             <Setter Property="Background" Value="{DynamicResource StatusCardDebugBackground}" />
         </Style>
+        <Style Selector="^:debug /template/ SelectableTextBlock#PART_TopText">
+            <Setter Property="Foreground" Value="{DynamicResource StatusCardDebugForeground}" />
+        </Style>
         <Style Selector="^:debug /template/ SelectableTextBlock#PART_BottomText">
             <Setter Property="Foreground" Value="{DynamicResource StatusCardDebugForeground}" />
         </Style>
         <Style Selector="^:info /template/ Border#PART_Root">
             <Setter Property="Background" Value="{DynamicResource StatusCardInfoBackground}" />
+        </Style>
+        <Style Selector="^:info /template/ SelectableTextBlock#PART_TopText">
+            <Setter Property="Foreground" Value="{DynamicResource StatusCardInfoForeground}" />
         </Style>
         <Style Selector="^:info /template/ SelectableTextBlock#PART_BottomText">
             <Setter Property="Foreground" Value="{DynamicResource StatusCardInfoForeground}" />
@@ -64,17 +71,26 @@
         <Style Selector="^:warn /template/ Border#PART_Root">
             <Setter Property="Background" Value="{DynamicResource StatusCardWarnBackground}" />
         </Style>
+        <Style Selector="^:warn /template/ SelectableTextBlock#PART_TopText">
+            <Setter Property="Foreground" Value="{DynamicResource StatusCardWarnForeground}" />
+        </Style>
         <Style Selector="^:warn /template/ SelectableTextBlock#PART_BottomText">
             <Setter Property="Foreground" Value="{DynamicResource StatusCardWarnForeground}" />
         </Style>
         <Style Selector="^:error /template/ Border#PART_Root">
             <Setter Property="Background" Value="{DynamicResource StatusCardErrorBackground}" />
         </Style>
+        <Style Selector="^:error /template/ SelectableTextBlock#PART_TopText">
+            <Setter Property="Foreground" Value="{DynamicResource StatusCardErrorForeground}" />
+        </Style>
         <Style Selector="^:error /template/ SelectableTextBlock#PART_BottomText">
             <Setter Property="Foreground" Value="{DynamicResource StatusCardErrorForeground}" />
         </Style>
         <Style Selector="^:fatal /template/ Border#PART_Root">
             <Setter Property="Background" Value="{DynamicResource StatusCardFatalBackground}" />
+        </Style>
+        <Style Selector="^:fatal /template/ SelectableTextBlock#PART_TopText">
+            <Setter Property="Foreground" Value="{DynamicResource StatusCardFatalForeground}" />
         </Style>
         <Style Selector="^:fatal /template/ SelectableTextBlock#PART_BottomText">
             <Setter Property="Foreground" Value="{DynamicResource StatusCardFatalForeground}" />

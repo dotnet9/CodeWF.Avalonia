@@ -24,6 +24,7 @@
     <Color x:Key="StudioSecondaryColor">#0369A1</Color>
     <Color x:Key="StudioPrimaryColor">#0369A1</Color>
     <Color x:Key="StudioGradientStartColor">#0369A1</Color>
+    <Color x:Key="StudioGradientEndColor">#247dae</Color>
     <Color x:Key="StudioTextGradientEndColor">#428fb9</Color>
     <SolidColorBrush x:Key="StudioBackground" Color="{StaticResource StudioBackgroundColor}" />
     <SolidColorBrush x:Key="StudioSurface" Color="{StaticResource StudioSurfaceColor}" />
@@ -49,16 +50,16 @@
     <SolidColorBrush x:Key="SemiColorSuccess">#15803D</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorWarning">#B45309</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDanger">#DC2626</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerActive">#f6dbdc</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorSuccessLight">#dfeee8</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorWarningLight">#f2e9e1</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerLight">#f7e3e5</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerLightActive">#f6dbdc</SolidColorBrush>
-    <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerActive">#faf7f8</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorSuccessLight">#edf6f3</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWarningLight">#f7f3f0</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLight">#faf7f8</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLightActive">#faf7f8</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#FFFFFF</SolidColorBrush><!-- 按明暗派生 -->
     <!-- 白字操作面使用独立渐变，装饰渐变保留明亮副色。 -->
     <LinearGradientBrush x:Key="StudioActionGradient" StartPoint="0%,0%" EndPoint="100%,100%">
         <GradientStop Offset="0" Color="{StaticResource StudioPrimaryColor}" />
-        <GradientStop Offset="1" Color="#24766B" />
+        <GradientStop Offset="1" Color="{StaticResource StudioGradientEndColor}" />
     </LinearGradientBrush>
     <ResourceDictionary x:Key="StudioPropertyGridTheme">
         <StaticResource x:Key="PgBackground" ResourceKey="StudioSurface" />
@@ -235,13 +236,13 @@
     <StaticResource x:Key="StatusBadgeInfoBorderBrush" ResourceKey="SemiColorSuccess" />
     <StaticResource x:Key="StatusBadgeWarnBorderBrush" ResourceKey="SemiColorWarning" />
     <StaticResource x:Key="StatusBadgeErrorBorderBrush" ResourceKey="SemiColorDanger" />
-    <StaticResource x:Key="StatusBadgeFatalBorderBrush" ResourceKey="SemiColorDangerActive" />
+    <StaticResource x:Key="StatusBadgeFatalBorderBrush" ResourceKey="SemiColorDanger" />
     <StaticResource x:Key="StatusBadgeDebugBackground" ResourceKey="StudioRaised" />
     <StaticResource x:Key="StatusBadgeInfoBackground" ResourceKey="SemiColorSuccessLight" />
     <StaticResource x:Key="StatusBadgeWarnBackground" ResourceKey="SemiColorWarningLight" />
     <StaticResource x:Key="StatusBadgeErrorBackground" ResourceKey="SemiColorDangerLight" />
     <StaticResource x:Key="StatusBadgeFatalBackground" ResourceKey="SemiColorDangerLightActive" />
-    <SolidColorBrush x:Key="StatusCardTopTextForeground">#5C6370</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardTopTextForeground">#5C6370</SolidColorBrush><!-- 状态卡内由各状态前景覆盖 -->
     <StaticResource x:Key="StatusCardDebugBackground" ResourceKey="StudioRaised" />
     <StaticResource x:Key="StatusCardInfoBackground" ResourceKey="SemiColorSuccessLight" />
     <StaticResource x:Key="StatusCardWarnBackground" ResourceKey="SemiColorWarningLight" />
@@ -251,7 +252,7 @@
     <StaticResource x:Key="StatusCardInfoForeground" ResourceKey="SemiColorSuccess" />
     <StaticResource x:Key="StatusCardWarnForeground" ResourceKey="SemiColorWarning" />
     <StaticResource x:Key="StatusCardErrorForeground" ResourceKey="SemiColorDanger" />
-    <StaticResource x:Key="StatusCardFatalForeground" ResourceKey="SemiColorDangerActive" />
+    <StaticResource x:Key="StatusCardFatalForeground" ResourceKey="SemiColorDanger" />
     <StaticResource x:Key="GuideCardBackground" ResourceKey="StudioSurface" />
     <StaticResource x:Key="GuideCardBorderBrush" ResourceKey="StudioBorder" />
     <StaticResource x:Key="GuideTextForeground" ResourceKey="StudioText" />

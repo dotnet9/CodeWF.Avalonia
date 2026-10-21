@@ -19,7 +19,9 @@ public sealed class StudioThemeControllerTests(AvaloniaPlatformFixture platform)
         var application = Application.Current!;
         var previous = application.RequestedThemeVariant;
         var semi = new SemiTheme();
+        var studio = new StudioTheme();
         application.Styles.Add(semi);
+        application.Styles.Add(studio);
         try
         {
             using var controller = new StudioThemeController(application);
@@ -42,6 +44,7 @@ public sealed class StudioThemeControllerTests(AvaloniaPlatformFixture platform)
         {
             application.RequestedThemeVariant = previous;
             application.Styles.Remove(semi);
+            application.Styles.Remove(studio);
         }
     });
 

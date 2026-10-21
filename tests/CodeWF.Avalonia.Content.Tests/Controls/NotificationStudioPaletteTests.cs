@@ -24,7 +24,7 @@ public sealed class NotificationStudioPaletteTests(AvaloniaPlatformFixture platf
     {
         var application = Application.Current!;
         var originalVariant = application.RequestedThemeVariant;
-        IStyle[] styles = [new global::Semi.Avalonia.SemiTheme(), new CodeWFLogTheme()];
+        IStyle[] styles = [new global::Semi.Avalonia.SemiTheme(), new CodeWFLogTheme(), new StudioTheme()];
         foreach (var style in styles) application.Styles.Add(style);
         using var themeController = new StudioThemeController(application);
         var window = new NotificationWindow();

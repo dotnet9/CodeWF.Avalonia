@@ -24,6 +24,7 @@
     <Color x:Key="StudioSecondaryColor">#86EFAC</Color>
     <Color x:Key="StudioPrimaryColor">#86EFAC</Color>
     <Color x:Key="StudioGradientStartColor">#86EFAC</Color>
+    <Color x:Key="StudioGradientEndColor">#6ec38d</Color>
     <Color x:Key="StudioTextGradientEndColor">#6ec38d</Color>
     <SolidColorBrush x:Key="StudioBackground" Color="{StaticResource StudioBackgroundColor}" />
     <SolidColorBrush x:Key="StudioSurface" Color="{StaticResource StudioSurfaceColor}" />
@@ -54,11 +55,11 @@
     <SolidColorBrush x:Key="SemiColorWarningLight">#393414</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDangerLight">#392622</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDangerLightActive">#422926</SolidColorBrush>
-    <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#000000</SolidColorBrush><!-- 按明暗派生 -->
     <!-- 白字操作面使用独立渐变，装饰渐变保留明亮副色。 -->
     <LinearGradientBrush x:Key="StudioActionGradient" StartPoint="0%,0%" EndPoint="100%,100%">
         <GradientStop Offset="0" Color="{StaticResource StudioPrimaryColor}" />
-        <GradientStop Offset="1" Color="#24766B" />
+        <GradientStop Offset="1" Color="{StaticResource StudioGradientEndColor}" />
     </LinearGradientBrush>
     <ResourceDictionary x:Key="StudioPropertyGridTheme">
         <StaticResource x:Key="PgBackground" ResourceKey="StudioSurface" />
@@ -73,7 +74,7 @@
         <StaticResource x:Key="PgSelected" ResourceKey="StudioPrimary" />
         <StaticResource x:Key="PgSelectedSoft" ResourceKey="StudioRaised" />
         <StaticResource x:Key="PgEditorBackground" ResourceKey="StudioSurface" />
-        <SolidColorBrush x:Key="PgSelectedText">#FFFFFF</SolidColorBrush>
+        <SolidColorBrush x:Key="PgSelectedText">#000000</SolidColorBrush>
     </ResourceDictionary>
     <!-- 现有控件模板通过资源别名使用配色。 -->
     <StaticResource x:Key="CodeWFWindowBackground" ResourceKey="StudioBackground" />
@@ -235,13 +236,13 @@
     <StaticResource x:Key="StatusBadgeInfoBorderBrush" ResourceKey="SemiColorSuccess" />
     <StaticResource x:Key="StatusBadgeWarnBorderBrush" ResourceKey="SemiColorWarning" />
     <StaticResource x:Key="StatusBadgeErrorBorderBrush" ResourceKey="SemiColorDanger" />
-    <StaticResource x:Key="StatusBadgeFatalBorderBrush" ResourceKey="SemiColorDangerActive" />
+    <StaticResource x:Key="StatusBadgeFatalBorderBrush" ResourceKey="SemiColorDanger" />
     <StaticResource x:Key="StatusBadgeDebugBackground" ResourceKey="StudioRaised" />
     <StaticResource x:Key="StatusBadgeInfoBackground" ResourceKey="SemiColorSuccessLight" />
     <StaticResource x:Key="StatusBadgeWarnBackground" ResourceKey="SemiColorWarningLight" />
     <StaticResource x:Key="StatusBadgeErrorBackground" ResourceKey="SemiColorDangerLight" />
     <StaticResource x:Key="StatusBadgeFatalBackground" ResourceKey="SemiColorDangerLightActive" />
-    <SolidColorBrush x:Key="StatusCardTopTextForeground">#5C6370</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardTopTextForeground">#5C6370</SolidColorBrush><!-- 状态卡内由各状态前景覆盖 -->
     <StaticResource x:Key="StatusCardDebugBackground" ResourceKey="StudioRaised" />
     <StaticResource x:Key="StatusCardInfoBackground" ResourceKey="SemiColorSuccessLight" />
     <StaticResource x:Key="StatusCardWarnBackground" ResourceKey="SemiColorWarningLight" />
@@ -251,7 +252,7 @@
     <StaticResource x:Key="StatusCardInfoForeground" ResourceKey="SemiColorSuccess" />
     <StaticResource x:Key="StatusCardWarnForeground" ResourceKey="SemiColorWarning" />
     <StaticResource x:Key="StatusCardErrorForeground" ResourceKey="SemiColorDanger" />
-    <StaticResource x:Key="StatusCardFatalForeground" ResourceKey="SemiColorDangerActive" />
+    <StaticResource x:Key="StatusCardFatalForeground" ResourceKey="SemiColorDanger" />
     <StaticResource x:Key="GuideCardBackground" ResourceKey="StudioSurface" />
     <StaticResource x:Key="GuideCardBorderBrush" ResourceKey="StudioBorder" />
     <StaticResource x:Key="GuideTextForeground" ResourceKey="StudioText" />
