@@ -1665,7 +1665,7 @@ body.hideR .document-workspace{grid-template-columns:minmax(0,1fr) 0 0}
   <!-- ═══ 1. 标题栏 ═══ -->
   <div class="cap">
     <img class="logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+CiAgPCEtLSBDb2RlV0YuQXZhbG9uaWEgwrcg5bGF5Lit5a2X5q+NIEHvvJrlnIblpLTnrJTnlLsgKyDmqKrmnaDkuIvmlrnkuInmnprmlrnlnZfvvIhDb250cm9scy9EYXRhR3JpZC9Eb2NrIOS4ieadoeS6p+WTgee6v++8iSAtLT4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNkM1Q0U3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzBBODRFMyIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTEyIiBmaWxsPSJ1cmwoI2JnKSIvPgoKICA8IS0tIOWxheS4reWtl+avjSBB77yI5Z6C55u06LeoIDExNuKAkzM5Nu+8jOS4reW/gyAyNTbvvIkgLS0+CiAgPGcgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjQwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGZpbGw9Im5vbmUiPgogICAgPHBhdGggZD0iTTE2MCAzOTYgTDI1NiAxMTYgTDM1MiAzOTYiLz4KICAgIDxsaW5lIHgxPSIxOTYiIHkxPSIzMDAiIHgyPSIzMTYiIHkyPSIzMDAiLz4KICA8L2c+CgogIDwhLS0g6K6h5pWw56m66Ze05YaF5LiJ5p6a5Lqn5ZOB57q/5pa55Z2X77yI5rC05bmz5bGF5LitIDIyNi8yNTYvMjg277yJIC0tPgogIDxyZWN0IHg9IjIxNCIgeT0iMzM2IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHJ4PSI2IiBmaWxsPSIjRkZGRkZGIiBvcGFjaXR5PSIwLjQ1Ii8+CiAgPHJlY3QgeD0iMjQ0IiB5PSIzMzYiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjYiIGZpbGw9IiNGRkZGRkYiIG9wYWNpdHk9IjAuNzAiLz4KICA8cmVjdCB4PSIyNzQiIHk9IjMzNiIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iNiIgZmlsbD0iI0ZGRkZGRiIgb3BhY2l0eT0iMS4wMCIvPgo8L3N2Zz4K" alt="CodeWF.Avalonia logo" title="CodeWF.Avalonia">
-    <span class="lg">CodeWF.Avalonia</span><span class="vbadge">v12.1.4.33</span>
+    <span class="lg">CodeWF.Avalonia</span><span class="vbadge">v12.1.4.38</span>
     <span class="sp"></span>
     <span class="pal" id="palDots"></span>
     <button class="wb" id="darkBtn" title="深色 / 浅色（Ctrl+D）">
@@ -5986,15 +5986,21 @@ function renderDoc(id) {
 }
 
 /* ═══ 属性面板 ═══ */
+var PROP_CHEVRON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>';
 function propKey(pageId, p) { return (p.global ? "" : (pageId || "")) + "|" + p.id; }
+function propCat(key, title) {
+ return '<div class="cat" data-group="' + key + '" role="button" tabindex="0" aria-expanded="true" title="' + esc(title) + '">' +
+  '<span class="gt">' + esc(title) + '</span><span class="chev" aria-hidden="true">' + PROP_CHEVRON + '</span></div>';
+}
 function rowHtml(pageId, p) {
  var mod = MODIFIED[propKey(pageId, p)] ? " mod" : "";
  var ctl;
  if (p.type === "radio") {
   ctl = '<div class="catalog-radio-options" data-id="' + p.id + '">' + p.options.map(function(option){ return '<label><input type="radio" name="' + esc(pageId+'-'+p.id) + '" value="' + esc(option) + '"' + (option === p.value ? ' checked' : '') + '> ' + esc(option) + '</label>'; }).join('') + '</div>';
  } else if (p.type === "combo") {
-  ctl = '<select data-id="' + p.id + '"' + (p.readonly ? " disabled" : "") + ">" +
-   p.options.map(function (o) { return "<option" + (o === p.value ? " selected" : "") + ">" + esc(o) + "</option>"; }).join("") + "</select>";
+  ctl = '<span class="selwrap"><select data-id="' + p.id + '"' + (p.readonly ? " disabled" : "") + ">" +
+   p.options.map(function (o) { return "<option" + (o === p.value ? " selected" : "") + ">" + esc(o) + "</option>"; }).join("") + "</select>" +
+   '<span class="chev" aria-hidden="true">' + PROP_CHEVRON + "</span></span>";
  } else if (p.type === "bool") {
   ctl = '<div class="switch' + (p.value ? " on" : "") + '" data-id="' + p.id + '" role="switch" aria-checked="' + !!p.value + '" tabindex="0" title="' + esc(p.label) + '"></div>';
  } else if (p.type === "text" || p.type === "multiline") {
@@ -6011,13 +6017,13 @@ function rowHtml(pageId, p) {
 }
 function renderPGrid(id) {
  var pageProps = (id && PROTO[id] && PROTO[id].props) || [];
- var html = '<div class="cat">外观 · 语言（全局）</div>' + SELF_PROPS.map(function (p) { return rowHtml(id, p); }).join("");
- html += '<div class="cat">' + esc(id ? pt(id) : "当前文档") + "</div>";
+ var globalProps = SELF_PROPS.filter(function (p) { return p.id !== "appearance.lang"; });
+ var langProps = SELF_PROPS.filter(function (p) { return p.id === "appearance.lang"; });
+ var html = propCat("appearance", "外观") + globalProps.map(function (p) { return rowHtml(id, p); }).join("");
+ html += propCat("language", "语言") + langProps.map(function (p) { return rowHtml(id, p); }).join("");
+ html += propCat("page:" + (id || ""), id ? pt(id) : "当前文档");
  html += pageProps.length ? pageProps.map(function (p) { return rowHtml(id, p); }).join("")
   : '<div class="pgp-empty">当前文档无属性</div>';
- html += '<div class="cat">状态</div>' +
-  '<div class="rw"><label>打开文档数</label><div class="ctl"><span style="font-size:11px">' + OPEN_DOCS.length + "</span></div></div>" +
-  '<div class="rw"><label>日志级别</label><div class="ctl"><span style="font-size:11px">' + esc(LOG_LEVEL) + "</span></div></div>";
  $("pGrid").innerHTML = html;
  var cnt = $("pgCnt"); if (cnt) cnt.textContent = "(" + (SELF_PROPS.length + pageProps.length) + " 项)";
  var all = SELF_PROPS.concat(pageProps);
@@ -6612,10 +6618,14 @@ boot();
         var next = child.nextElementSibling; child.remove(); child = next;
       }
     }
-    if (pageProps.length) removeSection(categories[0], categories[1]);
-    else removeSection(categories[1], categories[2]);
-    removeSection(categories[2], null);
-    if (!pageProps.length && categories[0]) categories[0].textContent = settings.group;
+    if (pageProps.length) removeSection(categories[0], categories[2]); // 页面参数替换全局外观 / 语言两组
+    else {
+      removeSection(categories[2], null); // 无页面参数时只保留全局设置
+      var appearance = categories[0] && categories[0].querySelector(".gt");
+      var language = categories[1] && categories[1].querySelector(".gt");
+      if (appearance) appearance.textContent = settings.shell.GlobalSettings.AppearanceGroup;
+      if (language) language.textContent = settings.shell.GlobalSettings.LanguageGroup;
+    }
     var labels = [settings.shell.Density, settings.shell.Palette, settings.shell.GlobalSettings.ModeLabel, settings.language];
     SELF_PROPS.forEach(function(property, index) {
       var control = panel.querySelector('[data-id="' + property.id + '"]');
@@ -7136,7 +7146,20 @@ boot();
 .property-modes svg{width:16px;height:16px;fill:currentColor}
 .property-search{display:block;box-sizing:border-box;width:100%;height:28px;margin-top:5px;padding:0 8px;font-size:11px;color:var(--tx);background:var(--bg2);border:1px solid var(--bd);border-radius:4px}
 #pGrid{flex:1;overflow:auto;padding:0;min-height:0;--property-name-width:118px}
-#pGrid .cat{box-sizing:border-box;margin:0;padding:7px 8px;background:var(--bg2);border-bottom:1px solid var(--bd)}
+#pGrid .cat{box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0;padding:7px 8px;min-height:31px;background:var(--bg2);border-bottom:1px solid var(--bd);color:var(--pri);font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;cursor:pointer;user-select:none}
+#pGrid .cat .gt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pGrid .cat .chev{flex:none;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;color:var(--tx2);transition:transform .12s}
+#pGrid .cat .chev svg{width:12px;height:12px}
+#pGrid .cat:hover{background:var(--hov)}
+#pGrid .cat:focus-visible{outline:2px solid var(--pri);outline-offset:-2px}
+#pGrid .cat.collapsed .chev{transform:rotate(-90deg)}
+#pGrid .rw.off,#pGrid .off{display:none}
+#pGrid.alpha .rw>label,#pGrid.alpha .rw>.nm{padding-left:8px}
+#pGrid:not(.alpha) .rw>label,#pGrid:not(.alpha) .rw>.nm{padding-left:28px}
+#pGrid .rw .selwrap{position:relative;display:flex;align-items:center;width:100%;height:100%;min-width:0}
+#pGrid .rw .selwrap select{appearance:none;-webkit-appearance:none;padding-right:28px}
+#pGrid .rw .selwrap>.chev{position:absolute;right:5px;top:0;bottom:0;width:18px;display:inline-flex;align-items:center;justify-content:center;color:var(--tx2);pointer-events:none}
+#pGrid .rw .selwrap>.chev svg{width:12px;height:12px}
 #pGrid .rw{box-sizing:border-box;display:grid;grid-template-columns:var(--property-name-width) minmax(0,1fr);gap:0;padding:0;height:31px;min-height:31px;border-radius:0;border-bottom:1px solid var(--bd);align-items:stretch}
 #pGrid .rw[hidden],#pGrid .cat[hidden]{display:none}
 #pGrid .rw>label,#pGrid .rw>.nm{display:flex;align-items:center;padding:0 8px;border-right:1px solid var(--bd);min-width:0}
@@ -7188,8 +7211,9 @@ select,select option{ text-align:left;text-align-last:left }
   }
   renderPGrid = function (id) {
     original(id);
-    var state = states[id] || (states[id] = { width:118, heights:{}, mode:"categorized", query:"" });
+    var state = states[id] || (states[id] = { width:118, heights:{}, mode:"categorized", query:"", collapsed:new Set() });
     var english = LANG === "en-US", nodes = Array.from(panel.children), rows = nodes.filter(node => node.matches(".rw"));
+    var cats = nodes.filter(node => node.matches(".cat"));
     var search = toolbar.querySelector("input");
     search.placeholder = english ? "Search properties" : "搜索属性";
     search.setAttribute("aria-label", search.placeholder); search.value = state.query;
@@ -7198,7 +7222,22 @@ select,select option{ text-align:left;text-align-last:left }
       panel.style.setProperty("--property-name-width", state.width + "px");
     }
     setWidth(state.width);
+    function applyCollapse() {
+      var inactive = !state.query && state.mode === "categorized";
+      var current = null;
+      nodes.forEach(function(node) {
+        if (node.matches(".cat")) { current = node; return; }
+        if (!current) return;
+        node.classList.toggle("off", inactive && state.collapsed.has(current.dataset.group));
+      });
+      cats.forEach(function(cat) {
+        var collapsed = state.collapsed.has(cat.dataset.group);
+        cat.classList.toggle("collapsed", collapsed);
+        cat.setAttribute("aria-expanded", String(!collapsed));
+      });
+    }
     function applyView() {
+      panel.classList.toggle("alpha", state.mode === "alphabetical");
       nodes.forEach(node => panel.appendChild(node));
       if (state.mode === "alphabetical") rows.slice().sort((a,b) => a.querySelector("label,.nm").textContent.localeCompare(b.querySelector("label,.nm").textContent, LANG)).forEach(row => panel.appendChild(row));
       rows.forEach(function(row) { row.hidden = !row.textContent.toLocaleLowerCase(LANG).includes(state.query.toLocaleLowerCase(LANG)); });
@@ -7207,7 +7246,19 @@ select,select option{ text-align:left;text-align-last:left }
         category.hidden = state.mode === "alphabetical" || !nodes.slice(index + 1, end < 0 ? undefined : end).some(node => node.matches(".rw") && !node.hidden);
       });
       toolbar.querySelectorAll("button").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.mode === state.mode)));
+      applyCollapse();
     }
+    cats.forEach(function(cat) {
+      var toggle = function() {
+        var key = cat.dataset.group;
+        if (state.collapsed.has(key)) state.collapsed.delete(key); else state.collapsed.add(key);
+        applyCollapse();
+      };
+      cat.onclick = toggle;
+      cat.onkeydown = function(event) { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); toggle(); } };
+      cat.title = english ? "Expand / collapse group" : "展开/折叠分组";
+      cat.setAttribute("aria-label", cat.title);
+    });
     toolbar.querySelectorAll("button").forEach(function(button) {
       button.title = button.dataset.mode === "categorized" ? (english ? "Categorized" : "分类视图") : (english ? "Alphabetical" : "按字母排序");
       button.setAttribute("aria-label", button.title);

@@ -47,10 +47,14 @@
         var next = child.nextElementSibling; child.remove(); child = next;
       }
     }
-    if (pageProps.length) removeSection(categories[0], categories[1]);
-    else removeSection(categories[1], categories[2]);
-    removeSection(categories[2], null);
-    if (!pageProps.length && categories[0]) categories[0].textContent = settings.group;
+    if (pageProps.length) removeSection(categories[0], categories[2]); // 页面参数替换全局外观 / 语言两组
+    else {
+      removeSection(categories[2], null); // 无页面参数时只保留全局设置
+      var appearance = categories[0] && categories[0].querySelector(".gt");
+      var language = categories[1] && categories[1].querySelector(".gt");
+      if (appearance) appearance.textContent = settings.shell.GlobalSettings.AppearanceGroup;
+      if (language) language.textContent = settings.shell.GlobalSettings.LanguageGroup;
+    }
     var labels = [settings.shell.Density, settings.shell.Palette, settings.shell.GlobalSettings.ModeLabel, settings.language];
     SELF_PROPS.forEach(function(property, index) {
       var control = panel.querySelector('[data-id="' + property.id + '"]');

@@ -32,8 +32,9 @@
   }
   renderPGrid = function (id) {
     original(id);
-    var state = states[id] || (states[id] = { width:118, heights:{}, mode:"categorized", query:"" });
+    var state = states[id] || (states[id] = { width:118, heights:{}, mode:"categorized", query:"", collapsed:new Set() });
     var english = LANG === "en-US", nodes = Array.from(panel.children), rows = nodes.filter(node => node.matches(".rw"));
+    var cats = nodes.filter(node => node.matches(".cat"));
     var search = toolbar.querySelector("input");
     search.placeholder = english ? "Search properties" : "搜索属性";
     search.setAttribute("aria-label", search.placeholder); search.value = state.query;
@@ -42,7 +43,22 @@
       panel.style.setProperty("--property-name-width", state.width + "px");
     }
     setWidth(state.width);
+    function applyCollapse() {
+      var inactive = !state.query && state.mode === "categorized";
+      var current = null;
+      nodes.forEach(function(node) {
+        if (node.matches(".cat")) { current = node; return; }
+        if (!current) return;
+        node.classList.toggle("off", inactive && state.collapsed.has(current.dataset.group));
+      });
+      cats.forEach(function(cat) {
+        var collapsed = state.collapsed.has(cat.dataset.group);
+        cat.classList.toggle("collapsed", collapsed);
+        cat.setAttribute("aria-expanded", String(!collapsed));
+      });
+    }
     function applyView() {
+      panel.classList.toggle("alpha", state.mode === "alphabetical");
       nodes.forEach(node => panel.appendChild(node));
       if (state.mode === "alphabetical") rows.slice().sort((a,b) => a.querySelector("label,.nm").textContent.localeCompare(b.querySelector("label,.nm").textContent, LANG)).forEach(row => panel.appendChild(row));
       rows.forEach(function(row) { row.hidden = !row.textContent.toLocaleLowerCase(LANG).includes(state.query.toLocaleLowerCase(LANG)); });
@@ -51,7 +67,19 @@
         category.hidden = state.mode === "alphabetical" || !nodes.slice(index + 1, end < 0 ? undefined : end).some(node => node.matches(".rw") && !node.hidden);
       });
       toolbar.querySelectorAll("button").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.mode === state.mode)));
+      applyCollapse();
     }
+    cats.forEach(function(cat) {
+      var toggle = function() {
+        var key = cat.dataset.group;
+        if (state.collapsed.has(key)) state.collapsed.delete(key); else state.collapsed.add(key);
+        applyCollapse();
+      };
+      cat.onclick = toggle;
+      cat.onkeydown = function(event) { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); toggle(); } };
+      cat.title = english ? "Expand / collapse group" : "展开/折叠分组";
+      cat.setAttribute("aria-label", cat.title);
+    });
     toolbar.querySelectorAll("button").forEach(function(button) {
       button.title = button.dataset.mode === "categorized" ? (english ? "Categorized" : "分类视图") : (english ? "Alphabetical" : "按字母排序");
       button.setAttribute("aria-label", button.title);

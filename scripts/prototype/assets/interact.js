@@ -1208,15 +1208,21 @@ function renderDoc(id) {
 }
 
 /* ═══ 属性面板 ═══ */
+var PROP_CHEVRON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>';
 function propKey(pageId, p) { return (p.global ? "" : (pageId || "")) + "|" + p.id; }
+function propCat(key, title) {
+ return '<div class="cat" data-group="' + key + '" role="button" tabindex="0" aria-expanded="true" title="' + esc(title) + '">' +
+  '<span class="gt">' + esc(title) + '</span><span class="chev" aria-hidden="true">' + PROP_CHEVRON + '</span></div>';
+}
 function rowHtml(pageId, p) {
  var mod = MODIFIED[propKey(pageId, p)] ? " mod" : "";
  var ctl;
  if (p.type === "radio") {
   ctl = '<div class="catalog-radio-options" data-id="' + p.id + '">' + p.options.map(function(option){ return '<label><input type="radio" name="' + esc(pageId+'-'+p.id) + '" value="' + esc(option) + '"' + (option === p.value ? ' checked' : '') + '> ' + esc(option) + '</label>'; }).join('') + '</div>';
  } else if (p.type === "combo") {
-  ctl = '<select data-id="' + p.id + '"' + (p.readonly ? " disabled" : "") + ">" +
-   p.options.map(function (o) { return "<option" + (o === p.value ? " selected" : "") + ">" + esc(o) + "</option>"; }).join("") + "</select>";
+  ctl = '<span class="selwrap"><select data-id="' + p.id + '"' + (p.readonly ? " disabled" : "") + ">" +
+   p.options.map(function (o) { return "<option" + (o === p.value ? " selected" : "") + ">" + esc(o) + "</option>"; }).join("") + "</select>" +
+   '<span class="chev" aria-hidden="true">' + PROP_CHEVRON + "</span></span>";
  } else if (p.type === "bool") {
   ctl = '<div class="switch' + (p.value ? " on" : "") + '" data-id="' + p.id + '" role="switch" aria-checked="' + !!p.value + '" tabindex="0" title="' + esc(p.label) + '"></div>';
  } else if (p.type === "text" || p.type === "multiline") {
@@ -1233,13 +1239,13 @@ function rowHtml(pageId, p) {
 }
 function renderPGrid(id) {
  var pageProps = (id && PROTO[id] && PROTO[id].props) || [];
- var html = '<div class="cat">外观 · 语言（全局）</div>' + SELF_PROPS.map(function (p) { return rowHtml(id, p); }).join("");
- html += '<div class="cat">' + esc(id ? pt(id) : "当前文档") + "</div>";
+ var globalProps = SELF_PROPS.filter(function (p) { return p.id !== "appearance.lang"; });
+ var langProps = SELF_PROPS.filter(function (p) { return p.id === "appearance.lang"; });
+ var html = propCat("appearance", "外观") + globalProps.map(function (p) { return rowHtml(id, p); }).join("");
+ html += propCat("language", "语言") + langProps.map(function (p) { return rowHtml(id, p); }).join("");
+ html += propCat("page:" + (id || ""), id ? pt(id) : "当前文档");
  html += pageProps.length ? pageProps.map(function (p) { return rowHtml(id, p); }).join("")
   : '<div class="pgp-empty">当前文档无属性</div>';
- html += '<div class="cat">状态</div>' +
-  '<div class="rw"><label>打开文档数</label><div class="ctl"><span style="font-size:11px">' + OPEN_DOCS.length + "</span></div></div>" +
-  '<div class="rw"><label>日志级别</label><div class="ctl"><span style="font-size:11px">' + esc(LOG_LEVEL) + "</span></div></div>";
  $("pGrid").innerHTML = html;
  var cnt = $("pgCnt"); if (cnt) cnt.textContent = "(" + (SELF_PROPS.length + pageProps.length) + " 项)";
  var all = SELF_PROPS.concat(pageProps);

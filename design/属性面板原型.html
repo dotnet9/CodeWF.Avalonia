@@ -120,19 +120,23 @@
 
   mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1px; }
 
-  /* 层级参考线 */
-  .guide { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border-soft); pointer-events: none; }
-
-  /* 折叠箭头（分组行 / 可展开属性行共用） */
-  .chev, .tw {
-    width: 14px; flex: none;
+  /* 折叠箭头（分组行 / 可展开属性行 / 下拉框共用）：12px 线性 chevron，统一放在行尾右侧 */
+  .chev, .tw, .combo .arr {
+    width: 18px; flex: none;
     display: inline-flex; align-items: center; justify-content: center;
     color: var(--text-sec); transition: transform .12s;
   }
+  .chev svg, .tw svg, .combo .arr svg { width: 12px; height: 12px; }
   .tw { cursor: pointer; height: 100%; }
   .tw:hover { color: var(--text-strong); }
   .collapsed .chev, .row.collapsed .tw { transform: rotate(-90deg); }
   .nm { overflow: hidden; text-overflow: ellipsis; }
+  /* 分组行：名称居左，箭头推到行尾 */
+  .group-row .cell { gap: 6px; }
+  .group-row .chev { margin-left: auto; margin-right: 10px; }
+  /* 可展开属性行：箭头绝对定位到行尾，值列内容避让 */
+  .row .tw { position: absolute; right: 4px; top: 0; bottom: 0; width: 22px; }
+  .row.expandable .cell.value { padding-right: 26px; }
 
   /* ---------- 编辑器 ---------- */
   .cell.value { padding: 0 4px 0 6px; gap: 4px; position: relative; overflow: hidden; }
@@ -173,7 +177,6 @@
   .row:hover .combo { border-color: var(--border); background: var(--bg-editor); }
   .combo.open { border-color: var(--accent); background: var(--bg-editor); }
   .combo .cv { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .combo .arr { color: var(--text-sec); font-size: 9px; flex: none; }
   .combo-menu {
     position: absolute; top: calc(var(--row-h) + 2px); left: 4px; right: 4px; z-index: 40;
     background: var(--menu-bg); border: 1px solid var(--border); border-radius: 4px;
@@ -507,10 +510,12 @@ body.prototype-maximized { padding:0; }
   --border:var(--bd); --border-soft:var(--bd); --accent:var(--pri);
   --accent-text:#fff; --accent-soft:var(--pri-lt); --menu-bg:var(--bg2); --row-h:31px;
 }
-body { padding:0; display:block; background:var(--bg); }
-#app { height:100dvh; }
-.property-banner { flex:none; min-height:92px; display:flex; align-items:center; justify-content:space-between; padding:18px 25px; gap:16px; background:radial-gradient(ellipse at 0 0,var(--pri-lt),transparent 60%),var(--bg); border-bottom:1px solid var(--bd2); }
-.property-banner h1 { font-size:23px; font-weight:600; letter-spacing:-.5px; color:var(--tx); }
+/* 窄窗体 specimen：固定 400px 居中，不再铺满整个页面。 */
+body { padding:0; display:flex; justify-content:center; background:var(--workbg); }
+#app { flex:none; width:400px; height:100dvh; border-inline:1px solid var(--bd2); box-shadow:0 0 44px rgba(0,0,0,.14); }
+.property-banner { flex:none; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px 12px; padding:14px 16px; background:radial-gradient(ellipse at 0 0,var(--pri-lt),transparent 60%),var(--bg); border-bottom:1px solid var(--bd2); }
+.property-banner h1 { font-size:19px; font-weight:600; letter-spacing:-.5px; color:var(--tx); }
+.property-banner select { max-width:132px; }
 .property-banner p { font-size:11px; color:var(--tx2); margin-top:5px; }
 .property-banner .studio-eyebrow { font-size:9px; margin-bottom:5px; }
 .property-banner select { background:var(--bg2); border:1px solid var(--bd); padding:7px; border-radius:6px; font-size:11px; }
@@ -1449,6 +1454,9 @@ textarea.ed { height:100%;min-height:0;padding:6px; }
 const P = (id, name, type, value, def, desc, extra) =>
   Object.assign({ id, kind: "prop", name, type, value, def, desc }, extra || {});
 
+/* 统一箭头：分组行 / 可展开属性行 / 下拉框共用同一 12px 线性 chevron */
+const CHEVRON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>';
+
 const TREE = [
   { id: "g1", kind: "group", name: "外观", children: [
     P("p01", "名称", "text", "阀门-01", "", "节点的显示名称，同时显示在画布与搜索结果中。"),
@@ -1573,7 +1581,8 @@ const hl = (s) => { // 搜索命中高亮
   if (i < 0) return esc(s);
   return esc(s.slice(0,i)) + "<mark>" + esc(s.slice(i, i+state.query.length)) + "</mark>" + esc(s.slice(i+state.query.length));
 };
-const indentX = (depth) => 8 + depth * 16;
+/* 首列标签：基础左边距 ≥3mm（取 12px），层级之间缩进 1 个字（12px） */
+const indentX = (depth) => 12 + depth * 12;
 
 let toastTimer = null;
 function toast(msg) {
@@ -1679,7 +1688,7 @@ function edBoolean(p) {
 }
 function edCombo(p, cell) {
   const el = document.createElement("div"); el.className = "combo";
-  el.innerHTML = '<span class="cv"></span><span class="arr">▼</span>';
+  el.innerHTML = '<span class="cv"></span><span class="arr">' + CHEVRON + '</span>';
   const cv = el.querySelector(".cv");
   const paint = () => { cv.textContent = p.value; };
   paint();
@@ -1787,18 +1796,6 @@ function makeNameCell(n, depth) {
   const c = document.createElement("div");
   c.className = "cell name";
   c.style.paddingLeft = indentX(depth) + "px";
-  for (let i = 0; i < depth; i++) { // 层级参考线
-    const g = document.createElement("div");
-    g.className = "guide";
-    g.style.left = (indentX(i) + 6) + "px";
-    c.appendChild(g);
-  }
-  if (!FLAT && n.kind === "prop" && n.children && n.children.length) {
-    const tw = document.createElement("span");
-    tw.className = "tw"; tw.textContent = "▾"; tw.title = "展开/折叠";
-    tw.addEventListener("click", (e) => { e.stopPropagation(); toggleNode(n.id); });
-    c.appendChild(tw);
-  }
   const nm = document.createElement("span");
   nm.className = "nm";
   nm.innerHTML = hl(n.name);
@@ -1815,14 +1812,19 @@ function makeValueCell(p) {
 function makePropRow(p, depth) {
   p._depth = depth; // 供重置后重建行使用
   const hasKids = (p.children || []).length > 0;
+  const expandable = hasKids && !FLAT;
   const row = document.createElement("div");
-  row.className = "row" + (hasKids && state.collapsed.has(p.id) && !state.query ? " collapsed" : "") +
+  row.className = "row" + (expandable && state.collapsed.has(p.id) && !state.query ? " collapsed" : "") +
                   (p.id === state.selectedId ? " selected" : "");
   row.dataset.row = p.id;
   row.appendChild(makeNameCell(p, depth));
   row.appendChild(makeValueCell(p));
   row.addEventListener("click", () => selectProp(p));
-  if (hasKids && !FLAT) {
+  if (expandable) { // 折叠箭头放在行尾右侧
+    const tw = document.createElement("span");
+    tw.className = "tw"; tw.innerHTML = CHEVRON; tw.title = "展开/折叠";
+    tw.addEventListener("click", (e) => { e.stopPropagation(); toggleNode(p.id); });
+    row.appendChild(tw);
     row.querySelector(".name").addEventListener("dblclick", (e) => { e.stopPropagation(); toggleNode(p.id); });
   }
   row.addEventListener("contextmenu", (e) => {
@@ -1841,14 +1843,8 @@ function makeGroupRow(n, depth) {
   row.style.gridTemplateColumns = "1fr";
   const c = document.createElement("div");
   c.className = "cell";
-  c.style.paddingLeft = (2 + depth * 16) + "px";
-  for (let i = 0; i < depth; i++) {
-    const g = document.createElement("div");
-    g.className = "guide";
-    g.style.left = (indentX(i) + 6) + "px";
-    c.appendChild(g);
-  }
-  c.insertAdjacentHTML("beforeend", '<span class="chev">▾</span><span>' + hl(n.name) + '</span>');
+  c.style.paddingLeft = (12 + depth * 12) + "px";
+  c.insertAdjacentHTML("beforeend", '<span class="nm">' + hl(n.name) + '</span><span class="chev">' + CHEVRON + '</span>');
   row.appendChild(c);
   row.addEventListener("click", () => { if (!state.query) toggleNode(n.id); });
   applyStoredRowHeight(row, n);

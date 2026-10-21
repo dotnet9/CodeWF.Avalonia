@@ -6,10 +6,12 @@
   --border:var(--bd); --border-soft:var(--bd); --accent:var(--pri);
   --accent-text:#fff; --accent-soft:var(--pri-lt); --menu-bg:var(--bg2); --row-h:31px;
 }
-body { padding:0; display:block; background:var(--bg); }
-#app { height:100dvh; }
-.property-banner { flex:none; min-height:92px; display:flex; align-items:center; justify-content:space-between; padding:18px 25px; gap:16px; background:radial-gradient(ellipse at 0 0,var(--pri-lt),transparent 60%),var(--bg); border-bottom:1px solid var(--bd2); }
-.property-banner h1 { font-size:23px; font-weight:600; letter-spacing:-.5px; color:var(--tx); }
+/* 窄窗体 specimen：固定 400px 居中，不再铺满整个页面。 */
+body { padding:0; display:flex; justify-content:center; background:var(--workbg); }
+#app { flex:none; width:400px; height:100dvh; border-inline:1px solid var(--bd2); box-shadow:0 0 44px rgba(0,0,0,.14); }
+.property-banner { flex:none; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px 12px; padding:14px 16px; background:radial-gradient(ellipse at 0 0,var(--pri-lt),transparent 60%),var(--bg); border-bottom:1px solid var(--bd2); }
+.property-banner h1 { font-size:19px; font-weight:600; letter-spacing:-.5px; color:var(--tx); }
+.property-banner select { max-width:132px; }
 .property-banner p { font-size:11px; color:var(--tx2); margin-top:5px; }
 .property-banner .studio-eyebrow { font-size:9px; margin-bottom:5px; }
 .property-banner select { background:var(--bg2); border:1px solid var(--bd); padding:7px; border-radius:6px; font-size:11px; }

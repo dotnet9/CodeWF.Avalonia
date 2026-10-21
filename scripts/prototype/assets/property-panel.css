@@ -8,7 +8,20 @@
 .property-modes svg{width:16px;height:16px;fill:currentColor}
 .property-search{display:block;box-sizing:border-box;width:100%;height:28px;margin-top:5px;padding:0 8px;font-size:11px;color:var(--tx);background:var(--bg2);border:1px solid var(--bd);border-radius:4px}
 #pGrid{flex:1;overflow:auto;padding:0;min-height:0;--property-name-width:118px}
-#pGrid .cat{box-sizing:border-box;margin:0;padding:7px 8px;background:var(--bg2);border-bottom:1px solid var(--bd)}
+#pGrid .cat{box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0;padding:7px 8px;min-height:31px;background:var(--bg2);border-bottom:1px solid var(--bd);color:var(--pri);font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;cursor:pointer;user-select:none}
+#pGrid .cat .gt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pGrid .cat .chev{flex:none;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;color:var(--tx2);transition:transform .12s}
+#pGrid .cat .chev svg{width:12px;height:12px}
+#pGrid .cat:hover{background:var(--hov)}
+#pGrid .cat:focus-visible{outline:2px solid var(--pri);outline-offset:-2px}
+#pGrid .cat.collapsed .chev{transform:rotate(-90deg)}
+#pGrid .rw.off,#pGrid .off{display:none}
+#pGrid.alpha .rw>label,#pGrid.alpha .rw>.nm{padding-left:8px}
+#pGrid:not(.alpha) .rw>label,#pGrid:not(.alpha) .rw>.nm{padding-left:28px}
+#pGrid .rw .selwrap{position:relative;display:flex;align-items:center;width:100%;height:100%;min-width:0}
+#pGrid .rw .selwrap select{appearance:none;-webkit-appearance:none;padding-right:28px}
+#pGrid .rw .selwrap>.chev{position:absolute;right:5px;top:0;bottom:0;width:18px;display:inline-flex;align-items:center;justify-content:center;color:var(--tx2);pointer-events:none}
+#pGrid .rw .selwrap>.chev svg{width:12px;height:12px}
 #pGrid .rw{box-sizing:border-box;display:grid;grid-template-columns:var(--property-name-width) minmax(0,1fr);gap:0;padding:0;height:31px;min-height:31px;border-radius:0;border-bottom:1px solid var(--bd);align-items:stretch}
 #pGrid .rw[hidden],#pGrid .cat[hidden]{display:none}
 #pGrid .rw>label,#pGrid .rw>.nm{display:flex;align-items:center;padding:0 8px;border-right:1px solid var(--bd);min-width:0}
