@@ -5,6 +5,8 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.Xml.Linq;
+using SkiaSharp;
 
 using Avalonia;
 using global::Avalonia.Controls;
@@ -216,6 +218,8 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
         {
             var svg = MermaidRenderer.RenderSvg(source, options);
             svg = InlineCssVariables(svg, options);
+            if (Regex.IsMatch(source, @"^\s*sankey(?:-beta)?\b", RegexOptions.Multiline | RegexOptions.CultureInvariant))
+                svg = FitSankeyLabels(svg);
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(svg));
             svgSource = SvgSource.LoadFromStream(stream);
         }
@@ -237,6 +241,36 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
         }
 
         return svgSource;
+    }
+
+    /// <summary>桑基图画布未计入左右外置标签，扩展 SVG 视口后再等比缩放。</summary>
+    internal static string FitSankeyLabels(string svg)
+    {
+        var document = XDocument.Parse(svg);
+        var root = document.Root!;
+        var viewBox = root.Attribute("viewBox")!.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select(value => double.Parse(value, CultureInfo.InvariantCulture)).ToArray();
+        var left = viewBox[0];
+        var right = left + viewBox[2];
+        using var typeface = SKTypeface.FromFamilyName("Inter");
+        foreach (var text in root.Descendants().Where(element => element.Name.LocalName == "text"))
+        {
+            if (!double.TryParse(text.Attribute("x")?.Value, CultureInfo.InvariantCulture, out var x)) continue;
+            var size = float.TryParse(text.Attribute("font-size")?.Value, CultureInfo.InvariantCulture, out var parsedSize) ? parsedSize : 14;
+            using var font = new SKFont(typeface, size);
+            // 非拉丁文字留足全角字宽，避免缺字回退字体的量测差异再次裁掉文字。
+            var fallbackWidth = text.Value.EnumerateRunes().Sum(rune => Rune.GetUnicodeCategory(rune) is
+                UnicodeCategory.NonSpacingMark or UnicodeCategory.EnclosingMark ? 0 : rune.IsAscii ? size * .75 : size);
+            var width = Math.Max(font.MeasureText(text.Value), fallbackWidth);
+            var anchor = text.Attribute("text-anchor")?.Value;
+            var start = anchor == "end" ? x - width : anchor == "middle" ? x - width / 2 : x;
+            left = Math.Min(left, start - 8);
+            right = Math.Max(right, start + width + 8);
+        }
+        root.SetAttributeValue("viewBox", string.Join(" ", new[] { left, viewBox[1], right - left, viewBox[3] }
+            .Select(value => value.ToString("0.###", CultureInfo.InvariantCulture))));
+        root.SetAttributeValue("width", (right - left).ToString("0.###", CultureInfo.InvariantCulture));
+        return document.ToString(SaveOptions.DisableFormatting);
     }
 
     /// <summary>缓存 Key 含主题配色：同一份图表在明暗主题下是两张不同的图。</summary>

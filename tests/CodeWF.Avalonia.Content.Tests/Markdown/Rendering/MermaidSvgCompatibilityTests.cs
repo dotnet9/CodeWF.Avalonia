@@ -10,6 +10,21 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 
 public sealed class MermaidSvgCompatibilityTests
 {
+    [Theory]
+    [InlineData("sankey-beta\nIdeas,Draft,40\nDraft,Published,30\nDraft,Revision,10")]
+    [InlineData("sankey-beta\n非常长的文档来源名称,需要完整展示的最终目标名称,40")]
+    public void SankeyExternalLabelsRemainInsideTheCanvas(string source)
+    {
+        var raw = MermaidBlockRenderer.InlineCssVariables(MermaidRenderer.RenderSvg(source, new RenderOptions()), new RenderOptions());
+        var original = XDocument.Parse(raw);
+        var fitted = XDocument.Parse(MermaidBlockRenderer.FitSankeyLabels(raw));
+        var viewBox = fitted.Root!.Attribute("viewBox")!.Value.Split(' ').Select(value => double.Parse(value, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
+        Assert.True(viewBox[2] > 800, "外置标签必须计入画布宽度");
+        Assert.Equal(original.Descendants().Where(element => element.Name.LocalName == "text").Select(element => element.Value),
+            fitted.Descendants().Where(element => element.Name.LocalName == "text").Select(element => element.Value));
+        Assert.Contains("40", fitted.ToString());
+    }
+
     [Fact]
     public async Task ConcurrentViewsReuseOneLoadedSvgAndPaletteChangesRemainIndependent()
     {
