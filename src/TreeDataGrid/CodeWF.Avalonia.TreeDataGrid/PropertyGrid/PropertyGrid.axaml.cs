@@ -551,9 +551,10 @@ public partial class PropertyGrid : UserControl
         }
     }
 
-    private void OnExpanderClick(object? sender, RoutedEventArgs e)
+    /// <summary>行尾展开按钮：按下即切换展开状态并拦截冒泡，避免分组行或属性行的按下处理重复切换。</summary>
+    private void OnExpanderPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (sender is TextBlock { DataContext: PropertyGridRow row })
+        if (sender is Border { DataContext: PropertyGridRow row } && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
         {
             ToggleExpand(row.Item);
             e.Handled = true;

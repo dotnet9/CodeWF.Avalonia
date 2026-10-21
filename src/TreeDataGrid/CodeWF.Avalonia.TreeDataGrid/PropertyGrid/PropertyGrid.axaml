@@ -42,8 +42,7 @@
 
       <pg:NullableDoubleToHeightConverter x:Key="NullableHeightConverter" />
       <pg:DepthToThicknessConverter x:Key="DepthIndentConverter" />
-      <pg:DepthToGuidesConverter x:Key="DepthGuidesConverter" />
-      <pg:BoolToChevronConverter x:Key="ChevronConverter" />
+      <StreamGeometry x:Key="PgChevronGeometry">M4,6 L8,10 L12,6</StreamGeometry>
     </ResourceDictionary>
   </UserControl.Resources>
 
@@ -148,15 +147,30 @@
     <Style Selector="Border.pg-name.selected TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource PgSelectedText}" />
     </Style>
-    <Style Selector="TextBlock.pg-expander">
-      <Setter Property="Width" Value="14" />
-      <Setter Property="TextAlignment" Value="Center" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="Foreground" Value="{DynamicResource PgSecondaryForeground}" />
+    <!-- 展开按钮：18px 行尾命中区，折叠时箭头指向右侧 -->
+    <Style Selector="Border.pg-expander">
+      <Setter Property="Width" Value="18" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="VerticalAlignment" Value="Stretch" />
       <Setter Property="Cursor" Value="Hand" />
     </Style>
-    <Style Selector="TextBlock.pg-expander:pointerover">
-      <Setter Property="Foreground" Value="{DynamicResource PgForeground}" />
+    <Style Selector="Border.pg-expander Path">
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Stroke" Value="{DynamicResource PgSecondaryForeground}" />
+      <Setter Property="StrokeThickness" Value="1.5" />
+      <Setter Property="RenderTransform" Value="rotate(-90deg)" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Border.pg-expander Path.expanded">
+      <Setter Property="RenderTransform" Value="rotate(0deg)" />
+    </Style>
+    <Style Selector="Border.pg-expander:pointerover Path">
+      <Setter Property="Stroke" Value="{DynamicResource PgForeground}" />
     </Style>
     <Style Selector="TextBlock.pg-group-name">
       <Setter Property="FontWeight" Value="SemiBold" />
@@ -194,10 +208,6 @@
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="Padding" Value="6,2" />
       <Setter Property="Foreground" Value="{DynamicResource PgSecondaryForeground}" />
-    </Style>
-
-    <!-- 层级缩进线 -->    <Style Selector="ItemsControl.pg-guides">
-      <Setter Property="VerticalAlignment" Value="Stretch" />
     </Style>
 
     <!-- 列宽拖拽命中区域 -->    <Style Selector="Border.pg-col-handle">
@@ -301,23 +311,13 @@
                     Height="{Binding Item.RowHeight, Converter={x:Static pg:NullableDoubleToHeightConverter.Instance}}"
                     PointerPressed="OnCategoryPressed">
               <Panel>
-                <StackPanel Orientation="Horizontal" Margin="{Binding Depth, Converter={x:Static pg:DepthToThicknessConverter.Instance}}">
-                  <ItemsControl Classes="pg-guides" ItemsSource="{Binding Depth, Converter={x:Static pg:DepthToGuidesConverter.Instance}}">
-                    <ItemsControl.ItemsPanel>
-                      <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" Height="18" />
-                      </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                      <DataTemplate>
-                        <Border Width="1" Margin="6,0,10,0" Background="{DynamicResource PgLine}" />
-                      </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                  </ItemsControl>
-                  <TextBlock Classes="pg-expander" IsVisible="{Binding Item.HasChildren}"
-                             Text="{Binding Item.IsExpanded, Converter={x:Static pg:BoolToChevronConverter.Instance}}" />
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="{Binding Depth, Converter={x:Static pg:DepthToThicknessConverter.Instance}}">
                   <TextBlock Classes="pg-group-name" Text="{Binding Item.Name}" />
                 </StackPanel>
+                <Border Classes="pg-expander" IsVisible="{Binding Item.HasChildren}" HorizontalAlignment="Right" Margin="0,0,8,0"
+                        PointerPressed="OnExpanderPressed">
+                  <Path Data="{StaticResource PgChevronGeometry}" Classes.expanded="{Binding Item.IsExpanded}" />
+                </Border>
                 <Border Classes="pg-row-line" Tag="{Binding Item}"
                         PointerPressed="OnRowLinePressed" DoubleTapped="OnRowLineDoubleTapped">
                   <Border />
@@ -330,7 +330,7 @@
             <Grid Classes="pg-row" Classes.selected="{Binding Item.IsSelected}"
                   MinHeight="{Binding DefaultRowHeight, ElementName=Root}"
                   Height="{Binding Item.RowHeight, Converter={x:Static pg:NullableDoubleToHeightConverter.Instance}}"
-                  ColumnDefinitions="Auto,*"
+                  ColumnDefinitions="Auto,*,Auto"
                   PointerPressed="OnRowPressed">
               <Grid.ContextMenu>
                 <ContextMenu>
@@ -342,22 +342,7 @@
               <!-- 名称单元格 -->              <Border Grid.Column="0" Classes="pg-name" Classes.selected="{Binding Item.IsSelected}"
                       Width="{Binding NameColumnWidth, ElementName=Root}">
                 <Panel>
-                  <StackPanel Orientation="Horizontal" Margin="{Binding Depth, Converter={x:Static pg:DepthToThicknessConverter.Instance}}">
-                    <ItemsControl Classes="pg-guides" ItemsSource="{Binding Depth, Converter={x:Static pg:DepthToGuidesConverter.Instance}}">
-                      <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                          <StackPanel Orientation="Horizontal" Height="18" />
-                        </ItemsPanelTemplate>
-                      </ItemsControl.ItemsPanel>
-                      <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                          <Border Width="1" Margin="6,0,10,0" Background="{DynamicResource PgLine}" />
-                        </DataTemplate>
-                      </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                    <TextBlock Classes="pg-expander" IsVisible="{Binding ShowExpander}"
-                               Text="{Binding Item.IsExpanded, Converter={x:Static pg:BoolToChevronConverter.Instance}}"
-                               PointerReleased="OnExpanderClick" />
+                  <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="{Binding Depth, Converter={x:Static pg:DepthToThicknessConverter.Instance}}">
                     <TextBlock Classes="pg-name" Classes.modified="{Binding Item.IsModifiedDeep}"
                                Text="{Binding Item.Name}" Margin="0,0,8,0" />
                   </StackPanel>
@@ -369,7 +354,12 @@
                 <pg:PropertyCellEditor />
               </Border>
 
-              <!-- 贯穿整行的分隔线 -->              <Border Grid.ColumnSpan="2" Classes="pg-row-line" Tag="{Binding Item}"
+              <!-- 行尾展开按钮 -->              <Border Grid.Column="2" Classes="pg-expander" IsVisible="{Binding ShowExpander}"
+                      PointerPressed="OnExpanderPressed">
+                <Path Data="{StaticResource PgChevronGeometry}" Classes.expanded="{Binding Item.IsExpanded}" />
+              </Border>
+
+              <!-- 贯穿整行的分隔线 -->              <Border Grid.ColumnSpan="3" Classes="pg-row-line" Tag="{Binding Item}"
                       PointerPressed="OnRowLinePressed" DoubleTapped="OnRowLineDoubleTapped">
                 <Border />
               </Border>

@@ -5,6 +5,7 @@ using Xunit;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Media;
+using AvaloniaPath = Avalonia.Controls.Shapes.Path;
 using Avalonia.Styling;
 using Avalonia;
 using Avalonia.Headless;
@@ -385,4 +386,57 @@ public sealed class PropertyGridHeadlessTests
             Assert.Equal(2, grid.Rows.Count);
         });
     }
+
+    [Fact]
+    public void ExpandersSitAtRowEndAndToggleCollapse() => _platform.Run(() =>
+    {
+        var theme = new Semi.Avalonia.SemiTheme();
+        Application.Current!.Styles.Add(theme);
+        var name = new PropertyItem { Name = "名称", Kind = PropertyItemKind.Text, Value = "阀门-01", DefaultValue = "" };
+        var family = new PropertyItem { Name = "字体族", Kind = PropertyItemKind.Text, Value = "微软雅黑", DefaultValue = "微软雅黑" };
+        var font = new PropertyItem { Name = "字体", Kind = PropertyItemKind.Text, Value = "微软雅黑", DefaultValue = "微软雅黑", Children = [family] };
+        var group = new PropertyItem { Name = "外观", Kind = PropertyItemKind.Category, Children = [name, font] };
+        var grid = new PropertyGrid { Items = new[] { group }, NameColumnWidth = 140 };
+        var window = new Window { Width = 480, Height = 360, Content = grid };
+        try
+        {
+            window.Show();
+            window.UpdateLayout();
+            Dispatcher.UIThread.RunJobs();
+
+            // 层级参考线已移除，缩进为基础 12px 加每级 12px
+            Assert.DoesNotContain(grid.GetVisualDescendants().OfType<ItemsControl>(), c => c.Classes.Contains("pg-guides"));
+            var leafRow = grid.GetVisualDescendants().OfType<Grid>().First(g => g.Classes.Contains("pg-row") && g.DataContext is PropertyLeafRow leaf && ReferenceEquals(leaf.Item, name));
+            var nameCell = leafRow.GetVisualDescendants().OfType<Border>().First(b => b.Classes.Contains("pg-name"));
+            var indent = Assert.IsType<StackPanel>(nameCell.GetVisualDescendants().OfType<StackPanel>().First());
+            Assert.Equal(new Thickness(24, 0, 8, 0), indent.Margin);
+
+            // 展开按钮只在行尾：无子项的名称格内没有，字体行的箭头右缘贴合行右缘
+            var fontRow = grid.GetVisualDescendants().OfType<Grid>().First(g => g.Classes.Contains("pg-row") && g.DataContext is PropertyLeafRow leaf && ReferenceEquals(leaf.Item, font));
+            var fontNameCell = fontRow.GetVisualDescendants().OfType<Border>().First(b => b.Classes.Contains("pg-name"));
+            Assert.DoesNotContain(fontNameCell.GetVisualDescendants(), c => c.Classes.Contains("pg-expander"));
+            var leafExpander = fontRow.GetVisualDescendants().OfType<Border>().First(b => b.Classes.Contains("pg-expander"));
+            var expanderRight = leafExpander.TranslatePoint(new Point(leafExpander.Bounds.Width, 0), fontRow)!.Value.X;
+            Assert.Equal(fontRow.Bounds.Width, expanderRight, 1);
+            Assert.NotNull(leafExpander.GetVisualDescendants().OfType<AvaloniaPath>().Single().Data);
+
+            // 点击分组行尾箭头折叠：只剩分组行；再点展开恢复
+            var groupExpander = grid.GetVisualDescendants().OfType<Border>()
+                .First(b => b.Classes.Contains("pg-expander") && b.DataContext is PropertyCategoryRow);
+            var center = groupExpander.TranslatePoint(new Point(groupExpander.Bounds.Width / 2, groupExpander.Bounds.Height / 2), window)!.Value;
+            window.MouseMove(center);
+            window.MouseDown(center, MouseButton.Left);
+            window.MouseUp(center, MouseButton.Left);
+            Dispatcher.UIThread.RunJobs();
+            Assert.Single(grid.Rows);
+            window.MouseDown(center, MouseButton.Left);
+            window.MouseUp(center, MouseButton.Left);
+            Dispatcher.UIThread.RunJobs();
+            Assert.Equal(4, grid.Rows.Count); // 外观、名称、字体与展开的字体族
+        }
+        finally
+        {
+            window.Close();
+        }
+    });
 }

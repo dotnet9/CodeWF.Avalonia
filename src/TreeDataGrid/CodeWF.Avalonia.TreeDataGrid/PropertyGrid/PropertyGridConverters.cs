@@ -18,13 +18,13 @@ public sealed class NullableDoubleToHeightConverter : IValueConverter
         => BindingOperations.DoNothing;
 }
 
-/// <summary>将层级转换为名称单元格的缩进。</summary>
+/// <summary>将层级转换为名称单元格的缩进：基础左边距 12px，每级再缩进 12px（一个字）。</summary>
 public sealed class DepthToThicknessConverter : IValueConverter
 {
     public static readonly DepthToThicknessConverter Instance = new();
 
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => new Thickness(2 + 16 * (value is int depth ? depth : 0), 0, 8, 0);
+        => new Thickness(12 + 12 * (value is int depth ? depth : 0), 0, 8, 0);
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         => BindingOperations.DoNothing;
