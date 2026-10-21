@@ -944,12 +944,8 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         ClearBlockControls();
         _renderedBlocks.Clear();
         _renderedMarkdown = text;
-        var parseStart = System.Diagnostics.Stopwatch.GetTimestamp();
-        _renderedModel = parsedModel ?? MarkdownParser.Parse(text, _documentPipeline);
-        if (parsedModel is null)
-        {
-            _lastParseDuration = System.Diagnostics.Stopwatch.GetElapsedTime(parseStart);
-        }
+        // 全文重绘也推进调度快照，避免 A → B → 全文 A → B 被误判为未变更。
+        _renderedModel = parsedModel ?? _scheduler.ParseNow(text, out _lastParseDuration);
 
         _lastRenderMode = MarkdownRenderMode.Full;
         ResetSelectionState();
@@ -1003,6 +999,16 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             _renderedModel = newModel;
             _lastRenderMode = MarkdownRenderMode.Incremental;
             return true;
+        }
+
+        // 被替换的源码块不再沿用旧折叠状态；未变更的块保留用户操作。
+        foreach (var block in _renderedModel.Blocks.Skip(diff.ReplaceStartIndex).Take(diff.OldRemoveCount))
+        {
+            _codeBlockFoldedStates.Remove(block.SourceSpan.Start);
+        }
+        foreach (var block in newModel.Blocks.Skip(diff.NewStartIndex).Take(diff.NewInsertCount))
+        {
+            _codeBlockFoldedStates.Remove(block.SourceSpan.Start);
         }
 
         var renderedNewBlocks = CreateRenderedBlocks(

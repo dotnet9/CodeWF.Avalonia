@@ -62,6 +62,11 @@ public sealed class MarkdownCodeBlockFoldingTests(AvaloniaPlatformFixture platfo
 			WaitForRender(viewer, source);
 			Assert.False(IsCodeContentVisible(viewer), "同文档重渲染不应丢失折叠状态");
 
+			var appendedDocument = source + "\nA new paragraph.\n";
+			viewer.Markdown = appendedDocument;
+			WaitForRender(viewer, appendedDocument);
+			Assert.False(IsCodeContentVisible(viewer), "其他段落变化不应展开未改动的代码块");
+
 			// 换文档：状态重置为展开。
 			var otherDocument = BuildCodeDocument(10);
 			viewer.Markdown = otherDocument;

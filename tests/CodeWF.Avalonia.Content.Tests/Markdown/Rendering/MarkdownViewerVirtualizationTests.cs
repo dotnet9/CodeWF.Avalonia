@@ -21,6 +21,30 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 public sealed class MarkdownViewerVirtualizationTests(AvaloniaPlatformFixture platform)
 {
     [Fact]
+    public void ReturningToPreviousTextAfterFullRenderStillRefreshesTheDocument() => platform.Run(() =>
+    {
+        const string first = "# First\n\nOpening paragraph.";
+        const string second = "# Second\n\n```cs\nvar n = 42;\n```";
+        var (window, viewer, _, _) = CreateViewer(first);
+        try
+        {
+            viewer.Markdown = second;
+            WaitForRender(viewer, second);
+            viewer.Markdown = first;
+            viewer.CodeBlockWrap = !viewer.CodeBlockWrap;
+            Dispatcher.UIThread.RunJobs();
+            WaitForRender(viewer, first);
+            viewer.Markdown = second;
+            WaitForRender(viewer, second);
+            Assert.Equal(second, viewer.CurrentModel.Source);
+        }
+        finally
+        {
+            window.Close();
+        }
+    });
+
+    [Fact]
     public void LargeDocumentsCreateTextControlsOnlyInsideRealizedBlocks() => platform.Run(() =>
     {
         var created = 0;
