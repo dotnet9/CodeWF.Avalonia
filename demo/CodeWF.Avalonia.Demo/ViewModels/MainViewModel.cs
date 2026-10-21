@@ -62,17 +62,8 @@ public partial class MainViewModel : ReactiveObject, IDisposable
         QuickGuideCommand = ReactiveCommand.Create(OpenGuidanceDemo);
         WriteLogsCommand = ReactiveCommand.Create(WriteSampleLogs);
 
-        Palettes = new ObservableCollection<AppearanceOption>
-        {
-            AppearanceOption.DotNet(),
-            AppearanceOption.Aurora(),
-            AppearanceOption.Ember(),
-            AppearanceOption.Default(),
-            AppearanceOption.Aquatic(),
-            AppearanceOption.Desert(),
-            AppearanceOption.Dusk(),
-            AppearanceOption.NightSky(),
-        };
+        _themeController ??= new StudioThemeController(Application.Current);
+        Palettes = new ObservableCollection<AppearanceOption>(AppearanceOption.CreateAll(_themeController));
         _selectedPalette = Palettes[0];
         CyclePaletteCommand = ReactiveCommand.Create(() => { SelectedPalette = Palettes[(Palettes.IndexOf(SelectedPalette) + 1) % Palettes.Count]; });
 
@@ -176,7 +167,7 @@ public partial class MainViewModel : ReactiveObject, IDisposable
             foreach (var group in Groups)
             {
                 foreach (var item in group.Items)
-                    item.IsSelected = item.TitleKey == value?.TitleKey;
+                    item.IsSelected = item.Title == value?.Title;
             }
             var selected = Groups.SelectMany(group => group.Items).FirstOrDefault(item => item.IsSelected);
             _selectedNavItem = selected;
@@ -334,7 +325,7 @@ public partial class MainViewModel : ReactiveObject, IDisposable
     {
         ArgumentNullException.ThrowIfNull(item);
 
-        var existing = Documents.FirstOrDefault(d => d.TitleKey == item.TitleKey);
+        var existing = Documents.FirstOrDefault(d => d.Title == item.Title);
         if (existing is not null)
         {
             ActivateDocument(existing);
@@ -346,14 +337,14 @@ public partial class MainViewModel : ReactiveObject, IDisposable
         {
             overview.Navigate = key =>
             {
-                var destination = Groups.SelectMany(g => g.Items).FirstOrDefault(i => i.TitleKey == key);
+                var destination = Groups.SelectMany(g => g.Items).FirstOrDefault(i => i.Title == key);
                 if (destination is not null) OpenItem(destination);
             };
             overview.TogglePanel = TogglePanel;
         }
         var document = new DemoDocumentViewModel(item, page, this);
         var dockDocument = _dockFactory?.CreateDocument() ?? new Document();
-        dockDocument.Id = "Doc." + item.TitleKey;
+        dockDocument.Id = "Doc." + item.Title;
         dockDocument.Title = document.DisplayTitle;
         dockDocument.Context = new Views.DemoDocumentView { DataContext = document };
         document.DockDocument = dockDocument;
@@ -407,7 +398,7 @@ public partial class MainViewModel : ReactiveObject, IDisposable
         }
 
         ActiveDocument = document;
-        SelectedGroup = Groups.FirstOrDefault(g => g.Items.Any(i => i.TitleKey == document.TitleKey));
+        SelectedGroup = Groups.FirstOrDefault(g => g.Items.Any(i => i.Title == document.Title));
     }
 
     /// <summary>Dock 侧关闭（页签 ✕）后的状态同步入口，仅由 <see cref="DemoDockFactory"/> 回调。</summary>
@@ -643,7 +634,7 @@ public partial class MainViewModel : ReactiveObject, IDisposable
             _themeController = new StudioThemeController(Application.Current);
             Application.Current.PropertyChanged += OnApplicationPropertyChanged;
         }
-        _themeController.Palette = SelectedPalette.Palette;
+        _themeController.PaletteKey = SelectedPalette.Key;
         _themeController.Mode = _themeMode;
         this.RaisePropertyChanged(nameof(IsDarkMode));
         SyncGlobalItems();
@@ -781,7 +772,7 @@ public partial class MainViewModel : ReactiveObject, IDisposable
             this.RaiseAndSetIfChanged(ref _selectedCulture, culture, nameof(SelectedCulture));
         this.RaisePropertyChanged(nameof(RibbonSections));
         SyncToolTitles();
-        foreach (var palette in Palettes) palette.RefreshTitle();
+        
         foreach (var mode in ThemeModeOptions) mode.RefreshTitle();
         this.RaisePropertyChanged(nameof(ThemeModes));
         this.RaisePropertyChanged(nameof(ThemeModeIndex));

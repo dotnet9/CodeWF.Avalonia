@@ -102,3 +102,8 @@ public partial class CompactTypographyResources : ResourceDictionary
 {
     public CompactTypographyResources() => AvaloniaXamlLoader.Load(this);
 }
+
+public partial class RelaxedTypographyResources : ResourceDictionary
+{
+    public RelaxedTypographyResources() => AvaloniaXamlLoader.Load(this);
+}

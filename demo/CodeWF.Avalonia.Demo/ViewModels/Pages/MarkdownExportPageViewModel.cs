@@ -70,7 +70,7 @@ public sealed class MarkdownExportPageViewModel : ReactiveObject
             Id = IdSize,
             Name = L.Instance.GetResource(DemoResources.Content.MarkdownExport.Properties.TypographySize),
             Kind = PropertyItemKind.Choice,
-            Options = [MarkdownTypographySizes.Normal, MarkdownTypographySizes.Small],
+            Options = [MarkdownTypographySizes.Normal, MarkdownTypographySizes.Compact],
             Value = _size,
             DefaultValue = MarkdownTypographySizes.Normal,
             Description = L.Instance.GetResource(DemoResources.Content.MarkdownExport.Properties.TypographySizeOfTheExportedDocument),

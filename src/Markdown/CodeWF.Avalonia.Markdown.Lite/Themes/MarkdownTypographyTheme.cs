@@ -31,6 +31,10 @@ public static class MarkdownTypographyThemes
 /// </summary>
 public static class MarkdownTypographySizes
 {
+    /// <summary>紧凑档：基准正文 13px（规则 §11）。</summary>
+    public const string Compact = "Compact";
+    /// <summary>正常档：基准正文 15px。</summary>
     public const string Normal = "Normal";
-    public const string Small = "Small";
+    /// <summary>宽松档：基准正文 17px。</summary>
+    public const string Relaxed = "Relaxed";
 }

@@ -73,7 +73,7 @@ public partial class MarkdownLitePage : DemoPageBase
             Id = IdSize,
             Name = L.Instance.GetResource(DemoResources.Content.MarkdownLite.Properties.TypographySize),
             Kind = PropertyItemKind.Choice,
-            Options = [MarkdownTypographySizes.Normal, MarkdownTypographySizes.Small],
+            Options = [MarkdownTypographySizes.Normal, MarkdownTypographySizes.Compact],
             Value = _size,
             DefaultValue = MarkdownTypographySizes.Normal,
             Description = "Normal / Small。",

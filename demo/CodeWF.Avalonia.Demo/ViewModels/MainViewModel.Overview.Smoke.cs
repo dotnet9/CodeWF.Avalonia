@@ -50,7 +50,7 @@ public partial class MainViewModel
                 overview.Overview.LabIndex = 0;
                 await Task.Delay(350);
                 window.UpdateLayout();
-                Save("" + palette.TitleKey.Split('.').Last() + (dark ? "-dark" : "-light"));
+                Save("" + palette.Title.Split('.').Last() + (dark ? "-dark" : "-light"));
             }
         }
         SelectedPalette = Palettes[0];
@@ -118,7 +118,7 @@ public partial class MainViewModel
             while (ActiveDocument?.Page is not { } page || !page.GetVisualAncestors().Contains(window) || page.Bounds.Width <= 0 || page.Bounds.Height <= 0)
             {
                 if (DateTime.UtcNow >= documentReadyBy)
-                    throw new TimeoutException("Dock document did not load: " + ActiveDocument?.TitleKey);
+                    throw new TimeoutException("Dock document did not load: " + ActiveDocument?.Title);
                 window.UpdateLayout();
                 await Task.Delay(50);
             }
@@ -130,7 +130,7 @@ public partial class MainViewModel
             var catalogReadyBy = DateTime.UtcNow.AddSeconds(10);
             while (ActiveDocument?.Page is not { } page || !page.GetVisualAncestors().Contains(window) || page.Bounds.Width <= 0 || page.Bounds.Height <= 0)
             {
-                if (DateTime.UtcNow >= catalogReadyBy) throw new TimeoutException("Catalog page did not load: " + item.TitleKey);
+                if (DateTime.UtcNow >= catalogReadyBy) throw new TimeoutException("Catalog page did not load: " + item.Title);
                 window.UpdateLayout();
                 await Task.Delay(50);
             }
@@ -155,7 +155,7 @@ public partial class MainViewModel
                     var commands = window.FindControl<ScrollViewer>("RibbonCommands")!.GetVisualDescendants()
                         .OfType<Button>().Select(button => button.DataContext).OfType<DemoItemViewModel>().ToArray();
                     if (commands.Length != group.Items.Count || !commands.SequenceEqual(group.Items))
-                        throw new InvalidOperationException("Ribbon commands do not match the catalog: " + group.TitleKey);
+                        throw new InvalidOperationException("Ribbon commands do not match the catalog: " + group.Title);
                     var icons = window.FindControl<ScrollViewer>("RibbonCommands")!.GetVisualDescendants()
                         .OfType<PathIcon>().Where(icon => icon.Classes.Contains("ribbon-icon")).ToArray();
                     if (icons.Length != commands.Length || icons.Any(icon => icon.Data is null || icon.Bounds.Width != 32 || icon.Bounds.Height != 32))
@@ -168,7 +168,7 @@ public partial class MainViewModel
                     var quickIcons = quickButtons.Select(button => button.Content).OfType<PathIcon>().ToArray();
                     if (quickIcons.Length != 3 || quickIcons.Any(icon => icon.Data is null || icon.Bounds.Width != 16 || icon.Bounds.Height != 16))
                         throw new InvalidOperationException("Ribbon quick icons must occupy 16 by 16 pixels.");
-                    Save($"ribbon-{group.TitleKey.Split('.').Last()}-{(int)size.Width}-{culture.Name}");
+                    Save($"ribbon-{group.Title.Split('.').Last()}-{(int)size.Width}-{culture.Name}");
                 }
             }
         }
@@ -193,7 +193,7 @@ public partial class MainViewModel
                 var geometry = window.FindControl<ScrollViewer>("RibbonCommands")!.GetVisualDescendants()
                     .OfType<Button>().Select(button => new
                     {
-                        Item = (button.DataContext as DemoItemViewModel)?.TitleKey,
+                        Item = (button.DataContext as DemoItemViewModel)?.Title,
                         Button = button.Bounds.ToString(),
                         Presenter = button.GetVisualDescendants().OfType<ContentPresenter>().FirstOrDefault(presenter => presenter.Name == "PART_ContentPresenter")?.Bounds.ToString(),
                         Selected = button.Classes.Contains("selected")
@@ -252,7 +252,7 @@ public partial class MainViewModel
             foreach (var key in new[] { DemoPages.MarkdownFlow, DemoPages.DataFlow, DemoPages.DocsFlow, DemoPages.Transfer, DemoPages.Guide, DemoPages.Log })
             {
                 overview.Overview.NavigateCommand.Execute(key);
-                if (ActiveDocument?.TitleKey != key) throw new InvalidOperationException("Overview navigation failed: " + key);
+                if (ActiveDocument?.Title != key) throw new InvalidOperationException("Overview navigation failed: " + key);
             }
             overview.Overview.NavigateCommand.Execute(DemoPages.Welcome);
             foreach (var culture in Cultures)

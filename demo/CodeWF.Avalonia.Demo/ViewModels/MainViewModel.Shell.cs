@@ -464,7 +464,7 @@ public partial class MainViewModel
     {
         var state = new LayoutState
         {
-            Palette = SelectedPalette.TitleKey,
+            Palette = SelectedPalette.Title,
             Dark = IsDarkMode,
             ThemeMode = _themeMode.ToString(),
             Density = Density.ToString(),
@@ -472,11 +472,11 @@ public partial class MainViewModel
             NavVisible = IsPanelVisible(_navTool),
             PropsVisible = ActiveDocument?.PropertiesVisible ?? true,
             LogVisible = IsPanelVisible(_logTool),
-            Documents = Documents.Select(d => d.TitleKey).ToArray(),
-            ActiveDocument = ActiveDocument?.TitleKey,
+            Documents = Documents.Select(d => d.Title).ToArray(),
+            ActiveDocument = ActiveDocument?.Title,
             Renames = Groups.SelectMany(g => g.Items)
                 .Where(i => i.CustomTitle is not null)
-                .ToDictionary(i => i.TitleKey, i => i.CustomTitle!),
+                .ToDictionary(i => i.Title, i => i.CustomTitle!),
         };
 
         try
@@ -514,7 +514,7 @@ public partial class MainViewModel
             }
 
             if (state.Palette is not null
-                && Palettes.FirstOrDefault(p => p.TitleKey == state.Palette) is { } palette)
+                && Palettes.FirstOrDefault(p => p.Title == state.Palette) is { } palette)
             {
                 _selectedPalette = palette;
                 this.RaisePropertyChanged(nameof(SelectedPalette));
@@ -541,7 +541,7 @@ public partial class MainViewModel
 
             foreach (var (titleKey, customTitle) in state.Renames ?? new Dictionary<string, string>())
             {
-                var item = Groups.SelectMany(g => g.Items).FirstOrDefault(i => i.TitleKey == titleKey);
+                var item = Groups.SelectMany(g => g.Items).FirstOrDefault(i => i.Title == titleKey);
                 if (item is not null)
                 {
                     item.CustomTitle = customTitle;
@@ -552,14 +552,14 @@ public partial class MainViewModel
             {
                 foreach (var titleKey in state.Documents)
                 {
-                    var item = Groups.SelectMany(g => g.Items).FirstOrDefault(i => i.TitleKey == titleKey);
+                    var item = Groups.SelectMany(g => g.Items).FirstOrDefault(i => i.Title == titleKey);
                     if (item is not null)
                     {
                         OpenItem(item);
                     }
                 }
 
-                if (Documents.FirstOrDefault(d => d.TitleKey == state.ActiveDocument) is { } active)
+                if (Documents.FirstOrDefault(d => d.Title == state.ActiveDocument) is { } active)
                 {
                     ActivateDocument(active);
                 }

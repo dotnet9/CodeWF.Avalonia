@@ -33,7 +33,7 @@ public sealed record MarkdownExportStyle(
 {
     private const string DefaultBodyFontFamily = "Inter, Microsoft YaHei UI, Segoe UI";
     private const string DefaultMonoFontFamily = "Cascadia Mono, Consolas";
-    private const string CompactTypographySize = "Small";
+    private const string CompactTypographySize = "Compact";
 
     public string QuoteBackgroundColor { get; init; } = PageBackgroundColor;
 

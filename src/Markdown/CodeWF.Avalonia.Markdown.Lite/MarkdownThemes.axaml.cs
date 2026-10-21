@@ -284,7 +284,7 @@ public class MarkdownThemes : Styles
                 includePalette: true);
         }
 
-        return IsSmallTypographySize(typographySize)
+        return IsCompactTypographySize(typographySize)
             ? CreateInheritedSizeResources(viewer, typographySize)
             : null;
     }
@@ -324,11 +324,21 @@ public class MarkdownThemes : Styles
             [MarkdownStyleKeys.TypographySizeResource] = normalizedSize
         };
 
-        if (IsSmallTypographySize(normalizedSize))
+        if (IsCompactTypographySize(normalizedSize))
         {
             foreach (var compactResource in new CompactTypographyResources())
             {
                 sizeResources[compactResource.Key] = compactResource.Value;
+            }
+
+            return sizeResources;
+        }
+
+        if (string.Equals(normalizedSize, MarkdownTypographySizes.Relaxed, StringComparison.OrdinalIgnoreCase))
+        {
+            foreach (var relaxedResource in new RelaxedTypographyResources())
+            {
+                sizeResources[relaxedResource.Key] = relaxedResource.Value;
             }
 
             return sizeResources;
@@ -387,14 +397,25 @@ public class MarkdownThemes : Styles
 
     private static string NormalizeTypographySize(string? typographySize)
     {
-        return IsSmallTypographySize(typographySize)
-            ? MarkdownTypographySizes.Small
-            : MarkdownTypographySizes.Normal;
+        // 三档尺寸（规则 §11）：紧凑 13 / 正常 15 / 宽松 17；旧 Small 记作紧凑。
+        return NormalizeTypographySize(typographySize, out _);
     }
 
-    private static bool IsSmallTypographySize(string? typographySize)
+    private static string NormalizeTypographySize(string? typographySize, out bool isCompact)
     {
-        return string.Equals(typographySize?.Trim(), MarkdownTypographySizes.Small, StringComparison.OrdinalIgnoreCase);
+        var value = typographySize?.Trim();
+        if (string.Equals(value, MarkdownTypographySizes.Relaxed, StringComparison.OrdinalIgnoreCase))
+        {
+            isCompact = false;
+            return MarkdownTypographySizes.Relaxed;
+        }
+        isCompact = !string.Equals(value, MarkdownTypographySizes.Normal, StringComparison.OrdinalIgnoreCase);
+        return isCompact ? MarkdownTypographySizes.Compact : MarkdownTypographySizes.Normal;
+    }
+
+    private static bool IsCompactTypographySize(string? typographySize)
+    {
+        return string.Equals(typographySize?.Trim(), MarkdownTypographySizes.Compact, StringComparison.OrdinalIgnoreCase);
     }
 
     private static ResourceDictionary CreateSizedTypographyResources(ResourceDictionary typographyResources, string? typographySize)
@@ -415,7 +436,7 @@ public class MarkdownThemes : Styles
             ? typographyResources
             : CreateLayoutOnlyResources(typographyResources));
 
-        if (IsSmallTypographySize(normalizedSize))
+        if (IsCompactTypographySize(normalizedSize))
         {
             foreach (var compactResource in new CompactTypographyResources())
             {
@@ -428,6 +449,13 @@ public class MarkdownThemes : Styles
                 sizedResources[MarkdownStyleKeys.ParagraphLineHeightResource] = Math.Max(16, article.BodySize * .93) * 1.65;
                 for (var i = 0; i < article.Headings.Length; i++)
                     sizedResources["CodeWFMarkdownHeading" + (i + 1) + "FontSize"] = article.Headings[i].Size * .93;
+            }
+        }
+        if (string.Equals(normalizedSize, MarkdownTypographySizes.Relaxed, StringComparison.OrdinalIgnoreCase))
+        {
+            foreach (var relaxedResource in new RelaxedTypographyResources())
+            {
+                sizedResources[relaxedResource.Key] = relaxedResource.Value;
             }
         }
 
