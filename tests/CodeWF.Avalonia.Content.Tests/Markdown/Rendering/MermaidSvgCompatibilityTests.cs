@@ -11,6 +11,32 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 public sealed class MermaidSvgCompatibilityTests
 {
     [Fact]
+    public async Task ConcurrentViewsReuseOneLoadedSvgAndPaletteChangesRemainIndependent()
+    {
+        var source = $"flowchart LR\nA[{Guid.NewGuid():N}] --> B[Done]";
+        var options = new RenderOptions { Bg = "#FFFFFF", Fg = "#302C3C", Accent = "#8B7CF6", DataPalette = ["#8B7CF6", "#70A98B"] };
+        var key = MermaidBlockRenderer.CreateCacheKey(source, options);
+        var results = await Task.WhenAll(Enumerable.Range(0, 12).Select(_ => MermaidBlockRenderer.ResolveSvgSourceAsync(key, source, options)));
+        Assert.NotNull(results[0]);
+        Assert.All(results, result => Assert.Same(results[0],result));
+        var dark = options with { Bg = "#202124", Fg = "#EDE8F5", DataPalette = ["#B6A6FF", "#93CFAC"] };
+        var other = await MermaidBlockRenderer.ResolveSvgSourceAsync(MermaidBlockRenderer.CreateCacheKey(source,dark),source,dark);
+        Assert.NotNull(other);Assert.NotSame(results[0],other);
+    }
+
+    [Fact]
+    public void PaletteChangesHaveIndependentCachedLayouts()
+    {
+        var first = new RenderOptions { DataPalette = ["#8B7CF6", "#72B59A"], Default = "#8B7CF6" };
+        var second = first with { DataPalette = ["#E4B95B", "#D78FB6"] };
+        Assert.NotEqual(MermaidBlockRenderer.CreateCacheKey("pie\n\"A\":2\n\"B\":1",first),
+            MermaidBlockRenderer.CreateCacheKey("pie\n\"A\":2\n\"B\":1",second));
+        var raw = MermaidRenderer.RenderSvg("pie\n\"A\":2\n\"B\":1",first);
+        Assert.Contains("#8B7CF6",raw,StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("#72B59A",raw,StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void CustomTheme_InheritsItsBasePalette()
     {
         Assert.True(MermaidBlockRenderer.IsDarkTheme(new ThemeVariant("NightSky", ThemeVariant.Dark)));

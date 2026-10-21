@@ -5,6 +5,12 @@ Markdown 渲染与编辑全家桶，按依赖重量分两包：
 - **Lite**：Markdig 解析 + Avalonia 渲染引擎，只渲染常规元素（标题/段落/列表/引用/表格/链接/代码块单色/图片替代文本/公式原文），内置 18 套排版主题。
 - **完整包**：在 Lite 之上叠加图片（GIF/SVG/预览）、数学公式、Mermaid 图表、TextMate 代码高亮、PNG/PDF/Word/公众号 HTML 导出、源码编辑器与单栏所见即所得编辑。
 
+## Mermaid 配色与加载
+
+Mermaid 支持应用级主题资源：Background、Foreground、Accent、Default、Line、Border、Surface，均以 `CodeWFMarkdownMermaid` 为前缀，值为 `SolidColorBrush`。`CodeWFMarkdownMermaidDataPalette` 为逗号分隔的十六进制颜色字符串；可另设 `CodeWFMarkdownMermaidFillPalette`，用于饼图、旅程、时间线、矩形树与象限图的大面积填充，缺省沿用数据色板。放入 Light / Dark 主题字典即可分别配置。
+
+图表在后台有限并行绘制，同源码和同配色的并发请求复用同一任务；48 项 SVG 缓存包含所有颜色选项。离开界面的请求停止应用结果，保留缓存供后续重新挂载。等待期间保留高度，避免暂时零高让大量离屏块同时进入视口；阅读控件中的 Mermaid 块无论文档长短均延迟到量测时创建。
+
 ## 安装
 
 ```bash

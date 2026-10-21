@@ -39,6 +39,8 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
     private static readonly Dictionary<string, SvgSource?> DiagramCache = new(StringComparer.Ordinal);
     private static readonly LinkedList<string> DiagramCacheOrder = new();
     private static readonly object DiagramCacheGate = new();
+    private static readonly Dictionary<string, Task<SvgSource?>> PendingDiagrams = new(StringComparer.Ordinal);
+    private static readonly SemaphoreSlim RenderSlots = new(2);
 
     public Control? TryRender(Block block, string? sourceMarkdown, IMarkdownRenderContext context)
     {
@@ -61,7 +63,7 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
             HorizontalAlignment = HorizontalAlignment.Center
         };
 
-        var border = new Border { Child = image };
+        var border = new Border { Child = image, MinHeight = 180 };
         border.Classes.Add("MdMermaid");
 
         CancellationTokenSource? cts = null;
@@ -120,12 +122,12 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
             var localCts = cts = new CancellationTokenSource();
             var token = localCts.Token;
 
-            var options = GetRenderOptions();
+            var options = GetRenderOptions(source);
             var cacheKey = CreateCacheKey(source, options);
 
             try
             {
-                var svgSource = await Task.Run(() => ResolveSvgSource(cacheKey, source, options), token);
+                var svgSource = await ResolveSvgSourceAsync(cacheKey, source, options).WaitAsync(token);
 
                 if (!token.IsCancellationRequested)
                 {
@@ -137,6 +139,7 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
                     }
 
                     image.Source = new SvgImage { Source = svgSource };
+                    border.MinHeight = 0;
                 }
             }
             catch (OperationCanceledException)
@@ -156,12 +159,39 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
                 panel.Children.Add(new TextBlock { Text = $"Mermaid render error: {message}" });
                 panel.Children.Add(new TextBlock { Text = source, TextWrapping = TextWrapping.Wrap });
                 border.Child = panel;
+                border.MinHeight = 0;
                 border.Classes.Clear();
                 border.Classes.Add("MdMermaidFallback");
             }
         }
 
         return border;
+    }
+
+    internal static Task<SvgSource?> ResolveSvgSourceAsync(string cacheKey, string source, MermaidRenderOptions options)
+    {
+        lock (DiagramCacheGate)
+        {
+            if (DiagramCache.TryGetValue(cacheKey, out var cached))
+            {
+                DiagramCacheOrder.Remove(cacheKey);
+                DiagramCacheOrder.AddLast(cacheKey);
+                return Task.FromResult(cached);
+            }
+            if (PendingDiagrams.TryGetValue(cacheKey, out var pending)) return pending;
+            var task = Task.Run(async () =>
+            {
+                await RenderSlots.WaitAsync().ConfigureAwait(false);
+                try { return ResolveSvgSource(cacheKey, source, options); }
+                finally
+                {
+                    RenderSlots.Release();
+                    lock (DiagramCacheGate) PendingDiagrams.Remove(cacheKey);
+                }
+            });
+            PendingDiagrams.Add(cacheKey, task);
+            return task;
+        }
     }
 
     /// <summary>
@@ -210,14 +240,14 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
     }
 
     /// <summary>缓存 Key 含主题配色：同一份图表在明暗主题下是两张不同的图。</summary>
-    private static string CreateCacheKey(string source, MermaidRenderOptions options) =>
-        $"{options.Bg}|{options.Fg}|{options.Accent}|{source}";
+    internal static string CreateCacheKey(string source, MermaidRenderOptions options) =>
+        $"{options.Bg}|{options.Fg}|{options.Accent}|{options.Line}|{options.Border}|{options.Surface}|{options.Default}|{string.Join(',', options.DataPalette ?? [])}|{source}";
 
     /// <summary>
     /// 按当前主题变体构造渲染选项；颜色来自 CodeWFMarkdownMermaid* 画刷资源
     /// （排版主题可覆盖），字面量仅作资源缺失时的兜底。
     /// </summary>
-    private static MermaidRenderOptions GetRenderOptions()
+    internal static MermaidRenderOptions GetRenderOptions(string? source = null)
     {
         var app = Application.Current;
         var theme = app?.ActualThemeVariant ?? ThemeVariant.Light;
@@ -228,9 +258,27 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
             Bg = ResolveHex(app, theme, "CodeWFMarkdownMermaidBackground", isDark ? "#18181B" : "#FFFFFF"),
             Fg = ResolveHex(app, theme, "CodeWFMarkdownMermaidForeground", isDark ? "#FAFAFA" : "#27272A"),
             Accent = ResolveHex(app, theme, "CodeWFMarkdownMermaidAccent", isDark ? "#60A5FA" : "#3B82F6"),
-            Transparent = false
+            Line = ResolveOptionalHex(app, theme, "CodeWFMarkdownMermaidLine"),
+            Border = ResolveOptionalHex(app, theme, "CodeWFMarkdownMermaidBorder"),
+            Surface = ResolveOptionalHex(app, theme, "CodeWFMarkdownMermaidSurface"),
+            Default = ResolveOptionalHex(app, theme, "CodeWFMarkdownMermaidDefault"),
+            DataPalette = ResolveDataPalette(app, theme, source),
+            Transparent = true
         };
     }
+
+    private static string[]? ResolveDataPalette(Application? app, ThemeVariant theme, string? source)
+    {
+        var filled = source is not null && Regex.IsMatch(source, @"^\s*(?:pie|journey|timeline|treemap|quadrantChart)\b", RegexOptions.Multiline | RegexOptions.CultureInvariant);
+        foreach (var key in filled ? new[] { "CodeWFMarkdownMermaidFillPalette", "CodeWFMarkdownMermaidDataPalette" } : new[] { "CodeWFMarkdownMermaidDataPalette" })
+            if (app?.TryGetResource(key, theme, out var palette) == true && palette is string colors
+                && colors.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries) is { Length: > 0 } values) return values;
+        return null;
+    }
+
+    private static string? ResolveOptionalHex(Application? app, ThemeVariant theme, string key) =>
+        app?.TryGetResource(key, theme, out var resource) == true && resource is ISolidColorBrush
+            ? ResolveHex(app, theme, key, "#000000") : null;
 
     internal static bool IsDarkTheme(ThemeVariant variant)
     {
@@ -293,6 +341,11 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
         // 0.14.x 除样式块外还以属性形式（fill=\"var(--bg)\"、var(--fg)）引用根变量
         builder.Replace("var(--bg)", Hex(bg));
         builder.Replace("var(--fg)", Hex(fg));
+        builder.Replace("var(--accent)", Hex(acc));
+        builder.Replace("var(--line)", options.Line ?? Hex(Mix(fg, 32, bg)));
+        builder.Replace("var(--border)", options.Border ?? Hex(Mix(fg, 10, bg)));
+        builder.Replace("var(--surface)", options.Surface ?? Hex(Mix(fg, 4, bg)));
+        builder.Replace("var(--muted)", options.Muted ?? Hex(Mix(fg, 55, bg)));
         builder.Replace("var(--fs-xs)", "12");
         builder.Replace("var(--fs-s)", "14");
         builder.Replace("var(--fs-m)", "16");

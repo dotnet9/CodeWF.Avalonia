@@ -1022,7 +1022,9 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         foreach (var modelBlock in modelBlocks)
         {
             // 增量更新时当前快照仍是旧文档；从短节恢复全文须按新模型决定延迟创建。
-            if (_virtualizingHost is { EnableVirtualization: true } && (documentBlockCount ?? _renderedModel.Blocks.Count) >= 200)
+            if (_virtualizingHost is { EnableVirtualization: true }
+                && ((documentBlockCount ?? _renderedModel.Blocks.Count) >= 200
+                    || modelBlock.SyntaxBlock is FencedCodeBlock fenced && string.Equals(fenced.Info?.Trim(), "mermaid", StringComparison.OrdinalIgnoreCase)))
             {
                 var deferred = new DeferredMarkdownBlock(() => CreateBlockContent(modelBlock, markdown));
                 renderedBlocks.Add(RenderedBlock.FromModel(modelBlock, deferred, null,
