@@ -37,9 +37,9 @@ public sealed class MarkdownThemesResourceTests
 
 		var exception = Record.Exception(() =>
 		{
-			MarkdownThemes.OverrideTypographyResources(parent, MarkdownTypographyThemes.Basic, MarkdownTypographySizes.Small);
+			MarkdownThemes.OverrideTypographyResources(parent, MarkdownTypographyThemes.Basic, MarkdownTypographySizes.Compact);
 			viewer.TypographySize = MarkdownTypographySizes.Normal;
-			MarkdownThemes.OverrideTypographyResources(parent, MarkdownTypographyThemes.Simple, MarkdownTypographySizes.Small);
+			MarkdownThemes.OverrideTypographyResources(parent, MarkdownTypographyThemes.Simple, MarkdownTypographySizes.Compact);
 		});
 
 		Assert.Null(exception);

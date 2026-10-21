@@ -19,31 +19,28 @@ public sealed class StudioThemeControllerTests(AvaloniaPlatformFixture platform)
         var application = Application.Current!;
         var previous = application.RequestedThemeVariant;
         var semi = new SemiTheme();
-        var studio = new StudioTheme();
         application.Styles.Add(semi);
-        application.Styles.Add(studio);
         try
         {
             using var controller = new StudioThemeController(application);
-            var palettes = Enum.GetValues<StudioPalette>();
-            Assert.Equal(16, palettes.Length);
+            var palettes = StudioPalettes.All;
+            Assert.Equal(9, palettes.Count);
             foreach (var palette in palettes)
             {
-                controller.Palette = palette;
+                controller.PaletteKey = palette.Key;
                 controller.Mode = StudioThemeMode.Light;
-                Assert.Equal(StudioTheme.GetVariant(palette, false), application.ActualThemeVariant);
+                Assert.Equal(StudioTheme.GetVariant(palette.Key, false), application.ActualThemeVariant);
                 var light = ResourceColor("StudioBackground");
                 controller.Mode = StudioThemeMode.Dark;
-                Assert.Equal(StudioTheme.GetVariant(palette, true), application.ActualThemeVariant);
+                Assert.Equal(StudioTheme.GetVariant(palette.Key, true), application.ActualThemeVariant);
                 var dark = ResourceColor("StudioBackground");
-                Assert.True(light.R + light.G + light.B > dark.R + dark.G + dark.B, palette.ToString());
+                Assert.True(light.R + light.G + light.B > dark.R + dark.G + dark.B, palette.Key);
                 Assert.NotEqual(ResourceColor("StudioText"), dark);
             }
         }
         finally
         {
             application.RequestedThemeVariant = previous;
-            application.Styles.Remove(studio);
             application.Styles.Remove(semi);
         }
     });
@@ -58,18 +55,18 @@ public sealed class StudioThemeControllerTests(AvaloniaPlatformFixture platform)
         var previous = application.RequestedThemeVariant;
         try
         {
-            using var controller = new StudioThemeController(application) { Palette = StudioPalette.Aquatic };
-            Assert.Equal(StudioTheme.AquaticLight, application.RequestedThemeVariant);
+            using var controller = new StudioThemeController(application) { PaletteKey = "teal" };
+            Assert.Equal(StudioTheme.GetVariant("teal", false), application.RequestedThemeVariant);
             SetTheme(PlatformThemeVariant.Dark);
-            Assert.Equal(StudioTheme.AquaticDark, application.RequestedThemeVariant);
+            Assert.Equal(StudioTheme.GetVariant("teal", true), application.RequestedThemeVariant);
             controller.Mode = StudioThemeMode.Light;
             SetTheme(PlatformThemeVariant.Dark);
-            Assert.Equal(StudioTheme.AquaticLight, application.RequestedThemeVariant);
+            Assert.Equal(StudioTheme.GetVariant("teal", false), application.RequestedThemeVariant);
             controller.Mode = StudioThemeMode.System;
-            Assert.Equal(StudioTheme.AquaticDark, application.RequestedThemeVariant);
+            Assert.Equal(StudioTheme.GetVariant("teal", true), application.RequestedThemeVariant);
             controller.Dispose();
             SetTheme(PlatformThemeVariant.Light);
-            Assert.Equal(StudioTheme.AquaticDark, application.RequestedThemeVariant);
+            Assert.Equal(StudioTheme.GetVariant("teal", true), application.RequestedThemeVariant);
         }
         finally { application.RequestedThemeVariant = previous; }
     });

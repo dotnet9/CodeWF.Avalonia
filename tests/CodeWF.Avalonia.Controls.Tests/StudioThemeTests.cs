@@ -12,8 +12,8 @@ public sealed class StudioThemeTests
         get
         {
             var data = new TheoryData<ThemeVariant>();
-            foreach (var palette in Enum.GetValues<StudioPalette>())
-            foreach (var dark in new[] { false, true }) data.Add(StudioTheme.GetVariant(palette, dark));
+            foreach (var palette in StudioPalettes.All)
+            foreach (var dark in new[] { false, true }) data.Add(StudioTheme.GetVariant(palette.Key, dark));
             return data;
         }
     }
@@ -78,7 +78,7 @@ public sealed class StudioThemeTests
     public void TextRolesAndActionGradientsStayReadableOnEveryWorkspaceSurface()
     {
         var theme = new StudioTheme();
-        foreach (var palette in Enum.GetValues<StudioPalette>())
+        foreach (var palette in StudioPalettes.All.Select(item => item.Key))
         foreach (var dark in new[] { false, true })
         {
             var variant = StudioTheme.GetVariant(palette, dark);

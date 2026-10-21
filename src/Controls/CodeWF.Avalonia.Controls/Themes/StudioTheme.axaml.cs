@@ -6,18 +6,20 @@ namespace CodeWF.Avalonia.Controls.Themes;
 
 /// <summary>
 /// 基于 Semi 控件模板提供可选的 Studio 外观。
-/// 令牌由派生引擎按变体运行时填充（规则 §13 字符串 Key 注册表），不再依赖每套配色一份 axaml。
+/// 内置九套配色的令牌由生成器产出静态 axaml（StudioThemeVariants.g.cs 提供变体）；
+/// 用户配色经控制器注册后在应用级合并字典生效。
 /// </summary>
-public sealed class StudioTheme : Styles
+public sealed partial class StudioTheme : Styles
 {
     private static readonly ConcurrentDictionary<string, ThemeVariant> Variants = new();
 
-    /// <summary>获取配色 Key 与明暗模式对应的主题变体（用户配色运行时创建，内置与用户同轨）。</summary>
+    public StudioTheme() => AvaloniaXamlLoader.Load(this);
+
+    /// <summary>内置键查静态变体；用户配色（未注册键）运行时创建。</summary>
     public static ThemeVariant GetVariant(string paletteKey, bool dark)
     {
+        if (BuiltinVariants.TryGetValue((paletteKey, dark), out var builtin)) return builtin;
         var name = $"studio/{paletteKey}/{(dark ? "dark" : "light")}";
         return Variants.GetOrAdd(name, key => new ThemeVariant(key, dark ? ThemeVariant.Dark : ThemeVariant.Light));
     }
-
-    public StudioTheme() => AvaloniaXamlLoader.Load(this);
 }

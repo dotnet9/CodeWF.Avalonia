@@ -397,7 +397,7 @@ public class MarkdownThemes : Styles
 
     private static string NormalizeTypographySize(string? typographySize)
     {
-        // 三档尺寸（规则 §11）：紧凑 13 / 正常 15 / 宽松 17；旧 Small 记作紧凑。
+        // 三档尺寸（规则 §11）：紧凑 13 / 正常 15 / 宽松 17。
         return NormalizeTypographySize(typographySize, out _);
     }
 

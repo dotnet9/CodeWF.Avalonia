@@ -96,6 +96,8 @@ public static class StudioPaletteEngine
             ["SemiColorDangerLightActive"] = StatusPressedSoft(status.Danger),
             ["SemiColorInfo"] = info,
             ["SemiColorInfoLight"] = StatusSoft(status.Info),
+            // 组件专用键（附录 A componentOverrides）：通知 muted 落在固定深色卡上，提高不透明度保证 4.5:1
+            ["notificationMuted"] = Over(paper, ink, 0.85),
         };
         return result;
 

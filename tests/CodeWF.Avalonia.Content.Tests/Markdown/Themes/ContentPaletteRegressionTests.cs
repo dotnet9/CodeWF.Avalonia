@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text.Json;
+using CodeWF.Avalonia.Content.Tests.Controls;
 using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 using CodeWF.Avalonia.Controls.Themes;
 using CodeWF.Avalonia.Log;
@@ -106,7 +107,7 @@ public sealed class ContentPaletteRegressionTests(AvaloniaPlatformFixture platfo
             LogViewResourceKeys.TraceForeground, LogViewResourceKeys.InformationForeground,
             LogViewResourceKeys.WarningForeground, LogViewResourceKeys.ErrorForeground
         };
-        foreach (var palette in Enum.GetValues<StudioPalette>())
+                foreach (var palette in StudioPaletteTestHost.Keys())
         foreach (var dark in new[] { false, true })
         {
             var variant = StudioTheme.GetVariant(palette, dark);
@@ -269,7 +270,7 @@ public sealed class ContentPaletteRegressionTests(AvaloniaPlatformFixture platfo
         window.Show();
         try
         {
-            foreach (var palette in Enum.GetValues<StudioPalette>())
+                    foreach (var palette in StudioPaletteTestHost.Keys())
             foreach (var dark in new[] { false, true })
             {
                 window.RequestedThemeVariant = StudioTheme.GetVariant(palette, dark);

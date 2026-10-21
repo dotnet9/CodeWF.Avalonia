@@ -27,6 +27,6 @@ public sealed class StudioThemeModeConverterTests
     {
         var converter = StudioThemeModeConverter.Instance;
         Assert.Same(BindingOperations.DoNothing, converter.Convert(99, typeof(ThemeVariant), null, CultureInfo.InvariantCulture));
-        Assert.Same(BindingOperations.DoNothing, converter.ConvertBack(StudioTheme.DotNetDark, typeof(StudioThemeMode), null, CultureInfo.InvariantCulture));
+        Assert.Same(BindingOperations.DoNothing, converter.ConvertBack(new ThemeVariant("custom/mode", ThemeVariant.Dark), typeof(StudioThemeMode), null, CultureInfo.InvariantCulture));
     }
 }

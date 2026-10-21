@@ -24,8 +24,9 @@ public sealed class NotificationStudioPaletteTests(AvaloniaPlatformFixture platf
     {
         var application = Application.Current!;
         var originalVariant = application.RequestedThemeVariant;
-        IStyle[] styles = [new global::Semi.Avalonia.SemiTheme(), new CodeWFLogTheme(), new StudioTheme()];
+        IStyle[] styles = [new global::Semi.Avalonia.SemiTheme(), new CodeWFLogTheme()];
         foreach (var style in styles) application.Styles.Add(style);
+        using var themeController = new StudioThemeController(application);
         var window = new NotificationWindow();
         window.Configure("Brand palette", TimeSpan.Zero, null, null, DesktopNotificationAttentionMode.None);
         var key = LogNotificationResourceKeys.ConfirmBackground;
@@ -35,9 +36,11 @@ public sealed class NotificationStudioPaletteTests(AvaloniaPlatformFixture platf
         {
             window.Show();
             var button = window.GetVisualDescendants().OfType<Button>().Single(control => control.Classes.Contains("confirm"));
-            foreach (var palette in Enum.GetValues<StudioPalette>())
+            foreach (var palette in StudioPaletteTestHost.Keys())
             foreach (var dark in new[] { false, true })
             {
+                themeController.PaletteKey = palette;
+                themeController.Mode = dark ? StudioThemeMode.Dark : StudioThemeMode.Light;
                 application.RequestedThemeVariant = StudioTheme.GetVariant(palette, dark);
                 Dispatcher.UIThread.RunJobs();
                 window.UpdateLayout();
@@ -73,6 +76,7 @@ public sealed class NotificationStudioPaletteTests(AvaloniaPlatformFixture platf
             if (hadOverride) application.Resources[key] = originalOverride;
             else application.Resources.Remove(key);
             foreach (var style in styles) application.Styles.Remove(style);
+            themeController.Dispose();
             application.RequestedThemeVariant = originalVariant;
         }
 

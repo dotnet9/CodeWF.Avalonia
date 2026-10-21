@@ -5,6 +5,7 @@ using global::Avalonia.Media;
 using global::Avalonia.Threading;
 using global::Avalonia.VisualTree;
 using CodeWF.Avalonia.Controls.Themes;
+using CodeWF.Avalonia.Content.Tests.Controls;
 using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 using CodeWF.Avalonia.MindView;
 using CodeWF.Avalonia.MindView.Controls;
@@ -27,7 +28,7 @@ public class MindViewControlTests(AvaloniaPlatformFixture platform)
         window.Show();
         try
         {
-            foreach (var palette in Enum.GetValues<StudioPalette>()) foreach (var dark in new[] { false, true })
+                        foreach (var palette in StudioPaletteTestHost.Keys()) foreach (var dark in new[] { false, true })
             {
                 window.RequestedThemeVariant = StudioTheme.GetVariant(palette, dark);
                 editor.AccentColor = Color.Parse(dark ? "#AE96FF" : "#6745D6");

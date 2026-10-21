@@ -58,7 +58,7 @@ public sealed class MarkdownCodeBlockFoldingTests(AvaloniaPlatformFixture platfo
 			Assert.False(IsCodeContentVisible(viewer));
 
 			// 同文档重渲染（主题/字号变化走全量路径）：折叠状态按块键保留。
-			viewer.TypographySize = CodeWF.Avalonia.Markdown.Themes.MarkdownTypographySizes.Small;
+			viewer.TypographySize = CodeWF.Avalonia.Markdown.Themes.MarkdownTypographySizes.Compact;
 			WaitForRender(viewer, source);
 			Assert.False(IsCodeContentVisible(viewer), "同文档重渲染不应丢失折叠状态");
 

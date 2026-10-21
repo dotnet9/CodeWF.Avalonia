@@ -23,7 +23,6 @@ public sealed class StudioThemeController : AvaloniaObject, IDisposable
     private readonly Application _application;
     private readonly StudioPaletteRegistry _registry = new();
     private readonly IPlatformSettings? _platformSettings;
-    private readonly Dictionary<ThemeVariant, ResourceDictionary> _applied = new();
     private bool _systemDark;
     private bool _disposed;
 
@@ -33,26 +32,7 @@ public sealed class StudioThemeController : AvaloniaObject, IDisposable
         _platformSettings = application.PlatformSettings;
         _systemDark = _platformSettings?.GetColorValues().ThemeVariant == PlatformThemeVariant.Dark;
         if (_platformSettings is not null) _platformSettings.ColorValuesChanged += OnColorValuesChanged;
-        PrewarmDefaults();
         Apply();
-    }
-
-    /// <summary>以默认配色预填 Light/Dark/Default 回退变体，确保资源查找始终可达。</summary>
-    private void PrewarmDefaults()
-    {
-        var palette = _registry.Find(StudioPalettes.DefaultKey)!;
-        foreach (var dark in new[] { false, true })
-        {
-            FillVariant(palette, dark, dark ? ThemeVariant.Dark : ThemeVariant.Light);
-        }
-        FillVariant(palette, dark: false, ThemeVariant.Default);
-    }
-
-    private void FillVariant(StudioPaletteDefinition palette, bool dark, ThemeVariant variant)
-    {
-        var dictionary = BuildDictionary(palette, dark);
-        _applied[variant] = dictionary;
-        _application.Resources.ThemeDictionaries[variant] = dictionary;
     }
 
     public string PaletteKey
@@ -108,12 +88,7 @@ public sealed class StudioThemeController : AvaloniaObject, IDisposable
         };
         var palette = _registry.Find(PaletteKey) ?? _registry.Find(StudioPalettes.DefaultKey)!;
         var variant = StudioTheme.GetVariant(palette.Key, dark);
-        if (!_applied.TryGetValue(variant, out var dictionary))
-        {
-            dictionary = BuildDictionary(palette, dark);
-            _applied[variant] = dictionary;
-            _application.Resources.ThemeDictionaries[variant] = dictionary;
-        }
+        EnsureUserPaletteResources(palette, dark, variant);
         _application.RequestedThemeVariant = variant;
     }
 
@@ -128,6 +103,13 @@ public sealed class StudioThemeController : AvaloniaObject, IDisposable
         dictionary["StudioPropertyGridTheme"] = dark ? "Dark" : "Light";
         dictionary["SystemAccentColor"] = derived["StudioAccentColor"];
         return dictionary;
+    }
+
+    /// <summary>用户配色：派生字典合并进应用级资源（内置九套走静态 axaml，无需合并）。</summary>
+    private void EnsureUserPaletteResources(StudioPaletteDefinition palette, bool dark, ThemeVariant variant)
+    {
+        if (!palette.Key.StartsWith("user:")) return;
+        _application.Resources.ThemeDictionaries[variant] = BuildDictionary(palette, dark);
     }
 
     public void Dispose()

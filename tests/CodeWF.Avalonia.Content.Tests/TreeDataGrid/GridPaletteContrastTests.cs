@@ -14,6 +14,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using CodeWF.Avalonia.Content.Tests.Controls;
 using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 using CodeWF.Avalonia.Controls.Themes;
 using CodeWF.Avalonia.DataGrid.Themes;
@@ -74,7 +75,7 @@ public sealed class GridPaletteContrastTests(AvaloniaPlatformFixture platform)
             // 测量主题切换后的稳定状态，消除过渡动画对取色时机的影响。
             foreach (var control in window.GetVisualDescendants().OfType<Control>()) control.Transitions = null;
             grid.SelectedItem = data[0];
-            foreach (var palette in Enum.GetValues<StudioPalette>())
+                        foreach (var palette in StudioPaletteTestHost.Keys())
             foreach (var dark in new[] { false, true })
             {
                 window.RequestedThemeVariant = StudioTheme.GetVariant(palette, dark);
@@ -226,7 +227,7 @@ public sealed class GridPaletteContrastTests(AvaloniaPlatformFixture platform)
         {
             floating.Show(); floating.UpdateLayout(); Dispatcher.UIThread.RunJobs();
             foreach (var control in floating.GetVisualDescendants().OfType<Control>()) control.Transitions = null;
-            foreach (var palette in Enum.GetValues<StudioPalette>())
+                        foreach (var palette in StudioPaletteTestHost.Keys())
             foreach (var dark in new[] { false, true })
             {
                 app.RequestedThemeVariant = StudioTheme.GetVariant(palette, dark);

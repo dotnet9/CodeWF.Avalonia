@@ -1,4 +1,34 @@
-<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <!-- 配色令牌由 StudioThemeController 在运行时按变体填充（规则 §13 字符串 Key 注册表）。
-       此字典仅保留键空间占位；Default/Light/Dark 回退亦由控制器以默认配色（indigo）预填。 -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:themes="using:CodeWF.Avalonia.Controls.Themes">
+<ResourceDictionary.ThemeDictionaries>
+<ResourceInclude x:Key="Default" Source="IndigoLight.axaml"/>
+<ResourceInclude x:Key="Light" Source="IndigoLight.axaml"/>
+<ResourceInclude x:Key="Dark" Source="IndigoDark.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.GraphiteLight}" Source="GraphiteLight.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.GraphiteDark}" Source="GraphiteDark.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.IndigoLight}" Source="IndigoLight.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.IndigoDark}" Source="IndigoDark.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.TealLight}" Source="TealLight.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.TealDark}" Source="TealDark.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.PineLight}" Source="PineLight.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.PineDark}" Source="PineDark.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.SkyLight}" Source="SkyLight.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.SkyDark}" Source="SkyDark.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.AmberLight}" Source="AmberLight.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.AmberDark}" Source="AmberDark.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.CrimsonLight}" Source="CrimsonLight.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.CrimsonDark}" Source="CrimsonDark.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.VioletLight}" Source="VioletLight.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.VioletDark}" Source="VioletDark.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.TerracottaLight}" Source="TerracottaLight.axaml"/>
+<ResourceInclude x:Key="{x:Static themes:StudioTheme.TerracottaDark}" Source="TerracottaDark.axaml"/>
+</ResourceDictionary.ThemeDictionaries>
+<SolidColorBrush x:Key="StudioSwatchGraphite">#3F3F46</SolidColorBrush>
+<SolidColorBrush x:Key="StudioSwatchIndigo">#4338CA</SolidColorBrush>
+<SolidColorBrush x:Key="StudioSwatchTeal">#0F766E</SolidColorBrush>
+<SolidColorBrush x:Key="StudioSwatchPine">#166534</SolidColorBrush>
+<SolidColorBrush x:Key="StudioSwatchSky">#0369A1</SolidColorBrush>
+<SolidColorBrush x:Key="StudioSwatchAmber">#B45309</SolidColorBrush>
+<SolidColorBrush x:Key="StudioSwatchCrimson">#BE123C</SolidColorBrush>
+<SolidColorBrush x:Key="StudioSwatchViolet">#6D28D9</SolidColorBrush>
+<SolidColorBrush x:Key="StudioSwatchTerracotta">#C2410C</SolidColorBrush>
 </ResourceDictionary>

@@ -59,9 +59,9 @@ public sealed class ControlPaletteContrastTests(AvaloniaPlatformFixture platform
         try
         {
             window.Show();
-            guideAction.Theme = (ControlTheme)window.FindResource("GuidePrimaryActionButton")!;
+                guideAction.Theme = (ControlTheme)window.FindResource("GuidePrimaryActionButton")!;
             var variants = studio
-                ? Enum.GetValues<StudioPalette>().SelectMany(palette => new[] { false, true }.Select(dark => StudioTheme.GetVariant(palette, dark)))
+                ? StudioPaletteTestHost.Keys().SelectMany(palette => new[] { false, true }.Select(dark => StudioTheme.GetVariant(palette, dark)))
                 : new[] { ThemeVariant.Light, ThemeVariant.Dark, SemiTheme.Aquatic, SemiTheme.Desert, SemiTheme.Dusk, SemiTheme.NightSky };
             foreach (var variant in variants)
             {
