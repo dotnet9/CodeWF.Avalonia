@@ -1,4 +1,4 @@
-﻿const standaloneFixture = require('./standalone-fixture.cjs');
+const standaloneFixture = require('./standalone-fixture.cjs');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -47,11 +47,12 @@ const properties = require('./audit-properties.cjs');
           };
         });
         // 验证八套配色与三态模式独立，以及系统主题动态变化。
-        assert.equal(await page.locator('#palSel, #themeModeSel').count(), 0);
-        assert.equal(await page.locator('#palDots button').count(), 8);
-        async function chooseMode(mode) { for(let count=0;count<3 && await page.locator('#darkBtn').getAttribute('data-mode') !== mode;count++) await page.locator('#darkBtn').click(); assert.equal(await page.locator('#darkBtn').getAttribute('data-mode'), mode); }
-        for (const palette of await page.locator('#palDots button').evaluateAll(items => items.map(item => item.dataset.p))) {
-          await page.locator('#palDots button[data-p="'+palette+'"]').click();
+        assert.equal(await page.locator('#palSel, #themeModeSel, #palDots').count(), 0);
+        assert.equal(await page.locator('#paletteGrid button').count(), 9); // 附录 A 9 套配色（外观菜单为唯一入口）
+        await page.locator('#appearanceMenu summary').click(); // 打开外观菜单：配色卡与明暗单选都在菜单内
+        async function chooseMode(mode) { await page.locator('#appearanceMenu input[name="codewf-theme-mode"][value="'+mode+'"]').check(); assert.equal(await page.evaluate(() => document.documentElement.dataset.themeMode), mode); }
+        for (const palette of await page.locator('#paletteGrid button').evaluateAll(items => items.map(item => item.dataset.palette))) {
+          await page.locator('#paletteGrid button[data-palette="'+palette+'"]').click();
           for (const mode of ['light', 'dark']) {
             await chooseMode(mode);
             assert.equal(await page.locator('html').getAttribute('data-theme'), mode);
@@ -63,12 +64,12 @@ const properties = require('./audit-properties.cjs');
         for (const mode of ['light', 'dark']) {
           await page.emulateMedia({ colorScheme: mode });
           await page.waitForFunction(expected => document.documentElement.dataset.theme === expected, mode);
-          assert.equal(await page.locator('#darkBtn').getAttribute('data-mode'), 'system');
+          assert.equal(await page.evaluate(() => document.documentElement.dataset.themeMode), 'system');
         }
         await chooseMode('light');
         await page.emulateMedia({ colorScheme: 'dark' });
         assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
-        await page.locator('#palDots button[data-p="dotnet"]').click();
+        await page.locator('#paletteGrid button[data-palette="indigo"]').click();
         for (const culture of ['zh-CN', 'en-US']) {
           await page.locator('#langBtn').click();
           assert.equal(await page.locator('#languageMenu').isVisible(), true);

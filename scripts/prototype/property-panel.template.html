@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-palette="dotnet">
+<html lang="zh-CN" data-theme="dark" data-palette="indigo">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,7 +19,7 @@
     --border: #333336;
     --border-soft: #2b2b2e;
     --accent: #0f6fdf;
-    --accent-text: #ffffff;
+    --accent-text: var(--on-primary, #ffffff);
     --accent-soft: rgba(15,111,223,.16);
     --mark: #6b5308;
     --menu-bg: #2b2b2d;
@@ -39,7 +39,7 @@
     --border: #e2e4e8;
     --border-soft: #edeef1;
     --accent: #1667d9;
-    --accent-text: #ffffff;
+    --accent-text: var(--on-primary, #ffffff);
     --accent-soft: rgba(22,103,217,.10);
     --mark: #ffe9a8;
     --menu-bg: #ffffff;
@@ -170,7 +170,7 @@
   /* 布尔 */
   .cb { appearance: none; width: 14px; height: 14px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg-editor); cursor: pointer; position: relative; flex: none; }
   .cb:checked { background: var(--accent); border-color: var(--accent); }
-  .cb:checked::after { content: ""; position: absolute; left: 4px; top: 1px; width: 3px; height: 7px; border: solid #fff; border-width: 0 1.5px 1.5px 0; transform: rotate(42deg); }
+  .cb:checked::after { content: ""; position: absolute; left: 4px; top: 1px; width: 3px; height: 7px; border: solid var(--accent-text, #fff); border-width: 0 1.5px 1.5px 0; transform: rotate(42deg); }
 
   /* 下拉 */
   .combo { display: flex; align-items: center; width: 100%; height: calc(var(--row-h) - 4px); padding: 0 4px 0 5px; border: 1px solid transparent; border-radius: 3px; cursor: pointer; gap: 4px; }
@@ -273,12 +273,31 @@
 <link rel="stylesheet" href="assets/studio.css">
 <link rel="stylesheet" href="assets/property-studio.css">
 <link rel="stylesheet" href="assets/palette-tokens.css">
+<script src="assets/palette-meta.js"></script>
 </head>
 <body>
 <div id="app">
   <header class="property-banner">
     <div><div class="studio-eyebrow">CODEWF / COMPONENT INSPECTOR</div><h1>PropertyGrid 属性工作台</h1><p>11 种编辑器 · 无限层级 · 动态可见性 · 修改追踪</p></div>
-    <select aria-label="界面配色" id="propertyPalette"><option value="dotnet">.NET Purple</option><option value="aurora">AI Aurora</option><option value="ember">AI Ember</option></select>
+    <!-- 外观菜单：明暗模式（浅/深/跟随系统）+ 界面配色网格，与主原型同构；配色与明暗的唯一入口 -->
+    <details id="appearanceMenu" class="appearance-menu">
+      <summary title="外观：主题与配色" aria-label="外观：主题与配色" aria-haspopup="menu">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3a9 9 0 0 0 0 18c1.2 0 2-.9 2-1.9 0-1.4-1.2-2-2.4-2.1H10a3.5 3.5 0 0 1-3.5-3.5c0-3.9 4.3-7 9.5-7 .3 0 .7 0 1 .1A9 9 0 0 0 12 3z"/><circle cx="8.5" cy="10" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="7.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="10" r="1.1" fill="currentColor" stroke="none"/></svg>
+        <span>外观</span>
+      </summary>
+      <div class="appearance-choices" role="group" aria-label="外观">
+        <fieldset class="studio-modes">
+          <legend>明暗模式</legend>
+          <div class="theme-mode-options">
+            <label><input type="radio" name="codewf-theme-mode" value="light"><span>浅色</span></label>
+            <label><input type="radio" name="codewf-theme-mode" value="dark"><span>深色</span></label>
+            <label><input type="radio" name="codewf-theme-mode" value="system"><span>跟随系统</span></label>
+          </div>
+        </fieldset>
+        <strong>界面配色</strong>
+        <div class="studio-palettes" id="paletteGrid"></div>
+      </div>
+    </details>
   </header>
 
   <!-- 工具条 -->
@@ -299,14 +318,6 @@
       <button class="search-clear" id="searchClear" title="清除">✕</button>
     </div>
     <div class="spacer"></div>
-    <button class="tbtn" id="btnTheme" title="切换浅色/深色主题">
-      <svg id="iconMoon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
-        <path d="M13.5 9.5A6 6 0 116.5 2.5a5 5 0 007 7z"/>
-      </svg>
-      <svg id="iconSun" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" style="display:none">
-        <circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6L13 13M13 3l-1.4 1.4M4.4 11.6L3 13"/>
-      </svg>
-    </button>
     <button class="tbtn" id="btnMore" title="更多选项">
       <svg viewBox="0 0 16 16" fill="currentColor">
         <circle cx="3" cy="8" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="13" cy="8" r="1.4"/>
@@ -880,13 +891,6 @@ $("searchClear").addEventListener("click", () => {
   render(); searchEl.focus();
 });
 
-$("btnTheme").addEventListener("click", () => {
-  state.theme = state.theme === "dark" ? "light" : "dark";
-  document.documentElement.dataset.theme = state.theme;
-  $("iconMoon").style.display = state.theme === "dark" ? "" : "none";
-  $("iconSun").style.display  = state.theme === "light" ? "" : "none";
-});
-
 $("btnMore").addEventListener("click", (e) => {
   e.stopPropagation();
   const m = $("moreMenu");
@@ -981,7 +985,51 @@ render();
 selectProp(ALL["p01"]);
 </script>
 <script>
-document.getElementById('propertyPalette').addEventListener('change', function () { document.documentElement.dataset.palette = this.value; });
+/* 外观菜单（与主原型 studio.js 同构）：明暗模式三选 + 界面配色网格（9 套，8 圆点色卡）。
+ * 数据来自生成产物 assets/palette-meta.js（附录 A 投影）；切换即持久化，刷新后恢复并归一旧 Key。 */
+(function () {
+  var info = window.CodeWFPalettes;
+  var menu = document.getElementById('appearanceMenu');
+  var grid = document.getElementById('paletteGrid');
+  var system = matchMedia('(prefers-color-scheme: dark)');
+  var KEY = 'codewf-avalonia-appearance';
+  if (!info || !menu) return;
+  function alias(value) { return (window.CodeWFPaletteKey && window.CodeWFPaletteKey(value)) || value; }
+  function order() {
+    var all = info.list.map(function (key) { return info.entries[key]; });
+    return all.filter(function (entry) { return entry.recommended; }).concat(all.filter(function (entry) { return !entry.recommended; }));
+  }
+  function currentMode() { return document.documentElement.dataset.themeMode || 'system'; }
+  function apply() {
+    var state = {};
+    try { state = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+    var palette = alias(state.palette || document.documentElement.dataset.palette || info.default);
+    if (info.list.indexOf(palette) < 0) palette = info.default;
+    var mode = ['light', 'dark', 'system'].indexOf(state.themeMode) >= 0 ? state.themeMode : currentMode();
+    document.documentElement.dataset.palette = palette;
+    document.documentElement.dataset.themeMode = mode;
+    document.documentElement.dataset.theme = mode === 'system' ? (system.matches ? 'dark' : 'light') : mode;
+    try { localStorage.setItem(KEY, JSON.stringify({ palette: palette, themeMode: mode })); } catch (e) {}
+    grid.innerHTML = order().map(function (entry) {
+      var dots = entry.swatch.map(function (color) { return '<i style="background:' + color + '"></i>'; }).join('');
+      return '<button type="button" data-palette="' + entry.key + '" aria-pressed="' + (entry.key === palette) + '" aria-label="' + entry.label + '">' +
+        (entry.recommended ? '<em class="palette-badge">推荐</em>' : '') +
+        '<span class="swatch-dots">' + dots + '</span>' +
+        '<span class="palette-label"><b>' + entry.label + '</b><small>' + entry.note + '</small></span></button>';
+    }).join('');
+    grid.querySelectorAll('button').forEach(function (button) { button.onclick = function () { save(button.dataset.palette, currentMode()); }; });
+    menu.querySelectorAll('input[name=codewf-theme-mode]').forEach(function (radio) { radio.checked = radio.value === mode; });
+  }
+  function save(palette, mode) {
+    try { localStorage.setItem(KEY, JSON.stringify({ palette: palette, themeMode: mode })); } catch (e) {}
+    apply();
+  }
+  menu.querySelector('.theme-mode-options').addEventListener('change', function (event) { save(document.documentElement.dataset.palette, event.target.value); });
+  document.addEventListener('click', function (event) { if (!event.target.closest('#appearanceMenu')) menu.open = false; });
+  document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && menu.open) { menu.open = false; menu.querySelector('summary').focus(); } });
+  system.addEventListener('change', function () { if (currentMode() === 'system') apply(); });
+  apply();
+})();
 </script>
 </body>
 </html>

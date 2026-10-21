@@ -36,7 +36,8 @@ var I18N = {
   "toast.saved": "布局已保存到浏览器本地", "toast.reset": "布局已重置为默认值",
   "toast.density": "密度：", "toast.palette": "色板：", "toast.theme": "主题：", "toast.lang": "语言：",
   "toast.copied": "已复制到剪贴板", "toast.exported": "导出完成",
-  "density.cozy": "舒适", "density.compact": "紧凑", "theme.light": "浅色", "theme.dark": "深色",
+  "density.cozy": "舒适", "density.compact": "紧凑", "theme.light": "浅色", "theme.dark": "深色", "theme.system": "跟随系统",
+  "appearance.menu": "外观：主题与配色", "appearance.menuShort": "外观", "appearance.modes": "明暗模式", "appearance.palettes": "界面配色",
   "g.prev": "上一步", "g.next": "下一步", "g.skip": "跳过", "g.close": "关闭",
   "g.1.t": "欢迎使用演示台", "g.1.d": "Ribbon 按控件功能分组；菜单项对应具体 API。综合示例位于最后一组。",
   "g.2.t": "导航树", "g.2.d": "与 Ribbon 同源；顶部可过滤页面，双击条目可就地重命名（原型内只改显示名）。",
@@ -66,7 +67,8 @@ var I18N = {
   "toast.saved": "Layout saved to browser storage", "toast.reset": "Layout reset to defaults",
   "toast.density": "Density: ", "toast.palette": "Palette: ", "toast.theme": "Theme: ", "toast.lang": "Language: ",
   "toast.copied": "Copied to clipboard", "toast.exported": "Export finished",
-  "density.cozy": "Cozy", "density.compact": "Compact", "theme.light": "Light", "theme.dark": "Dark",
+  "density.cozy": "Cozy", "density.compact": "Compact", "theme.light": "Light", "theme.dark": "Dark", "theme.system": "System",
+  "appearance.menu": "Appearance: theme & palette", "appearance.menuShort": "Appearance", "appearance.modes": "Mode", "appearance.palettes": "Palette",
   "g.prev": "Back", "g.next": "Next", "g.skip": "Skip", "g.close": "Close",
   "g.1.t": "Welcome", "g.1.d": "Ribbon groups APIs by function, with one menu entry per API. Composite examples are in the final group. Double-click a tab to collapse commands.",
   "g.2.t": "Explorer", "g.2.d": "Same source as the Ribbon. Filter on top; double-click an entry to rename it in place.",
@@ -248,7 +250,7 @@ REG("welcome", {
    '<tr><td>v12.1.4.3</td><td>高对比色板按变体落地 Semi 语义色，修复深色变体文字看不清</td></tr>' +
    '<tr><td>v12.1.4.2</td><td>Markdown 文档块虚拟化保留重块控件并补滚动锚点补偿</td></tr>' +
    '</tbody></table></div>' +
-   '<div class="demo"><h4>快捷键</h4><div class="hint" style="margin:0">Ctrl+K 命令面板 · Ctrl+S 保存布局 · Ctrl+D 深浅 · Ctrl+L 语言 · F1 引导 · 双击 Ribbon 页签折叠命令区</div></div>';
+   '<div class="demo"><h4>快捷键</h4><div class="hint" style="margin:0">Ctrl+K 命令面板 · Ctrl+S 保存布局 · Ctrl+L 语言 · F1 引导 · 双击 Ribbon 页签折叠命令区</div></div>';
  }
 });
 
@@ -971,9 +973,9 @@ REG("codewfwindow", {
   var cfg = [["默认标题栏", 0, 0], ["全屏按钮 + 内容钻入", 1, 0], ["隐藏最小化", 1, 1]];
   return '<div class="row">' + cfg.map(function (c) {
    return '<div style="border:1px solid var(--bd);border-radius:8px;overflow:hidden;width:250px;cursor:pointer" onclick="log2both(\'打开演示窗口：' + c[0] + '\')">' +
-    '<div style="display:flex;align-items:center;height:32px;background:linear-gradient(90deg,var(--pri),transparent);padding:0 8px 0 12px">' +
-    '<span style="color:#fff;font-size:11px">◆</span><span style="color:#fff;font-size:11px;flex:1;margin-left:8px">' + c[0] + "</span>" +
-    '<span style="color:rgba(255,255,255,.8);font-size:11px">' + (c[1] ? "— ⛶ □ ✕" : "— □ ✕") + "</span></div>" +
+    '<div style="display:flex;align-items:center;height:32px;background:linear-gradient(90deg,var(--pri-lt),transparent);padding:0 8px 0 12px">' +
+    '<span style="color:var(--pri);font-size:11px">◆</span><span style="color:var(--pri);font-size:11px;flex:1;margin-left:8px">' + c[0] + "</span>" +
+    '<span style="color:var(--tx2);font-size:11px">' + (c[1] ? "— ⛶ □ ✕" : "— □ ✕") + "</span></div>" +
     '<div style="padding:18px 12px;color:var(--tx2);font-size:11px;line-height:1.8">全屏按钮：' + (c[1] ? "显示" : "隐藏") +
     "<br>最小化按钮：" + (c[2] ? "隐藏" : "显示") + "</div></div>";
   }).join("") + "</div>" +
@@ -981,17 +983,25 @@ REG("codewfwindow", {
  }
 });
 
-/* ═══════════════ 属性面板：全局项 + 当前页项 ═══════════════ */
+/* ═══════════════ 配色清单：读取生成产物 assets/palette-meta.js（附录 A 投影） ═══════════════
+ * 9 套高对比配色 + 旧 Key 别名（weft→teal、dotnet→indigo 等），名单与色卡勿在此手写。
+ * 入口唯一：外观菜单（index 模板 #appearanceMenu，studio.js 构建与同步）。 */
+var PAL_INFO = window.CodeWFPalettes || { default: "indigo", list: ["indigo"], entries: { indigo: { label: "靛蓝" } } };
+var PAL_LIST = PAL_INFO.list;
+var PAL_NAME = {};
+PAL_LIST.forEach(function (key) {
+ PAL_NAME[key] = PAL_INFO.entries[key].label;
+});
+function palKey(value) {
+ var mapped = window.CodeWFPaletteKey ? window.CodeWFPaletteKey(value) : value;
+ return PAL_LIST.indexOf(mapped) >= 0 ? mapped : PAL_INFO.default;
+}
+
+/* ═══════════════ 属性面板：全局项 + 当前页项 ═══════════════
+ * 配色与明暗不再在此出现（外观菜单是唯一入口，见 index 模板 #appearanceMenu / studio.js）。 */
 var SELF_PROPS = [
  { id: "appearance.density", label: "密度", type: "combo", options: ["舒适", "紧凑"], value: "舒适", global: true,
   apply: function (v) { setDensity(v === "紧凑" ? "compact" : "cozy"); } },
- { id: "appearance.palette", label: "色板", type: "combo", options: ["默认", "水生", "沙漠", "黄昏", "夜空", "高对比"], value: "默认", global: true,
-  apply: function (v) {
-   var m = { "默认": "default", "水生": "aqua", "沙漠": "desert", "黄昏": "dusk", "夜空": "night", "高对比": "contrast" };
-   setPalette(m[v] || "default");
-  } },
- { id: "appearance.dark", label: "深色模式", type: "bool", value: true, global: true,
-  apply: function (v) { setTheme(v ? "dark" : "light"); } },
  { id: "appearance.lang", label: "语言", type: "combo", options: ["简体中文", "English"], value: "简体中文", global: true,
   apply: function (v) { setLang(v === "English" ? "en-US" : "zh-CN"); } }
 ];
@@ -1274,28 +1284,16 @@ function applyProp(pageId, p, v, light) {
 }
 
 /* ═══ 外壳：色板 / 深浅 / 语言 / 密度 / 面板 / 布局 ═══ */
-var PAL_LIST = ["default", "aqua", "desert", "dusk", "night", "contrast"];
-var PAL_COLOR = { default: "#0064fa", aqua: "#0091a8", desert: "#c26a1d", dusk: "#7a5cc4", night: "#2b6cb0", contrast: "#888" };
+/* PAL_LIST / PAL_NAME / palKey 见文件前部（palette-meta.js 投影）；配色与明暗的唯一 UI 入口是外观菜单。 */
 function setPalette(v) {
+ v = palKey(v); /* 旧 Key（dotnet/aqua/contrast…）经别名归一到新 9 套 */
  document.documentElement.dataset.palette = v;
- var sel = $("palSel"); if (sel) sel.value = v;
- var p = SELF_PROPS[1]; p.value = { default: "默认", aqua: "水生", desert: "沙漠", dusk: "黄昏", night: "夜空", contrast: "高对比" }[v] || "默认";
- renderPalDots();
- log2both(tt("toast.palette") + p.value);
-}
-function renderPalDots() {
- var cur = document.documentElement.dataset.palette;
- $("palDots").innerHTML = PAL_LIST.map(function (p) {
-  return '<i style="background:' + PAL_COLOR[p] + '" data-p="' + p + '" title="' + p + '"' + (p === cur ? ' class="on"' : "") + "></i>";
- }).join("");
- document.querySelectorAll(".pal i").forEach(function (i) { i.onclick = function () { setPalette(i.getAttribute("data-p")); }; });
+ log2both(tt("toast.palette") + PAL_NAME[v]);
 }
 function setTheme(v) {
  document.documentElement.dataset.theme = v;
- SELF_PROPS[2].value = (v === "dark");
  log2both(tt("toast.theme") + (v === "dark" ? tt("theme.dark") : tt("theme.light")));
 }
-function toggleDark() { setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"); }
 function setDensity(v) {
  document.documentElement.dataset.density = v;
  SELF_PROPS[0].value = (v === "compact" ? "紧凑" : "舒适");
@@ -1305,7 +1303,7 @@ function setLang(l) {
  LANG = l;
  document.documentElement.lang = l;
  $("notificationDemo").title = l === "en-US" ? "Notification demo" : "通知演示";
- SELF_PROPS[3].value = (l === "en-US" ? "English" : "简体中文");
+ SELF_PROPS[1].value = (l === "en-US" ? "English" : "简体中文");
  document.querySelectorAll("[data-i18n]").forEach(function (n) { n.textContent = tt(n.dataset.i18n); });
  var cp = $("cpmQ"); if (cp) cp.placeholder = tt("cmd.ph");
  renderRTabs(); renderTree(); renderDocTabs();
@@ -1357,7 +1355,7 @@ function loadLayout() {
 window.layoutResetAsk = function () {
  confirmDlg(tt("dlg.reset.t"), tt("dlg.reset.d"), function () {
   document.body.classList.remove("hideL", "hideR", "hideLog", "rmn");
-  setDensity("cozy"); setPalette("dotnet"); setTheme("system");
+  setDensity("cozy"); setPalette(PAL_INFO.default); setTheme("system");
   try { localStorage.removeItem(LAYOUT_KEY); } catch (e) { }
   notify("warn", tt("nc.warn"), tt("toast.reset"));
   log2both(tt("toast.reset"), "warn");
@@ -1419,7 +1417,6 @@ function cmdList() {
   };
  });
  var C = [
-  { label: "切换深色 / 浅色", icon: "◐", run: toggleDark },
   { label: "切换语言 中 / EN", icon: "文A", run: function () { setLang(LANG === "zh-CN" ? "en-US" : "zh-CN"); } },
   { label: "切换密度 舒适 / 紧凑", icon: "▤", run: function () { setDensity(document.documentElement.dataset.density === "compact" ? "cozy" : "compact"); } },
   { label: "保存布局", icon: "💾", run: saveLayout },
@@ -1431,10 +1428,6 @@ function cmdList() {
   { label: "打开引导", icon: "❔", run: guideOpen }
  ];
  C.forEach(function (c) { c.group = tt("cmd.cmds"); list.push(c); });
- var palLabels = SELF_PROPS.filter(function (p) { return p.id === "appearance.palette"; })[0].options;
- PAL_LIST.forEach(function (p, i) {
-  list.push({ label: tt("toast.palette") + palLabels[i], group: tt("cmd.cmds"), icon: "🎨", run: function () { setPalette(p); } });
- });
  return list;
 }
 function cpmOpen() { $("cpm").classList.add("on"); $("cpmQ").value = ""; cpmIdx = 0; cpmDraw(); $("cpmQ").focus(); }
@@ -1469,8 +1462,6 @@ function cpmRun() {
 function bindShell() {
  $("rTabsBar").ondblclick = function (e) { if (e.target.classList.contains("t2")) toggleRibbon(); };
 
- $("darkBtn").onclick = toggleDark;
- $("darkBtn2").onclick = toggleDark;
  $("langBtn").onclick = function () { setLang(LANG === "zh-CN" ? "en-US" : "zh-CN"); };
  $("langBtn2").onclick = $("langBtn").onclick;
  $("notificationDemo").onclick = function () { notify("ok", tt("nc.ok"), LANG === "en-US" ? "Notification demo" : "通知演示"); };
@@ -1479,10 +1470,6 @@ function bindShell() {
  $("qkDensity").onclick = function () { setDensity(document.documentElement.dataset.density === "compact" ? "cozy" : "compact"); };
  $("qkSave").onclick = saveLayout;
  $("qkReset").onclick = function () { layoutResetAsk(); };
- $("qkPalette").onclick = function () {
-  var i = PAL_LIST.indexOf(document.documentElement.dataset.palette);
-  setPalette(PAL_LIST[(i + 1) % PAL_LIST.length]);
- };
  $("hideNav").onclick = function () { togglePanel("L"); };
  $("hideProp2").onclick = function () { togglePanel("R"); };
  $("hideLogBtn").onclick = function () { togglePanel("Log"); };
@@ -1514,7 +1501,6 @@ function bindShell() {
   var k = (e.key || "").toLowerCase();
   var mod = e.ctrlKey || e.metaKey;
   if (mod && k === "k") { e.preventDefault(); $("cpm").classList.contains("on") ? cpmClose() : cpmOpen(); return; }
-  if (mod && k === "d") { e.preventDefault(); toggleDark(); return; }
   if (mod && k === "l") { e.preventDefault(); setLang(LANG === "zh-CN" ? "en-US" : "zh-CN"); return; }
   if (mod && k === "s") { e.preventDefault(); saveLayout(); return; }
   if (e.key === "F1") { e.preventDefault(); guideOpen(); return; }
@@ -1539,10 +1525,8 @@ function boot() {
  expose();
  var restored = false;
  guard(function () { restored = loadLayout(); }, "loadLayout");
- if (!restored) renderPalDots();
  renderRTabs();
  renderTree();
- renderPalDots();
  if (OPEN_DOCS.length) { renderDocTabs(); renderDoc(ACTIVE_DOC); }
  else openDoc("welcome");
  renderPGrid(ACTIVE_DOC);

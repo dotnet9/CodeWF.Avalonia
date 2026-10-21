@@ -2,47 +2,82 @@
 "use strict";
 (function () {
   var toolkit = document.body.dataset.product === "toolkit";
-  var paletteNames = { dotnet:".NET Purple", aurora:"AI Aurora", ember:"AI Ember", default:"默认蓝", aqua:"水生", desert:"沙漠", dusk:"黄昏", night:"夜空" };
-  PAL_LIST = ["dotnet", "aurora", "ember", "default", "aqua", "desert", "dusk", "night"];
-  Object.assign(PAL_COLOR, { dotnet:"#512bd4", aurora:"linear-gradient(135deg,#8968ff,#26d4cc)", ember:"#bd674d" });
-  SELF_PROPS[1].options = PAL_LIST.map(function (p) { return paletteNames[p]; });
-  SELF_PROPS[1].apply = function (name) { setPalette(PAL_LIST.find(function (p) { return paletteNames[p] === name; }) || "dotnet"); };
-  renderPalDots = function () {
-    var current = document.documentElement.dataset.palette;
-    $("palDots").innerHTML = PAL_LIST.map(function (p) {
-      return '<button type="button" style="background:' + PAL_COLOR[p] + '" data-p="' + p + '" title="' + paletteNames[p] + '" aria-label="' + paletteNames[p] + '" aria-pressed="' + (p === current) + '" class="' + (p === current ? "on" : "") + '"></button>';
-    }).join("");
-    $("palDots").querySelectorAll("button").forEach(function (b) { b.onclick = function () { setPalette(b.dataset.p); }; });
-  };
+  /* 配色清单/名称/色卡来自 interact.js 读取的 assets/palette-meta.js（生成产物）。
+   * 配色与明暗的唯一入口 = 外观菜单（#appearanceMenu），旧的 palDots/darkBtn/属性面板条目已移除。 */
   setPalette = function (p) {
-    if (PAL_LIST.indexOf(p) < 0) p = "dotnet";
+    p = palKey(p); /* 旧 Key 别名归一 */
     document.documentElement.dataset.palette = p;
-    SELF_PROPS[1].value = paletteNames[p];
-    renderPalDots();
+    syncAppearanceMenu();
+    writeAppearance();
     renderPGrid(ACTIVE_DOC);
-    log2both(tt("toast.palette") + paletteNames[p]);
+    log2both(tt("toast.palette") + PAL_NAME[p]);
   };
+  /* 外观菜单（与 Vex 原型 theme.js 同构）：明暗模式三选 + 界面配色网格（推荐置顶、18px 圆形 8 色饼色卡）。
+   * 切换即持久化（localStorage），刷新后恢复并经 palKey 归一旧 Key。 */
+  var APPEARANCE_KEY = "codewf-avalonia-appearance";
+  function readAppearance() { try { return JSON.parse(localStorage.getItem(APPEARANCE_KEY) || "null"); } catch (_) { return null; } }
+  function writeAppearance() {
+    try {
+      localStorage.setItem(APPEARANCE_KEY, JSON.stringify({
+        palette: document.documentElement.dataset.palette,
+        themeMode: document.documentElement.dataset.themeMode || "system"
+      }));
+    } catch (_) {}
+  }
+  var appearanceMenu = $("appearanceMenu"), paletteGrid = $("paletteGrid");
+  function paletteOrder() {
+    var entries = PAL_LIST.map(function (key) { return window.CodeWFPalettes.entries[key]; });
+    return entries.filter(function (entry) { return entry.recommended; }).concat(entries.filter(function (entry) { return !entry.recommended; }));
+  }
+  function renderPaletteGrid() {
+    if (!paletteGrid) return;
+    paletteGrid.innerHTML = paletteOrder().map(function (entry) {
+      var name = LANG === "en-US" ? entry.en : entry.label;
+      var dots = entry.swatch.map(function (color) { return '<i style="background:' + color + '"></i>'; }).join("");
+      return '<button type="button" data-palette="' + entry.key + '" aria-pressed="false" aria-label="' + esc(name) + '">' +
+        (entry.recommended ? '<em class="palette-badge">' + label("推荐", "Pick") + '</em>' : "") +
+        '<span class="swatch-dots">' + dots + '</span>' +
+        '<span class="palette-label"><b>' + esc(name) + '</b><small>' + esc(entry.note) + '</small></span></button>';
+    }).join("");
+    paletteGrid.querySelectorAll("button").forEach(function (b) { b.onclick = function () { setPalette(b.dataset.palette); }; });
+    syncAppearanceMenu();
+  }
+  function syncAppearanceMenu() {
+    if (!appearanceMenu) return;
+    var current = document.documentElement.dataset.palette, mode = document.documentElement.dataset.themeMode || "system";
+    var summary = appearanceMenu.querySelector("summary");
+    summary.title = tt("appearance.menu");
+    summary.setAttribute("aria-label", tt("appearance.menu"));
+    appearanceMenu.querySelectorAll("[data-palette]").forEach(function (button) {
+      var entry = window.CodeWFPalettes.entries[button.dataset.palette];
+      var name = LANG === "en-US" ? entry.en : entry.label;
+      button.title = name + " · " + (LANG === "en-US" ? entry.label : entry.en);
+      button.setAttribute("aria-label", name);
+      button.setAttribute("aria-pressed", String(button.dataset.palette === current));
+    });
+    appearanceMenu.querySelectorAll("input[name=codewf-theme-mode]").forEach(function (radio) { radio.checked = radio.value === mode; });
+  }
+  if (appearanceMenu) {
+    appearanceMenu.querySelector(".theme-mode-options").addEventListener("change", function (event) { setTheme(event.target.value); });
+    document.addEventListener("click", function (event) { if (!event.target.closest("#appearanceMenu")) appearanceMenu.open = false; });
+    document.addEventListener("keydown", function (event) { if (event.key === "Escape" && appearanceMenu.open) { appearanceMenu.open = false; appearanceMenu.querySelector("summary").focus(); } });
+    var originalSetLang = setLang;
+    setLang = function (culture) { originalSetLang(culture); renderPaletteGrid(); };
+  }
   var originalTheme = setTheme;
   var systemTheme = matchMedia("(prefers-color-scheme: dark)");
   var themeMode = "system";
+  var savedAppearance = readAppearance();
   try { themeMode = JSON.parse(localStorage.getItem(LAYOUT_KEY) || "null")?.theme || "system"; } catch (_) {}
-  var modeButton = $("darkBtn");
-  SELF_PROPS[2].type = "combo";
-  SELF_PROPS[2].options = ["system", "light", "dark"];
-  SELF_PROPS[2].apply = function(mode) { setTheme(mode); };
+  if (savedAppearance && ["system", "light", "dark"].indexOf(savedAppearance.themeMode) >= 0) themeMode = savedAppearance.themeMode; /* 外观存档比手动布局存档新 */
   setTheme = function (mode) {
     themeMode = ["system", "light", "dark"].includes(mode) ? mode : "system";
     document.documentElement.dataset.themeMode = themeMode;
     originalTheme(themeMode === "system" ? (systemTheme.matches ? "dark" : "light") : themeMode);
-    SELF_PROPS[2].value = themeMode;
-    var paths = {system:'<rect x="2" y="2" width="12" height="9" rx="1.5"/><path d="M6 14h4M8 11v3"/>',light:'<circle cx="8" cy="8" r="3"/><path d="M8 0v2M8 14v2M0 8h2M14 8h2M2 2l1.5 1.5M12.5 12.5 14 14M2 14l1.5-1.5M12.5 3.5 14 2"/>',dark:'<path d="M13 9.6A5.6 5.6 0 0 1 6.4 3a5.6 5.6 0 1 0 6.6 6.6z"/>'};
-    modeButton.dataset.mode = themeMode;
-    modeButton.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true">' + paths[themeMode] + '</svg>';
+    syncAppearanceMenu();
+    writeAppearance();
     renderPGrid(ACTIVE_DOC);
   };
-  toggleDark = function() { setTheme({system:"light", light:"dark", dark:"system"}[themeMode]); };
-  modeButton.onclick = toggleDark;
-  $("darkBtn2").onclick = toggleDark;
   var languageButton = $("langBtn"), languageMenu = $("languageMenu");
   var languageNames = {"zh-CN":"简体中文", "en-US":"English"};
   languageMenu.innerHTML = Object.keys(I18N).map(function(culture) { return '<button type="button" role="menuitemradio" data-language="' + culture + '">' + esc(languageNames[culture] || culture) + '</button>'; }).join('');
@@ -123,7 +158,7 @@
       '<div class="studio-section-label"><span>' + label('从能力出发','Explore the capabilities') + '</span><small>EXPLORE THE LIBRARIES ↙</small></div>' +
       '<div class="studio-capabilities">' + capabilities.map(function (c,i) { var titles = toolkit ? ['Event-driven apps','Distributed messaging','Binary protocols','Files & data','Image toolchain','Runtime observability'] : ['Markdown workspace','Data interaction','Document workspace','Input & selection','Guides & status','Logging & localization']; return '<button type="button" class="studio-capability" data-open="' + c[0] + '"><span class="studio-icon">' + iconSvg(c[0],'s18') + '</span><span class="studio-arrow">↗</span><h3>' + label(c[1],titles[i]) + '</h3><p>' + label(c[2],c[3]) + '</p><small>' + c[3] + '</small></button>'; }).join('') + '</div>' +
       '<div class="studio-install"><code id="studio-install-command">dotnet add package CodeWF.' + (toolkit ? 'Toolkit.EventBus' : 'Avalonia.Controls') + '</code><button type="button" class="studio-link" id="studio-copy">' + label('复制安装命令','Copy install command') + ' ⧉</button></div>' +
-      '<p class="studio-note">' + label('浏览器交互示意 · 完整页面展示对应 .NET API；AI Aurora / Ember 为视觉配色。','Browser interaction previews · Full demos show the .NET APIs. AI Aurora / Ember are visual palettes.') + '</p></div>';
+      '<p class="studio-note">' + label('浏览器交互示意 · 完整页面展示对应 .NET API；配色遵循高对比令牌规则（8 套）。','Browser interaction previews · Full demos show the .NET APIs. Colors follow the high-contrast token rules (8 palettes).') + '</p></div>';
   }
   function bindOverview(el) {
     el.querySelectorAll('[data-stage]').forEach(function (b) { b.onclick = function () { selected = b.dataset.stage; drawStage(); }; });
@@ -223,11 +258,11 @@
   REG('welcome', { zh:{ t:'CodeWF Studio',d:'',f:[] },render:overview });
   var originalRenderInto = renderInto;
   renderInto = function (id,el) { originalRenderInto(id,el); if (id === 'welcome' && el) bindOverview(el); };
-  var current = document.documentElement.dataset.palette;
-  if (PAL_LIST.indexOf(current) < 0) current='dotnet';
-  SELF_PROPS[1].value=paletteNames[current];
+  var current = savedAppearance && savedAppearance.palette ? palKey(savedAppearance.palette) : palKey(document.documentElement.dataset.palette);
+  document.documentElement.dataset.palette = current; /* 恢复外观存档（含旧 Key 归一），不额外打启动日志 */
   setTheme(themeMode);
-  renderPalDots();
+  renderPaletteGrid();
+  writeAppearance();
   renderRBody();
   renderPGrid(ACTIVE_DOC);
   if (ACTIVE_DOC) renderDoc(ACTIVE_DOC);

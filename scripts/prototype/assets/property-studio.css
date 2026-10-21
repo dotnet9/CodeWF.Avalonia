@@ -4,7 +4,7 @@
   --bg-toolbar:var(--bg2); --bg-group:var(--bg2); --bg-desc:var(--workbg);
   --bg-editor:var(--bg3); --bg-editor-hover:var(--hov); --bg-hover:var(--hov);
   --border:var(--bd); --border-soft:var(--bd); --accent:var(--pri);
-  --accent-text:#fff; --accent-soft:var(--pri-lt); --menu-bg:var(--bg2); --row-h:31px;
+  --accent-text:var(--on-primary); --accent-soft:var(--pri-lt); --menu-bg:var(--bg2); --row-h:31px;
 }
 /* 窄窗体 specimen：固定 400px 居中，不再铺满整个页面。 */
 body { padding:0; display:flex; justify-content:center; background:var(--workbg); }
@@ -15,9 +15,12 @@ body { padding:0; display:flex; justify-content:center; background:var(--workbg)
 .property-banner p { font-size:11px; color:var(--tx2); margin-top:5px; }
 .property-banner .studio-eyebrow { font-size:9px; margin-bottom:5px; }
 .property-banner select { background:var(--bg2); border:1px solid var(--bd); padding:7px; border-radius:6px; font-size:11px; }
+/* 外观菜单（studio.css 提供基础样式）：横幅里的 summary 做成紧凑按钮 */
+.property-banner .appearance-menu summary { height:auto; min-height:32px; border:1px solid var(--bd); border-radius:6px; padding:6px 10px; }
+.property-banner .appearance-choices { top:100%; margin-top:6px; }
 select, select option { text-align:left; text-align-last:left; }
-.toolbar { display:grid;grid-template-columns:auto auto 1fr auto auto;grid-template-rows:30px 28px;gap:5px 3px;height:auto;border-color:var(--bd);padding:6px; }
-#btnCat{grid-column:1;grid-row:1}#btnAlpha{grid-column:2;grid-row:1}.toolbar>.spacer{grid-column:3;grid-row:1}#btnTheme{grid-column:4;grid-row:1}#btnMore{grid-column:5;grid-row:1}
+.toolbar { display:grid;grid-template-columns:auto auto 1fr auto;grid-template-rows:30px 28px;gap:5px 3px;height:auto;border-color:var(--bd);padding:6px; }
+#btnCat{grid-column:1;grid-row:1}#btnAlpha{grid-column:2;grid-row:1}.toolbar>.spacer{grid-column:3;grid-row:1}#btnMore{grid-column:4;grid-row:1}
 .toolbar .tbtn{width:32px;height:30px}.toolbar .tbtn svg{width:18px;height:18px}
 .searchbox { grid-column:1 / -1;grid-row:2;max-width:none;margin:0;background:var(--bg);border:1px solid var(--bd);border-radius:4px;height:28px; }
 .grid-wrap { background:var(--bg); }

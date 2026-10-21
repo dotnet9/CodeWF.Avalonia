@@ -36,8 +36,7 @@
   // Reuse the native language resources and show either page parameters or global settings.
   var originalPropertyGrid = renderPGrid;
   var densityValues = SELF_PROPS[0].options.slice();
-  var paletteValues = SELF_PROPS[1].options.slice();
-  var paletteKeys = ["DotNet", "Aurora", "Ember", "Default", "Aquatic", "Desert", "Dusk", "NightSky"];
+  // 配色与明暗的入口已收敛到外观菜单（#appearanceMenu），属性面板只剩密度/语言两项全局设置。
   renderPGrid = function(id) {
     originalPropertyGrid(id);
     var settings = window.CodeWFPrototypeSettings[LANG], panel = $("pGrid");
@@ -55,29 +54,19 @@
       if (appearance) appearance.textContent = settings.shell.GlobalSettings.AppearanceGroup;
       if (language) language.textContent = settings.shell.GlobalSettings.LanguageGroup;
     }
-    var labels = [settings.shell.Density, settings.shell.Palette, settings.shell.GlobalSettings.ModeLabel, settings.language];
+    var labels = [settings.shell.Density, settings.language];
     SELF_PROPS.forEach(function(property, index) {
       var control = panel.querySelector('[data-id="' + property.id + '"]');
       if (!control) return;
       var label = control.closest(".rw").querySelector("label,.nm");
       label.textContent = labels[index]; label.title = labels[index];
-      if (index === 0 || index === 1 || index === 2) Array.from(control.options).forEach(function(option) {
-        var value = option.value; option.value = value;
-        option.textContent = index === 0
-          ? (value === densityValues[1] ? settings.shell.DensityCompact : settings.shell.DensityComfort)
-          : index === 1 ? settings.palettes[paletteKeys[paletteValues.indexOf(value)]]
-          : settings.shell.GlobalSettings[{system:"SystemMode",light:"LightMode",dark:"DarkMode"}[value]];
+      if (index === 0) Array.from(control.options).forEach(function(option) {
+        option.textContent = option.value === densityValues[1] ? settings.shell.DensityCompact : settings.shell.DensityComfort;
       });
     });
-    var modeButton = $("darkBtn"), mode = document.documentElement.dataset.themeMode || "system";
-    modeButton.title = settings.shell.GlobalSettings.ModeLabel + ": " + settings.shell.GlobalSettings[{system:"SystemMode",light:"LightMode",dark:"DarkMode"}[mode]];
-    modeButton.setAttribute("aria-label", modeButton.title);
     $("langBtn").title = settings.language;
     $("langBtn").setAttribute("aria-label", settings.language);
     $("languageMenu").querySelectorAll('button').forEach(function(button) { button.setAttribute('aria-checked', String(button.dataset.language === LANG)); });
-    $("palDots").querySelectorAll("button").forEach(function(button, index) {
-      button.title = settings.palettes[paletteKeys[index]]; button.setAttribute("aria-label", button.title);
-    });
     if ($("pgCnt")) $("pgCnt").textContent = "(" + (pageProps.length || SELF_PROPS.length) + ")";
   };
   var originalOpenDoc = openDoc;

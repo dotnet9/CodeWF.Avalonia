@@ -20,10 +20,10 @@ const standaloneFixture = require('./standalone-fixture.cjs');
     await standalone.attach(page);
     await page.goto(standalone.url);
     await page.waitForFunction(() => typeof openDoc === 'function' && window.CodeWFDemoCatalog);
-    for (const icon of ['#darkBtn svg', '#langBtn svg', '#notificationDemo svg'])
+    for (const icon of ['#appearanceMenu summary svg', '#langBtn svg', '#notificationDemo svg'])
       assert.equal(await page.locator(icon).evaluate(element => element.getBoundingClientRect().width), 16, icon);
     for (const culture of ['zh-CN', 'en-US'])
-    for (const palette of ['dotnet', 'aurora', 'ember', 'default', 'aqua', 'desert', 'dusk', 'night'])
+    for (const palette of ['graphite', 'indigo', 'teal', 'pine', 'sky', 'amber', 'crimson', 'violet', 'terracotta'])
     for (const mode of ['light', 'dark'])
     for (const route of ['status-badge', 'status-card']) {
       await page.evaluate(({ culture, palette, mode, route }) => {
@@ -71,7 +71,7 @@ const standaloneFixture = require('./standalone-fixture.cjs');
     await standalone.verify(page);
     assert.deepEqual(errors, []);
     fs.writeFileSync(path.join(output, 'palette-contrast.json'), JSON.stringify(measurements, null, 2));
-    console.log(`PASS: 16 palette/mode combinations × 2 languages × 2 status routes; ${measurements.length} rendered text comparisons`);
+    console.log(`PASS: 18 palette/mode combinations × 2 languages × 2 status routes; ${measurements.length} rendered text comparisons`);
   } catch (error) {
     await page.screenshot({ path: path.join(output, 'palette-failure.png') });
     throw error;

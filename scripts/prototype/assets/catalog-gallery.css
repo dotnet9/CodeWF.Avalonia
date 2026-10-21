@@ -29,7 +29,9 @@
 .flow .st.cur .n{background:var(--button-bg);color:var(--on-primary)}.flow .st.done .n{color:var(--badge-text)}
 .studio-action.primary:hover{background:var(--button-hover);border-color:var(--button-hover);color:var(--on-primary)}
 .studio-action.primary:active{background:var(--button-pressed);border-color:var(--button-pressed);color:var(--on-primary)}
-.studio-node.active{background:var(--action-gradient);color:var(--on-primary)}.studio-node.active code{color:var(--on-primary)}
+/* §15 强调色唯一律：流程节点激活态 = 中性底（hover 档）+ 主色文字；主色描边来自 studio.css .studio-node.active。
+ * 不做整块渐变填充，全界面渐变仅保留 hero 标题一处（--text-gradient-end）。 */
+.studio-node.active{background:var(--hov);color:var(--pri)}.studio-node.active code{color:var(--pri)}
 .cpm .it.on{background:var(--sel);color:var(--tx)}.cpm .it.on .g,.cpm .it.on .k{color:var(--tx2)}
 .guide-tip .nav button{color:var(--tx)}
 

@@ -1,40 +1,21 @@
 ﻿<!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-palette="dotnet" data-density="cozy">
+<html lang="zh-CN" data-theme="dark" data-palette="indigo" data-density="cozy">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CodeWF.Avalonia.Demo — 原型</title>
 <style>
-/* ═══════════ 色板（6 色板 × 浅深，对应 ACSemiTheme ThemeDictionaries） ═══════════ */
+/* ═══════════ 色板与颜色令牌 ═══════════
+ * 全部颜色（含 :root[data-theme=light|dark] 回退与 8 套配色）由
+ * assets/palette-tokens.css 提供（scripts/prototype/generate-palette-tokens.cjs 生成，禁止手写）。
+ * 本块只保留与配色无关的静态变量（字号 / 间距 / 密度）。 */
 :root{
-  --pri:#0064fa;--pri-h:#0057d4;--pri-lt:rgba(0,100,250,.09);
-  --bg:#fff;--bg2:#f5f6f8;--bg3:#eef0f3;--tx:#1c1f23;--tx2:#5c626b;--tx3:#757c85;
-  --bd:#d9dce1;--bd2:#e6e8ec;--hov:#eef0f3;--sel:#e3edff;--workbg:#e4e7ec;
-  --ok:#1f8a3b;--warn:#e8a103;--warn-tx:#3a2a00;--err:#c62828;
   /* 外观字号令牌（对应 Markdown 排版主题接管字号前的基础值） */
   --fs-crumb:11px;--fs-h1:19px;--fs-dsc:12.5px;--fs-tag:10.5px;--fs-code:11.5px;--fs-body:13px;
   /* 间距节奏：4 / 8 / 12 / 16 */
   --sp1:4px;--sp2:8px;--sp3:12px;--sp4:16px;
   --density:var(--sp2);
 }
-[data-palette=aqua]{--pri:#0091a8;--pri-h:#007a8e;--pri-lt:rgba(0,145,168,.10);--sel:#dff5f8}
-[data-palette=desert]{--pri:#c26a1d;--pri-h:#a85a15;--pri-lt:rgba(194,106,29,.10);--sel:#faf0e2}
-[data-palette=dusk]{--pri:#7a5cc4;--pri-h:#654aa8;--pri-lt:rgba(122,92,196,.10);--sel:#efe9fb}
-[data-palette=night]{--pri:#2b6cb0;--pri-h:#245a96;--pri-lt:rgba(43,108,176,.10);--sel:#e2edf9}
-[data-palette=contrast]{--pri:#000;--pri-h:#000;--pri-lt:rgba(0,0,0,.08);--sel:#eee}
-[data-theme=dark]{
-  --bg:#1b1b1f;--bg2:#232327;--bg3:#2a2a30;--tx:#e6e6e8;--tx2:#b3b8c0;--tx3:#8d939c;
-  --bd:#3a3a40;--bd2:#2b2b30;--hov:#2a2a30;--sel:#1d2c44;--workbg:#111114;
-}
-[data-theme=dark][data-palette=default]{--pri:#4d9aff;--pri-h:#6cadff;--pri-lt:rgba(77,154,255,.14);--sel:#1d2c44}
-[data-theme=dark][data-palette=aqua]{--pri:#2ec3dd;--pri-h:#4fd0e8;--sel:#123c44}
-[data-theme=dark][data-palette=desert]{--pri:#e8a355;--pri-h:#efb56f;--sel:#443318}
-[data-theme=dark][data-palette=dusk]{--pri:#a98ae0;--pri-h:#bca0e8;--sel:#322a4a}
-[data-theme=dark][data-palette=night]{--pri:#5b93cf;--pri-h:#74a8db;--sel:#1a2a3e}
-[data-theme=dark][data-palette=contrast]{--pri:#fff;--pri-h:#fff;--pri-lt:rgba(255,255,255,.12);--sel:#333}
-/* 高对比白底：主色白不可用于文字，正文色调成纯黑 */
-[data-palette=contrast] .cap .lg,[data-palette=contrast] .cap .ver{color:#fff}
-[data-palette=contrast] .bd h1{color:var(--tx)}
 
 /* 密度：舒适 / 紧凑（属性面板密度切换） */
 [data-density=compact]{--density:var(--sp1)}
@@ -75,7 +56,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 
 /* ═══ 1. 标题栏 34px（CodeWFWindow） ═══ */
 .cap{display:flex;align-items:center;height:34px;padding-left:10px;gap:8px;position:relative;
-  background:linear-gradient(90deg,var(--pri) 0%,var(--pri-h) 26%,rgba(0,0,0,0) 58%),var(--bg2);
+  background:var(--bg2); /* §15：标题栏为中性表面（studio.css .cap 再覆为 --bg），主色不做大面积底 */
   border-bottom:1px solid var(--bd)}
 .cap .logo{width:20px;height:20px;border-radius:5px;display:block;flex:none;
   box-shadow:0 1px 5px rgba(0,0,0,.3),0 0 0 1px rgba(255,255,255,.22)}
@@ -89,11 +70,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .cap .wb svg{width:12px;height:12px;stroke:currentColor;stroke-width:1.3;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .cap .wb:hover{background:var(--hov);color:var(--tx)}
 .cap .wb:focus-visible{outline:2px solid var(--pri);outline-offset:-2px}
-.cap .wb.cls:hover{background:var(--err);color:#fff}
-.cap .pal{display:inline-flex;gap:5px;align-items:center;margin:0 2px}
-.cap .pal i{width:12px;height:12px;border-radius:50%;cursor:pointer;border:1px solid rgba(128,128,128,.55);display:block;transition:transform .12s,box-shadow .12s}
-.cap .pal i:hover{transform:scale(1.25)}
-.cap .pal i.on{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--pri)}
+.cap .wb.cls:hover{background:var(--err);color:var(--on-primary)}
 
 /* ═══ 2. Ribbon 页签行 32px ═══ */
 .rtabs{display:flex;align-items:center;height:32px;padding:0 10px;gap:2px;background:var(--bg);border-bottom:1px solid var(--bd)}
@@ -204,7 +181,7 @@ body.hideLog .p-log{display:none}
 .dt:hover{color:var(--tx)}
 .dt.on{background:var(--bg);color:var(--tx);font-weight:600;border-bottom:2px solid var(--pri)}
 .dt .x{width:14px;height:14px;display:flex;align-items:center;justify-content:center;border-radius:3px;font-size:10px;color:var(--tx3)}
-.dt .x:hover{background:var(--err);color:#fff}
+.dt .x:hover{background:var(--err);color:var(--on-primary)}
 .dbody{flex:1;min-height:0;overflow:auto;padding:var(--sp3) var(--sp4) 26px}
 .doc .crumb{font-size:12px;color:var(--tx3);margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .doc .crumb svg{color:var(--tx3)}
@@ -215,7 +192,7 @@ body.hideLog .p-log{display:none}
 .ftg span{font-size:var(--fs-tag);padding:1px 9px;border-radius:10px;background:var(--pri-lt);color:var(--pri);font-weight:600}
 .smt{display:inline-flex;border:1px solid var(--bd);border-radius:6px;overflow:hidden;margin-bottom:14px}
 .smt button{border:none;background:var(--bg2);padding:4px 18px;cursor:pointer;font-size:11px;color:var(--tx2)}
-.smt button.on{background:var(--pri);color:#fff;font-weight:600}
+.smt button.on{background:var(--pri);color:var(--on-primary);font-weight:600}
 .smcode{background:var(--bg3);border:1px solid var(--bd2);border-radius:6px;padding:12px 14px;
   font-family:Consolas,monospace;font-size:var(--fs-code);line-height:1.65;white-space:pre;overflow:auto;
   max-height:300px;margin-bottom:14px;color:var(--tx)}
@@ -228,7 +205,7 @@ body.hideLog .p-log{display:none}
 .btn:focus-visible{outline:2px solid var(--pri);outline-offset:1px}
 .btn.pri{border-color:var(--pri);color:var(--pri);background:var(--pri-lt)}
 .btn.danger{border-color:var(--err);color:var(--err)}
-.btn.danger:hover{background:var(--err);color:#fff;border-color:var(--err)}
+.btn.danger:hover{background:var(--err);color:var(--on-primary);border-color:var(--err)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 
 /* Markdown */
@@ -281,13 +258,12 @@ body.hideLog .p-log{display:none}
 .p-log .ltm{color:var(--tx3);margin-right:10px}
 
 /* 状态组件（色带用深色，正文对比度 ≥ 4.5:1；卡片正文走 --tx2 而非白字） */
-.sbadge{display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:4px;font-size:11px;color:#fff;margin-right:8px}
-.sbadge::before{content:"";width:6px;height:6px;border-radius:50%;background:#fff}
+.sbadge{display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:4px;font-size:11px;color:var(--badge-text);margin-right:8px}
+.sbadge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--badge-text)}
 .scard{width:190px;border:1px solid var(--bd);border-radius:8px;overflow:hidden;margin-right:12px;margin-bottom:10px;display:inline-block;vertical-align:top}
-.scard .h{padding:8px 12px;font-size:12px;font-weight:600;color:#fff;display:flex;justify-content:space-between;align-items:center}
+.scard .h{padding:8px 12px;font-size:12px;font-weight:600;color:var(--badge-text);display:flex;justify-content:space-between;align-items:center}
 .scard .b{padding:10px 12px;font-size:11px;color:var(--tx2);line-height:1.7;min-height:52px}
-.k-debug{background:#52565e}.k-info{background:#0064fa}.k-warn{background:#c98600}.k-error{background:#c62828}.k-fatal{background:#a1144c}
-[data-theme=dark] .k-debug{background:#4a4a52}
+.k-debug{background:var(--badge-debug)}.k-info{background:var(--badge-info)}.k-warn{background:var(--badge-warn)}.k-error{background:var(--badge-error)}.k-fatal{background:var(--badge-fatal)}
 .busy .barwrap{max-width:420px;margin:0 auto 12px}
 
 /* Transfer */
@@ -385,9 +361,9 @@ body.hideLog .p-log{display:none}
 .flow .st .si{display:none}
 .flow .st.cur{border-color:var(--pri);background:var(--pri-lt);color:var(--pri);font-weight:700;
   box-shadow:0 0 0 3px var(--pri-lt)}
-.flow .st.cur .n{background:var(--pri);color:#fff}
+.flow .st.cur .n{background:var(--pri);color:var(--on-primary)}
 .flow .st.done{border-color:var(--ok);color:var(--ok)}
-.flow .st.done .n{background:var(--ok);color:#fff}
+.flow .st.done .n{background:var(--ok);color:var(--on-primary)}
 .flow .st.cur .si,.flow .st.done .si{display:inline-flex}
 .subtabs{display:flex;gap:2px;border-bottom:1px solid var(--bd);margin-bottom:12px;flex-wrap:wrap}
 .subtabs button{border:none;background:transparent;padding:6px 12px;cursor:pointer;font-size:12px;color:var(--tx2);
@@ -460,8 +436,8 @@ body.hideLog .p-log{display:none}
 /* 任务栏 26px */
 .tbar{height:28px;flex:none;display:flex;align-items:center;gap:9px;padding:0 12px;background:var(--bg2);
   border-top:1px solid var(--bd);font-size:11px;color:var(--tx2);overflow:hidden}
-.tbar .badge{display:inline-flex;align-items:center;gap:5px;padding:1px 9px;border-radius:4px;font-size:10px;color:#fff;background:var(--pri)}
-.tbar .badge::before{content:"";width:5px;height:5px;border-radius:50%;background:#fff}
+.tbar .badge{display:inline-flex;align-items:center;gap:5px;padding:1px 9px;border-radius:4px;font-size:10px;color:var(--on-primary);background:var(--pri)}
+.tbar .badge::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--on-primary)}
 .tbar .sp{flex:1}
 .tbar .latest{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:34%}
 .tbar .sep{color:var(--bd)}
@@ -497,10 +473,26 @@ d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"
     <img class="logo" src="logo.svg" alt="CodeWF.Avalonia logo" title="CodeWF.Avalonia">
     <span class="lg">CodeWF.Avalonia</span><span class="vbadge">v__CODEWF_DEMO_VERSION__</span>
     <span class="sp"></span>
-    <span class="pal" id="palDots"></span>
-    <button class="wb" id="darkBtn" title="深色 / 浅色（Ctrl+D）">
-      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 9.6A5.6 5.6 0 0 1 6.4 3a5.6 5.6 0 1 0 6.6 6.6z"/></svg>
-    </button>
+    <!-- 外观菜单：明暗模式（浅/深/跟随系统）+ 界面配色网格（与 Vex 原型同构；卡片与色卡由 studio.js 从 palette-meta.js 生成）。
+         配色与明暗的唯一入口（旧 palDots / darkBtn / qkPalette 循环钮 / 属性面板下拉已移除）。 -->
+    <details id="appearanceMenu" class="appearance-menu">
+      <summary title="外观：主题与配色" aria-label="外观：主题与配色" aria-haspopup="menu">
+        <svg class="svgic s16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0 0 18c1.2 0 2-.9 2-1.9 0-1.4-1.2-2-2.4-2.1H10a3.5 3.5 0 0 1-3.5-3.5c0-3.9 4.3-7 9.5-7 .3 0 .7 0 1 .1A9 9 0 0 0 12 3z"/><circle cx="8.5" cy="10" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="7.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="10" r="1.1" fill="currentColor" stroke="none"/></svg>
+        <span data-i18n="appearance.menuShort">外观</span>
+      </summary>
+      <div class="appearance-choices" role="group" aria-label="外观">
+        <fieldset class="studio-modes">
+          <legend data-i18n="appearance.modes">明暗模式</legend>
+          <div class="theme-mode-options">
+            <label><input type="radio" name="codewf-theme-mode" value="light"><span data-i18n="theme.light">浅色</span></label>
+            <label><input type="radio" name="codewf-theme-mode" value="dark"><span data-i18n="theme.dark">深色</span></label>
+            <label><input type="radio" name="codewf-theme-mode" value="system"><span data-i18n="theme.system">跟随系统</span></label>
+          </div>
+        </fieldset>
+        <strong data-i18n="appearance.palettes">界面配色</strong>
+        <div class="studio-palettes" id="paletteGrid"></div>
+      </div>
+    </details>
     <div class="titlebar-language">
       <button class="wb" id="langBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="languageMenu" title="Language"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18z"/></svg></button>
       <div id="languageMenu" role="menu" hidden></div>
@@ -519,9 +511,6 @@ d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"
       </button>
       <button id="qkReset" title="重置布局">
         <svg class="svgic s16" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg>
-      </button>
-      <button id="qkPalette" title="循环切换色板">
-        <svg class="svgic s16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a8.5 8.5 0 0 0 0 17c1.3 0 2-.9 2-1.9 0-1.6 1.1-2.1 2.4-2.1H18a3.5 3.5 0 0 0 3.5-3.5c0-3.9-4.3-7-9.5-7z"/><circle cx="8.5" cy="10" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="8" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="10" r="1.1" fill="currentColor" stroke="none"/></svg>
       </button>
     </div>
     <div class="rt2" id="rTabs"></div>
@@ -614,7 +603,6 @@ d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"
     <span data-i18n="st.sync">最近同步 </span><span class="tm" id="stFlush">00:00:00</span>
     <span class="sep">|</span>
     <button id="logToggleBtn" data-i18n="status.logpanel">日志面板</button>
-    <button id="darkBtn2">深浅</button>
     <button id="langBtn2">中英</button>
     <span>net10.0 · Avalonia 12.1.4</span>
   </div>
@@ -652,6 +640,7 @@ d.textContent+="JS错误: "+e.message+" @"+(e.filename||"").split("/").pop()+":"
 
 <div id="DBG"></div>
 
+<script src="assets/palette-meta.js"></script>
 <script src="assets/catalog-data.js"></script>
 <script src="assets/interact.js"></script>
 <script src="assets/studio.js"></script>
