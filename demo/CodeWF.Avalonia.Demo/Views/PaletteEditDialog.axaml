@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="CodeWF.Avalonia.Demo.Views.PaletteEditDialog"
+        xmlns:views="using:CodeWF.Avalonia.Demo.Views"
+        xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
+        x:DataType="vm:UserPaletteDraft"
+        Width="430" Height="520" CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Title="编辑配色"
+        Background="{DynamicResource StudioBackground}" Foreground="{DynamicResource StudioText}">
+  <Grid RowDefinitions="Auto,*,Auto" Margin="20" RowSpacing="12">
+    <TextBlock x:Name="TitleText" Grid.Row="0" FontSize="15" FontWeight="SemiBold" />
+    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+      <StackPanel Spacing="10">
+        <StackPanel Spacing="4">
+          <TextBlock Text="配色名称" FontSize="11" Opacity="0.75" />
+          <TextBox Text="{Binding Name, Mode=TwoWay}" />
+        </StackPanel>
+        <ItemsControl x:Name="ColorInputs">
+          <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="2" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="views:ColorField">
+              <StackPanel Spacing="3" Margin="0,2,8,6">
+                <TextBlock Text="{Binding Label}" FontSize="10.5" Opacity="0.75" />
+                <TextBox Text="{Binding Color, Mode=TwoWay}" FontFamily="Consolas" />
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </ScrollViewer>
+    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+      <Button x:Name="CancelButton" Content="取消" MinWidth="76" />
+      <Button x:Name="OkButton" Content="确定" MinWidth="76" Classes="accent" />
+    </StackPanel>
+  </Grid>
+</Window>

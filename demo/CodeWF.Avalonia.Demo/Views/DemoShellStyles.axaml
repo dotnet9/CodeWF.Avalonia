@@ -268,4 +268,75 @@
   <Style Selector="PathIcon.ribbon-icon"><Setter Property="Foreground" Value="{DynamicResource StudioAccent}" /></Style>
   <Style Selector="PathIcon.ribbon-icon:disabled"><Setter Property="Foreground" Value="{DynamicResource SemiColorDisabledText}" /></Style>
   <Style Selector="Border.catalog-group"><Setter Property="BorderThickness" Value="0" /></Style>
+
+  <!--  外观菜单弹层（原型 appearance-choices 同构）  -->
+  <Style Selector="Border.appearance-choices">
+    <Setter Property="Background" Value="{DynamicResource StudioSurface}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Padding" Value="16" />
+    <Setter Property="BoxShadow" Value="0 12 36 0 #33000000" />
+  </Style>
+  <Style Selector="TextBlock.appearance-title">
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Opacity" Value="0.8" />
+  </Style>
+  <Style Selector="ListBox.mode-chips">
+    <Setter Property="Background" Value="{DynamicResource StudioBackground}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+  <Style Selector="ListBox.mode-chips ListBoxItem">
+    <Setter Property="Padding" Value="9,4" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="MinHeight" Value="28" />
+    <Setter Property="CornerRadius" Value="6" />
+  </Style>
+  <Style Selector="Button.palette-card">
+    <Setter Property="Background" Value="{DynamicResource StudioBackground}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Padding" Value="9" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="Transitions">
+      <Transitions><BrushTransition Property="BorderBrush" Duration="0:0:0.14" /></Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="Button.palette-card:hover /template/ ContentPresenter">
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioAccent}" />
+  </Style>
+  <Style Selector="Border.palette-badge">
+    <Setter Property="Background" Value="{DynamicResource StudioAccent}" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="VerticalAlignment" Value="Top" />
+    <Setter Property="Margin" Value="0,0,0,-4" />
+  </Style>
+  <Style Selector="Border.palette-badge TextBlock">
+    <Setter Property="Foreground" Value="White" />
+  </Style>
+  <Style Selector="Button.palette-tool">
+    <Setter Property="Background" Value="{DynamicResource StudioSurface}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="5" />
+    <Setter Property="Width" Value="22" />
+    <Setter Property="Height" Value="22" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="FontSize" Value="11" />
+  </Style>
+  <Style Selector="Button.appearance-add">
+    <Setter Property="Background" Value="{DynamicResource StudioBackground}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="9,6" />
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+  <Style Selector="Button.appearance-add:hover">
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioAccent}" />
+    <Setter Property="Foreground" Value="{DynamicResource StudioAccent}" />
+  </Style>
 </Styles>

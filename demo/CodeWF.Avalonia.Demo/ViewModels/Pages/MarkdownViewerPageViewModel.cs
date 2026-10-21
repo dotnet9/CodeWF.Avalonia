@@ -100,7 +100,7 @@ public class MarkdownViewerPageViewModel : ReactiveObject
         MarkdownTypographyThemes.WeChatFormat,
     ];
 
-    public string[] SizeOptions { get; } = [MarkdownTypographySizes.Normal, MarkdownTypographySizes.Compact];
+    public string[] SizeOptions { get; } = [MarkdownTypographySizes.Compact, MarkdownTypographySizes.Normal, MarkdownTypographySizes.Relaxed];
 
     public void Apply() => AppliedMarkdown = Source;
 

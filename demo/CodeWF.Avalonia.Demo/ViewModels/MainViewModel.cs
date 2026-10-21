@@ -66,6 +66,9 @@ public partial class MainViewModel : ReactiveObject, IDisposable
         Palettes = new ObservableCollection<AppearanceOption>(AppearanceOption.CreateAll(_themeController));
         _selectedPalette = Palettes[0];
         CyclePaletteCommand = ReactiveCommand.Create(() => { SelectedPalette = Palettes[(Palettes.IndexOf(SelectedPalette) + 1) % Palettes.Count]; });
+        AddPaletteCommand = ReactiveCommand.Create(AddUserPalette);
+        EditUserPaletteCommand = ReactiveCommand.Create<AppearanceOption>(EditUserPalette);
+        RemoveUserPaletteCommand = ReactiveCommand.Create<AppearanceOption>(RemoveUserPalette);
 
         Cultures = new ObservableCollection<CultureOption>
         {
@@ -244,6 +247,101 @@ public partial class MainViewModel : ReactiveObject, IDisposable
     public string LogFolder => DemoBootstrapper.LogFolder;
 
     public ReactiveCommand<RxVoid, RxVoid> CyclePaletteCommand { get; }
+
+    /// <summary>视图注入的新增/编辑配色对话框钩子：返回 true 表示确认提交草稿。</summary>
+    public Func<UserPaletteDraft, bool>? PaletteDialogHandler { get; set; }
+
+    public ReactiveCommand<RxVoid, RxVoid> AddPaletteCommand { get; private set; } = null!;
+
+    public ReactiveCommand<AppearanceOption, RxVoid> EditUserPaletteCommand { get; private set; } = null!;
+
+    public ReactiveCommand<AppearanceOption, RxVoid> RemoveUserPaletteCommand { get; private set; } = null!;
+
+    /// <summary>新增配色：对话框收集名称与 8 基色，注册表 upsert 后应用。</summary>
+    private void AddUserPalette()
+    {
+        if (_themeController is null) return;
+        var draft = new UserPaletteDraft();
+        if (PaletteDialogHandler?.Invoke(draft) != true) return;
+        if (!draft.IsValid)
+        {
+            Notify(DemoNotificationKind.Warning, T(DemoResources.Shell.PaletteNameRequired), T(DemoResources.Shell.PaletteInvalidColor));
+            return;
+        }
+
+        var key = NextUserKey(draft.Name);
+        _themeController.Registry.Register(new StudioPaletteRegistry.UserPalette(
+            key, draft.Name.Trim(), "Custom",
+            draft.Colors[0], draft.Colors[1], draft.Colors[2], draft.Colors[3],
+            draft.Colors[4], draft.Colors[5], draft.Colors[6], draft.Colors[7]));
+        RebuildPalettes(key);
+        Notify(DemoNotificationKind.Success, string.Format(System.Globalization.CultureInfo.CurrentCulture,
+            L.Instance.GetResource(DemoResources.Shell.PaletteSavedFormat), draft.Name.Trim()));
+    }
+
+    /// <summary>编辑用户配色（内置九套不可编辑）。</summary>
+    private void EditUserPalette(AppearanceOption option)
+    {
+        if (_themeController is null || !option.IsUser) return;
+        var definition = _themeController.Registry.Find(option.Key);
+        if (definition is null) return;
+        var draft = new UserPaletteDraft(
+            key: option.Key,
+            name: definition.Name,
+            colors:
+            [
+                definition.Light.Paper, definition.Light.Surface, definition.Light.Ink, definition.Light.Accent,
+                definition.Dark.Paper, definition.Dark.Surface, definition.Dark.Ink, definition.Dark.Accent,
+            ],
+            labels:
+            [
+                "Demo.Shell.ColorLightPaper", "Demo.Shell.ColorLightSurface", "Demo.Shell.ColorLightInk", "Demo.Shell.ColorLightAccent",
+                "Demo.Shell.ColorDarkPaper", "Demo.Shell.ColorDarkSurface", "Demo.Shell.ColorDarkInk", "Demo.Shell.ColorDarkAccent",
+            ]);
+        if (PaletteDialogHandler?.Invoke(draft) != true) return;
+        if (!draft.IsValid)
+        {
+            Notify(DemoNotificationKind.Warning, T(DemoResources.Shell.PaletteNameRequired), T(DemoResources.Shell.PaletteInvalidColor));
+            return;
+        }
+
+        _themeController.Registry.Register(new StudioPaletteRegistry.UserPalette(
+            option.Key, draft.Name.Trim(), "Custom",
+            draft.Colors[0], draft.Colors[1], draft.Colors[2], draft.Colors[3],
+            draft.Colors[4], draft.Colors[5], draft.Colors[6], draft.Colors[7]));
+        RebuildPalettes(option.Key);
+        Notify(DemoNotificationKind.Success, string.Format(System.Globalization.CultureInfo.CurrentCulture,
+            L.Instance.GetResource(DemoResources.Shell.PaletteSavedFormat), draft.Name.Trim()));
+    }
+
+    /// <summary>删除用户配色（内置九套不可删除；删除当前配色时回落默认）。</summary>
+    private void RemoveUserPalette(AppearanceOption option)
+    {
+        if (_themeController is null || !option.IsUser || !_themeController.Registry.Remove(option.Key)) return;
+        RebuildPalettes(null);
+        Notify(DemoNotificationKind.Info, string.Format(System.Globalization.CultureInfo.CurrentCulture,
+            L.Instance.GetResource(DemoResources.Shell.PaletteRemovedFormat), option.Title));
+    }
+
+    /// <summary>按名称生成唯一 user:* 键。</summary>
+    private string NextUserKey(string name)
+    {
+        var slug = "user:" + System.Text.RegularExpressions.Regex.Replace(name.Trim().ToLowerInvariant(), "[^a-z0-9一-鿿]+", "-").Trim('-');
+        var candidate = slug;
+        for (var i = 2; _themeController!.Registry.Find(candidate) is not null; i++) candidate = slug + "-" + i;
+        return candidate;
+    }
+
+    /// <summary>重建配色集合（保留选择；key 为 null 或已删时回落默认）并应用。</summary>
+    private void RebuildPalettes(string? selectKey)
+    {
+        var selectedKey = selectKey ?? SelectedPalette.Key;
+        Palettes.Clear();
+        foreach (var option in AppearanceOption.CreateAll(_themeController!)) Palettes.Add(option);
+        SelectedPalette = Palettes.FirstOrDefault(p => p.Key == selectedKey)
+            ?? Palettes.FirstOrDefault(p => p.Key == StudioPalettes.DefaultKey)
+            ?? Palettes[0];
+    }
 
     public ObservableCollection<AppearanceOption> Palettes { get; }
 

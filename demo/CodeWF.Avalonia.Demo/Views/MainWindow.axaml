@@ -39,26 +39,63 @@
   </codewf:CodeWFWindow.LeftContent>
   <codewf:CodeWFWindow.RightContent>
     <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="0,0,8,0">
-      <ListBox Classes="studio-palettes" ItemsSource="{Binding Palettes}"
-               SelectedItem="{Binding SelectedPalette}" ToolTip.Tip="{codewf:I18n Demo.Shell.Palette}">
-        <ListBox.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate></ListBox.ItemsPanel>
-        <ListBox.ItemTemplate>
-          <DataTemplate x:DataType="vm:AppearanceOption">
-            <Ellipse Width="13" Height="13" Fill="{Binding Swatch}" ToolTip.Tip="{Binding Title}" />
-          </DataTemplate>
-        </ListBox.ItemTemplate>
-      </ListBox>
-      <ThemeVariantScope x:Name="TitleBarThemeScope"
-                         RequestedThemeVariant="{Binding ThemeModeIndex, Mode=TwoWay, Converter={x:Static codewf:StudioThemeModeConverter.Instance}}">
-        <ThemeVariantScope.Resources>
-          <TextBlock x:Key="STRING_THEME_TOGGLE_SYSTEM" Text="{codewf:I18n Demo.Shell.GlobalSettings.SystemMode}" />
-          <TextBlock x:Key="STRING_THEME_TOGGLE_LIGHT" Text="{codewf:I18n Demo.Shell.GlobalSettings.LightMode}" />
-          <TextBlock x:Key="STRING_THEME_TOGGLE_DARK" Text="{codewf:I18n Demo.Shell.GlobalSettings.DarkMode}" />
-        </ThemeVariantScope.Resources>
-        <u:ThemeToggleButton x:Name="TitleBarThemeToggle" Width="30" Height="30" IsThreeState="True"
-                             TargetScope="{Binding #TitleBarThemeScope}"
-                             ToolTip.Tip="{codewf:I18n Demo.Shell.GlobalSettings.ModeLabel}" />
-      </ThemeVariantScope>
+      <!--  外观菜单（原型 appearance-menu 同构）：明暗三选 + 配色九宫格（推荐置顶 + 8 圆点卡 + 用户卡 ✎/× + 新增配色）  -->
+      <ToggleButton x:Name="AppearanceButton" Classes="qk-btn"
+                    ToolTip.Tip="{codewf:I18n Demo.Shell.AppearanceMenu}">
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <PathIcon Width="15" Height="15" Data="{DynamicResource SemiIconColorPalette}" />
+          <TextBlock Text="{codewf:I18n Demo.Shell.AppearanceMenu}" FontSize="12" VerticalAlignment="Center" />
+        </StackPanel>
+      </ToggleButton>
+      <Popup PlacementTarget="{Binding #AppearanceButton}" Placement="Bottom" VerticalOffset="8"
+             IsLightDismissEnabled="True" IsEnabled="{Binding #AppearanceButton.IsChecked}">
+        <Border Classes="appearance-choices" Width="324">
+          <StackPanel Spacing="10">
+            <TextBlock Classes="appearance-title" Text="{codewf:I18n Demo.Shell.GlobalSettings.ModeLabel}" />
+            <ListBox Classes="mode-chips" SelectedIndex="{Binding ThemeModeIndex}" ItemsSource="{Binding ThemeModes}" />
+            <TextBlock Classes="appearance-title" Text="{codewf:I18n Demo.Shell.PalettesTitle}" />
+            <ScrollViewer MaxHeight="420" HorizontalScrollBarVisibility="Disabled">
+              <ItemsControl ItemsSource="{Binding Palettes}">
+                <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="3" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:AppearanceOption">
+                    <Panel Margin="0,0,6,6">
+                      <Button Classes="palette-card" Click="OnPaletteCardClick" Tag="{Binding}">
+                        <StackPanel Spacing="5">
+                          <Panel HorizontalAlignment="Left">
+                            <ItemsControl ItemsSource="{Binding SwatchDots}">
+                              <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="2" Columns="4" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                              <ItemsControl.ItemTemplate>
+                                <DataTemplate><Ellipse Width="12" Height="12" Margin="1" Fill="{Binding}" /></DataTemplate>
+                              </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Border Classes="palette-badge" IsVisible="{Binding IsRecommended}">
+                              <TextBlock Text="{codewf:I18n Demo.Shell.Pick}" FontSize="9" FontWeight="SemiBold" Margin="4,1" />
+                            </Border>
+                          </Panel>
+                          <TextBlock Text="{Binding Title}" FontSize="12" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                          <TextBlock Text="{Binding Note}" FontSize="10" Opacity="0.72" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                      </Button>
+                      <StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                  IsVisible="{Binding IsUser}">
+                        <Button Classes="qk-btn palette-tool" Content="✎" ToolTip.Tip="{codewf:I18n Demo.Shell.EditPalette}"
+                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).EditUserPaletteCommand}"
+                                CommandParameter="{Binding}" />
+                        <Button Classes="qk-btn palette-tool" Content="×" ToolTip.Tip="{codewf:I18n Demo.Shell.RemovePalette}"
+                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).RemoveUserPaletteCommand}"
+                                CommandParameter="{Binding}" />
+                      </StackPanel>
+                    </Panel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+            <Button Classes="appearance-add" Content="{codewf:I18n Demo.Shell.AddPalette}" Command="{Binding AddPaletteCommand}"
+                    HorizontalAlignment="Stretch" />
+          </StackPanel>
+        </Border>
+      </Popup>
       <ComboBox x:Name="TitleBarLanguageSelector" Width="50" MinHeight="0" Height="30" Padding="6,0"
                 ItemsSource="{Binding Cultures}" SelectedItem="{Binding SelectedCulture}"
                 HorizontalContentAlignment="Left" ToolTip.Tip="{codewf:I18n Demo.Shell.GlobalSettings.LanguageLabel}">
