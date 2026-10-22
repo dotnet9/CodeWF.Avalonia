@@ -98,13 +98,6 @@ internal sealed class ListRenderer : IMarkdownBlockRenderer
             context.AttachTaskMarkerInteraction(checkBox, item.Span.Start);
         }
 
-        var marker = new Border
-        {
-            Child = checkBox,
-            MinWidth = markerWidth,
-            VerticalAlignment = VerticalAlignment.Top
-        };
-        context.AddMarkdownClass(marker, MarkdownStyleKeys.ListMarker);
         // 对齐原型任务项：复选框左侧保留列表圆点（• □ 文案）。
         var bullet = context.CreateSelectableText(MarkdownStyleKeys.ListMarker);
         bullet.Text = "•";
@@ -116,14 +109,14 @@ internal sealed class ListRenderer : IMarkdownBlockRenderer
         var pair = new StackPanel { Orientation = Orientation.Horizontal, MinWidth = markerWidth };
         pair.Children.Add(bullet);
         pair.Children.Add(checkBox);
-        var styledMarker = new Border
+        var marker = new Border
         {
             Child = pair,
             MinWidth = markerWidth,
             VerticalAlignment = VerticalAlignment.Top
         };
-        context.AddMarkdownClass(styledMarker, MarkdownStyleKeys.ListMarker);
-        return styledMarker;
+        context.AddMarkdownClass(marker, MarkdownStyleKeys.ListMarker);
+        return marker;
     }
 
     private static SelectableTextBlock CreateListMarker(string text, double markerWidth, IMarkdownRenderContext context)
