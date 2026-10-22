@@ -452,7 +452,7 @@ public class MarkdownThemes : Styles
         }
 
         // 规则 §11：尺寸档只提供正文基准（13/15/17），标题等按主题的相对比例等比缩放。
-        if (ArticleTypographyCatalog.Find(typographyTheme) is { } article)
+        if (ArticleTypographyResolver.Find(typographyTheme) is { } article)
         {
             var baseSize = normalizedSize switch
             {

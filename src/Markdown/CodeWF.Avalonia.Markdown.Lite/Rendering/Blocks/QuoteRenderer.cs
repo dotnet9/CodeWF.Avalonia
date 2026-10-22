@@ -23,7 +23,7 @@ internal sealed class QuoteRenderer : IMarkdownBlockRenderer
         context.AddMarkdownClass(border, MarkdownStyleKeys.Quote);
         context.BindTheme(border, Border.BorderBrushProperty, MarkdownViewer.BorderLineBrushProperty, BindingPriority.Style);
         context.BindTheme(border, Border.BackgroundProperty, MarkdownViewer.QuoteBackgroundBrushProperty);
-        var article = context is MarkdownViewer viewer ? ArticleTypographyCatalog.Find(viewer.TypographyTheme) : null;
+        var article = context is MarkdownViewer viewer ? ArticleTypographyResolver.Find(viewer.TypographyTheme) : null;
         if (article is not null) border.Bind(Border.BorderBrushProperty, border.GetResourceObservable("CodeWFMarkdownQuoteBorderBrush"));
 
         var stack = new StackPanel { Orientation = Orientation.Vertical };

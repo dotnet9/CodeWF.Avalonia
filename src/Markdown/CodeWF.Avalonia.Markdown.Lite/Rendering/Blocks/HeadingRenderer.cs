@@ -43,7 +43,7 @@ internal sealed class HeadingRenderer : IMarkdownBlockRenderer
 
         context.AttachLinkInteraction(textBlock, heading.Inline, false);
 
-        if (context is MarkdownViewer viewer && ArticleTypographyCatalog.Find(viewer.TypographyTheme) is { } article)
+        if (context is MarkdownViewer viewer && ArticleTypographyResolver.Find(viewer.TypographyTheme) is { } article)
         {
         var prefix = "CodeWFMarkdownHeading" + heading.Level;
         border.Bind(Layoutable.MarginProperty, border.GetResourceObservable(prefix + "Margin"));
