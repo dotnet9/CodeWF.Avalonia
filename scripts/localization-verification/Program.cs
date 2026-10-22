@@ -69,8 +69,7 @@ manager.CultureChanged += OnCultureChanged;
 try
 {
     // 在同一批真实模板上连续切换主题，检查控件资源不会停留在 Semi 默认蓝色。
-    foreach (var variant in Enum.GetValues<StudioPalette>().SelectMany(palette =>
-                 new[] { StudioTheme.GetVariant(palette, false), StudioTheme.GetVariant(palette, true) }))
+    foreach (var variant in StudioPalettes.All.SelectMany(palette => new[] { StudioTheme.GetVariant(palette.Key, false), StudioTheme.GetVariant(palette.Key, true) }))
     {
         window.RequestedThemeVariant = variant;
         Dispatcher.UIThread.RunJobs();
@@ -151,10 +150,10 @@ try
             manager.Culture = CultureInfo.GetCultureInfo(culture);
             Require(manager.GetResource(DemoKeys.Shell.Ready) != DemoKeys.Shell.Ready,
                 "Catalog rendering uses the real host translations in " + culture);
-            foreach (var palette in Enum.GetValues<StudioPalette>())
+            foreach (var palette in StudioPalettes.All)
             foreach (var dark in new[] { false, true })
             {
-                window.RequestedThemeVariant = StudioTheme.GetVariant(palette, dark);
+                window.RequestedThemeVariant = StudioTheme.GetVariant(palette.Key, dark);
                 Dispatcher.UIThread.RunJobs();
                 window.UpdateLayout();
                 bitmap.Render(window);

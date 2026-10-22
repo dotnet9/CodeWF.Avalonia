@@ -31,8 +31,8 @@ internal static class DemoPaletteVerification
         Directory.CreateDirectory(output);
         var failures = new List<string>();
         var measurements = new List<string> { "mode\tstate\tforeground\tbackground\tcontrast" };
-        var modes = Enum.GetValues<StudioPalette>().SelectMany(palette => new[] { false, true }
-            .Select(dark => (Palette: palette, Dark: dark, Name: palette + (dark ? "-dark" : "-light")))).ToArray();
+        var modes = StudioPalettes.All.SelectMany(palette => new[] { false, true }
+            .Select(dark => (Palette: palette.Key, Dark: dark, Name: palette.Key + (dark ? "-dark" : "-light")))).ToArray();
         var shell = new MainWindow();
         var model = (MainViewModel)shell.DataContext!;
         var scene = new MarkdownFlowPage();
@@ -66,7 +66,7 @@ internal static class DemoPaletteVerification
             foreach (var mode in modes)
             {
                 var previousFailures = failures.Count;
-                model.SelectedPalette = model.Palettes.Single(palette => palette.Palette == mode.Palette);
+                model.SelectedPalette = model.Palettes.Single(palette => palette.Key == mode.Palette);
                 model.IsDarkMode = mode.Dark;
                 var variant = StudioTheme.GetVariant(mode.Palette, mode.Dark);
                 foreach (var window in new Window[] { shell, sceneWindow, blocksWindow, sampleOwner, custom, extended })
@@ -267,7 +267,7 @@ internal static class DemoPaletteVerification
                         model.SelectedCulture = model.Cultures.Single(option => option.Name == culture);
                         foreach (var mode in modes)
                         {
-                            model.SelectedPalette = model.Palettes.Single(palette => palette.Palette == mode.Palette);
+                            model.SelectedPalette = model.Palettes.Single(palette => palette.Key == mode.Palette);
                             model.IsDarkMode = mode.Dark;
                             shell.RequestedThemeVariant = StudioTheme.GetVariant(mode.Palette, mode.Dark);
                             Pump(shell);
