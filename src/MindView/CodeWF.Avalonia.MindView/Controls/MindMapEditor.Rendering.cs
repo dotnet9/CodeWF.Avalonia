@@ -38,6 +38,15 @@ public partial class MindMapEditor
             ApplyTheme();
             RecreateNodeChrome();
         }
+        else if (change.Property == LayoutKindProperty)
+        {
+            ArrangeNodes();
+        }
+        else if (change.Property == StyleKindProperty)
+        {
+            RecreateNodeChrome();
+            UpdateConnectors();
+        }
         else if (change.Property == ControllerProperty)
         {
             Rebuild();

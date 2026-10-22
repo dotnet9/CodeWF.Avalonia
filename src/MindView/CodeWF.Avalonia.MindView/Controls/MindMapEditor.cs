@@ -28,6 +28,12 @@ public partial class MindMapEditor : UserControl
 
     public Color? AccentColor { get => GetValue(AccentColorProperty); set => SetValue(AccentColorProperty, value); }
 
+    public static readonly StyledProperty<MindMapLayoutKind> LayoutKindProperty =
+        AvaloniaProperty.Register<MindMapEditor, MindMapLayoutKind>(nameof(LayoutKind), MindMapLayoutKind.Right);
+
+    public static readonly StyledProperty<MindMapStyleKind> StyleKindProperty =
+        AvaloniaProperty.Register<MindMapEditor, MindMapStyleKind>(nameof(StyleKind), MindMapStyleKind.Quiet);
+
     public static readonly StyledProperty<bool> IsDarkThemeProperty =
         AvaloniaProperty.Register<MindMapEditor, bool>(nameof(IsDarkTheme));
 
@@ -425,6 +431,18 @@ public partial class MindMapEditor : UserControl
         private set => SetAndRaise(ViewportBoundsProperty, ref _viewportBounds, value);
     }
 
+    public MindMapLayoutKind LayoutKind
+    {
+        get => GetValue(LayoutKindProperty);
+        set => SetValue(LayoutKindProperty, value);
+    }
+
+    public MindMapStyleKind StyleKind
+    {
+        get => GetValue(StyleKindProperty);
+        set => SetValue(StyleKindProperty, value);
+    }
+
     /// <summary>
     /// 按当前树结构重新计算节点坐标。未提供 Controller 时，控件的内置结构操作会自动调用它。
     /// </summary>
@@ -440,7 +458,8 @@ public partial class MindMapEditor : UserControl
             AssignMissingColors(root);
         }
 
-        MindMapTreeLayout.Arrange(Roots);
+        MindMapLayout.Arrange(Roots, LayoutKind);
+        UpdateConnectors();
     }
 
     /// <summary>

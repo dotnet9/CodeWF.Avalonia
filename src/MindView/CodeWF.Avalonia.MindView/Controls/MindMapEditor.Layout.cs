@@ -21,14 +21,22 @@ public partial class MindMapEditor
 
     private void UpdateConnectors()
     {
+        var vertical = LayoutKind is MindMapLayoutKind.Down or MindMapLayoutKind.Outline
+            or MindMapLayoutKind.Fishbone or MindMapLayoutKind.Radial;
         foreach (var connector in _connectors)
         {
             var parentSize = GetRenderedNodeSize(connector.Parent);
             var childSize = GetRenderedNodeSize(connector.Child);
-            var start = GetConnectorStart(connector.Parent, parentSize);
-            var end = GetConnectorEnd(connector.Child, childSize);
+            var start = vertical
+                ? new Point(connector.Parent.X + parentSize.Width / 2,
+                    connector.Child.Y >= connector.Parent.Y ? connector.Parent.Y + parentSize.Height : connector.Parent.Y)
+                : GetConnectorStart(connector.Parent, parentSize);
+            var end = vertical
+                ? new Point(connector.Child.X + childSize.Width / 2,
+                    connector.Child.Y >= connector.Parent.Y ? connector.Child.Y : connector.Child.Y + childSize.Height)
+                : GetConnectorEnd(connector.Child, childSize);
 
-            connector.Path.Data = CreateConnectorGeometry(start, end);
+            connector.Path.Data = CreateConnectorGeometry(start, end, vertical);
         }
     }
 
@@ -93,7 +101,73 @@ public partial class MindMapEditor
         return MindMapLayoutMetrics.EstimateNodeSize(node, GetNodeLevel(node), metrics.Placeholder);
     }
 
+    /// <summary>样式层：在主题度量之上叠加六种风格变体（清雅为默认，直接透传）。</summary>
     private NodeMetrics GetNodeMetrics(MindMapNode node)
+    {
+        var metrics = BuildNodeMetrics(node);
+        if (StyleKind == MindMapStyleKind.Quiet) return metrics;
+        var level = GetNodeLevel(node);
+        if (level <= 1) return metrics;
+        var accent = GetNodeAccentColor(node, "#2563EB");
+        switch (StyleKind)
+        {
+            case MindMapStyleKind.Mono:
+            {
+                var gray = IsDarkTheme ? Color.Parse("#9CA3AF") : Color.Parse("#6B7280");
+                return metrics with
+                {
+                    Background = level == 2 ? CreateBranchBackgroundBrush(gray) : Brushes.Transparent,
+                    BorderBrush = CreateAccentBrush(gray, 0.55),
+                    HoverBackground = level == 2 ? CreateBranchBackgroundBrush(gray, isHover: true) : metrics.HoverBackground,
+                };
+            }
+            case MindMapStyleKind.Colorful:
+                return metrics with
+                {
+                    Background = level == 2 ? new SolidColorBrush(accent) : TintBrush(accent, 0.16),
+                    Foreground = level == 2 ? ContrastText(accent) : metrics.Foreground,
+                };
+            case MindMapStyleKind.Outline:
+                return metrics with
+                {
+                    Background = Brushes.Transparent,
+                    BorderBrush = new SolidColorBrush(accent),
+                    BorderThickness = new Thickness(level == 2 ? 1.4 : 1),
+                    CornerRadius = new CornerRadius(level == 2 ? 8 : 5),
+                    BoxShadow = default,
+                };
+            case MindMapStyleKind.Capsule:
+                return metrics with
+                {
+                    CornerRadius = new CornerRadius(metrics.MinHeight / 2),
+                    Padding = new Thickness(metrics.Padding.Left + 6, metrics.Padding.Top),
+                };
+            case MindMapStyleKind.Underline:
+                return metrics with
+                {
+                    Background = Brushes.Transparent,
+                    BorderBrush = new SolidColorBrush(accent),
+                    BorderThickness = new Thickness(0, 0, 0, level == 2 ? 2.4 : 1.6),
+                    CornerRadius = new CornerRadius(0),
+                    BoxShadow = default,
+                };
+            default: return metrics;
+        }
+    }
+
+    private static IBrush TintBrush(Color accent, double ratio)
+    {
+        const int target = 255;
+        return new SolidColorBrush(Color.FromRgb(
+            (byte)(accent.R + (target - accent.R) * ratio),
+            (byte)(accent.G + (target - accent.G) * ratio),
+            (byte)(accent.B + (target - accent.B) * ratio)));
+    }
+
+    private static IBrush ContrastText(Color accent) =>
+        accent.R * 0.299 + accent.G * 0.587 + accent.B * 0.114 > 150 ? Brushes.Black : Brushes.White;
+
+    private NodeMetrics BuildNodeMetrics(MindMapNode node)
     {
         var level = GetNodeLevel(node);
         if (level <= 1)
@@ -167,10 +241,17 @@ public partial class MindMapEditor
             SelectedBoxShadow: GetResourceBoxShadows(MindViewStyleKeys.LeafSelectedBoxShadowResource, IsDarkTheme ? "0 3 12 0 #30000000" : "0 3 12 0 #14000000"));
     }
 
-    private static Geometry CreateConnectorGeometry(Point start, Point end)
+    private Geometry CreateConnectorGeometry(Point start, Point end, bool straight = false)
     {
         var geometry = new StreamGeometry();
         using var context = geometry.Open();
+        if (straight)
+        {
+            context.BeginFigure(start, isFilled: false);
+            context.LineTo(end);
+            context.EndFigure(false);
+            return geometry;
+        }
         var distance = Math.Max(32, end.X - start.X);
         var controlOffset = distance * 0.55;
         context.BeginFigure(start, isFilled: false);

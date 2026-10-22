@@ -11,10 +11,10 @@ public static partial class MindMapDocumentCodec
     private const double DrawIoPageMinHeight = 1100;
     private const double DrawIoPagePadding = 120;
 
-    public static string ToDrawIo(MindMapNode root)
+    public static string ToDrawIo(MindMapNode root, MindMapLayoutKind layoutKind = MindMapLayoutKind.Right)
     {
         var exportRoot = CloneDrawIoNode(root);
-        MindMapTreeLayout.Arrange([exportRoot]);
+        MindMapLayout.Arrange([exportRoot], layoutKind);
 
         var cells = new List<XElement>
         {
