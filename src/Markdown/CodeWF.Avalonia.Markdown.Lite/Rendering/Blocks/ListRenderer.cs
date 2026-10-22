@@ -105,7 +105,25 @@ internal sealed class ListRenderer : IMarkdownBlockRenderer
             VerticalAlignment = VerticalAlignment.Top
         };
         context.AddMarkdownClass(marker, MarkdownStyleKeys.ListMarker);
-        return marker;
+        // 对齐原型任务项：复选框左侧保留列表圆点（• □ 文案）。
+        var bullet = context.CreateSelectableText(MarkdownStyleKeys.ListMarker);
+        bullet.Text = "•";
+        bullet.MinWidth = 14;
+        bullet.TextAlignment = TextAlignment.Right;
+        bullet.VerticalAlignment = VerticalAlignment.Top;
+        context.BindTheme(bullet, SelectableTextBlock.ForegroundProperty, MarkdownViewer.AccentBrushProperty);
+        context.BindTheme(bullet, SelectableTextBlock.FontFamilyProperty, MarkdownViewer.ContentFontFamilyProperty);
+        var pair = new StackPanel { Orientation = Orientation.Horizontal, MinWidth = markerWidth };
+        pair.Children.Add(bullet);
+        pair.Children.Add(checkBox);
+        var styledMarker = new Border
+        {
+            Child = pair,
+            MinWidth = markerWidth,
+            VerticalAlignment = VerticalAlignment.Top
+        };
+        context.AddMarkdownClass(styledMarker, MarkdownStyleKeys.ListMarker);
+        return styledMarker;
     }
 
     private static SelectableTextBlock CreateListMarker(string text, double markerWidth, IMarkdownRenderContext context)
