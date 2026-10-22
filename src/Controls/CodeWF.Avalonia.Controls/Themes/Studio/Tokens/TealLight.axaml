@@ -1,25 +1,25 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Color x:Key="StudioPaperColor">#FBFEFD</Color>
-    <Color x:Key="StudioHoverColor">#e2edea</Color>
+    <Color x:Key="StudioPaperColor">#fdfdfd</Color>
+    <Color x:Key="StudioHoverColor">#eaebea</Color>
     <SolidColorBrush x:Key="StudioHover" Color="{StaticResource StudioHoverColor}"/>
-    <Color x:Key="StudioPressedColor">#dfeeec</Color>
+    <Color x:Key="StudioPressedColor">#e0edec</Color>
     <SolidColorBrush x:Key="StudioPressed" Color="{StaticResource StudioPressedColor}"/>
-    <Color x:Key="StudioSelectedColor">#dfeeec</Color>
+    <Color x:Key="StudioSelectedColor">#e0edec</Color>
     <SolidColorBrush x:Key="StudioSelected" Color="{StaticResource StudioSelectedColor}"/>
-    <Color x:Key="StudioControlBorderColor">#ccd3d1</Color>
+    <Color x:Key="StudioControlBorderColor">#ced2d1</Color>
     <SolidColorBrush x:Key="StudioControlBorder" Color="{StaticResource StudioControlBorderColor}"/>
     <Color x:Key="StudioFocusRingColor">#0F766E</Color>
     <SolidColorBrush x:Key="StudioFocusRing" Color="{StaticResource StudioFocusRingColor}"/>
-    <Color x:Key="StudioDisabledColor">#9da8a5</Color>
+    <Color x:Key="StudioDisabledColor">#9ea7a5</Color>
     <SolidColorBrush x:Key="StudioDisabled" Color="{StaticResource StudioDisabledColor}"/>
     <!-- 颜色令牌与画刷遵循 Semi 的主题字典结构。 -->
-    <Color x:Key="StudioBackgroundColor">#f7fcfb</Color>
-    <Color x:Key="StudioSurfaceColor">#EDF7F5</Color>
-    <Color x:Key="StudioRaisedColor">#f2f5f4</Color>
-    <Color x:Key="StudioBorderColor">#dfe4e3</Color>
+    <Color x:Key="StudioBackgroundColor">#fbfbfb</Color>
+    <Color x:Key="StudioSurfaceColor">#f5f5f5</Color>
+    <Color x:Key="StudioRaisedColor">#f4f4f4</Color>
+    <Color x:Key="StudioBorderColor">#e1e3e3</Color>
     <Color x:Key="StudioTextColor">#102722</Color>
-    <Color x:Key="StudioMutedColor">#5b6c68</Color>
+    <Color x:Key="StudioMutedColor">#5c6b68</Color>
     <Color x:Key="StudioAccentColor">#0F766E</Color>
     <Color x:Key="StudioSecondaryColor">#0F766E</Color>
     <Color x:Key="StudioPrimaryColor">#0F766E</Color>
@@ -50,11 +50,11 @@
     <SolidColorBrush x:Key="SemiColorSuccess">#15803D</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorWarning">#B45309</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDanger">#d82626</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerActive">#f9f3f2</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorSuccessLight">#ebf5f0</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorWarningLight">#f6f2ec</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerLight">#f9f3f2</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerLightActive">#f9f3f2</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerActive">#fbf2f2</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorSuccessLight">#eff6f1</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWarningLight">#f9f3ee</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLight">#fbf2f2</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLightActive">#fbf2f2</SolidColorBrush>
     <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#FFFFFF</SolidColorBrush><!-- 按明暗派生 -->
     <!-- 白字操作面使用独立渐变，装饰渐变保留明亮副色。 -->
     <LinearGradientBrush x:Key="StudioActionGradient" StartPoint="0%,0%" EndPoint="100%,100%">
@@ -346,7 +346,7 @@
     <StaticResource x:Key="CodeWFLogDesktopNotificationTitleBarBorderBrush" ResourceKey="StudioBorder" />
     <StaticResource x:Key="CodeWFLogDesktopNotificationTitleForeground" ResourceKey="StudioText" />
     <StaticResource x:Key="CodeWFLogDesktopNotificationContentForeground" ResourceKey="StudioText" />
-    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationMutedForeground">#334743</SolidColorBrush>
+    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationMutedForeground">#344743</SolidColorBrush>
     <StaticResource x:Key="CodeWFLogDesktopNotificationNewLogBackground" ResourceKey="StudioPrimary" />
     <StaticResource x:Key="CodeWFLogDesktopNotificationNewLogLabelBackground" ResourceKey="StudioRaised" />
     <StaticResource x:Key="CodeWFLogDesktopNotificationNewLogLabelBorderBrush" ResourceKey="StudioBorder" />

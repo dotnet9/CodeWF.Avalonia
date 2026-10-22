@@ -1,23 +1,23 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Color x:Key="StudioPaperColor">#101012</Color>
-    <Color x:Key="StudioHoverColor">#2b2b2e</Color>
+    <Color x:Key="StudioPaperColor">#101010</Color>
+    <Color x:Key="StudioHoverColor">#2b2b2b</Color>
     <SolidColorBrush x:Key="StudioHover" Color="{StaticResource StudioHoverColor}"/>
-    <Color x:Key="StudioPressedColor">#333336</Color>
+    <Color x:Key="StudioPressedColor">#333334</Color>
     <SolidColorBrush x:Key="StudioPressed" Color="{StaticResource StudioPressedColor}"/>
-    <Color x:Key="StudioSelectedColor">#333336</Color>
+    <Color x:Key="StudioSelectedColor">#333334</Color>
     <SolidColorBrush x:Key="StudioSelected" Color="{StaticResource StudioSelectedColor}"/>
-    <Color x:Key="StudioControlBorderColor">#4b4b4d</Color>
+    <Color x:Key="StudioControlBorderColor">#4b4b4c</Color>
     <SolidColorBrush x:Key="StudioControlBorder" Color="{StaticResource StudioControlBorderColor}"/>
     <Color x:Key="StudioFocusRingColor">#D4D4D8</Color>
     <SolidColorBrush x:Key="StudioFocusRing" Color="{StaticResource StudioFocusRingColor}"/>
-    <Color x:Key="StudioDisabledColor">#6b6b6d</Color>
+    <Color x:Key="StudioDisabledColor">#6b6b6c</Color>
     <SolidColorBrush x:Key="StudioDisabled" Color="{StaticResource StudioDisabledColor}"/>
     <!-- 颜色令牌与画刷遵循 Semi 的主题字典结构。 -->
-    <Color x:Key="StudioBackgroundColor">#141416</Color>
-    <Color x:Key="StudioSurfaceColor">#1C1C1F</Color>
-    <Color x:Key="StudioRaisedColor">#1e1e20</Color>
-    <Color x:Key="StudioBorderColor">#343436</Color>
+    <Color x:Key="StudioBackgroundColor">#141414</Color>
+    <Color x:Key="StudioSurfaceColor">#1c1c1c</Color>
+    <Color x:Key="StudioRaisedColor">#1e1e1e</Color>
+    <Color x:Key="StudioBorderColor">#343435</Color>
     <Color x:Key="StudioTextColor">#F4F4F5</Color>
     <Color x:Key="StudioMutedColor">#a2a2a3</Color>
     <Color x:Key="StudioAccentColor">#D4D4D8</Color>
@@ -50,11 +50,11 @@
     <SolidColorBrush x:Key="SemiColorSuccess">#4ADE80</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorWarning">#FBBF24</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDanger">#F87171</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerActive">#432527</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorSuccessLight">#1a3526</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorWarningLight">#3a3015</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerLight">#3a2123</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerLightActive">#432527</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerActive">#432525</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorSuccessLight">#1a3524</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWarningLight">#3a3014</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLight">#3a2121</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLightActive">#432525</SolidColorBrush>
     <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#000000</SolidColorBrush><!-- 按明暗派生 -->
     <!-- 白字操作面使用独立渐变，装饰渐变保留明亮副色。 -->
     <LinearGradientBrush x:Key="StudioActionGradient" StartPoint="0%,0%" EndPoint="100%,100%">

@@ -1,0 +1,215 @@
+{
+ "welcome": {
+  "contract": [],
+  "rows": 2
+ },
+ "about": {
+  "contract": [],
+  "rows": 2
+ },
+ "searchlist": {
+  "contract": [
+   "text:r",
+   "text:r",
+   "text:r"
+  ],
+  "rows": 3
+ },
+ "transfer": {
+  "contract": [
+   "text:r",
+   "text:r"
+  ],
+  "rows": 2
+ },
+ "status-badge": {
+  "contract": [
+   "combo",
+   "text"
+  ],
+  "rows": 2
+ },
+ "status-card": {
+  "contract": [
+   "combo",
+   "number"
+  ],
+  "rows": 2
+ },
+ "guide": {
+  "contract": [
+   "text:r"
+  ],
+  "rows": 1
+ },
+ "notifications": {
+  "contract": [
+   "text"
+  ],
+  "rows": 1
+ },
+ "datagrid": {
+  "contract": [
+   "bool",
+   "number"
+  ],
+  "rows": 2
+ },
+ "colde": {
+  "contract": [
+   "text:r"
+  ],
+  "rows": 1
+ },
+ "treegrid": {
+  "contract": [
+   "bool"
+  ],
+  "rows": 1
+ },
+ "propgrid": {
+  "contract": [
+   "combo",
+   "bool",
+   "bool",
+   "number"
+  ],
+  "rows": 4
+ },
+ "log": {
+  "contract": [
+   "combo",
+   "number"
+  ],
+  "rows": 2
+ },
+ "codewfwindow": {
+  "contract": [
+   "number",
+   "number",
+   "number",
+   "bool"
+  ],
+  "rows": 4
+ },
+ "titlebar": {
+  "contract": [
+   "text"
+  ],
+  "rows": 1
+ },
+ "dock": {
+  "contract": [
+   "text:r"
+  ],
+  "rows": 1
+ },
+ "trapezoid": {
+  "contract": [
+   "text:r"
+  ],
+  "rows": 1
+ },
+ "wsp": {
+  "contract": [
+   "bool",
+   "number",
+   "number",
+   "number"
+  ],
+  "rows": 4
+ },
+ "diagonal-line": {
+  "contract": [
+   "number"
+  ],
+  "rows": 1
+ },
+ "expansion": {
+  "contract": [],
+  "rows": 2
+ },
+ "md-viewer": {
+  "contract": [
+   "combo",
+   "combo",
+   "bool",
+   "number"
+  ],
+  "rows": 4
+ },
+ "md-lite": {
+  "contract": [
+   "combo",
+   "combo"
+  ],
+  "rows": 2
+ },
+ "md-editor": {
+  "contract": [
+   "number",
+   "bool",
+   "bool"
+  ],
+  "rows": 3
+ },
+ "md-live": {
+  "contract": [
+   "combo",
+   "number"
+  ],
+  "rows": 2
+ },
+ "md-export": {
+  "contract": [
+   "combo",
+   "combo",
+   "radio"
+  ],
+  "rows": 3
+ },
+ "if": {
+  "contract": [
+   "text:r"
+  ],
+  "rows": 1
+ },
+ "switch": {
+  "contract": [
+   "text:r"
+  ],
+  "rows": 1
+ },
+ "lang": {
+  "contract": [],
+  "rows": 2
+ },
+ "flow-write": {
+  "contract": [
+   "combo",
+   "combo",
+   "bool",
+   "number"
+  ],
+  "rows": 4
+ },
+ "flow-data": {
+  "contract": [
+   "bool",
+   "number"
+  ],
+  "rows": 2
+ },
+ "flow-docs": {
+  "contract": [
+   "text:r"
+  ],
+  "rows": 1
+ },
+ "appguide": {
+  "contract": [
+   "text:r"
+  ],
+  "rows": 1
+ }
+}

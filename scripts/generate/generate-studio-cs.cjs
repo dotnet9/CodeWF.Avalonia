@@ -25,7 +25,9 @@ const STATUS = {
 };
 
 function derive(base, dark) {
-  const paper = base.paper, surface = base.surface, ink = base.ink, accent = base.accent;
+  // §5.1 画布中性化（与 palette-rules.js 同步）：paper/surface 去色温保留明度，色相只留在墨、强调与交互态。
+  const neutral = h => { const c = px(h); const l = Math.round(0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]); return toHex([l, l, l]); };
+  const paper = neutral(base.paper), surface = neutral(base.surface), ink = base.ink, accent = base.accent;
   const onPrimary = contrast('#FFFFFF', accent) > contrast('#000000', accent) ? '#FFFFFF' : '#000000';
   // 状态软底（规则 §3 组件可读性约束）：浅色态向 paper 回退、深色态向状态色加深，保证状态文字 ≥4.5。
   const softFor = (hex, alpha) => {

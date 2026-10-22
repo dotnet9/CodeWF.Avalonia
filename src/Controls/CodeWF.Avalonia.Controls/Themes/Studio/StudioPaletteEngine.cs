@@ -26,13 +26,21 @@ public static class StudioPaletteEngine
         255);
     private static Color Over(Color baseColor, Color foreground, double alpha) => Mix(baseColor, foreground, alpha);
 
+    /// <summary>§5.1 画布中性化：paper/surface 去色温、保留相对明度（海拔差不变），色相只留在墨、强调与交互态。</summary>
+    private static Color Neutralize(Color c)
+    {
+        var luma = (byte)System.Math.Round(0.2126 * c.R + 0.7152 * c.G + 0.0722 * c.B);
+        return new Color(255, luma, luma, luma);
+    }
+
     /// <summary>派生指定明暗态的全部令牌基色（键集与令牌模板的 Color/画刷字面量条目对应）。</summary>
     public static Dictionary<string, Color> Derive(string key, StudioPaletteDefinition palette, bool dark)
     {
         var mode = dark ? "dark" : "light";
         var status = StatusDefaults[mode];
-        var paper = Parse(dark ? palette.Dark.Paper : palette.Light.Paper);
-        var surface = Parse(dark ? palette.Dark.Surface : palette.Light.Surface);
+        // §5.1 画布中性化：先剥掉 paper/surface 的色温再派生，大面积画布不随色板染色。
+        var paper = Neutralize(Parse(dark ? palette.Dark.Paper : palette.Light.Paper));
+        var surface = Neutralize(Parse(dark ? palette.Dark.Surface : palette.Light.Surface));
         var ink = Parse(dark ? palette.Dark.Ink : palette.Light.Ink);
         var accent = Parse(dark ? palette.Dark.Accent : palette.Light.Accent);
 
