@@ -35,7 +35,25 @@ function derive(base, dark) {
   };
   const soft = hex => softFor(hex, dark ? 0.18 : 0.12);
   const softPressed = hex => softFor(hex, (dark ? 0.18 : 0.12) + 0.04);
+  // 渐变端点：浅 accent→白 25%，深 accent→paper 20%；与 OnPrimary 对比不足 4.5 时向 accent 收敛。
+  const gradientEnd = () => {
+    const target = dark ? paper : '#FFFFFF';
+    let w = dark ? 0.20 : 0.25, end = mix(accent, target, w);
+    while (contrast(onPrimary, end) < 4.5 && w > 0.005) { w -= 0.005; end = mix(accent, target, w); }
+    return end;
+  };
   const st = STATUS[dark ? 'dark' : 'light'];
+  // 状态色可读性（规则 §3）：对 paper 与 surface 任一不足 4.5 时，浅色态向 ink、深色态向白按 1% 步进收敛。
+  const statusFor = hex => {
+    if (contrast(hex, paper) >= 4.5 && contrast(hex, surface) >= 4.5) return hex;
+    const target = dark ? '#FFFFFF' : ink;
+    for (let step = 1; step <= 100; step++) {
+      const candidate = mix(hex, target, step / 100);
+      if (contrast(candidate, paper) >= 4.5 && contrast(candidate, surface) >= 4.5) return candidate;
+    }
+    return target;
+  };
+  const status = { danger: statusFor(st.danger), success: statusFor(st.success), warning: statusFor(st.warning), info: statusFor(st.info) };
   return {
     notificationMuted: over(paper, ink, 0.85),
     StudioBackgroundColor: mix(paper, surface, 0.30),
@@ -50,11 +68,13 @@ function derive(base, dark) {
     StudioFocusRingColor: accent,
     StudioDisabledColor: over(paper, ink, 0.40),
     StudioTextColor: ink,
+    StatusCardTopTextForeground: ink,
     StatusBadgeLeftTextForeground: dark ? '#000000' : '#FFFFFF',
-    // muted（规则 §3 派生表约束）：ink@64% 起步，对 bg/surface/raised 任一工作面不足 4.5 时按 1% 步进加深。
+    // muted（规则 §3 派生表约束）：ink@64% 起步，对 bg/surface/raised/hover 任一工作面不足 4.5 时按 1% 步进加深。
     StudioMutedColor: (() => {
       const bg = mix(paper, surface, 0.30), raised = over(paper, ink, dark ? 0.06 : 0.04);
-      const worst = m => Math.min(contrast(m, bg), contrast(m, surface), contrast(m, raised));
+      const hover = over(surface, ink, dark ? 0.07 : 0.05);
+      const worst = m => Math.min(contrast(m, bg), contrast(m, surface), contrast(m, raised), contrast(m, hover));
       let muted = over(paper, ink, 0.64);
       for (let a = 0.65; a <= 0.90 && worst(muted) < 4.5; a += 0.01) muted = over(paper, ink, a);
       return muted;
@@ -63,14 +83,10 @@ function derive(base, dark) {
     StudioSecondaryColor: accent,
     StudioPrimaryColor: accent,
     StudioGradientStartColor: accent,
-    StudioTextGradientEndColor: dark ? mix(accent, paper, 0.20) : mix(accent, '#FFFFFF', 0.25),
+    StudioTextGradientEndColor: gradientEnd(),
     StudioOnPrimary: onPrimary,
-    // 行动渐变端点（规则 §3 行动渐变端点约束）：规则值 mix(accent→paper,20%)，与 OnPrimary 对比不足 4.5 时向 accent 收敛。
-    StudioGradientEndColor: (() => {
-      let w = 0.20, end = mix(accent, paper, w);
-      while (contrast(onPrimary, end) < 4.5 && w > 0.005) { w -= 0.005; end = mix(accent, paper, w); }
-      return end;
-    })(),
+    // 行动渐变端点（规则 §3 行动渐变端点约束）：规则值混合，与 OnPrimary 对比不足 4.5 时向 accent 收敛。
+    StudioGradientEndColor: gradientEnd(),
     StudioPrimaryHover: (() => {
       const target = dark ? '#FFFFFF' : paper;
       let w = 0.08, hover = mix(accent, target, w);
@@ -78,14 +94,14 @@ function derive(base, dark) {
       return hover;
     })(),
     StudioPrimaryPressed: dark ? mix(accent, '#000000', 0.12) : mix(accent, ink, 0.10),
-    SemiColorSuccess: st.success,
-    SemiColorWarning: st.warning,
-    SemiColorDanger: st.danger,
-    SemiColorDangerActive: softPressed(st.danger),
-    SemiColorSuccessLight: soft(st.success),
-    SemiColorWarningLight: soft(st.warning),
-    SemiColorDangerLight: soft(st.danger),
-    SemiColorDangerLightActive: softPressed(st.danger),
+    SemiColorSuccess: status.success,
+    SemiColorWarning: status.warning,
+    SemiColorDanger: status.danger,
+    SemiColorDangerActive: softPressed(status.danger),
+    SemiColorSuccessLight: soft(status.success),
+    SemiColorWarningLight: soft(status.warning),
+    SemiColorDangerLight: soft(status.danger),
+    SemiColorDangerLightActive: softPressed(status.danger),
   };
 }
 

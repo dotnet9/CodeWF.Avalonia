@@ -1,6 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Media;
+using CodeWF.Avalonia.Demo.I18n;
 using CodeWF.Avalonia.Demo.ViewModels;
+using CodeWF.Toolkit.Lang;
 
 namespace CodeWF.Avalonia.Demo.Views;
 
@@ -23,7 +25,9 @@ public partial class PaletteEditDialog : Window
     {
         _draft = draft;
         InitializeComponent();
-        TitleText.Text = string.IsNullOrEmpty(draft.Key) ? "＋ 新增配色" : "✎ 编辑配色";
+        TitleText.Text = string.IsNullOrEmpty(draft.Key)
+            ? L.Instance.GetResource(ResourceKeys.Shell.AddPalette)
+            : L.Instance.GetResource(ResourceKeys.Shell.EditPalette);
         _fields = draft.Labels.Zip(draft.Colors, (label, color) => new ColorField(label, color)).ToList();
         ColorInputs.ItemsSource = _fields;
         OkButton.Click += (_, _) =>

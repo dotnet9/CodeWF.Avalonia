@@ -54,10 +54,10 @@ public static class StudioPaletteEngine
         Color StatusSoft(string hex) => StatusSoftFor(paper, Parse(hex), statusSoftAlpha, dark);
         Color StatusPressedSoft(string hex) => StatusSoftFor(paper, Parse(hex), statusSoftAlpha + 0.04, dark);
 
-        var danger = Parse(status.Danger);
-        var success = Parse(status.Success);
-        var warning = Parse(status.Warning);
-        var info = Parse(status.Info);
+        var danger = StatusColorFor(paper, surface, ink, Parse(status.Danger), dark);
+        var success = StatusColorFor(paper, surface, ink, Parse(status.Success), dark);
+        var warning = StatusColorFor(paper, surface, ink, Parse(status.Warning), dark);
+        var info = StatusColorFor(paper, surface, ink, Parse(status.Info), dark);
 
         // onAccent：白字与黑字取对比度更高者
         var onAccent = Contrast(white, accent) > Contrast(black, accent) ? white : black;
@@ -80,13 +80,14 @@ public static class StudioPaletteEngine
             ["StudioTextColor"] = ink,
             // muted：ink@64% 起步，对 bg/surface/raised 任一工作面不足 4.5 时按 1% 步进加深（规则 §3 约束）。
             ["StudioMutedColor"] = MutedFor(paper, surface, ink, dark),
+            ["StatusCardTopTextForeground"] = ink,
             ["StatusBadgeLeftTextForeground"] = dark ? Colors.Black : Colors.White,
             // 品牌交互
             ["StudioAccentColor"] = accent,
             ["StudioSecondaryColor"] = accent,
             ["StudioPrimaryColor"] = accent,
             ["StudioGradientStartColor"] = accent,
-            ["StudioTextGradientEndColor"] = Mix(accent, dark ? paper : white, dark ? 0.20 : 0.25),
+            ["StudioTextGradientEndColor"] = GradientEndFor(accent, paper, dark),
             // 状态
             ["SemiColorSuccess"] = success,
             ["SemiColorWarning"] = warning,
@@ -121,6 +122,19 @@ public static class StudioPaletteEngine
         return (System.Math.Max(la, lb) + 0.05) / (System.Math.Min(la, lb) + 0.05);
     }
 
+    /// <summary>状态色可读性（规则 §3）：对 paper 与 surface 任一不足 4.5:1 时，浅色态向 ink、深色态向白按 1% 步进收敛。</summary>
+    private static Color StatusColorFor(Color paper, Color surface, Color ink, Color status, bool dark)
+    {
+        if (Contrast(status, paper) >= 4.5 && Contrast(status, surface) >= 4.5) return status;
+        var target = dark ? Colors.White : ink;
+        for (var step = 1; step <= 100; step++)
+        {
+            var candidate = Mix(status, target, step / 100.0);
+            if (Contrast(candidate, paper) >= 4.5 && Contrast(candidate, surface) >= 4.5) return candidate;
+        }
+        return target;
+    }
+
     /// <summary>状态软底（规则 §3 组件可读性约束）：浅色态向 paper 回退、深色态向状态色加深，保证状态文字 ≥4.5:1。</summary>
     private static Color StatusSoftFor(Color paper, Color status, double alpha, bool dark)
     {
@@ -149,14 +163,15 @@ public static class StudioPaletteEngine
         return hover;
     }
 
-    /// <summary>muted：ink@64% 起步，对 bg/surface/raised 任一工作面不足 4.5:1 时按 1% 步进加深。</summary>
+    /// <summary>muted：ink@64% 起步，对 bg/surface/raised/hover 任一工作面不足 4.5:1 时按 1% 步进加深。</summary>
     private static Color MutedFor(Color paper, Color surface, Color ink, bool dark)
     {
         var background = Mix(paper, surface, 0.30);
         var raised = Over(paper, ink, dark ? 0.06 : 0.04);
+        var hover = Over(surface, ink, dark ? 0.07 : 0.05);
         var alpha = 0.64;
         var muted = Over(paper, ink, alpha);
-        while ((Contrast(muted, background) < 4.5 || Contrast(muted, surface) < 4.5 || Contrast(muted, raised) < 4.5) && alpha < 0.90)
+        while ((Contrast(muted, background) < 4.5 || Contrast(muted, surface) < 4.5 || Contrast(muted, raised) < 4.5 || Contrast(muted, hover) < 4.5) && alpha < 0.90)
         {
             alpha += 0.01;
             muted = Over(paper, ink, alpha);
@@ -164,16 +179,17 @@ public static class StudioPaletteEngine
         return muted;
     }
 
-    /// <summary>行动渐变端点：规则值 mix(accent→paper,20%)，与 OnPrimary 对比不足 4.5 时向 accent 收敛混合比例。</summary>
-    private static Color GradientEndFor(Color accent, Color paper)
+    /// <summary>行动/标题渐变端点：浅色 mix(accent→白,25%)、深色 mix(accent→paper,20%)；与 OnPrimary 对比不足 4.5 时向 accent 收敛。</summary>
+    private static Color GradientEndFor(Color accent, Color paper, bool dark)
     {
         var onPrimary = Contrast(Colors.White, accent) > Contrast(Colors.Black, accent) ? Colors.White : Colors.Black;
-        var weight = 0.20;
-        var end = Mix(accent, paper, weight);
+        var target = dark ? paper : Colors.White;
+        var weight = dark ? 0.20 : 0.25;
+        var end = Mix(accent, target, weight);
         while (Contrast(onPrimary, end) < 4.5 && weight > 0.005)
         {
             weight -= 0.005;
-            end = Mix(accent, paper, weight);
+            end = Mix(accent, target, weight);
         }
         return end;
     }
@@ -192,8 +208,8 @@ public static class StudioPaletteEngine
             ["StudioPrimaryHover"] = HoverFor(accent, paper, dark),
             // primaryPressed：浅 mix(accent→ink,10%) / 深 mix(accent→black,12%)
             ["StudioPrimaryPressed"] = Mix(accent, dark ? Colors.Black : ink, dark ? 0.12 : 0.10),
-            // 行动渐变端点（规则 §3 行动渐变端点约束）：与 OnPrimary 对比不足 4.5 时向 accent 收敛
-            ["StudioGradientEndColor"] = GradientEndFor(accent, paper),
+            // 行动渐变端点（规则 §3 行动渐变端点约束）：规则值混合，与 OnPrimary 对比不足 4.5 时向 accent 收敛
+            ["StudioGradientEndColor"] = GradientEndFor(accent, paper, dark),
             ["PgSelectedText"] = Contrast(Colors.White, accent) > Contrast(Colors.Black, accent) ? Colors.White : Colors.Black,
         };
     }

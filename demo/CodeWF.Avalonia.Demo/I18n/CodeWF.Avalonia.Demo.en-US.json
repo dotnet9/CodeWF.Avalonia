@@ -5,6 +5,8 @@
   "Demo": {
     "Shell": {
       "Palette": "Palette",
+      "Ok": "OK",
+      "Cancel": "Cancel",
       "Dark": "Dark",
       "Light": "Light",
       "Properties": "Props",
@@ -42,28 +44,28 @@
       "NavFilter": "Filter pages…",
       "NavEmpty": "No matching page",
       "Account": "Account",
+      "AppearanceMenu": "Appearance",
+      "AddPalette": "＋ Add palette",
+      "PalettesTitle": "Palettes",
+      "PaletteName": "Palette name",
+      "PaletteNameRequired": "Enter a palette name first",
+      "PaletteInvalidColor": "Colors must be #RRGGBB",
+      "Pick": "Pick",
+      "EditPalette": "Edit palette",
+      "RemovePalette": "Remove palette",
+      "PaletteSavedFormat": "Palette \"{0}\" saved and applied",
+      "PaletteRemovedFormat": "Palette \"{0}\" removed",
+      "ColorLightPaper": "Light paper",
+      "ColorLightSurface": "Light surface",
+      "ColorLightInk": "Light ink",
+      "ColorLightAccent": "Light accent",
+      "ColorDarkPaper": "Dark paper",
+      "ColorDarkSurface": "Dark surface",
+      "ColorDarkInk": "Dark ink",
+      "ColorDarkAccent": "Dark accent",
       "GlobalSettings": {
-        "AppearanceMenu": "Appearance",
-    "AddPalette": "＋ Add palette",
-    "PalettesTitle": "Palettes",
-    "PaletteName": "Palette name",
-    "PaletteNameRequired": "Enter a palette name first",
-    "PaletteInvalidColor": "Colors must be #RRGGBB",
-    "Pick": "Pick",
-    "EditPalette": "Edit palette",
-    "RemovePalette": "Remove palette",
-    "PaletteSavedFormat": "Palette \"{0}\" saved and applied",
-    "PaletteRemovedFormat": "Palette \"{0}\" removed",
-    "ColorLightPaper": "Light paper",
-    "ColorLightSurface": "Light surface",
-    "ColorLightInk": "Light ink",
-    "ColorLightAccent": "Light accent",
-    "ColorDarkPaper": "Dark paper",
-    "ColorDarkSurface": "Dark surface",
-    "ColorDarkInk": "Dark ink",
-    "ColorDarkAccent": "Dark accent",
-    "PaletteLabel": "Palette",
-        "PaletteDescription": "Eight palettes: .NET Purple, AI Aurora, AI Ember, Default, Aquatic, Desert, Dusk, and Night Sky.",
+        "PaletteLabel": "Palette",
+        "PaletteDescription": "Nine palettes: Graphite, Indigo, Teal, Pine, Sky, Amber, Crimson, Violet, and Terracotta.",
         "ModeLabel": "Mode",
         "LightMode": "Light",
         "DarkMode": "Dark",
@@ -147,15 +149,15 @@
       "CSharp": "C#"
     },
     "Palette": {
-      "Default": "Default",
-      "Aquatic": "Aquatic",
-      "Desert": "Desert",
-      "Dusk": "Dusk",
-      "NightSky": "NightSky",
-      "HighContrast": "High Contrast",
-      "DotNet": ".NET Purple",
-      "Aurora": "AI Aurora",
-      "Ember": "AI Ember"
+      "Graphite": "Graphite",
+      "Indigo": "Indigo",
+      "Teal": "Teal",
+      "Pine": "Pine",
+      "Sky": "Sky",
+      "Amber": "Amber",
+      "Crimson": "Crimson",
+      "Violet": "Violet",
+      "Terracotta": "Terracotta"
     },
     "Scene": {
       "Step.Open": "Open doc",
@@ -194,11 +196,11 @@
       },
       "MarkdownViewer": {
         "Title": "MarkdownViewer",
-        "Desc": "Full rendering pipeline: 18 typography themes, incremental rendering, block virtualization and task write-back; switch themes from the property panel."
+        "Desc": "Full rendering pipeline: 12 typography themes, incremental rendering, block virtualization and task write-back; switch themes from the property panel."
       },
       "MarkdownLite": {
         "Title": "Markdown Lite",
-        "Desc": "The Lite package ships only the rendering pipeline and 18 themes; images degrade to alt text, formulas stay raw and code blocks render in a single color."
+        "Desc": "The Lite package ships only the rendering pipeline and 12 themes; images degrade to alt text, formulas stay raw and code blocks render in a single color."
       },
       "MarkdownEditor": {
         "Title": "Markdown Editor",
@@ -275,7 +277,7 @@
     },
     "Welcome": {
       "FeaturesTitle": "Modules covered by this showcase",
-      "FeaturesMarkdown": "· Markdown: rendering (18 themes / virtualization / incremental), Lite, source editor, live editor, export and social copy",
+      "FeaturesMarkdown": "· Markdown: rendering (12 themes / virtualization / incremental), Lite, source editor, live editor, export and social copy",
       "FeaturesData": "· Data: DataGrid enhancement (three-state / natural sorting / smart tooltips), PropertyGrid panel",
       "FeaturesControls": "· Controls: CodeWFWindow, SearchListBox, Transfer, status components, Guide, column display editor",
       "FeaturesInfra": "· Infrastructure & views: logging, localization, If/Switch markup, Dock workspace, trapezoid tabs, virtualizing panel",
@@ -963,11 +965,11 @@
       },
       "MarkdownLite": {
         "View": {
-          "MarkdownLiteUsesMarkdigAndASmallerRendering": "Markdown.Lite uses Markdig and a smaller rendering pipeline for common Markdown elements. It includes the same 18 typography themes with fewer dependencies."
+          "MarkdownLiteUsesMarkdigAndASmallerRendering": "Markdown.Lite uses Markdig and a smaller rendering pipeline for common Markdown elements. It includes the same 12 typography themes with fewer dependencies."
         },
         "Properties": {
           "TypographyTheme": "Typography theme",
-          "LiteIncludesTheSame18TypographyThemesFour": "Lite includes the same 18 typography themes; four common themes are listed here.",
+          "LiteIncludesTheSame18TypographyThemesFour": "Lite includes the same 12 typography themes; four common themes are listed here.",
           "TypographySize": "Typography size"
         },
         "Source": {
@@ -975,7 +977,7 @@
           "Xaml": "<PackageReference Include=\"CodeWF.Avalonia.Markdown.Lite\" />\n\n<codewf:MarkdownViewer Markdown=\"{Binding Content}\"\n                       TypographyTheme=\"Basic\"\n                       TypographySize=\"Normal\" />"
         },
         "Samples": {
-          "Markdown": "# Markdown Lite\n\nHeadings, **bold**, *italic*, `inline code`, lists, quotes, tables, links, and code blocks.\n\n- Smaller dependency set\n- 18 typography themes\n\n| Feature | Supported |\n| --- | --- |\n| Common Markdown | Yes |\n| Export | Use full package |\n\n```csharp\nviewer.Markdown = source;\n```\n\n> A focused rendering package."
+          "Markdown": "# Markdown Lite\n\nHeadings, **bold**, *italic*, `inline code`, lists, quotes, tables, links, and code blocks.\n\n- Smaller dependency set\n- 12 typography themes\n\n| Feature | Supported |\n| --- | --- |\n| Common Markdown | Yes |\n| Export | Use full package |\n\n```csharp\nviewer.Markdown = source;\n```\n\n> A focused rendering package."
         }
       },
       "MarkdownLiveEditor": {
@@ -1020,7 +1022,7 @@
         },
         "Properties": {
           "TypographyTheme": "Typography theme",
-          "18TypographyThemesChangesRenderImmediately": "18 typography themes; changes render immediately.",
+          "18TypographyThemesChangesRenderImmediately": "12 typography themes; changes render immediately.",
           "TypographySize": "Typography size",
           "NormalSmallSmallUsesCompactTypography": "Normal / Small; Small uses compact typography.",
           "Virtualization": "Virtualization",
@@ -1029,7 +1031,7 @@
           "EnableVirtualizationAboveThisBlockCount": "Enable virtualization above this block count."
         },
         "Source": {
-          "CSharp": "viewer.TypographyTheme = MarkdownTypographyThemes.GeekBlack;\nviewer.TypographySize = MarkdownTypographySizes.Small;\n\nMarkdownThemes.OverrideTypographyResources(Application.Current, MarkdownTypographyThemes.Verdant);\n\nviewer.TaskWriteBackRequested += (_, e) =>\n    editor.ApplyExternalEdit(e.Markdown);\nvar parseMs = viewer.LastParseDuration.TotalMilliseconds;\nvar mode = viewer.LastRenderMode;           // Incremental / Full\nvar realized = viewer.RealizedBlockCount;",
+          "CSharp": "viewer.TypographyTheme = MarkdownTypographyThemes.GeekBlack;\nviewer.TypographySize = MarkdownTypographySizes.Compact;\n\nMarkdownThemes.OverrideTypographyResources(Application.Current, MarkdownTypographyThemes.TenderGreen);\n\nviewer.TaskWriteBackRequested += (_, e) =>\n    editor.ApplyExternalEdit(e.Markdown);\nvar parseMs = viewer.LastParseDuration.TotalMilliseconds;\nvar mode = viewer.LastRenderMode;           // Incremental / Full\nvar realized = viewer.RealizedBlockCount;",
           "Xaml": "<codewf:MarkdownViewer Markdown=\"{Binding Content}\"\n                       TypographyTheme=\"{Binding Theme}\"\n                       TypographySize=\"{Binding Size}\"\n                       EnableVirtualization=\"True\"\n                       VirtualizationThreshold=\"40\" />"
         },
         "UpdateMetrics": {
@@ -1325,7 +1327,7 @@
           "IncrementalRendering": "Incremental rendering",
           "Completed": "Completed",
           "BlockVirtualization": "Block virtualization",
-          "18TypographyThemes": "18 typography themes",
+          "18TypographyThemes": "12 typography themes",
           "PDFExport": "PDF export",
           "WordExport": "Word export",
           "RichTextPublishing": "Rich-text publishing",

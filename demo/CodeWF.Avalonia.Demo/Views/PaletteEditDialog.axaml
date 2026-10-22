@@ -3,17 +3,18 @@
         x:Class="CodeWF.Avalonia.Demo.Views.PaletteEditDialog"
         xmlns:views="using:CodeWF.Avalonia.Demo.Views"
         xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels"
+        xmlns:codewf="https://codewf.com"
         x:DataType="vm:UserPaletteDraft"
         Width="430" Height="520" CanResize="False"
         WindowStartupLocation="CenterOwner"
-        Title="编辑配色"
+        Title="{codewf:I18n Demo.Shell.EditPalette}"
         Background="{DynamicResource StudioBackground}" Foreground="{DynamicResource StudioText}">
   <Grid RowDefinitions="Auto,*,Auto" Margin="20" RowSpacing="12">
     <TextBlock x:Name="TitleText" Grid.Row="0" FontSize="15" FontWeight="SemiBold" />
     <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
       <StackPanel Spacing="10">
         <StackPanel Spacing="4">
-          <TextBlock Text="配色名称" FontSize="11" Opacity="0.75" />
+          <TextBlock Text="{codewf:I18n Demo.Shell.PaletteName}" FontSize="11" Opacity="0.75" />
           <TextBox Text="{Binding Name, Mode=TwoWay}" />
         </StackPanel>
         <ItemsControl x:Name="ColorInputs">
@@ -30,8 +31,8 @@
       </StackPanel>
     </ScrollViewer>
     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
-      <Button x:Name="CancelButton" Content="取消" MinWidth="76" />
-      <Button x:Name="OkButton" Content="确定" MinWidth="76" Classes="accent" />
+      <Button x:Name="CancelButton" Content="{codewf:I18n Demo.Shell.Cancel}" MinWidth="76" />
+      <Button x:Name="OkButton" Content="{codewf:I18n Demo.Shell.Ok}" MinWidth="76" Classes="accent" />
     </StackPanel>
   </Grid>
 </Window>

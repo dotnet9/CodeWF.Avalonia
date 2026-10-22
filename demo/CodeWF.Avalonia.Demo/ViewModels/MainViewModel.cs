@@ -326,7 +326,7 @@ public partial class MainViewModel : ReactiveObject, IDisposable
     /// <summary>按名称生成唯一 user:* 键。</summary>
     private string NextUserKey(string name)
     {
-        var slug = "user:" + System.Text.RegularExpressions.Regex.Replace(name.Trim().ToLowerInvariant(), "[^a-z0-9一-鿿]+", "-").Trim('-');
+        var slug = "user:" + System.Text.RegularExpressions.Regex.Replace(name.Trim().ToLowerInvariant(), "[^a-z0-9\\u4e00-\\u9fff]+", "-").Trim('-');
         var candidate = slug;
         for (var i = 2; _themeController!.Registry.Find(candidate) is not null; i++) candidate = slug + "-" + i;
         return candidate;

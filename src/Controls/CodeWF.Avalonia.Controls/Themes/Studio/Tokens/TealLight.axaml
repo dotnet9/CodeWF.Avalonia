@@ -19,13 +19,13 @@
     <Color x:Key="StudioRaisedColor">#f2f5f4</Color>
     <Color x:Key="StudioBorderColor">#dfe4e3</Color>
     <Color x:Key="StudioTextColor">#102722</Color>
-    <Color x:Key="StudioMutedColor">#62726f</Color>
+    <Color x:Key="StudioMutedColor">#5b6c68</Color>
     <Color x:Key="StudioAccentColor">#0F766E</Color>
     <Color x:Key="StudioSecondaryColor">#0F766E</Color>
     <Color x:Key="StudioPrimaryColor">#0F766E</Color>
     <Color x:Key="StudioGradientStartColor">#0F766E</Color>
-    <Color x:Key="StudioGradientEndColor">#25837c</Color>
-    <Color x:Key="StudioTextGradientEndColor">#4b9892</Color>
+    <Color x:Key="StudioGradientEndColor">#26837c</Color>
+    <Color x:Key="StudioTextGradientEndColor">#26837c</Color>
     <SolidColorBrush x:Key="StudioBackground" Color="{StaticResource StudioBackgroundColor}" />
     <SolidColorBrush x:Key="StudioSurface" Color="{StaticResource StudioSurfaceColor}" />
     <SolidColorBrush x:Key="StudioRaised" Color="{StaticResource StudioRaisedColor}" />
@@ -49,12 +49,12 @@
     <SolidColorBrush x:Key="StudioPrimaryPressed">#0f6e66</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorSuccess">#15803D</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorWarning">#B45309</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDanger">#DC2626</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerActive">#faf8f7</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDanger">#d82626</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerActive">#f9f3f2</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorSuccessLight">#ebf5f0</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorWarningLight">#f6f2ec</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerLight">#faf8f7</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerLightActive">#faf8f7</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLight">#f9f3f2</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLightActive">#f9f3f2</SolidColorBrush>
     <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#FFFFFF</SolidColorBrush><!-- 按明暗派生 -->
     <!-- 白字操作面使用独立渐变，装饰渐变保留明亮副色。 -->
     <LinearGradientBrush x:Key="StudioActionGradient" StartPoint="0%,0%" EndPoint="100%,100%">
@@ -242,7 +242,7 @@
     <StaticResource x:Key="StatusBadgeWarnBackground" ResourceKey="SemiColorWarningLight" />
     <StaticResource x:Key="StatusBadgeErrorBackground" ResourceKey="SemiColorDangerLight" />
     <StaticResource x:Key="StatusBadgeFatalBackground" ResourceKey="SemiColorDangerLightActive" />
-    <SolidColorBrush x:Key="StatusCardTopTextForeground">#5C6370</SolidColorBrush><!-- 状态卡内由各状态前景覆盖 -->
+    <SolidColorBrush x:Key="StatusCardTopTextForeground">#102722</SolidColorBrush><!-- 状态卡内由各状态前景覆盖 -->
     <StaticResource x:Key="StatusCardDebugBackground" ResourceKey="StudioRaised" />
     <StaticResource x:Key="StatusCardInfoBackground" ResourceKey="SemiColorSuccessLight" />
     <StaticResource x:Key="StatusCardWarnBackground" ResourceKey="SemiColorWarningLight" />

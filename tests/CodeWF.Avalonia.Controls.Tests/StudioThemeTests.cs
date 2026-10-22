@@ -114,6 +114,34 @@ public sealed class StudioThemeTests
         }
     }
 
+    /// <summary>用户配色走运行时 Fill：状态色与静态 axaml 同源，且作为文字在 paper/surface 上达标（规则 §3/§5）。</summary>
+    [Theory]
+    [MemberData(nameof(Variants))]
+    public void RuntimeFillCarriesReadableStatusColors(ThemeVariant variant)
+    {
+        var palette = StudioPalettes.All.Single(item => StudioTheme.GetVariant(item.Key, true) == variant || StudioTheme.GetVariant(item.Key, false) == variant);
+        var dark = StudioTheme.GetVariant(palette.Key, true) == variant;
+        var derived = StudioPaletteEngine.Derive(palette.Key, palette, dark);
+        foreach (var pair in StudioPaletteEngine.DeriveExtras(palette, dark)) derived[pair.Key] = pair.Value;
+        var dictionary = new global::Avalonia.Controls.ResourceDictionary();
+        StudioTokens.Fill(dictionary, derived);
+
+        foreach (var key in new[] { "SemiColorSuccess", "SemiColorWarning", "SemiColorDanger", "SemiColorDangerActive" })
+        {
+            var brush = Assert.IsType<SolidColorBrush>(dictionary[key]);
+            Assert.Equal(derived[key], brush.Color);
+        }
+
+        foreach (var key in new[] { "SemiColorSuccess", "SemiColorWarning", "SemiColorDanger" })
+        {
+            var color = Assert.IsType<SolidColorBrush>(dictionary[key]).Color;
+            var paper = derived["StudioPaperColor"];
+            var surface = derived["StudioSurfaceColor"];
+            Assert.True(Contrast(color, paper) >= 4.5, $"{variant}/{key}/paper = {Contrast(color, paper):F3}:1");
+            Assert.True(Contrast(color, surface) >= 4.5, $"{variant}/{key}/surface = {Contrast(color, surface):F3}:1");
+        }
+    }
+
     private static double Contrast(Color first, Color second)
     {
         static double Linear(byte component)
