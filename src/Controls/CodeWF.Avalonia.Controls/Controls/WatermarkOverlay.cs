@@ -16,6 +16,7 @@ public class WatermarkOverlay : Control
     public static readonly StyledProperty<FontFamily> FontFamilyProperty = AvaloniaProperty.Register<WatermarkOverlay, FontFamily>(nameof(FontFamily), FontFamily.Default);
     public static readonly StyledProperty<double> FontSizeProperty = AvaloniaProperty.Register<WatermarkOverlay, double>(nameof(FontSize), 19,
         validate: value => double.IsFinite(value) && value > 0);
+    public static readonly StyledProperty<FontWeight> FontWeightProperty = AvaloniaProperty.Register<WatermarkOverlay, FontWeight>(nameof(FontWeight), FontWeight.Normal);
     public static readonly StyledProperty<double> AngleProperty = AvaloniaProperty.Register<WatermarkOverlay, double>(nameof(Angle), -25, validate: double.IsFinite);
     public static readonly StyledProperty<Size> SpacingProperty = AvaloniaProperty.Register<WatermarkOverlay, Size>(nameof(Spacing), new Size(280, 180),
         validate: value => double.IsFinite(value.Width) && double.IsFinite(value.Height) && value.Width >= 1 && value.Height >= 1);
@@ -28,18 +29,19 @@ public class WatermarkOverlay : Control
     public IBrush? Ink { get => GetValue(InkProperty); set => SetValue(InkProperty, value); }
     public FontFamily FontFamily { get => GetValue(FontFamilyProperty); set => SetValue(FontFamilyProperty, value); }
     public double FontSize { get => GetValue(FontSizeProperty); set => SetValue(FontSizeProperty, value); }
+    public FontWeight FontWeight { get => GetValue(FontWeightProperty); set => SetValue(FontWeightProperty, value); }
     public double Angle { get => GetValue(AngleProperty); set => SetValue(AngleProperty, value); }
     public Size Spacing { get => GetValue(SpacingProperty); set => SetValue(SpacingProperty, value); }
     public Point Offset { get => GetValue(OffsetProperty); set => SetValue(OffsetProperty, value); }
 
     static WatermarkOverlay() => AffectsRender<WatermarkOverlay>(TextProperty, StrengthProperty, InkProperty,
-        FontFamilyProperty, FontSizeProperty, AngleProperty, SpacingProperty, OffsetProperty);
+        FontFamilyProperty, FontSizeProperty, FontWeightProperty, AngleProperty, SpacingProperty, OffsetProperty);
     public WatermarkOverlay() { IsHitTestVisible = false; ClipToBounds = true; }
 
     public override void Render(DrawingContext context)
     {
         if (string.IsNullOrWhiteSpace(Text) || Strength <= 0 || Ink is null) return;
-        var text = new FormattedText(Text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, new Typeface(FontFamily), FontSize, Ink);
+        var text = new FormattedText(Text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, new Typeface(FontFamily, FontStyle.Normal, FontWeight), FontSize, Ink);
         using var clip = context.PushClip(new Rect(Bounds.Size));
         using var opacity = context.PushOpacity(Strength / 100);
         // 对偏移取模，避免极端负偏移产生大量离屏绘制。
