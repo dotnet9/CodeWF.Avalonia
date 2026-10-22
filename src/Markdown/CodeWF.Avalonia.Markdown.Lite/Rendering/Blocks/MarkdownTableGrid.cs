@@ -25,8 +25,10 @@ internal sealed class MarkdownTableGrid : Grid
         }
 
         var naturalWidth = widths.Sum();
+        // 原型语义：宽表（自然宽度 ≥ 可用宽度约一半）铺满渲染区；短表保持自然宽度不拉伸。
         if (MarkdownTableLayout.GetFillAvailableWidth(this) && naturalWidth > 0 &&
-            double.IsFinite(availableSize.Width) && naturalWidth < availableSize.Width)
+            double.IsFinite(availableSize.Width) && naturalWidth < availableSize.Width &&
+            naturalWidth >= availableSize.Width * 0.45)
         {
             for (var index = 0; index < widths.Length; index++) widths[index] *= availableSize.Width / naturalWidth;
         }
