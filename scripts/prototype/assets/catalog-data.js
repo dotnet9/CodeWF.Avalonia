@@ -800,6 +800,8 @@ window.CodeWFPrototypeSettings = {
   "zh-CN": {
     "shell": {
       "Palette": "色板",
+      "Ok": "确定",
+      "Cancel": "取消",
       "Dark": "深色",
       "Light": "浅色",
       "Properties": "属性",
@@ -837,9 +839,28 @@ window.CodeWFPrototypeSettings = {
       "NavFilter": "过滤页面…",
       "NavEmpty": "没有匹配的页面",
       "Account": "账户",
+      "AppearanceMenu": "外观",
+      "AddPalette": "＋ 新增配色",
+      "PalettesTitle": "界面配色",
+      "PaletteName": "配色名称",
+      "PaletteNameRequired": "请先输入配色名称",
+      "PaletteInvalidColor": "色值需为 #RRGGBB",
+      "Pick": "推荐",
+      "EditPalette": "编辑配色",
+      "RemovePalette": "删除配色",
+      "PaletteSavedFormat": "配色「{0}」已保存并应用",
+      "PaletteRemovedFormat": "配色「{0}」已删除",
+      "ColorLightPaper": "浅 · 纸面",
+      "ColorLightSurface": "浅 · 面板",
+      "ColorLightInk": "浅 · 墨色",
+      "ColorLightAccent": "浅 · 强调",
+      "ColorDarkPaper": "深 · 纸面",
+      "ColorDarkSurface": "深 · 面板",
+      "ColorDarkInk": "深 · 墨色",
+      "ColorDarkAccent": "深 · 强调",
       "GlobalSettings": {
         "PaletteLabel": "色板",
-        "PaletteDescription": "八套配色：.NET 紫、AI 极光、AI 赤陶、默认蓝、水生、沙漠、黄昏与夜空。",
+        "PaletteDescription": "九套配色：石墨、靛蓝、青碧、松绿、天青、琥珀、绯红、紫晶与陶土。",
         "ModeLabel": "界面模式",
         "LightMode": "浅色",
         "DarkMode": "深色",
@@ -864,15 +885,15 @@ window.CodeWFPrototypeSettings = {
       "SampleErrorLog": "演示：一条错误日志"
     },
     "palettes": {
-      "Default": "默认",
-      "Aquatic": "水生",
-      "Desert": "沙漠",
-      "Dusk": "黄昏",
-      "NightSky": "夜空",
-      "HighContrast": "高对比",
-      "DotNet": ".NET 紫",
-      "Aurora": "AI 极光",
-      "Ember": "AI 暖陶"
+      "Graphite": "石墨",
+      "Indigo": "靛蓝",
+      "Teal": "青碧",
+      "Pine": "松绿",
+      "Sky": "天青",
+      "Amber": "琥珀",
+      "Crimson": "绯红",
+      "Violet": "紫晶",
+      "Terracotta": "陶土"
     },
     "language": "语言",
     "group": "外观"
@@ -880,6 +901,8 @@ window.CodeWFPrototypeSettings = {
   "en-US": {
     "shell": {
       "Palette": "Palette",
+      "Ok": "OK",
+      "Cancel": "Cancel",
       "Dark": "Dark",
       "Light": "Light",
       "Properties": "Props",
@@ -917,9 +940,28 @@ window.CodeWFPrototypeSettings = {
       "NavFilter": "Filter pages…",
       "NavEmpty": "No matching page",
       "Account": "Account",
+      "AppearanceMenu": "Appearance",
+      "AddPalette": "＋ Add palette",
+      "PalettesTitle": "Palettes",
+      "PaletteName": "Palette name",
+      "PaletteNameRequired": "Enter a palette name first",
+      "PaletteInvalidColor": "Colors must be #RRGGBB",
+      "Pick": "Pick",
+      "EditPalette": "Edit palette",
+      "RemovePalette": "Remove palette",
+      "PaletteSavedFormat": "Palette \"{0}\" saved and applied",
+      "PaletteRemovedFormat": "Palette \"{0}\" removed",
+      "ColorLightPaper": "Light paper",
+      "ColorLightSurface": "Light surface",
+      "ColorLightInk": "Light ink",
+      "ColorLightAccent": "Light accent",
+      "ColorDarkPaper": "Dark paper",
+      "ColorDarkSurface": "Dark surface",
+      "ColorDarkInk": "Dark ink",
+      "ColorDarkAccent": "Dark accent",
       "GlobalSettings": {
         "PaletteLabel": "Palette",
-        "PaletteDescription": "Eight palettes: .NET Purple, AI Aurora, AI Ember, Default, Aquatic, Desert, Dusk, and Night Sky.",
+        "PaletteDescription": "Nine palettes: Graphite, Indigo, Teal, Pine, Sky, Amber, Crimson, Violet, and Terracotta.",
         "ModeLabel": "Mode",
         "LightMode": "Light",
         "DarkMode": "Dark",
@@ -944,15 +986,15 @@ window.CodeWFPrototypeSettings = {
       "SampleErrorLog": "Demo: error log"
     },
     "palettes": {
-      "Default": "Default",
-      "Aquatic": "Aquatic",
-      "Desert": "Desert",
-      "Dusk": "Dusk",
-      "NightSky": "NightSky",
-      "HighContrast": "High Contrast",
-      "DotNet": ".NET Purple",
-      "Aurora": "AI Aurora",
-      "Ember": "AI Ember"
+      "Graphite": "Graphite",
+      "Indigo": "Indigo",
+      "Teal": "Teal",
+      "Pine": "Pine",
+      "Sky": "Sky",
+      "Amber": "Amber",
+      "Crimson": "Crimson",
+      "Violet": "Violet",
+      "Terracotta": "Terracotta"
     },
     "language": "Language",
     "group": "Appearance"
@@ -1406,15 +1448,15 @@ window.CodeWFPrototypeResources = {
       },
       "MarkdownLite": {
         "View": {
-          "MarkdownLiteUsesMarkdigAndASmallerRendering": "CodeWF.Avalonia.Markdown.Lite：Markdig 解析 + 自研渲染管线，只渲染常规元素——标题 / 段落 / 列表 / 引用 / 表格 / 链接 / 代码块（单色）/ 图片替代文本 / 公式原文，内置同款 18 套排版主题，体积与依赖更小。"
+          "MarkdownLiteUsesMarkdigAndASmallerRendering": "CodeWF.Avalonia.Markdown.Lite：Markdig 解析 + 自研渲染管线，只渲染常规元素——标题 / 段落 / 列表 / 引用 / 表格 / 链接 / 代码块（单色）/ 图片替代文本 / 公式原文，内置同款 12 套排版主题，体积与依赖更小。"
         },
         "Properties": {
           "TypographyTheme": "排版主题",
-          "LiteIncludesTheSame18TypographyThemesFour": "Lite 内置同款 18 套排版主题，此处列出常用四个。",
+          "LiteIncludesTheSame18TypographyThemesFour": "Lite 内置同款 12 套排版主题，此处列出常用四个。",
           "TypographySize": "排版尺寸"
         },
         "Source": {
-          "CSharp": "// Lite 包：只带渲染管线与 18 套排版主题（无编辑器 / 导出 / 数学 / Mermaid / TextMate 高亮）\r\n// 完整包：在其上叠加图片（GIF/SVG）、公式、图表、代码高亮、PNG/PDF/Word/公众号导出\r\n//\r\n// 下方示例演示降级行为：图片退化为替代文本、公式保留原文、代码块单色。\r\nvar viewer = new MarkdownViewer\r\n{\r\n    Markdown = \"# Lite 示例\",\r\n    TypographyTheme = MarkdownTypographyThemes.Simple,\r\n    EnableVirtualization = true,\r\n};",
+          "CSharp": "// Lite 包：只带渲染管线与 12 套排版主题（无编辑器 / 导出 / 数学 / Mermaid / TextMate 高亮）\r\n// 完整包：在其上叠加图片（GIF/SVG）、公式、图表、代码高亮、PNG/PDF/Word/公众号导出\r\n//\r\n// 下方示例演示降级行为：图片退化为替代文本、公式保留原文、代码块单色。\r\nvar viewer = new MarkdownViewer\r\n{\r\n    Markdown = \"# Lite 示例\",\r\n    TypographyTheme = MarkdownTypographyThemes.Simple,\r\n    EnableVirtualization = true,\r\n};",
           "Xaml": "<!-- Lite 与完整包的渲染控件同名同命名空间，换包不换代码 -->\r\n<PackageReference Include=\"CodeWF.Avalonia.Markdown.Lite\" />\r\n\r\n<codewf:MarkdownViewer Markdown=\"{Binding Content}\"\r\n                       TypographyTheme=\"Basic\"\r\n                       TypographySize=\"Normal\" />"
         },
         "Samples": {
@@ -1463,7 +1505,7 @@ window.CodeWFPrototypeResources = {
         },
         "Properties": {
           "TypographyTheme": "排版主题",
-          "18TypographyThemesChangesRenderImmediately": "18 套排版主题，提交后立即重渲染。",
+          "18TypographyThemesChangesRenderImmediately": "12 套排版主题，提交后立即重渲染。",
           "TypographySize": "排版尺寸",
           "NormalSmallSmallUsesCompactTypography": "Normal / Small，Small 为紧凑排版。",
           "Virtualization": "虚拟化",
@@ -1472,8 +1514,8 @@ window.CodeWFPrototypeResources = {
           "EnableVirtualizationAboveThisBlockCount": "块数超过该值才启用虚拟化。"
         },
         "Source": {
-          "CSharp": "// 主题切换：单控件覆盖\r\nviewer.TypographyTheme = MarkdownTypographyThemes.GeekBlack;\r\nviewer.TypographySize = MarkdownTypographySizes.Small;\r\n\r\n// 应用级全局覆盖\r\nMarkdownThemes.OverrideTypographyResources(Application.Current, MarkdownTypographyThemes.Verdant);\r\n\r\n// 渲染指标与任务回写\r\nviewer.TaskWriteBackRequested += (_, e) =>\r\n    editor.ApplyExternalEdit(e.Markdown);   // 勾选任务后同步回编辑器\r\nvar parseMs = viewer.LastParseDuration.TotalMilliseconds;\r\nvar mode = viewer.LastRenderMode;           // Incremental / Full\r\nvar realized = viewer.RealizedBlockCount;",
-          "Xaml": "<!-- 18 套排版主题、增量渲染、块级虚拟化、任务勾选回写 -->\r\n<codewf:MarkdownViewer Markdown=\"{Binding Content}\"\r\n                       TypographyTheme=\"{Binding Theme}\"\r\n                       TypographySize=\"{Binding Size}\"\r\n                       EnableVirtualization=\"True\"\r\n                       VirtualizationThreshold=\"40\" />"
+          "CSharp": "// 主题切换：单控件覆盖\r\nviewer.TypographyTheme = MarkdownTypographyThemes.GeekBlack;\r\nviewer.TypographySize = MarkdownTypographySizes.Compact;\r\n\r\n// 应用级全局覆盖\r\nMarkdownThemes.OverrideTypographyResources(Application.Current, MarkdownTypographyThemes.TenderGreen);\r\n\r\n// 渲染指标与任务回写\r\nviewer.TaskWriteBackRequested += (_, e) =>\r\n    editor.ApplyExternalEdit(e.Markdown);   // 勾选任务后同步回编辑器\r\nvar parseMs = viewer.LastParseDuration.TotalMilliseconds;\r\nvar mode = viewer.LastRenderMode;           // Incremental / Full\r\nvar realized = viewer.RealizedBlockCount;",
+          "Xaml": "<!-- 12 套排版主题、增量渲染、块级虚拟化、任务勾选回写 -->\r\n<codewf:MarkdownViewer Markdown=\"{Binding Content}\"\r\n                       TypographyTheme=\"{Binding Theme}\"\r\n                       TypographySize=\"{Binding Size}\"\r\n                       EnableVirtualization=\"True\"\r\n                       VirtualizationThreshold=\"40\" />"
         },
         "UpdateMetrics": {
           "ModeParsingMsRealizedBlocksFormat": "渲染模式：{0} · 解析耗时：{1:F1} ms · 已实现块：{2}"
@@ -1768,7 +1810,7 @@ window.CodeWFPrototypeResources = {
           "IncrementalRendering": "增量渲染",
           "Completed": "已完成",
           "BlockVirtualization": "块级虚拟化",
-          "18TypographyThemes": "18 套排版主题",
+          "18TypographyThemes": "12 套排版主题",
           "PDFExport": "PDF 导出",
           "WordExport": "Word 导出",
           "RichTextPublishing": "公众号复制",
@@ -2323,11 +2365,11 @@ window.CodeWFPrototypeResources = {
       },
       "MarkdownLite": {
         "View": {
-          "MarkdownLiteUsesMarkdigAndASmallerRendering": "Markdown.Lite uses Markdig and a smaller rendering pipeline for common Markdown elements. It includes the same 18 typography themes with fewer dependencies."
+          "MarkdownLiteUsesMarkdigAndASmallerRendering": "Markdown.Lite uses Markdig and a smaller rendering pipeline for common Markdown elements. It includes the same 12 typography themes with fewer dependencies."
         },
         "Properties": {
           "TypographyTheme": "Typography theme",
-          "LiteIncludesTheSame18TypographyThemesFour": "Lite includes the same 18 typography themes; four common themes are listed here.",
+          "LiteIncludesTheSame18TypographyThemesFour": "Lite includes the same 12 typography themes; four common themes are listed here.",
           "TypographySize": "Typography size"
         },
         "Source": {
@@ -2335,7 +2377,7 @@ window.CodeWFPrototypeResources = {
           "Xaml": "<PackageReference Include=\"CodeWF.Avalonia.Markdown.Lite\" />\n\n<codewf:MarkdownViewer Markdown=\"{Binding Content}\"\n                       TypographyTheme=\"Basic\"\n                       TypographySize=\"Normal\" />"
         },
         "Samples": {
-          "Markdown": "# Markdown Lite\n\nHeadings, **bold**, *italic*, `inline code`, lists, quotes, tables, links, and code blocks.\n\n- Smaller dependency set\n- 18 typography themes\n\n| Feature | Supported |\n| --- | --- |\n| Common Markdown | Yes |\n| Export | Use full package |\n\n```csharp\nviewer.Markdown = source;\n```\n\n> A focused rendering package."
+          "Markdown": "# Markdown Lite\n\nHeadings, **bold**, *italic*, `inline code`, lists, quotes, tables, links, and code blocks.\n\n- Smaller dependency set\n- 12 typography themes\n\n| Feature | Supported |\n| --- | --- |\n| Common Markdown | Yes |\n| Export | Use full package |\n\n```csharp\nviewer.Markdown = source;\n```\n\n> A focused rendering package."
         }
       },
       "MarkdownLiveEditor": {
@@ -2380,7 +2422,7 @@ window.CodeWFPrototypeResources = {
         },
         "Properties": {
           "TypographyTheme": "Typography theme",
-          "18TypographyThemesChangesRenderImmediately": "18 typography themes; changes render immediately.",
+          "18TypographyThemesChangesRenderImmediately": "12 typography themes; changes render immediately.",
           "TypographySize": "Typography size",
           "NormalSmallSmallUsesCompactTypography": "Normal / Small; Small uses compact typography.",
           "Virtualization": "Virtualization",
@@ -2389,7 +2431,7 @@ window.CodeWFPrototypeResources = {
           "EnableVirtualizationAboveThisBlockCount": "Enable virtualization above this block count."
         },
         "Source": {
-          "CSharp": "viewer.TypographyTheme = MarkdownTypographyThemes.GeekBlack;\nviewer.TypographySize = MarkdownTypographySizes.Small;\n\nMarkdownThemes.OverrideTypographyResources(Application.Current, MarkdownTypographyThemes.Verdant);\n\nviewer.TaskWriteBackRequested += (_, e) =>\n    editor.ApplyExternalEdit(e.Markdown);\nvar parseMs = viewer.LastParseDuration.TotalMilliseconds;\nvar mode = viewer.LastRenderMode;           // Incremental / Full\nvar realized = viewer.RealizedBlockCount;",
+          "CSharp": "viewer.TypographyTheme = MarkdownTypographyThemes.GeekBlack;\nviewer.TypographySize = MarkdownTypographySizes.Compact;\n\nMarkdownThemes.OverrideTypographyResources(Application.Current, MarkdownTypographyThemes.TenderGreen);\n\nviewer.TaskWriteBackRequested += (_, e) =>\n    editor.ApplyExternalEdit(e.Markdown);\nvar parseMs = viewer.LastParseDuration.TotalMilliseconds;\nvar mode = viewer.LastRenderMode;           // Incremental / Full\nvar realized = viewer.RealizedBlockCount;",
           "Xaml": "<codewf:MarkdownViewer Markdown=\"{Binding Content}\"\n                       TypographyTheme=\"{Binding Theme}\"\n                       TypographySize=\"{Binding Size}\"\n                       EnableVirtualization=\"True\"\n                       VirtualizationThreshold=\"40\" />"
         },
         "UpdateMetrics": {
@@ -2685,7 +2727,7 @@ window.CodeWFPrototypeResources = {
           "IncrementalRendering": "Incremental rendering",
           "Completed": "Completed",
           "BlockVirtualization": "Block virtualization",
-          "18TypographyThemes": "18 typography themes",
+          "18TypographyThemes": "12 typography themes",
           "PDFExport": "PDF export",
           "WordExport": "Word export",
           "RichTextPublishing": "Rich-text publishing",
@@ -2810,7 +2852,7 @@ window.CodeWFMarkdownSamples = {
   },
   "en-US": {
     "viewer": "# MarkdownViewer\n\n**Markdig** → block models → windowed rendering.\n\n## Features\n- [x] Incremental rendering\n- [ ] Task write-back\n\n| Component | Purpose |\n| --- | --- |\n| Viewer | Render Markdown |\n| Editor | Edit source |\n\n```csharp\nviewer.Markdown = source;\n```\n\n> Try changing the typography theme.",
-    "lite": "# Markdown Lite\n\nHeadings, **bold**, *italic*, `inline code`, lists, quotes, tables, links, and code blocks.\n\n- Smaller dependency set\n- 18 typography themes\n\n| Feature | Supported |\n| --- | --- |\n| Common Markdown | Yes |\n| Export | Use full package |\n\n```csharp\nviewer.Markdown = source;\n```\n\n> A focused rendering package.",
+    "lite": "# Markdown Lite\n\nHeadings, **bold**, *italic*, `inline code`, lists, quotes, tables, links, and code blocks.\n\n- Smaller dependency set\n- 12 typography themes\n\n| Feature | Supported |\n| --- | --- |\n| Common Markdown | Yes |\n| Export | Use full package |\n\n```csharp\nviewer.Markdown = source;\n```\n\n> A focused rendering package.",
     "editor": "# MarkdownEditorView\n\nMarkdown source editing with AvaloniaEdit.\n\n## Built-in actions\n- Bold and italic\n- Headings and tables\n- Task lists and code\n\n```csharp\nawait editor.ExecuteAsync(MarkdownEditorAction.Bold);\n```",
     "live": "# Live editing\n\nEdit headings, paragraphs, lists, and tables directly.\n\n## List\n- Block models\n- Incremental rendering\n\n```csharp\nvar editor = new MarkdownLiveEditorView();\n```\n\n| Feature | State |\n| --- | --- |\n| Editing | Ready |",
     "apply": "Apply",
@@ -2882,11 +2924,9 @@ window.CodeWFMarkdownTypography = {
     "CodeWFMarkdownParagraphLineHeight": 29.0
   },
   "TenderGreen": {},
-  "Verdant": {},
   "RedScarlet": {
     "CodeWFMarkdownHeading1FontSize": 31.0
   },
-  "BlueGlow": {},
   "TechnologyBlue": {
     "CodeWFMarkdownParagraphLineHeight": 29.0
   },
@@ -2894,21 +2934,9 @@ window.CodeWFMarkdownTypography = {
   "Yamabuki": {
     "CodeWFMarkdownHeading1FontSize": 31.0
   },
-  "FrontendPeak": {
-    "CodeWFMarkdownParagraphLineHeight": 30.0,
-    "CodeWFMarkdownHeading1FontSize": 33.0
-  },
   "GeekBlack": {},
   "Simple": {
     "CodeWFMarkdownParagraphLineHeight": 27.0
-  },
-  "RosePurple": {},
-  "CuteGreen": {
-    "CodeWFMarkdownParagraphFontSize": 16.5,
-    "CodeWFMarkdownParagraphLineHeight": 30.0
-  },
-  "FullStackBlue": {
-    "CodeWFMarkdownHeading1FontSize": 32.0
   },
   "WeChatFormat": {
     "CodeWFMarkdownParagraphFontSize": 16.0,

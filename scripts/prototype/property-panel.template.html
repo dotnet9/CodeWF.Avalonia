@@ -1010,15 +1010,22 @@ selectProp(ALL["p01"]);
     document.documentElement.dataset.themeMode = mode;
     document.documentElement.dataset.theme = mode === 'system' ? (system.matches ? 'dark' : 'light') : mode;
     try { localStorage.setItem(KEY, JSON.stringify({ palette: palette, themeMode: mode })); } catch (e) {}
+    // 只更新既有卡片的选中态；重建 DOM 会让正在处理点击的按钮脱离文档，菜单随之关闭。
+    if (!grid.querySelector('button')) renderGrid();
+    grid.querySelectorAll('button').forEach(function (button) {
+      button.setAttribute('aria-pressed', String(button.dataset.palette === palette));
+    });
+    menu.querySelectorAll('input[name=codewf-theme-mode]').forEach(function (radio) { radio.checked = radio.value === mode; });
+  }
+  function renderGrid() {
     grid.innerHTML = order().map(function (entry) {
       var dots = entry.swatch.map(function (color) { return '<i style="background:' + color + '"></i>'; }).join('');
-      return '<button type="button" data-palette="' + entry.key + '" aria-pressed="' + (entry.key === palette) + '" aria-label="' + entry.label + '">' +
+      return '<button type="button" data-palette="' + entry.key + '" aria-pressed="false" aria-label="' + entry.label + '">' +
         (entry.recommended ? '<em class="palette-badge">推荐</em>' : '') +
         '<span class="swatch-dots">' + dots + '</span>' +
         '<span class="palette-label"><b>' + entry.label + '</b><small>' + entry.note + '</small></span></button>';
     }).join('');
     grid.querySelectorAll('button').forEach(function (button) { button.onclick = function () { save(button.dataset.palette, currentMode()); }; });
-    menu.querySelectorAll('input[name=codewf-theme-mode]').forEach(function (radio) { radio.checked = radio.value === mode; });
   }
   function save(palette, mode) {
     try { localStorage.setItem(KEY, JSON.stringify({ palette: palette, themeMode: mode })); } catch (e) {}

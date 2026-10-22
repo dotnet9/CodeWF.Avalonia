@@ -49,7 +49,7 @@ foreach ($culture in @('zh-CN','en-US')) {
 }
 $typography = [ordered]@{}
 $sharedThemes = Join-Path $repoRoot 'src/Markdown/CodeWF.Avalonia.Markdown.Lite/Themes/Shared'
-foreach ($name in @('Common', 'Basic', 'OrangeHeart', 'InkBlack', 'ColorfulPurple', 'TenderGreen', 'Verdant', 'RedScarlet', 'BlueGlow', 'TechnologyBlue', 'LanQing', 'Yamabuki', 'FrontendPeak', 'GeekBlack', 'Simple', 'RosePurple', 'CuteGreen', 'FullStackBlue', 'WeChatFormat', 'CompactTypographyResources')) {
+foreach ($name in @('Common', 'Basic', 'OrangeHeart', 'InkBlack', 'ColorfulPurple', 'TenderGreen', 'RedScarlet', 'TechnologyBlue', 'LanQing', 'Yamabuki', 'GeekBlack', 'Simple', 'WeChatFormat', 'CompactTypographyResources')) {
     $path = Join-Path $sharedThemes ($name + '.axaml')
     $metrics = [ordered]@{}
     if (Test-Path -LiteralPath $path) {
@@ -132,7 +132,7 @@ function Read-PrototypeColor([hashtable] $Resources, [string] $Key) {
 }
 $paletteCss = [Collections.Generic.List[string]]::new()
 $paletteCss.Add('/* 生成来源：Themes/Studio/Tokens；执行 scripts/sync_design_catalog.ps1 更新。 */')
-$paletteNames = [ordered]@{ DotNet = 'dotnet'; Aurora = 'aurora'; Ember = 'ember'; Default = 'default'; Aquatic = 'aqua'; Desert = 'desert'; Dusk = 'dusk'; NightSky = 'night' }
+$paletteNames = [ordered]@{ Graphite = 'graphite'; Indigo = 'indigo'; Teal = 'teal'; Pine = 'pine'; Sky = 'sky'; Amber = 'amber'; Crimson = 'crimson'; Violet = 'violet'; Terracotta = 'terracotta' }
 $roles = [ordered]@{
     'bg' = 'StudioBackgroundColor'; 'bg2' = 'StudioSurfaceColor'; 'bg3' = 'StudioRaisedColor'
     'tx' = 'StudioTextColor'; 'tx2' = 'StudioMutedColor'; 'tx3' = 'StudioMutedColor'
@@ -146,7 +146,7 @@ $roles = [ordered]@{
 }
 foreach ($palette in $paletteNames.Keys) {
     foreach ($mode in @('Light', 'Dark')) {
-        $file = if ($palette -eq 'Default') { "$mode.axaml" } else { "$palette$mode.axaml" }
+        $file = "$palette$mode.axaml"
         [xml] $tokens = Get-Content -LiteralPath (Join-Path $repoRoot "src/Controls/CodeWF.Avalonia.Controls/Themes/Studio/Tokens/$file") -Raw -Encoding utf8
         $resources = @{}
         foreach ($node in $tokens.DocumentElement.ChildNodes) {

@@ -163,10 +163,13 @@ const properties = require('./audit-properties.cjs');
       await propertyPrototype.attach(propertyPage);
       await propertyPage.goto(propertyPrototype.url);
       assert.ok(await propertyPage.locator('#rows .row').count() > 0);
-      for (const palette of ['dotnet', 'aurora', 'ember']) {
-        await propertyPage.selectOption('#propertyPalette', palette);
+      await propertyPage.locator('#appearanceMenu summary').click(); // 配色卡位于折叠的外观菜单内
+      for (const palette of ['graphite', 'teal', 'terracotta']) {
+        await propertyPage.locator('#paletteGrid [data-palette="' + palette + '"]').click();
         assert.equal(await propertyPage.locator('html').getAttribute('data-palette'), palette);
+        assert.equal(await propertyPage.locator('#appearanceMenu').evaluate(element => element.open), true);
       }
+      await propertyPage.keyboard.press('Escape'); // 关闭外观菜单，避免遮挡工具条点击
       await propertyPage.locator('#btnAlpha').click();
       assert.equal(await propertyPage.locator('#rows .group-row').count(), 0);
       await propertyPage.locator('#btnCat').click();

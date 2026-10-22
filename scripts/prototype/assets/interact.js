@@ -147,10 +147,9 @@ function confirmDlg(title, body, onYes, danger) {
 }
 function closeDlg() { $("dlgm").classList.remove("on"); _dlgYes = null; }
 
-/* ═══ Markdown 排版主题（与 MarkdownTypographyThemes 的 18 套一致） ═══ */
-var MD_THEMES = ["Basic", "OrangeHeart", "InkBlack", "ColorfulPurple", "TenderGreen", "Verdant", "RedScarlet",
- "BlueGlow", "TechnologyBlue", "LanQing", "Yamabuki", "FrontendPeak", "GeekBlack", "Simple", "RosePurple",
- "CuteGreen", "FullStackBlue", "WeChatFormat"];
+/* ═══ Markdown 排版主题（与 ArticleTypographyCatalog 的 12 套一致，规则 §9） ═══ */
+var MD_THEMES = ["Basic", "Simple", "InkBlack", "GeekBlack", "OrangeHeart", "RedScarlet",
+ "ColorfulPurple", "Yamabuki", "TechnologyBlue", "LanQing", "TenderGreen", "WeChatFormat"];
 /* 字号由排版主题决定（验证「外观字号令牌被排版主题接管」） */
 var MD_THEME_FS = { Basic: "13px", GeekBlack: "12.5px", TechnologyBlue: "13.5px", WeChatFormat: "15px" };
 
@@ -448,8 +447,8 @@ function applyMdTheme() {
 REG("md-viewer", {
  zh: {
   t: "MarkdownViewer",
-  d: "后台线程解析 + 增量渲染 + 块级虚拟化；排版主题即时切换（共 18 套），正文字号由排版主题接管；任务勾选回写 Markdown 源文。",
-  f: ["增量渲染", "块级虚拟化", "18 主题", "任务回写"]
+  d: "后台线程解析 + 增量渲染 + 块级虚拟化；排版主题即时切换（共 12 套），正文字号由排版主题接管；任务勾选回写 Markdown 源文。",
+  f: ["增量渲染", "块级虚拟化", "12 主题", "任务回写"]
  },
  xaml: '<codewf:MarkdownViewer\n    Markdown="{Binding Content}"\n    TypographyTheme="{Binding Theme}"\n    EnableVirtualization="True" />',
  cs: 'viewer.TaskWriteBackRequested += (_, e) =>\n    e.Result.Markdown = e.Rendered;\n\nMarkdownThemes.OverrideTypographyResources(\n    Application.Current, MarkdownTypographyThemes.GeekBlack);',

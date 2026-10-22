@@ -15,7 +15,7 @@ exports.verifyContract = async function (page, route) {
   assert.ok(Object.hasOwn(contracts,route), `Missing native property contract: ${route}`);
   const contract = await page.evaluate(id => window.CodeWFPrototypePropertyContract(id), route);
   assert.deepEqual(contract.map(item => item.type+(item.readonly?':r':'')),contracts[route],`Native property kinds: ${route}`);
-  const expected=contract.length||4;
+  const expected=contract.length||(['welcome','about','expansion','lang'].includes(route)?2:0);
   assert.equal(await page.locator('#pGrid .rw').count(),expected,`Property rows: ${route}`);
   assert.equal(await page.locator('#pgCnt').innerText(),`(${expected})`,`Property count: ${route}`);
   for(const item of contract){

@@ -1,13 +1,14 @@
 /* 从 docs/配色与排版令牌规则.md 附录 A 生成原型配色令牌。
  * 单一事实源：规则文档（解析"## 附录 A"后的 json 数据块）。
  * 产出（均带版本戳 = Directory.Build.props 版本，规则 §14 禁止手写）：
- *   assets/palette-tokens.css   8 套配色 × 明暗 + :root[data-theme] 回退块（= 默认配色派生）
+ *   assets/palette-tokens.css   9 套配色 × 明暗 + :root[data-theme] 回退块（= 默认配色派生）
  *                               每块包含两套词汇：规则语义长名（--paper/--panel/--fg/--accent…）
  *                               + 原型既有短名映射层（--bg/--bg2/--tx/--pri…，见 SHORT_VAR_MAP）。
- *   assets/palette-meta.js      window.CodeWFPalettes（8 套元数据 + 8 色卡 swatch）与旧 Key 别名表。
- * 用法：node scripts/prototype/generate-palette-tokens.cjs [--check] [--force]
+ *   assets/palette-meta.js      window.CodeWFPalettes（9 套元数据 + 8 色卡 swatch）与旧 Key 别名表。
+ * 用法：node scripts/prototype/generate-palette-tokens.cjs [--rules <规则文档路径>] [--check] [--force]
  *   --check 只做对比度校验、产物新鲜度与三项静态自检（JS 可解析 / var() 全有定义 / 本地资源存在），不落盘；
- *   --force 对比度校验失败时仍落盘（默认失败退出码 1 且不落盘）。 */
+ *   --force 对比度校验失败时仍落盘（默认失败退出码 1 且不落盘）。
+ * 派生引擎 assets/palette-rules.js 与 Vex 设计仓、CodeWF.Toolkit 原型三处逐字节同源（禁改公式）。 */
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
@@ -15,8 +16,10 @@ const Rules = require('./assets/palette-rules.js');
 
 const prototypeRoot = __dirname;
 const repoRoot = path.resolve(prototypeRoot, '../..');
-const rulesPath = path.join(repoRoot, 'docs', '配色与排版令牌规则.md');
 const args = process.argv.slice(2);
+const flag = name => args.indexOf(name);
+const rulesPath = flag('--rules') >= 0 ? path.resolve(args[flag('--rules') + 1])
+  : (process.env.CODEWF_RULES_DOC || path.join(repoRoot, 'docs', '配色与排版令牌规则.md'));
 
 /* ── 解析附录 A（唯一事实源，不另行抄写常数） ─────────────────────────── */
 const doc = fs.readFileSync(rulesPath, 'utf8');
@@ -86,7 +89,7 @@ const SHORT_VAR_MAP = [
   // fatal 无独立状态键：复用 danger，底用 danger-pressed-bg（status@(soft+4)%，比 error 软底深一档，
   // 对应旧快照 fatal 比 error 深一档的层级关系）。info 旧值复用了绿色 success，规则有独立 info 键。
   ['--badge-text', 'on-accent', '徽标前景 = on-accent（onAccent 自动判定）'],
-  ['--card-top', 'muted', '卡片顶栏文字 = muted（旧值为中性灰）'],
+  ['--card-top', 'fg', '状态卡顶栏文字 = fg（与 Studio 令牌 StatusCardTopTextForeground = ink 对齐；muted 不保证在状态软底上 ≥4.5:1）'],
   ['--badge-debug', 'accent', 'Debug 徽标 = accent（品牌/中性级，旧 dotnet 值即 accent）'],
   ['--badge-debug-bg', 'accent-soft', 'Debug 徽标底 = accent-soft'],
   ['--card-debug', 'fg', 'Debug 卡片正文 = fg（旧值即 ink）'],
@@ -129,7 +132,7 @@ const MODES = ['light', 'dark'];
 const issues = [];
 for (const [key, palette] of Object.entries(data.palettes)) {
   for (const mode of MODES) {
-    Rules.validate(baseOf(palette, mode), mode, data.statusDefaults)
+    Rules.validate(baseOf(palette, mode), mode, data.statusDefaults, data.derivation[mode])
       .forEach(message => issues.push(key + '/' + mode + ': ' + message));
   }
 }
