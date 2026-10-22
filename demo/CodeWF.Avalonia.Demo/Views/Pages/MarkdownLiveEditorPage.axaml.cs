@@ -32,7 +32,7 @@ public partial class MarkdownLiveEditorPage : DemoPageBase
         {
             EditorBackgroundKey = "StudioBackground", EditorForegroundKey = "StudioText"
         };
-        _editor.TypographyTheme = MarkdownTypographyThemes.Verdant;
+        _editor.TypographyTheme = MarkdownTypographyThemes.TenderGreen;
         _editor.SetText(SampleMarkdown);
         _editor.MarkdownChanged += (_, _) => UpdateStatus();
 
@@ -77,12 +77,12 @@ public partial class MarkdownLiveEditorPage : DemoPageBase
             Options =
             [
                 MarkdownTypographyThemes.Basic,
-                MarkdownTypographyThemes.Verdant,
                 MarkdownTypographyThemes.TenderGreen,
                 MarkdownTypographyThemes.GeekBlack,
+                MarkdownTypographyThemes.OrangeHeart,
                 MarkdownTypographyThemes.WeChatFormat,
             ],
-            Value = MarkdownTypographyThemes.Verdant,
+            Value = MarkdownTypographyThemes.TenderGreen,
             DefaultValue = MarkdownTypographyThemes.Basic,
             Description = L.Instance.GetResource(DemoResources.Content.MarkdownLiveEditor.Properties.TypographyThemeUsedByTheLiveEditor),
         };

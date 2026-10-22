@@ -79,26 +79,7 @@ public class MarkdownViewerPageViewModel : ReactiveObject
     }
 
     public string[] ThemeOptions { get; } =
-    [
-        MarkdownTypographyThemes.Basic,
-        MarkdownTypographyThemes.OrangeHeart,
-        MarkdownTypographyThemes.InkBlack,
-        MarkdownTypographyThemes.ColorfulPurple,
-        MarkdownTypographyThemes.TenderGreen,
-        MarkdownTypographyThemes.Verdant,
-        MarkdownTypographyThemes.RedScarlet,
-        MarkdownTypographyThemes.BlueGlow,
-        MarkdownTypographyThemes.TechnologyBlue,
-        MarkdownTypographyThemes.LanQing,
-        MarkdownTypographyThemes.Yamabuki,
-        MarkdownTypographyThemes.FrontendPeak,
-        MarkdownTypographyThemes.GeekBlack,
-        MarkdownTypographyThemes.Simple,
-        MarkdownTypographyThemes.RosePurple,
-        MarkdownTypographyThemes.CuteGreen,
-        MarkdownTypographyThemes.FullStackBlue,
-        MarkdownTypographyThemes.WeChatFormat,
-    ];
+        ArticleTypographyCatalog.All.Select(typography => typography.Key).ToArray();
 
     public string[] SizeOptions { get; } = [MarkdownTypographySizes.Compact, MarkdownTypographySizes.Normal, MarkdownTypographySizes.Relaxed];
 

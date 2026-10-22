@@ -21,18 +21,12 @@ public static class MarkdownTypographyThemeRegistry
         Register(MarkdownTypographyThemes.InkBlack, static () => new InkBlackTypographyResources());
         Register(MarkdownTypographyThemes.ColorfulPurple, static () => new ColorfulPurpleTypographyResources());
         Register(MarkdownTypographyThemes.TenderGreen, static () => new TenderGreenTypographyResources());
-        Register(MarkdownTypographyThemes.Verdant, static () => new VerdantTypographyResources());
         Register(MarkdownTypographyThemes.RedScarlet, static () => new RedScarletTypographyResources());
-        Register(MarkdownTypographyThemes.BlueGlow, static () => new BlueGlowTypographyResources());
         Register(MarkdownTypographyThemes.TechnologyBlue, static () => new TechnologyBlueTypographyResources());
         Register(MarkdownTypographyThemes.LanQing, static () => new LanQingTypographyResources());
         Register(MarkdownTypographyThemes.Yamabuki, static () => new YamabukiTypographyResources());
-        Register(MarkdownTypographyThemes.FrontendPeak, static () => new FrontendPeakTypographyResources());
         Register(MarkdownTypographyThemes.GeekBlack, static () => new GeekBlackTypographyResources());
         Register(MarkdownTypographyThemes.Simple, static () => new SimpleTypographyResources());
-        Register(MarkdownTypographyThemes.RosePurple, static () => new RosePurpleTypographyResources());
-        Register(MarkdownTypographyThemes.CuteGreen, static () => new CuteGreenTypographyResources());
-        Register(MarkdownTypographyThemes.FullStackBlue, static () => new FullStackBlueTypographyResources());
         Register(MarkdownTypographyThemes.WeChatFormat, static () => new WeChatFormatTypographyResources());
         foreach (var typography in ArticleTypographyCatalog.All)
             Register(typography.Key, typography.CreateResources);

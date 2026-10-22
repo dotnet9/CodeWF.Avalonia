@@ -442,14 +442,6 @@ public class MarkdownThemes : Styles
             {
                 sizedResources[compactResource.Key] = compactResource.Value;
             }
-            // Compact article layouts reduce spacing while retaining a readable body size.
-            if (ArticleTypographyCatalog.Find(typographyTheme) is { } article)
-            {
-                sizedResources[MarkdownStyleKeys.ParagraphFontSizeResource] = Math.Max(16, article.BodySize * .93);
-                sizedResources[MarkdownStyleKeys.ParagraphLineHeightResource] = Math.Max(16, article.BodySize * .93) * 1.65;
-                for (var i = 0; i < article.Headings.Length; i++)
-                    sizedResources["CodeWFMarkdownHeading" + (i + 1) + "FontSize"] = article.Headings[i].Size * .93;
-            }
         }
         if (string.Equals(normalizedSize, MarkdownTypographySizes.Relaxed, StringComparison.OrdinalIgnoreCase))
         {
@@ -457,6 +449,22 @@ public class MarkdownThemes : Styles
             {
                 sizedResources[relaxedResource.Key] = relaxedResource.Value;
             }
+        }
+
+        // 规则 §11：尺寸档只提供正文基准（13/15/17），标题等按主题的相对比例等比缩放。
+        if (ArticleTypographyCatalog.Find(typographyTheme) is { } article)
+        {
+            var baseSize = normalizedSize switch
+            {
+                MarkdownTypographySizes.Compact => 13d,
+                MarkdownTypographySizes.Relaxed => 17d,
+                _ => 15d
+            };
+            var scale = baseSize / article.BodySize;
+            sizedResources[MarkdownStyleKeys.ParagraphFontSizeResource] = baseSize;
+            sizedResources[MarkdownStyleKeys.ParagraphLineHeightResource] = baseSize * article.Leading;
+            for (var i = 0; i < article.Headings.Length; i++)
+                sizedResources["CodeWFMarkdownHeading" + (i + 1) + "FontSize"] = article.Headings[i].Size * scale;
         }
 
         sizedResources[MarkdownStyleKeys.TypographyThemeResource] = typographyTheme ?? string.Empty;

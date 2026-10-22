@@ -3,7 +3,7 @@ using global::Avalonia.Markup.Xaml;
 namespace CodeWF.Avalonia.Markdown.Themes;
 
 /// <summary>
-/// 完整包（CodeWF.Avalonia.Markdown）的样式入口：在基类（Lite.Themes 的控件模板与 18 套排版主题）
+/// 完整包（CodeWF.Avalonia.Markdown）的样式入口：在基类（Lite.Themes 的控件模板与 12 套排版主题）
 /// 之上叠加图片外观与 AvaloniaEdit 原生编辑器模板，无需引入 Fluent / Simple 应用主题。
 /// 基础包请直接使用 CodeWF.Avalonia.Markdown.Lite.Themes 的 MarkdownThemes。
 /// <para>

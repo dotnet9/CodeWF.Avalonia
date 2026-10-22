@@ -37,7 +37,7 @@ internal sealed class QuoteRenderer : IMarkdownBlockRenderer
                 {
                     text.Margin = default;
                     text.TextAlignment = Enum.Parse<global::Avalonia.Media.TextAlignment>(article.Quote.Alignment);
-                    text.FontSize = article.BodySize * article.Quote.FontScale;
+                    text.FontSize = context.ParagraphFontSize * article.Quote.FontScale;
                     text.FontStyle = article.Quote.Italic ? global::Avalonia.Media.FontStyle.Italic : global::Avalonia.Media.FontStyle.Normal;
                     text.Bind(SelectableTextBlock.ForegroundProperty, text.GetResourceObservable("CodeWFMarkdownQuoteForeground"));
                 }

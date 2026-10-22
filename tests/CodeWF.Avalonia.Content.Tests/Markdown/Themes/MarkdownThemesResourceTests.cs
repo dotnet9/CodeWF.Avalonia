@@ -77,7 +77,7 @@ public sealed class MarkdownThemesResourceTests
 
 	[Theory]
 	[InlineData(MarkdownTypographyThemes.Simple, "#343B43", "#F6F7F8", "#F6F7F8", "#F3F3F4")]
-	[InlineData(MarkdownTypographyThemes.OrangeHeart, "#874742", "#F6F7F8", "#F6F7F8", "#FEF6F5")]
+	[InlineData(MarkdownTypographyThemes.OrangeHeart, "#844641", "#F6F7F8", "#F6F7F8", "#FEF6F5")]
 	public void CreateExportStyle_WhenThemeUsesCommonResources_ResolvesIncludedBaseResources(
 		string themeName,
 		string accentColor,
