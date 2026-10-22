@@ -32,6 +32,10 @@ public sealed class MarkdownMindMapView : UserControl
         AvaloniaProperty.Register<MarkdownMindMapView, Color>(nameof(AccentColor), Color.Parse("#7457E8"));
     public static readonly StyledProperty<bool> EnableMotionProperty =
         AvaloniaProperty.Register<MarkdownMindMapView, bool>(nameof(EnableMotion), true);
+    public static readonly StyledProperty<MindMapLayoutKind> LayoutKindProperty =
+        AvaloniaProperty.Register<MarkdownMindMapView, MindMapLayoutKind>(nameof(LayoutKind), MindMapLayoutKind.Right);
+    public static readonly StyledProperty<MindMapStyleKind> StyleKindProperty =
+        AvaloniaProperty.Register<MarkdownMindMapView, MindMapStyleKind>(nameof(StyleKind), MindMapStyleKind.Quiet);
     public static readonly StyledProperty<IBrush?> CanvasBrushProperty = AvaloniaProperty.Register<MarkdownMindMapView, IBrush?>(nameof(CanvasBrush));
     public static readonly StyledProperty<IBrush?> CardBrushProperty = AvaloniaProperty.Register<MarkdownMindMapView, IBrush?>(nameof(CardBrush));
     public static readonly StyledProperty<IBrush?> TextBrushProperty = AvaloniaProperty.Register<MarkdownMindMapView, IBrush?>(nameof(TextBrush));
@@ -72,6 +76,10 @@ public sealed class MarkdownMindMapView : UserControl
     public MarkdownMindMapNode? Root { get => GetValue(RootProperty); set => SetValue(RootProperty, value); }
     public Color AccentColor { get => GetValue(AccentColorProperty); set => SetValue(AccentColorProperty, value); }
     public bool EnableMotion { get => GetValue(EnableMotionProperty); set => SetValue(EnableMotionProperty, value); }
+    /// <summary>导图布局（右树/平衡/放射/向下/目录/鱼骨），只改几何不改结构。</summary>
+    public MindMapLayoutKind LayoutKind { get => GetValue(LayoutKindProperty); set => SetValue(LayoutKindProperty, value); }
+    /// <summary>导图样式（清雅/缤纷/线框/胶囊/脉络/黑白），只改节点视觉。</summary>
+    public MindMapStyleKind StyleKind { get => GetValue(StyleKindProperty); set => SetValue(StyleKindProperty, value); }
     public double Zoom => _scale.ScaleX;
     public MarkdownMindMapNode? SelectedNode => _selected;
     public event EventHandler<MarkdownMindMapNode>? NodeSelected;
@@ -203,6 +211,10 @@ public sealed class MarkdownMindMapView : UserControl
             if (!sameDocument) { _hasViewport = false; EnsureViewport(); }
             if (newRoot is not null && _pendingViewport is { } pending) { _pendingViewport = null; RestoreViewport(pending); }
         }
+        else if (change.Property == LayoutKindProperty || change.Property == StyleKindProperty)
+        {
+            Rebuild();
+        }
         else if (change.Property == AccentColorProperty || change.Property == EnableMotionProperty || change.Property == CanvasBrushProperty || change.Property == CardBrushProperty || change.Property == TextBrushProperty || change.Property == LineBrushProperty || change.Property == DotBrushProperty || change.Property == SuccessColorProperty || change.Property == WarningColorProperty) Rebuild();
     }
 
@@ -264,16 +276,34 @@ public sealed class MarkdownMindMapView : UserControl
         _dots.Brush = DotBrush ?? line; _dots.InvalidateVisual();
         if (Root is null) { VisibleNodesChanged?.Invoke(this, EventArgs.Empty); return; }
         double row = 54; _width = 0;
-        if (geometry) { Place(Root, 0, AccentColor); _height = Math.Max(90, row + 20); }
+        if (geometry)
+        {
+            Place(Root, 0, AccentColor);
+            ApplyLayoutKind();
+            _height = Math.Max(90, _bounds.Values.Max(rect => rect.Bottom) + 20);
+        }
         foreach (var (node, rect) in _bounds)
         foreach (var child in node.Children)
         {
             if (!_bounds.TryGetValue(child, out var childRect)) continue;
-            var a = new Point(rect.Right, rect.Center.Y); var b = new Point(childRect.Left, childRect.Center.Y);
+            Point a, b;
+            if (LayoutKind is MindMapLayoutKind.Down or MindMapLayoutKind.Outline or MindMapLayoutKind.Radial or MindMapLayoutKind.Fishbone)
+            {
+                a = new Point(rect.Center.X, rect.Bottom);
+                b = new Point(childRect.Center.X, childRect.Top);
+                if (childRect.Center.Y < rect.Center.Y) { a = new Point(rect.Center.X, rect.Top); b = new Point(childRect.Center.X, childRect.Bottom); }
+            }
+            else
+            {
+                a = new Point(rect.Right, rect.Center.Y); b = new Point(childRect.Left, childRect.Center.Y);
+            }
             if (_bounds.Count >= 200 && !new Rect(new Point(Math.Min(a.X, b.X), Math.Min(a.Y, b.Y)), new Size(Math.Abs(b.X - a.X) + 1, Math.Abs(b.Y - a.Y) + 1)).Intersects(_realizedRegion)) continue;
+            var data = LayoutKind is MindMapLayoutKind.Down or MindMapLayoutKind.Outline or MindMapLayoutKind.Radial or MindMapLayoutKind.Fishbone
+                ? FormattableString.Invariant($"M {a.X},{a.Y} L {b.X},{b.Y}")
+                : FormattableString.Invariant($"M {a.X},{a.Y} C {a.X + 40},{a.Y} {b.X - 40},{b.Y} {b.X},{b.Y}");
             _canvas.Children.Add(new global::Avalonia.Controls.Shapes.Path
             {
-                Data = Geometry.Parse(FormattableString.Invariant($"M {a.X},{a.Y} C {a.X + 40},{a.Y} {b.X - 40},{b.Y} {b.X},{b.Y}")),
+                Data = Geometry.Parse(data),
                 Stroke = new SolidColorBrush(_branches[child], dark ? .6 : .38), StrokeThickness = 1.5, IsHitTestVisible = false
             });
         }
@@ -305,6 +335,38 @@ public sealed class MarkdownMindMapView : UserControl
                 BoxShadow = BoxShadows.Parse(dark ? "0 3 12 0 #16000000" : "0 3 12 0 #07000000"),
                 Cursor = new Cursor(StandardCursorType.Hand), Focusable = true
             };
+            // 样式层：清雅为默认；缤纷/线框/胶囊/脉络/黑白只调整卡片视觉（对应原型 map-appearance）。
+            if (!root && StyleKind != MindMapStyleKind.Quiet)
+            {
+                switch (StyleKind)
+                {
+                    case MindMapStyleKind.Colorful:
+                        card.Background = heading ? new SolidColorBrush(color) : Tint(color, dark ? 0.24 : 0.85);
+                        card.BorderBrush = new SolidColorBrush(color);
+                        break;
+                    case MindMapStyleKind.Outline:
+                        card.Background = Brushes.Transparent;
+                        card.BorderBrush = new SolidColorBrush(color);
+                        card.BoxShadow = BoxShadows.Parse("0 0 0 0 #00000000");
+                        card.CornerRadius = new CornerRadius(6);
+                        break;
+                    case MindMapStyleKind.Capsule:
+                        card.CornerRadius = new CornerRadius(rect.Height / 2);
+                        card.Padding = new Thickness(16, 8);
+                        break;
+                    case MindMapStyleKind.Underline:
+                        card.Background = Brushes.Transparent;
+                        card.BorderBrush = new SolidColorBrush(color);
+                        card.BorderThickness = new Thickness(0, 0, 0, 2.2);
+                        card.CornerRadius = new CornerRadius(0);
+                        card.BoxShadow = BoxShadows.Parse("0 0 0 0 #00000000");
+                        break;
+                    case MindMapStyleKind.Mono:
+                        card.Background = Brush.Parse(dark ? "#2E3038" : "#EDEEF2");
+                        card.BorderBrush = node == _selected ? Brush.Parse(dark ? "#C8CAD4" : "#5A5C66") : line;
+                        break;
+                }
+            }
             if (EnableMotion) card.Transitions = new Transitions { new BrushTransition { Property = Border.BorderBrushProperty, Duration = TimeSpan.FromMilliseconds(160) } };
             ToolTip.SetTip(card, node.FullText);
             Canvas.SetLeft(card, rect.X); Canvas.SetTop(card, rect.Y);
@@ -407,6 +469,226 @@ public sealed class MarkdownMindMapView : UserControl
             _bounds[node] = rect; _branches[node] = branch; _width = Math.Max(_width, rect.Right + 32);
             return rect.Center.Y;
         }
+    }
+
+    /// <summary>Place 先按单侧树铺出尺寸，再按所选布局重排坐标（尺寸沿用测量结果）。</summary>
+    private void ApplyLayoutKind()
+    {
+        if (Root is null || LayoutKind == MindMapLayoutKind.Right) return;
+        if (LayoutKind == MindMapLayoutKind.Balanced) { BalancedBounds(Root); return; }
+        if (LayoutKind == MindMapLayoutKind.Down) { var top = _bounds[Root].Top; var cursor = _bounds[Root].X; MeasureDownBounds(Root, ref cursor); PlaceDownBounds(Root, top); return; }
+        if (LayoutKind == MindMapLayoutKind.Outline) { var cursor = _bounds.Values.Min(rect => rect.Top); OutlineBounds(Root, 0, ref cursor); return; }
+        if (LayoutKind == MindMapLayoutKind.Radial) { RadialBounds(Root); return; }
+        if (LayoutKind == MindMapLayoutKind.Fishbone) { FishboneBounds(Root); return; }
+    }
+
+    private double NodeHeight(MarkdownMindMapNode node) => _bounds.TryGetValue(node, out var rect) ? rect.Height : 40;
+    private double NodeWidth(MarkdownMindMapNode node) => _bounds.TryGetValue(node, out var rect) ? rect.Width : 224;
+
+    private double SubtreeHeightOf(MarkdownMindMapNode node)
+    {
+        var height = NodeHeight(node);
+        if (node.IsCollapsed || node.Children.Count == 0) return height;
+        return Math.Max(height, node.Children.Sum(SubtreeHeightOf) + 14 * (node.Children.Count - 1));
+    }
+
+    private void BalancedBounds(MarkdownMindMapNode root)
+    {
+        var rootRect = _bounds[root];
+        var sides = new List<MarkdownMindMapNode>[2] { new(), new() };
+        var loads = new double[2];
+        foreach (var child in root.Children)
+        {
+            var side = loads[0] <= loads[1] ? 0 : 1;
+            sides[side].Add(child);
+            loads[side] += SubtreeHeightOf(child);
+        }
+        var centers = new List<double>();
+        for (var side = 0; side < 2; side++)
+        {
+            if (sides[side].Count == 0) continue;
+            var sign = side == 0 ? 1 : -1;
+            var cursor = rootRect.Center.Y - loads[side] / 2;
+            var top = cursor;
+            foreach (var child in sides[side])
+            {
+                PlaceSide(child, 1, sign, rootRect.Right + 34, rootRect.Left - 34, ref cursor);
+            }
+            centers.Add((top + cursor - 14) / 2);
+        }
+        var center = centers.Count == 0 ? rootRect.Center.Y : centers.Average();
+        ShiftTree(root, center - rootRect.Center.Y, 0);
+    }
+
+    private void PlaceSide(MarkdownMindMapNode node, int depth, int sign, double rightAnchor, double leftAnchor, ref double cursor)
+    {
+        var height = NodeHeight(node);
+        var x = sign > 0 ? rightAnchor + (depth - 1) * 272 + 32 : leftAnchor - (depth - 1) * 272 - 32 - NodeWidth(node);
+        if (node.IsCollapsed || node.Children.Count == 0)
+        {
+            _bounds[node] = new Rect(x, cursor, NodeWidth(node), height);
+            cursor += height + 14;
+            return;
+        }
+        foreach (var child in node.Children) PlaceSide(child, depth + 1, sign, rightAnchor, leftAnchor, ref cursor);
+        var center = (SubtreeFirstCenter(node) + SubtreeLastCenter(node)) / 2;
+        _bounds[node] = new Rect(x, center - height / 2, NodeWidth(node), height);
+    }
+
+    private double SubtreeFirstCenter(MarkdownMindMapNode node)
+    {
+        if (node.IsCollapsed || node.Children.Count == 0) return _bounds[node].Center.Y;
+        return SubtreeFirstCenter(node.Children[0]);
+    }
+
+    private double SubtreeLastCenter(MarkdownMindMapNode node)
+    {
+        if (node.IsCollapsed || node.Children.Count == 0) return _bounds[node].Center.Y;
+        return SubtreeLastCenter(node.Children[^1]);
+    }
+
+    private void ShiftTree(MarkdownMindMapNode node, double dy, double dx)
+    {
+        if (_bounds.TryGetValue(node, out var rect)) _bounds[node] = new Rect(rect.X + dx, rect.Y + dy, rect.Width, rect.Height);
+        foreach (var child in node.Children) ShiftTree(child, dy, dx);
+    }
+
+    private double MeasureDownBounds(MarkdownMindMapNode node, ref double cursor)
+    {
+        var width = NodeWidth(node);
+        if (node.IsCollapsed || node.Children.Count == 0)
+        {
+            var rect = _bounds[node];
+            _bounds[node] = new Rect(cursor, rect.Y, width, rect.Height);
+            cursor += width + 22;
+            return _bounds[node].Center.X;
+        }
+        var centers = new List<double>();
+        foreach (var child in node.Children) centers.Add(MeasureDownBounds(child, ref cursor));
+        var center = (centers[0] + centers[^1]) / 2;
+        var existing = _bounds[node];
+        _bounds[node] = new Rect(center - width / 2, existing.Y, width, existing.Height);
+        return center;
+    }
+
+    private void PlaceDownBounds(MarkdownMindMapNode node, double top)
+    {
+        var existing = _bounds[node];
+        _bounds[node] = new Rect(existing.X, top, existing.Width, existing.Height);
+        foreach (var child in node.Children) PlaceDownBounds(child, top + existing.Height + 40);
+    }
+
+    private void OutlineBounds(MarkdownMindMapNode node, int depth, ref double cursor)
+    {
+        var existing = _bounds[node];
+        var indent = 32 + depth * 64;
+        _bounds[node] = new Rect(indent, cursor, Math.Min(existing.Width, 340 - indent), existing.Height);
+        cursor += existing.Height + 12;
+        foreach (var child in node.Children) OutlineBounds(child, depth + 1, ref cursor);
+    }
+
+    private int SubtreeLeafCountOf(MarkdownMindMapNode node) =>
+        node.IsCollapsed || node.Children.Count == 0 ? 1 : node.Children.Sum(SubtreeLeafCountOf);
+
+    private void RadialBounds(MarkdownMindMapNode root)
+    {
+        var rootRect = _bounds[root];
+        var centerX = rootRect.Center.X;
+        var centerY = rootRect.Center.Y;
+        var leaves = root.Children.Select(SubtreeLeafCountOf).ToList();
+        var total = Math.Max(1, leaves.Sum());
+        var angle = -Math.PI / 2;
+        const double ring = 236;
+        for (var i = 0; i < root.Children.Count; i++)
+        {
+            var span = Math.PI * 2 * leaves[i] / total;
+            PlaceRadial(root.Children[i], 1, centerX, centerY, angle + span / 2, ring, leaves[i]);
+            angle += span;
+        }
+        var maxRight = _bounds.Values.Max(rect => rect.Right);
+        var minLeft = _bounds.Values.Min(rect => rect.Left);
+        _width = Math.Max(_width, maxRight + 32);
+        if (minLeft < 24) ShiftTree(root, 0, 24 - minLeft);
+    }
+
+    private void PlaceRadial(MarkdownMindMapNode node, int depth, double parentCenterX, double parentCenterY, double angle, double ring, int leaves)
+    {
+        var radius = depth * ring;
+        var size = new Size(NodeWidth(node), NodeHeight(node));
+        node = Bind(node, parentCenterX + Math.Cos(angle) * radius - size.Width / 2,
+            parentCenterY + Math.Sin(angle) * radius * 0.74 - size.Height / 2, size);
+        if (node.IsCollapsed || node.Children.Count == 0) return;
+        var childLeaves = node.Children.Select(SubtreeLeafCountOf).ToList();
+        var childTotal = Math.Max(1, childLeaves.Sum());
+        var total = Math.Max(1, SubtreeLeafCountOf(Root!));
+        var span = Math.Max(Math.PI * 2 * leaves / total, 0.24);
+        var start = angle - span / 2;
+        var accumulated = 0;
+        for (var i = 0; i < node.Children.Count; i++)
+        {
+            var childAngle = start + span * (accumulated + childLeaves[i] / 2d) / childTotal;
+            var nodeRect = _bounds[node];
+            PlaceRadial(node.Children[i], depth + 1, nodeRect.Center.X, nodeRect.Center.Y, childAngle, ring, childLeaves[i]);
+            accumulated += childLeaves[i];
+        }
+    }
+
+    private MarkdownMindMapNode Bind(MarkdownMindMapNode node, double x, double y, Size size)
+    {
+        _bounds[node] = new Rect(x, y, size.Width, size.Height);
+        return node;
+    }
+
+    private void FishboneBounds(MarkdownMindMapNode root)
+    {
+        var rootRect = _bounds[root];
+        var spineY = rootRect.Center.Y;
+        var branchX = rootRect.Right + 56;
+        var index = 0;
+        foreach (var branch in root.Children)
+        {
+            var direction = index % 2 == 0 ? -1 : 1;
+            var branchRect = _bounds[branch];
+            _bounds[branch] = new Rect(branchX, spineY + direction * 64 - branchRect.Height / 2, branchRect.Width, branchRect.Height);
+            var childX = branchX;
+            var cursor = spineY + direction * (64 + branchRect.Height / 2 + 18);
+            foreach (var child in branch.Children)
+            {
+                var childRect = _bounds[child];
+                Bind(child, childX, direction > 0 ? cursor : cursor - childRect.Height, childRect.Size);
+                StackFishChildren(child, childX, ref cursor, direction);
+                childX += childRect.Width + 30;
+            }
+            branchX += branchRect.Width + 30;
+            index++;
+        }
+        var maxRight = _bounds.Values.Max(rect => rect.Right);
+        var minTop = _bounds.Values.Min(rect => rect.Top);
+        if (minTop < 24) ShiftTree(root, 24 - minTop, 0);
+        _width = Math.Max(_width, maxRight + 32);
+        _height = Math.Max(_height, _bounds.Values.Max(rect => rect.Bottom) + 20);
+    }
+
+    private void StackFishChildren(MarkdownMindMapNode node, double x, ref double cursor, int direction)
+    {
+        var local = cursor;
+        foreach (var child in node.Children)
+        {
+            var rect = _bounds[child];
+            Bind(child, x + 30, direction > 0 ? local : local - rect.Height, rect.Size);
+            local += direction > 0 ? rect.Height + 12 : -(rect.Height + 12);
+            StackFishChildren(child, x + 30, ref local, direction);
+        }
+        cursor = local;
+    }
+
+    private static IBrush Tint(Color accent, double targetRatio)
+    {
+        const int target = 255;
+        return new SolidColorBrush(Color.FromRgb(
+            (byte)(accent.R + (target - accent.R) * targetRatio),
+            (byte)(accent.G + (target - accent.G) * targetRatio),
+            (byte)(accent.B + (target - accent.B) * targetRatio)));
     }
 
     private sealed class DotGrid : Control
