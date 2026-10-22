@@ -2,7 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using CodeWF.Avalonia.Demo.I18n;
 using CodeWF.Avalonia.Demo.ViewModels;
-using CodeWF.Toolkit.Lang;
+using L = global::CodeWF.Toolkit.Lang.I18nManager;
 
 namespace CodeWF.Avalonia.Demo.Views;
 
@@ -37,8 +37,8 @@ public partial class PaletteEditDialog : Window
             {
                 TitleText.Opacity = 0.45;
                 var restore = new global::Avalonia.Threading.DispatcherTimer { Interval = System.TimeSpan.FromMilliseconds(600) };
-        restore.Tick += (_, _) => { restore.Stop(); TitleText.Opacity = 1; };
-        restore.Start();
+                restore.Tick += (_, _) => { restore.Stop(); TitleText.Opacity = 1; };
+                restore.Start();
                 return;
             }
             for (var i = 0; i < _fields.Count; i++) _draft.Colors[i] = _fields[i].Color;
