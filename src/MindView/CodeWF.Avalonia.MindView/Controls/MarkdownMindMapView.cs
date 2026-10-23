@@ -301,10 +301,17 @@ public sealed class MarkdownMindMapView : UserControl
             var data = LayoutKind is MindMapLayoutKind.Down or MindMapLayoutKind.Outline or MindMapLayoutKind.Radial or MindMapLayoutKind.Fishbone
                 ? FormattableString.Invariant($"M {a.X},{a.Y} L {b.X},{b.Y}")
                 : FormattableString.Invariant($"M {a.X},{a.Y} C {a.X + 40},{a.Y} {b.X - 40},{b.Y} {b.X},{b.Y}");
+            // 原型连线配色：缤纷=分支色、黑白=前景、其余样式统一强调色系（polish.css .map-links）。
+            var linkColor = StyleKind switch
+            {
+                MindMapStyleKind.Colorful => _branches[child],
+                MindMapStyleKind.Mono => dark ? Color.Parse("#E4E5E7") : Color.Parse("#30343B"),
+                _ => AccentColor
+            };
             _canvas.Children.Add(new global::Avalonia.Controls.Shapes.Path
             {
                 Data = Geometry.Parse(data),
-                Stroke = new SolidColorBrush(_branches[child], dark ? .6 : .38), StrokeThickness = 1.5, IsHitTestVisible = false
+                Stroke = new SolidColorBrush(linkColor, StyleKind == MindMapStyleKind.Colorful ? (dark ? .6 : .38) : .42), StrokeThickness = 1.5, IsHitTestVisible = false
             });
         }
         foreach (var (node, rect) in _bounds)
@@ -313,18 +320,32 @@ public sealed class MarkdownMindMapView : UserControl
             var root = ReferenceEquals(node, Root);
             var heading = node.Kind == MarkdownMindMapNodeKind.Heading;
             var color = _branches[node];
-            var body = new StackPanel { Spacing = 4, VerticalAlignment = VerticalAlignment.Center };
-            if (root) body.Children.Add(new TextBlock { Text = MindViewLocalization.GetResource(MindViewL.MarkdownDocument), FontSize = 9, LineHeight = 14, Foreground = MindViewThemeResources.AccentForeground(AccentColor), Opacity = .75 });
-            if (!root && heading) body.Children.Add(new TextBlock { Text = $"H{node.HeadingLevel}", FontSize = 9, LineHeight = 14, Foreground = foreground });
+            // 原型 Quiet 卡片：标题左对齐垂直居中，级别/文档徽标在右缘（标题节点靠上、根节点居中）。
+            var body = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), VerticalAlignment = VerticalAlignment.Center };
+            var badge = root ? MindViewLocalization.GetResource(MindViewL.MarkdownDocument) : heading ? $"H{node.HeadingLevel}" : null;
             body.Children.Add(new TextBlock
             {
                 Text = node.Title, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, MaxLines = root ? 1 : 4,
                 FontSize = root || heading ? 13 : 12, LineHeight = 20,
                 FontWeight = root || heading ? FontWeight.SemiBold : FontWeight.Normal,
-                Foreground = root ? MindViewThemeResources.AccentForeground(AccentColor) : foreground
+                Foreground = root ? MindViewThemeResources.AccentForeground(AccentColor) : foreground,
+                VerticalAlignment = VerticalAlignment.Center
             });
+            if (badge is not null)
+            {
+                var badgeText = new TextBlock
+                {
+                    Text = badge, FontSize = 9, LineHeight = 14,
+                    Foreground = root ? MindViewThemeResources.AccentForeground(AccentColor) : foreground,
+                    Opacity = .75, HorizontalAlignment = HorizontalAlignment.Right,
+                    VerticalAlignment = root ? VerticalAlignment.Center : VerticalAlignment.Top,
+                    Margin = new Thickness(6, 0, 0, 0)
+                };
+                Grid.SetColumn(badgeText, 1);
+                body.Children.Add(badgeText);
+            }
             var content = new Grid();
-            content.Children.Add(new CardDecoration { IsSummary = !root && !heading, Stripe = !root && heading ? new SolidColorBrush(color) : null, Line = line, Margin = new Thickness(-12, -10), IsHitTestVisible = false });
+            content.Children.Add(new CardDecoration { IsSummary = !root && !heading, Stripe = !root && heading && StyleKind != MindMapStyleKind.Quiet ? new SolidColorBrush(color) : null, Line = line, Margin = new Thickness(-12, -10), IsHitTestVisible = false });
             content.Children.Add(body);
             var card = new Border
             {
@@ -335,6 +356,9 @@ public sealed class MarkdownMindMapView : UserControl
                 BoxShadow = BoxShadows.Parse(dark ? "0 3 12 0 #16000000" : "0 3 12 0 #07000000"),
                 Cursor = new Cursor(StandardCursorType.Hand), Focusable = true
             };
+            // 原型根节点：实底外描一圈留白再套强调色细环（双环），不用投影。
+            if (root) card.BoxShadow = BoxShadows.Parse(FormattableString.Invariant(
+                $"0 0 0 2 {(dark ? "#202124" : "#FFFFFF")}, 0 0 0 3.5 {AccentColor}"));
             // 样式层：清雅为默认；缤纷/线框/胶囊/脉络/黑白只调整卡片视觉（对应原型 map-appearance）。
             if (!root && StyleKind != MindMapStyleKind.Quiet)
             {
