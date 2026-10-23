@@ -96,9 +96,15 @@ internal sealed class TableRenderer : IMarkdownBlockRenderer
             ? context.CreateParagraph(paragraph, false, new Thickness(0))
             : context.ConvertBlock(block, null);
 
-        if (isHeader && child is SelectableTextBlock textBlock)
+        if (child is SelectableTextBlock textBlock)
         {
-            textBlock.FontWeight = FontWeight.SemiBold;
+            // 表格排版独立于正文：主题可用 CodeWFMarkdownTableCellFontSize/LineHeight 覆写字号与行高。
+            textBlock.Bind(SelectableTextBlock.FontSizeProperty, textBlock.GetResourceObservable("CodeWFMarkdownTableCellFontSize"));
+            textBlock.Bind(SelectableTextBlock.LineHeightProperty, textBlock.GetResourceObservable("CodeWFMarkdownTableCellLineHeight"));
+            if (isHeader)
+            {
+                textBlock.FontWeight = FontWeight.SemiBold;
+            }
         }
 
         return child;

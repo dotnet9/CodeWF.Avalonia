@@ -680,14 +680,17 @@ public partial class MarkdownLiveEditorView : UserControl
                         Text = "•",
                         MinWidth = 14,
                         TextAlignment = TextAlignment.Right,
-                        VerticalAlignment = VerticalAlignment.Center,
+                        // 对齐首行文字：段行高 28.5，圆点字面约 19，顶部偏移 ≈ 5。
+                        VerticalAlignment = VerticalAlignment.Top,
+                        Margin = new Thickness(0, 5, 0, 0),
                         Foreground = _blockOptions.MutedBrush
                     });
                     var box = new CheckBox
                     {
                         IsChecked = model.IsChecked,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        Margin = new Thickness(10, 0, 6, 0)
+                        // 复选框 14px，行高 28.5：顶部偏移 (28.5-14)/2 ≈ 7，与阅读视图同一对齐。
+                        VerticalAlignment = VerticalAlignment.Top,
+                        Margin = new Thickness(10, 7, 6, 0)
                     };
                     box.Classes.Add("MdTaskMarkerBox");
                     box.IsCheckedChanged += (_, _) =>

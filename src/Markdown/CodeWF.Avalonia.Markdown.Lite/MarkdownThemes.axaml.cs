@@ -451,7 +451,8 @@ public class MarkdownThemes : Styles
             }
         }
 
-        // 规则 §11：尺寸档只提供正文基准（13/15/17），标题等按主题的相对比例等比缩放。
+        // 规则 §11：尺寸档只提供正文基准（13/15/17），目录值是排版默认字号下的 CSS 实测值，
+        // 字号/行高/边距整套按 baseSize/BodySize 等比缩放，保持 CSS em 语义一致。
         if (ArticleTypographyResolver.Find(typographyTheme) is { } article)
         {
             var baseSize = normalizedSize switch
@@ -461,10 +462,31 @@ public class MarkdownThemes : Styles
                 _ => 15d
             };
             var scale = baseSize / article.BodySize;
-            sizedResources[MarkdownStyleKeys.ParagraphFontSizeResource] = baseSize;
-            sizedResources[MarkdownStyleKeys.ParagraphLineHeightResource] = baseSize * article.Leading;
-            for (var i = 0; i < article.Headings.Length; i++)
-                sizedResources["CodeWFMarkdownHeading" + (i + 1) + "FontSize"] = article.Headings[i].Size * scale;
+            foreach (var entry in article.CreateResources())
+            {
+                sizedResources[entry.Key] = entry.Value switch
+                {
+                    double value => value * scale,
+                    Thickness thickness => new Thickness(
+                        thickness.Left * scale,
+                        thickness.Top * scale,
+                        thickness.Right * scale,
+                        thickness.Bottom * scale),
+                    _ => entry.Value,
+                };
+            }
+
+            // design 原型共享节奏（15px 基准实测值，主题无关）：列表/表格随尺寸档等比缩放。
+            var shared = baseSize / 15d;
+            sizedResources["CodeWFMarkdownListSpacing"] = 0d;
+            sizedResources["CodeWFMarkdownListMargin"] = new Thickness(0, 0, 0, 8 * shared);
+            sizedResources["CodeWFMarkdownListItemMargin"] = new Thickness(0, 1.5 * shared, 0, 1.5 * shared);
+            sizedResources["CodeWFMarkdownListFirstParagraphMargin"] = new Thickness(0);
+            sizedResources["CodeWFMarkdownTableMargin"] = new Thickness(0, 15 * shared, 0, 15 * shared);
+            sizedResources["CodeWFMarkdownTableCellPadding"] = new Thickness(10 * shared, 5 * shared);
+            sizedResources["CodeWFMarkdownTableCellMinHeight"] = 24.75 * shared;
+            sizedResources["CodeWFMarkdownTableCellFontSize"] = 12.5 * shared;
+            sizedResources["CodeWFMarkdownTableCellLineHeight"] = 23.75 * shared;
         }
 
         sizedResources[MarkdownStyleKeys.TypographyThemeResource] = typographyTheme ?? string.Empty;
