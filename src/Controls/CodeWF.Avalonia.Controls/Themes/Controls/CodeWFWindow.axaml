@@ -169,6 +169,12 @@
                                             </Grid>
                                         </Border>
                                     </Border>
+
+                                    <ContentPresenter
+                                        Name="PART_OverlayContentPresenter"
+                                        Classes="overlay-content-presenter"
+                                        Content="{TemplateBinding OverlayContent}"
+                                        IsVisible="{Binding OverlayContent, RelativeSource={RelativeSource AncestorType=codewf:CodeWFWindow}}" />
                                 </Panel>
                             </Border>
                         </Border>

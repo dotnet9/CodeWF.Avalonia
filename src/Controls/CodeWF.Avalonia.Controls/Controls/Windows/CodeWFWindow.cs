@@ -83,6 +83,10 @@ public class CodeWFWindow : Window
     public static readonly StyledProperty<CornerRadius> WindowCornerRadiusProperty =
         AvaloniaProperty.Register<CodeWFWindow, CornerRadius>(nameof(WindowCornerRadius), new CornerRadius(4));
 
+    /// <summary>覆盖整窗（含标题条）的浮层内容，如对话框宿主；渲染在标题栏叠层之上。</summary>
+    public static readonly StyledProperty<object?> OverlayContentProperty =
+        AvaloniaProperty.Register<CodeWFWindow, object?>(nameof(OverlayContent));
+
     private readonly Dictionary<Control, WindowEdge> _resizeGrips = new();
     private readonly bool _usesNativeWindowCorners;
     private Button? _closeButton;
@@ -184,6 +188,13 @@ public class CodeWFWindow : Window
     {
         get => GetValue(TitleBarMarginProperty);
         set => SetValue(TitleBarMarginProperty, value);
+    }
+
+    /// <summary>覆盖整窗（含标题条）的浮层内容，如对话框宿主。</summary>
+    public object? OverlayContent
+    {
+        get => GetValue(OverlayContentProperty);
+        set => SetValue(OverlayContentProperty, value);
     }
 
     /// <summary>窗口按钮的宽度；高度随标题栏同步变化。</summary>

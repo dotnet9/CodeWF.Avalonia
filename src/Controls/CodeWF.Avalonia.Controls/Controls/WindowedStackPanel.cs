@@ -219,6 +219,23 @@ public class WindowedStackPanel : Panel
         InvalidateMeasure();
     }
 
+    /// <summary>
+    /// 在锚点子项之前插入门兄弟项。调用方只拿到控件引用（如渲染器插入工具条）时用本重载，
+    /// 避免直接操作 <see cref="Panel.Children"/> 造成 <c>_entries</c> 与子项位置映射错位。
+    /// 锚点不是本面板子项时返回 false。
+    /// </summary>
+    public bool InsertItemBefore(Control anchor, Control control, bool pinned = false, bool pinnedByKind = false)
+    {
+        var index = _entries.FindIndex(entry => ReferenceEquals(entry.Control, anchor));
+        if (index < 0)
+        {
+            return false;
+        }
+
+        InsertItem(index, control, pinned, pinnedByKind);
+        return true;
+    }
+
     public void RemoveAt(int index)
     {
         if (index < 0 || index >= _entries.Count)
