@@ -673,18 +673,30 @@ public partial class MarkdownLiveEditorView : UserControl
 
                 if (model.IsTask)
                 {
+                    // 对齐原型任务项：复选框左侧保留列表圆点（• □ 文案），与阅读视图一致。
+                    var marker = new StackPanel { Orientation = Orientation.Horizontal };
+                    marker.Children.Add(new TextBlock
+                    {
+                        Text = "•",
+                        MinWidth = 14,
+                        TextAlignment = TextAlignment.Right,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Foreground = _blockOptions.MutedBrush
+                    });
                     var box = new CheckBox
                     {
                         IsChecked = model.IsChecked,
                         VerticalAlignment = VerticalAlignment.Center,
-                        Margin = new Thickness(0, 0, 6, 0)
+                        Margin = new Thickness(10, 0, 6, 0)
                     };
+                    box.Classes.Add("MdTaskMarkerBox");
                     box.IsCheckedChanged += (_, _) =>
                     {
                         model.IsChecked = box.IsChecked == true;
                         view.NotifyModelChanged();
                     };
-                    row.Children.Add(box);
+                    marker.Children.Add(box);
+                    row.Children.Add(marker);
                 }
                 else
                 {
