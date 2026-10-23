@@ -31,18 +31,21 @@ public sealed record ArticleTypography(string Key, string Name, string EnglishNa
             [MarkdownStyleKeys.ParagraphLineHeightResource] = BodySize * Leading,
             ["CodeWFMarkdownBlockSpacing"] = 0d,
             ["CodeWFMarkdownParagraphMargin"] = new Thickness(0, 0, 0, BodySize * .85),
-            ["CodeWFMarkdownHeadingMargin"] = new Thickness(0, BodySize * 1.4, 0, BodySize * .45),
+            // 目录 margin 是 CSS 折叠后语义，Avalonia 相邻 margin 相加：标题/引用顶边距扣除前块下边距，
+            // 表格下边距按段落块语义补齐，保证跨引擎的块节奏一致。
+            ["CodeWFMarkdownHeadingMargin"] = new Thickness(0, Math.Max(0, BodySize * 1.4 - BodySize * .85), 0, BodySize * .45),
             ["CodeWFMarkdownQuotePadding"] = Thickness.Parse(Quote.Padding),
-            ["CodeWFMarkdownQuoteMargin"] = Thickness.Parse(Quote.Margin),
+            ["CodeWFMarkdownQuoteMargin"] = WithReducedTop(Thickness.Parse(Quote.Margin), 8),
             ["CodeWFMarkdownQuoteBorderThickness"] = Thickness.Parse(Quote.Border),
             ["CodeWFMarkdownQuoteCornerRadius"] = new CornerRadius(Quote.Radius),
+            ["CodeWFMarkdownTableMargin"] = new Thickness(0, 0, 0, BodySize * .85),
         };
         for (var i = 0; i < Headings.Length; i++)
         {
             var h = Headings[i]; var prefix = "CodeWFMarkdownHeading" + (i + 1);
             resources[prefix + "FontSize"] = h.Size;
             resources[prefix + "LineHeight"] = h.LineHeight;
-            resources[prefix + "Margin"] = Thickness.Parse(h.Margin);
+            resources[prefix + "Margin"] = WithReducedTop(Thickness.Parse(h.Margin), BodySize * .85);
             resources[prefix + "FontWeight"] = (FontWeight)h.Weight;
             resources[prefix + "TextAlignment"] = Enum.Parse<TextAlignment>(h.Alignment);
             resources[prefix + "BorderThickness"] = Thickness.Parse(h.Border);
@@ -53,6 +56,10 @@ public sealed record ArticleTypography(string Key, string Name, string EnglishNa
         resources.ThemeDictionaries[ThemeVariant.Dark] = Colors(true);
         return resources;
     }
+
+    /// <summary>扣除前块折叠掉的下边距，顶边距不足时归零。</summary>
+    private static Thickness WithReducedTop(Thickness margin, double reduction) =>
+        new(margin.Left, Math.Max(0, margin.Top - reduction), margin.Right, margin.Bottom);
 
     private ResourceDictionary Colors(bool dark)
     {
