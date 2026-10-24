@@ -76,7 +76,7 @@ const properties = require('./audit-properties.cjs');
           await page.locator('#languageMenu [data-language="'+culture+'"]').click();
           assert.equal(await page.locator('#languageMenu').isVisible(), false);
           assert.equal(await page.locator('html').getAttribute('lang'), culture);
-          assert.equal(await page.locator('#rTabs [data-t]').count(), catalog.length);
+          assert.equal(await page.locator('#rTabs [data-t]').count(), catalog.length + 1); // +1: 外壳「视图」页签（Dock 面板显隐，不属于 API 目录）
           for (const group of catalog) {
             await page.locator(`#rTabs [data-t="${group.id}"]`).click();
             assert.equal(await page.locator('#rBody .cbtn').count(), group.items.length);

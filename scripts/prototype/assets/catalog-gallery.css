@@ -1,5 +1,5 @@
 .catalog-header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-bottom:12px;border-bottom:1px solid var(--line)}
-.catalog-header h1{font-size:19px;margin:0 0 4px}.catalog-header p{font-size:11px;color:var(--pri);margin:0}.cbtn .lb{max-width:160px}
+.catalog-header h1{font-size:20px;margin:0 0 4px}.catalog-header p{font-size:11.5px;color:var(--pri);margin:0}.cbtn .lb{max-width:none}
 .catalog-category{padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin:8px 0;background:var(--bg2)}
 .catalog-category h3{font-size:13px;color:var(--pri);margin:0 0 8px}.catalog-category .btn{margin:0 6px 6px 0}
 .catalog-index h2{font-size:18px;margin:0 0 10px}.catalog-index>p{color:var(--tx2);font-size:12px;margin:0 0 10px}
@@ -7,15 +7,15 @@
 .catalog-source{border-top:1px solid var(--line);margin-top:16px;padding-top:8px}.catalog-source pre{max-height:200px;overflow:auto;font:12px/1.7 Consolas,monospace;padding:12px;background:var(--bg2)}
 .catalog-input{display:block;width:100%;min-height:72px;box-sizing:border-box;margin-bottom:10px;resize:vertical;color:var(--tx);background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:10px;font:13px/1.6 Consolas,monospace}
 .catalog-result{white-space:pre-wrap;font:12px/1.7 Consolas,monospace}.catalog-titlebar{display:flex;justify-content:space-between;padding:12px;margin-top:12px;background:var(--bg2);border-radius:6px}
-.catalog-line{display:block;width:280px;height:180px;color:var(--pri);margin-top:16px}.catalog-status{display:flex;gap:12px;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg2)}
+.catalog-line{display:block;width:280px;height:180px;color:var(--pri);margin-top:16px}.catalog-status{display:flex;gap:12px;border:1px solid var(--line);border-radius:var(--r1,6px);overflow:hidden;background:var(--bg2)}
 .catalog-status strong{background:var(--pri);color:#fff;padding:5px 10px}.catalog-status span{padding:5px 10px}.catalog-status.card{flex-direction:column;padding:12px;min-width:80px}
-.rt2{overflow-x:auto;white-space:nowrap}.cmds{flex-wrap:wrap}.rbn{max-height:180px;overflow:auto}.cbtn{min-width:95px;max-width:170px}.cbtn .lb{white-space:normal;overflow-wrap:anywhere;font-size:11px}.lb{max-width:none}
+.rt2{overflow-x:auto;white-space:nowrap}.rbn{overflow-x:auto;overflow-y:hidden}.lb{max-width:none}
 .studio-title{font-size:28px!important}.studio-hero{padding-top:0!important;padding-bottom:4px!important}.catalog-index .btn:hover{transform:translateY(-2px)}
 @media(prefers-reduced-motion:reduce){.catalog-index .btn:hover{transform:none}}
 
 .studio-hero h2{font-size:26px!important;letter-spacing:-.5px}.studio-hero{margin:8px 0 14px!important}.studio-sigil{width:90px;height:90px}.studio-meta{padding-bottom:12px;margin-bottom:10px}
 
-.cmds{flex-wrap:nowrap}.cbtn{flex:0 0 auto;width:auto;height:62px}.rbn{overflow-x:auto;overflow-y:hidden}.catalog-header .catalog-description{color:var(--tx2);font-size:12px;margin-top:6px;line-height:1.7}
+.cmds{flex-wrap:nowrap}.catalog-header .catalog-description{color:var(--tx2);font-size:12.5px;margin-top:6px;line-height:1.7}
 
 .catalog-status[data-level="Debug"]{--status-color:var(--badge-debug);--status-bg:var(--badge-debug-bg);--card-color:var(--card-debug);--card-bg:var(--card-debug-bg)}
 .catalog-status[data-level="Info"]{--status-color:var(--badge-info);--status-bg:var(--badge-info-bg);--card-color:var(--card-info);--card-bg:var(--card-info-bg)}
@@ -23,7 +23,7 @@
 .catalog-status[data-level="Error"]{--status-color:var(--badge-error);--status-bg:var(--badge-error-bg);--card-color:var(--card-error);--card-bg:var(--card-error-bg)}
 .catalog-status[data-level="Fatal"]{--status-color:var(--badge-fatal);--status-bg:var(--badge-fatal-bg);--card-color:var(--card-fatal);--card-bg:var(--card-fatal-bg)}
 .catalog-status{border-color:var(--status-color);background:var(--status-bg)}.catalog-status strong{background:var(--status-color);color:var(--badge-text)}
-.catalog-status.card{background:var(--card-bg);border-color:var(--card-bg);color:var(--card-color)}.catalog-status.card strong{background:transparent;color:var(--card-top)}.catalog-status.card .catalog-status-icon{color:var(--card-color)}
+.catalog-status.card{background:var(--card-bg);border-color:var(--card-bg);color:var(--card-color);border-radius:var(--r2,10px)}.catalog-status.card strong{background:transparent;color:var(--card-top)}.catalog-status.card .catalog-status-icon{color:var(--card-color)}
 
 /* 主色实底与强调文字使用不同令牌，深色主题也保持可读的前景。 */
 .flow .st.cur .n{background:var(--button-bg);color:var(--on-primary)}.flow .st.done .n{color:var(--badge-text)}
@@ -42,18 +42,21 @@
 
 .catalog-status-row{flex-wrap:wrap}.catalog-status.card{box-sizing:border-box;width:180px;min-height:80px;flex:0 0 180px;gap:0;padding:8px 8px 8px 48px;text-align:left}.catalog-status.card strong{padding:0;font-size:12px}.catalog-status.card span{padding:8px 0 0;font-size:16px}.catalog-status.catalog-driven{width:100%;margin-top:12px}
 
-/* 与原生外壳共用 Ribbon 尺寸，命令保留完整 API 名。 */
+/* 紧凑命令条：单行 16px 图标 + 完整 API 名，替代大磁贴 Ribbon。 */
 body{font-family:"Segoe UI","Microsoft YaHei UI",sans-serif}
-.rbn{height:104px;padding:4px 12px 2px;display:flex;gap:12px;align-items:flex-start}
-.grp{flex:none;padding-right:12px;margin-right:0}.grp .cmds{display:grid;grid-auto-flow:column;grid-template-rows:80px;gap:0 4px}
-.cbtn{min-width:95px;max-width:none;padding:3px 8px;height:80px}.cbtn .lb{max-width:none;white-space:nowrap;overflow-wrap:normal}
-.ribbon-small .cmds{grid-template-rows:repeat(2,40px)}.ribbon-small .cbtn{height:40px;flex-direction:row;justify-content:flex-start}.cbtn .ic{display:flex;align-items:center;justify-content:center;width:32px;height:32px;flex:none}.cbtn .ic svg{width:32px;height:32px}
-.qk button{width:30px;height:30px;color:var(--tx2)}.qk button svg{width:18px;height:18px}.qk button:hover{color:var(--pri)}.qk button:active{background:var(--pri-lt)}
-.grp .gname{height:18px;padding-top:2px;font-size:10px;letter-spacing:0}
+.rbn{height:46px;padding:0 12px;display:flex;gap:0;align-items:stretch}
+.grp{flex:none;display:flex;flex-direction:row;align-items:center;padding:0 10px;margin-right:0}
+.grp .cmds{display:flex;flex-wrap:nowrap;gap:2px;align-items:center}
+.cbtn{min-width:0;max-width:none;flex:0 0 auto;width:auto;height:32px;padding:0 9px}
+.cbtn .ic{display:flex;align-items:center;justify-content:center;width:16px;height:16px;flex:none}.cbtn .ic svg{width:16px;height:16px}
+.cbtn .lb{max-width:none;white-space:nowrap;overflow-wrap:normal;font-size:12px}
+.gname{display:none}
+.qk button{width:28px;height:28px;color:var(--tx2)}.qk button svg{width:16px;height:16px}.qk button:hover{color:var(--pri)}.qk button:active{background:var(--pri-lt)}
+[data-density="compact"] .cbtn{padding:0 6px}
 .p-nav{width:16%;min-width:164px}.p-props{width:17%;min-width:220px}.p-log{height:14%;min-height:60px}
-.tree .lf{font-size:11.5px;height:30px}.tree .nd .hd{height:31px;font-size:11px}
+.tree .lf{font-size:12.5px;height:30px}.tree .nd .hd{height:31px;font-size:11.5px}
 .dbody:not([data-page="welcome"]){padding:0}.catalog-header{padding:10px 16px;gap:12px}.catalog-header h1{line-height:1.35}.catalog-header .catalog-description{margin-top:3px;line-height:1.5}
-.dbody:not([data-page="welcome"])>[id^="seg-"]{padding:14px 16px}.demo{border-radius:10px}
+.dbody:not([data-page="welcome"])>[id^="seg-"]{padding:14px 16px}.demo{border-radius:var(--r2,10px)}
 [data-density="compact"] .cbtn{min-width:80px;padding:3px 4px}
 .catalog-markdown-basic{display:flex;flex-direction:column;gap:8px;font-size:16px;line-height:26px;color:var(--tx)}
 .catalog-markdown-basic h1{font-size:32px;line-height:1.2;margin:18px 0 10px;font-weight:700}
@@ -70,13 +73,18 @@ body{font-family:"Segoe UI","Microsoft YaHei UI",sans-serif}
 
 .qk2 button svg{width:18px;height:18px}.rw textarea{width:100%;min-height:64px;resize:vertical;box-sizing:border-box;background:var(--bg2);color:var(--tx);border:1px solid var(--line);border-radius:4px}.rw:has(textarea){height:auto;min-height:74px}
 
-/* 文档与参数一起布局，拖出文档时共同移动。 */
-.document-workspace{display:grid;grid-template-columns:minmax(160px,1fr) 5px minmax(180px,var(--document-properties-width,260px));flex:1;min-height:0;min-width:0;overflow:hidden}
-.document-workspace>.dbody{min-width:0;min-height:0;overflow:auto}
-.document-workspace>.p-props{width:auto;min-width:0;min-height:0;border-left:0}
-.document-splitter{background:var(--line);cursor:col-resize;touch-action:none}
-.document-splitter:hover,.document-splitter:focus-visible{background:var(--pri);outline:none}
-body.hideR .document-workspace{grid-template-columns:minmax(0,1fr) 0 0}
+/* 文档区（页签+内容）与属性面板是平级圆角块，间隙与导航一致；分隔条隐形，悬停显示拖拽柄。 */
+.p-doc{display:grid;grid-template-columns:minmax(0,1fr) 10px minmax(180px,var(--document-properties-width,260px));grid-template-rows:auto minmax(0,1fr);border:none;background:transparent;box-shadow:none;overflow:visible;position:relative}
+.document-workspace{display:contents}
+.p-doc>.dts{grid-column:1;grid-row:1;border:1px solid var(--bd2);border-radius:var(--r2,10px) var(--r2,10px) 0 0;background:var(--bg)}
+.p-doc>.document-workspace>.dbody{grid-column:1;grid-row:2;min-width:0;min-height:0;overflow:auto;border:1px solid var(--bd2);border-top:none;border-radius:0 0 var(--r2,10px) var(--r2,10px);background:var(--bg)}
+.p-doc>.document-workspace>.document-splitter{grid-column:2;grid-row:1/3;position:relative;background:transparent;cursor:col-resize;touch-action:none}
+.document-splitter:focus-visible{outline:none}
+.document-splitter::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:3px;height:36px;border-radius:999px;background:transparent;transition:background .15s}
+.document-splitter:hover::before,.document-splitter:focus-visible::before{background:var(--pri)}
+.p-doc>.document-workspace>.p-props{grid-column:3;grid-row:1/3;width:auto;min-width:0;min-height:0}
+body.hideR .p-doc{grid-template-columns:minmax(0,1fr)}
+body.hideR .document-splitter,body.hideR .p-props{display:none}
 
 /* 属性驱动的控件预览保持紧凑尺寸；表单单元格沿用无边框编辑样式。 */
 .catalog-status.card{position:relative;padding-left:calc(var(--status-icon-width,32px) + 16px)}
@@ -90,8 +98,8 @@ body.hideR .document-workspace{grid-template-columns:minmax(0,1fr) 0 0}
 .catalog-status.badge{display:inline-flex;align-self:flex-start;box-sizing:border-box;height:24px;gap:0;padding:0;border:1px solid var(--status-color);border-radius:6px;font-size:13px;line-height:20px}
 .catalog-status.badge strong{padding:1px 8px;font-weight:400}.catalog-status.badge span{padding:1px 4px}
 .catalog-status-page>.catalog-driven{margin-top:0}
-/* 独立 API 页沿用 StudioUi.Card 的 18px 内边距和 12px 圆角。 */
-.catalog-api-card{padding:18px;border-radius:12px;display:flex;flex-direction:column;gap:8px}
+/* 独立 API 页沿用 StudioUi.Card 的 18px 内边距。 */
+.catalog-api-card{padding:18px;border-radius:var(--r2,10px);display:flex;flex-direction:column;gap:8px}
 .catalog-api-card>h4{font-size:12.5px;line-height:18px;color:var(--tx);font-weight:600;margin:0}
 .catalog-titlebar-preview{height:44px;box-sizing:border-box;margin:0;padding:0;background:transparent;border-radius:0;align-items:center}
 .catalog-titlebar-preview strong{font-size:13px;font-weight:400;margin-left:12px}

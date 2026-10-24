@@ -1317,7 +1317,16 @@ function togglePanel(which) {
  var label = which === "L" ? "导航树" : which === "R" ? "属性" : "日志";
  log2both(label + "面板：" + (hidden ? "隐藏" : "显示"));
  if (ACTIVE_DOC === "flow-docs") renderDoc("flow-docs");
+ syncPropsCollapse();
  return hidden;
+}
+function syncPropsCollapse() {
+ var pc = $("propsCollapse");
+ if (!pc) return;
+ var hidden = document.body.classList.contains("hideR");
+ pc.setAttribute("aria-pressed", String(!hidden));
+ pc.title = hidden ? (LANG === "en-US" ? "Expand properties panel" : "展开属性面板")
+                   : (LANG === "en-US" ? "Collapse properties panel" : "折叠属性面板");
 }
 var LAYOUT_KEY = "codewf-avalonia-demo-layout";
 function saveLayout() {
@@ -1469,17 +1478,10 @@ function bindShell() {
  $("qkDensity").onclick = function () { setDensity(document.documentElement.dataset.density === "compact" ? "cozy" : "compact"); };
  $("qkSave").onclick = saveLayout;
  $("qkReset").onclick = function () { layoutResetAsk(); };
- $("hideNav").onclick = function () { togglePanel("L"); };
- $("hideProp2").onclick = function () { togglePanel("R"); };
  $("hideLogBtn").onclick = function () { togglePanel("Log"); };
  $("logToggleBtn").onclick = function () { togglePanel("Log"); };
- $("dkNav").onclick = $("hideNav").onclick;
- $("dkProps").onclick = $("hideProp2").onclick;
- $("dkLog").onclick = $("hideLogBtn").onclick;
- $("dkMax").onclick = function () { document.body.classList.add("hideL", "hideR"); log2both("文档区最大化"); };
- $("dkReset").onclick = function () { layoutResetAsk(); };
- $("openLogDir").onclick = function () { log2both("打开日志目录（跨平台内联：Explorer / xdg-open / open）", "warn"); };
- $("clrLogBtn").onclick = clearLogAsk;
+ $("propsCollapse").onclick = function () { togglePanel("R"); };
+ bindLogContextMenu();
  $("cpmQ").oninput = cpmDraw;
  $("cpmQ").onkeydown = function (e) {
   if (e.key === "ArrowDown") { e.preventDefault(); cpmMove(1); }
@@ -1509,6 +1511,38 @@ function bindShell() {
    else gCloseGuide();
   }
  });
+}
+function openLogDirectory() {
+ log2both("打开日志目录（跨平台内联：Explorer / xdg-open / open）", "warn");
+}
+/* 日志面板右键菜单：镜像原生 LogView 的上下文菜单（打开目录 / 清空）。 */
+function bindLogContextMenu() {
+ var menu = document.createElement("div");
+ menu.className = "ctx-menu"; menu.id = "logCtxMenu"; menu.hidden = true;
+ document.body.appendChild(menu);
+ var label = function (key) { return (I18N[LANG] || I18N["zh-CN"] || {})[key] || key; };
+ $("logP").addEventListener("contextmenu", function (event) {
+  event.preventDefault();
+  menu.innerHTML = '<button type="button" data-act="dir">' + esc(label("log.opendir")) +
+   '</button><button type="button" data-act="clear">' + esc(label("log.clear")) + "</button>";
+  menu.style.left = Math.min(event.clientX, window.innerWidth - 170) + "px";
+  menu.style.top = Math.min(event.clientY, window.innerHeight - 100) + "px";
+  menu.hidden = false;
+ });
+ menu.addEventListener("click", function (event) {
+  var act = event.target instanceof Element ? event.target.getAttribute("data-act") : null;
+  if (!act) return;
+  menu.hidden = true;
+  if (act === "dir") openLogDirectory();
+  else if (act === "clear") window.clearLogAsk();
+ });
+ document.addEventListener("click", function (event) {
+  if (menu.hidden) return;
+  if (event.target instanceof Element && event.target.closest("#logCtxMenu")) return;
+  menu.hidden = true;
+ });
+ document.addEventListener("keydown", function (event) { if (event.key === "Escape") menu.hidden = true; });
+ window.addEventListener("blur", function () { menu.hidden = true; });
 }
 window.clearLogAsk = function () {
  confirmDlg(tt("dlg.del.t"), "清空底部日志面板？该操作不影响日志文件。", function () {

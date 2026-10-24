@@ -76,6 +76,55 @@
     originalOpenDoc(id);
   };
   window.openDoc = openDoc;
+  /* ── Ribbon「视图」命令组：Dock 面板显隐（原型外壳命令，不属于 API 目录，导航树不渲染） ── */
+  var VIEW_ID = "view";
+  var originalTabName = tabName;
+  tabName = function (id) { return id === VIEW_ID ? (LANG === "en-US" ? "View" : "视图") : originalTabName(id); };
+  var originalRenderRTabs = renderRTabs;
+  renderRTabs = function () {
+    originalRenderRTabs();
+    var tab = document.createElement("div");
+    tab.className = "t2" + (curTab === VIEW_ID ? " on" : "");
+    tab.dataset.t = VIEW_ID;
+    tab.setAttribute("role", "tab"); tab.tabIndex = 0;
+    tab.title = (LANG === "en-US" ? "View" : "视图") + (LANG === "en-US" ? " (double-click to collapse the ribbon)" : "（双击折叠命令区）");
+    tab.innerHTML = "<span>" + (LANG === "en-US" ? "View" : "视图") + "</span>";
+    tab.onclick = function () { switchTab(VIEW_ID); };
+    tab.ondblclick = function () { toggleRibbon(); };
+    tab.onkeydown = function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); switchTab(VIEW_ID); } };
+    $("rTabs").appendChild(tab);
+  };
+  var shellIcon = {
+    nav: '<svg class="svgic s16" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>',
+    log: '<svg class="svgic s16" viewBox="0 0 24 24"><path d="M5 4h14M5 9h14M5 14h9M5 19h6"/></svg>',
+    max: '<svg class="svgic s16" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>',
+    reset: '<svg class="svgic s16" viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6L3.5 8.5"/><path d="M3.5 3.5v5h5"/></svg>'
+  };
+  var galleryRenderRBody = renderRBody;
+  renderRBody = function () {
+    if (curTab !== VIEW_ID) { galleryRenderRBody(); return; }
+    var zh = LANG !== "en-US";
+    var items = [
+      { act: "nav",   label: zh ? "导航树" : "Nav Tree",   title: zh ? "显示 / 隐藏导航树" : "Toggle navigation tree", on: !document.body.classList.contains("hideL") },
+      { act: "log",   label: zh ? "日志" : "Log Panel",    title: zh ? "显示 / 隐藏日志面板" : "Toggle log panel", on: !document.body.classList.contains("hideLog") },
+      { act: "max",   label: zh ? "最大化" : "Maximize",   title: zh ? "文档区最大化（隐藏导航树与属性面板）" : "Maximize the document area", on: document.body.classList.contains("hideL") && document.body.classList.contains("hideR") },
+      { act: "reset", label: zh ? "重置" : "Reset Layout", title: zh ? "重置布局" : "Reset layout", on: false }
+    ];
+    $("rBody").innerHTML = '<div class="grp"><div class="cmds">' + items.map(function (it) {
+      return '<button class="cbtn" data-shell="' + it.act + '" title="' + esc(it.title) + '" aria-pressed="' + it.on + '">' +
+        '<span class="ic">' + shellIcon[it.act] + '</span><span class="lb">' + esc(it.label) + "</span></button>";
+    }).join("") + '</div><div class="gname">' + (zh ? "视图" : "View") + "</div></div>";
+    $("rBody").querySelectorAll("[data-shell]").forEach(function (button) {
+      button.onclick = function () {
+        var act = button.dataset.shell;
+        if (act === "nav") togglePanel("L");
+        else if (act === "log") togglePanel("Log");
+        else if (act === "max") { document.body.classList.add("hideL", "hideR"); syncPropsCollapse(); log2both("文档区最大化"); }
+        else layoutResetAsk();
+        renderRBody();
+      };
+    });
+  };
   function apiMeta(entry) {
     return { t:title(entry), d:entry.api ? entry.package : text("AboutDesc"), f:[] };
   }
@@ -176,9 +225,10 @@
   var widths = {}, workspace = document.querySelector('.document-workspace');
   var splitter = document.querySelector('.document-splitter');
   function resizeProperties(width) {
-    var bounded = Math.max(180, Math.min(width, workspace.clientWidth - 165));
+    var frame = document.querySelector('.p-doc') || workspace;
+    var bounded = Math.max(180, Math.min(width, frame.clientWidth - 165));
     widths[ACTIVE_DOC] = bounded;
-    workspace.style.setProperty('--document-properties-width', bounded + 'px');
+    document.body.style.setProperty('--document-properties-width', bounded + 'px');
     splitter.setAttribute('aria-valuenow', String(Math.round(bounded)));
   }
   splitter.onpointerdown = function(event) {
@@ -194,7 +244,7 @@
   };
   var renderWithProperties = renderDoc;
   renderDoc = function(id) {
-    workspace.style.setProperty('--document-properties-width', (widths[id] || 260) + 'px');
+    document.body.style.setProperty('--document-properties-width', (widths[id] || 260) + 'px');
     return renderWithProperties(id);
   };
   curTab='home';
