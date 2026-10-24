@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shapes="using:Avalonia.Controls.Shapes">
   <!--  演示台外壳样式：与设计原型对齐（间距 / 四态 / 命令按钮 / 状态栏 / 步骤条）  -->
 
   <!--  快捷工具按钮：28×26 热区、字形居中、悬停与键盘焦点四态  -->
@@ -300,7 +301,7 @@
     <Setter Property="Padding" Value="0" />
   </Style>
   <Style Selector="ListBox.language-list ListBoxItem">
-    <Setter Property="Padding" Value="10,7" />
+    <Setter Property="Padding" Value="10,6" />
     <Setter Property="MinHeight" Value="30" />
     <Setter Property="FontSize" Value="12.5" />
     <Setter Property="CornerRadius" Value="6" />
@@ -323,6 +324,98 @@
     <Setter Property="FontSize" Value="12" />
     <Setter Property="MinHeight" Value="28" />
     <Setter Property="CornerRadius" Value="6" />
+  </Style>
+  <!--  Vex appearance-pill：密度/模式三态行，三等分扁平 pill，选中 = 强调软底 + 强调文字  -->
+  <Style Selector="ListBox.appearance-pills">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Margin" Value="0,9,0,0" />
+  </Style>
+  <Style Selector="ListBox.appearance-pills ListBoxItem">
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="MinHeight" Value="32" />
+    <Setter Property="CornerRadius" Value="5" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+  <Style Selector="ListBox.appearance-pills ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+  <Style Selector="ListBox.appearance-pills ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
+  </Style>
+  <Style Selector="ListBox.appearance-pills ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource SemiColorPrimaryLight}" />
+  </Style>
+  <Style Selector="ListBox.appearance-pills ListBoxItem:selected">
+    <Setter Property="Foreground" Value="{DynamicResource StudioAccent}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+  <!--  Vex palette-card-on：选中环（外扩 1.5px 强调描边）与右缘 ✓  -->
+  <Style Selector="Border.palette-ring">
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioAccent}" />
+    <Setter Property="BorderThickness" Value="1.5" />
+    <Setter Property="CornerRadius" Value="7.5" />
+    <Setter Property="Margin" Value="-1.5" />
+    <Setter Property="IsHitTestVisible" Value="False" />
+  </Style>
+  <Style Selector="TextBlock.palette-check">
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="Foreground" Value="{DynamicResource StudioAccent}" />
+    <Setter Property="HorizontalAlignment" Value="Right" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Margin" Value="0,0,6,0" />
+  </Style>
+  <!--  Vex palette-add-card：虚线描边新增卡（Button 无虚线边框，用 Rectangle 覆层）  -->
+  <Style Selector="Button.palette-add-card">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="VerticalContentAlignment" Value="Stretch" />
+  </Style>
+  <Style Selector="shapes|Rectangle.palette-add-dash">
+    <Setter Property="StrokeThickness" Value="1" />
+    <Setter Property="RadiusX" Value="8" />
+    <Setter Property="RadiusY" Value="8" />
+    <Setter Property="Fill" Value="Transparent" />
+    <Setter Property="StrokeDashArray" Value="4,3" />
+    <Setter Property="Stroke" Value="{DynamicResource StudioBorder}" />
+  </Style>
+  <Style Selector="Button.palette-add-card:pointerover shapes|Rectangle.palette-add-dash">
+    <Setter Property="Stroke" Value="{DynamicResource StudioAccent}" />
+  </Style>
+  <Style Selector="Button.palette-add-card:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
+  </Style>
+  <Style Selector="ToggleButton.qk-btn.appearance-btn">
+    <Setter Property="Width" Value="NaN" />
+    <Setter Property="Height" Value="32" />
+    <Setter Property="CornerRadius" Value="5" />
+    <Setter Property="Padding" Value="7,0" />
+    <Setter Property="FontSize" Value="11" />
+  </Style>
+  <Style Selector="ToggleButton.qk-btn.lang-btn">
+    <Setter Property="Width" Value="32" />
+    <Setter Property="Height" Value="32" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+  <Style Selector="Border.lang-chip">
+    <Setter Property="Background" Value="{DynamicResource StudioSelected}" />
+  </Style>
+  <Style Selector="TextBlock.lang-chip-text">
+    <Setter Property="Foreground" Value="{DynamicResource StudioAccent}" />
+  </Style>
+  <Style Selector="ListBox.language-list ListBoxItem:selected Border.lang-chip">
+    <Setter Property="Background" Value="{DynamicResource StudioAccent}" />
+  </Style>
+  <Style Selector="ListBox.language-list ListBoxItem:selected TextBlock.lang-chip-text">
+    <Setter Property="Foreground" Value="{DynamicResource StudioOnPrimary}" />
   </Style>
   <Style Selector="Button.palette-card">
     <Setter Property="Background" Value="{DynamicResource StudioBackground}" />

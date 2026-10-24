@@ -28,6 +28,14 @@ public sealed class AppearanceOption : global::ReactiveUI.ReactiveObject
     /// <summary>用户自定义配色（卡片带 ✎/×，可编辑与删除）。</summary>
     public bool IsUser { get; }
 
+    /// <summary>当前应用的配色（Vex palette-card-on：选中环 + 右缘 ✓）。</summary>
+    private bool _isSelected;
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set => global::ReactiveUI.IReactiveObjectExtensions.RaiseAndSetIfChanged(this, ref _isSelected, value);
+    }
+
     /// <summary>编写层 8 色圆点（浅 4 + 深 4，4×2 排布）。</summary>
     public System.Collections.Generic.IReadOnlyList<IBrush> SwatchDots { get; init; } = System.Array.Empty<IBrush>();
 
@@ -115,12 +123,22 @@ public sealed class CultureOption
     {
         Name = name;
         DisplayName = displayName;
+        ShortName = name switch
+        {
+            "zh-CN" => "中",
+            "zh-Hant" => "繁",
+            "ja-JP" => "日",
+            _ => "EN",
+        };
     }
 
     public string Name { get; }
 
     /// <summary>语言名以其自身语言展示（不随界面语言切换）。</summary>
     public string DisplayName { get; }
+
+    /// <summary>语言菜单 24px 徽标文字（Vex studio-language chip）。</summary>
+    public string ShortName { get; }
 
     public override string ToString() => DisplayName;
 }

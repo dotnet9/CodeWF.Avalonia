@@ -517,6 +517,11 @@ public partial class MainViewModel
                 && Palettes.FirstOrDefault(p => p.Title == state.Palette) is { } palette)
             {
                 _selectedPalette = palette;
+                foreach (var option in Palettes)
+                {
+                    option.IsSelected = option == palette;
+                }
+
                 this.RaisePropertyChanged(nameof(SelectedPalette));
             }
 

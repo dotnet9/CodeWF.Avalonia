@@ -1,4 +1,5 @@
 ﻿<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui"
+                     xmlns:shapes="using:Avalonia.Controls.Shapes"
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:codewf="https://codewf.com"
                      xmlns:u="https://irihi.tech/ursa"
@@ -39,79 +40,106 @@
   </codewf:CodeWFWindow.LeftContent>
   <codewf:CodeWFWindow.RightContent>
     <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="0,0,8,0">
-      <!--  外观菜单（原型 appearance-menu 同构）：明暗三选 + 配色九宫格（推荐置顶 + 8 圆点卡 + 用户卡 ✎/× + 新增配色）  -->
-      <ToggleButton x:Name="AppearanceButton" Classes="qk-btn"
+      <!--  外观菜单（Vex ShellAppearanceMenuView 口径）：密度/模式 pill 行 + 配色卡网格（选中环 + 右缘 ✓ + 推荐角标 + 用户卡 ✎/×） + 虚线新增卡  -->
+      <ToggleButton x:Name="AppearanceButton" Classes="qk-btn appearance-btn"
                     ToolTip.Tip="{codewf:I18n Demo.Shell.AppearanceMenu}">
         <StackPanel Orientation="Horizontal" Spacing="5">
           <PathIcon Width="15" Height="15" Data="{DynamicResource SemiIconColorPalette}" />
-          <TextBlock Text="{codewf:I18n Demo.Shell.AppearanceMenu}" FontSize="12" VerticalAlignment="Center" />
+          <TextBlock Text="{codewf:I18n Demo.Shell.AppearanceMenu}" FontSize="11" VerticalAlignment="Center" />
         </StackPanel>
       </ToggleButton>
       <Popup PlacementTarget="{Binding #AppearanceButton}" Placement="Bottom" VerticalOffset="8"
-             IsLightDismissEnabled="True" IsEnabled="{Binding #AppearanceButton.IsChecked}">
-        <Border Classes="appearance-choices" Width="458">
-          <StackPanel Spacing="10">
+             IsLightDismissEnabled="True" IsEnabled="{Binding #AppearanceButton.IsChecked}" IsOpen="{Binding #AppearanceButton.IsChecked, Mode=TwoWay}">
+        <Border Classes="appearance-choices" Width="430">
+          <StackPanel>
+            <TextBlock Classes="appearance-title" Text="{codewf:I18n Demo.Shell.Density}" Margin="0,4,0,0" />
+            <ListBox Classes="appearance-pills" SelectedIndex="{Binding DensityIndex}">
+              <ListBox.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="2" /></ItemsPanelTemplate></ListBox.ItemsPanel>
+              <ListBoxItem Content="{codewf:I18n Demo.Shell.DensityComfort}" />
+              <ListBoxItem Content="{codewf:I18n Demo.Shell.DensityCompact}" />
+            </ListBox>
             <TextBlock Classes="appearance-title" Text="{codewf:I18n Demo.Shell.GlobalSettings.ModeLabel}" />
-            <ListBox Classes="mode-chips" SelectedIndex="{Binding ThemeModeIndex}" ItemsSource="{Binding ThemeModes}" />
+            <ListBox Classes="appearance-pills" SelectedIndex="{Binding ThemeModeIndex}" ItemsSource="{Binding ThemeModes}">
+              <ListBox.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="3" /></ItemsPanelTemplate></ListBox.ItemsPanel>
+            </ListBox>
             <TextBlock Classes="appearance-title" Text="{codewf:I18n Demo.Shell.PalettesTitle}" />
-            <ScrollViewer MaxHeight="420" HorizontalScrollBarVisibility="Disabled">
-              <ItemsControl ItemsSource="{Binding Palettes}">
-                <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="3" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate x:DataType="vm:AppearanceOption">
-                    <Panel Margin="0,0,6,6">
-                      <Button Classes="palette-card" Click="OnPaletteCardClick" Tag="{Binding}">
-                        <StackPanel Spacing="5">
-                          <Panel HorizontalAlignment="Left">
-                            <ItemsControl ItemsSource="{Binding SwatchDots}">
-                              <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="2" Columns="4" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
-                              <ItemsControl.ItemTemplate>
-                                <DataTemplate><Ellipse Width="16" Height="16" Margin="1" Fill="{Binding}" /></DataTemplate>
-                              </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                            <Border Classes="palette-badge" IsVisible="{Binding IsRecommended}">
-                              <TextBlock Text="{codewf:I18n Demo.Shell.Pick}" FontSize="9" FontWeight="SemiBold" Margin="4,1" />
-                            </Border>
-                          </Panel>
-                          <TextBlock Text="{Binding Title}" FontSize="12" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                          <TextBlock Text="{Binding Note}" FontSize="10" Opacity="0.72" TextTrimming="CharacterEllipsis" />
-                        </StackPanel>
-                      </Button>
-                      <StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                  IsVisible="{Binding IsUser}">
-                        <Button Classes="qk-btn palette-tool" Content="✎" ToolTip.Tip="{codewf:I18n Demo.Shell.EditPalette}"
-                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).EditUserPaletteCommand}"
-                                CommandParameter="{Binding}" />
-                        <Button Classes="qk-btn palette-tool" Content="×" ToolTip.Tip="{codewf:I18n Demo.Shell.RemovePalette}"
-                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).RemoveUserPaletteCommand}"
-                                CommandParameter="{Binding}" />
-                      </StackPanel>
-                    </Panel>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
+            <ScrollViewer MaxHeight="470" HorizontalScrollBarVisibility="Disabled" Margin="0,10,0,0">
+              <StackPanel>
+                <ItemsControl ItemsSource="{Binding Palettes}">
+                  <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="3" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:AppearanceOption">
+                      <Panel Margin="0,0,6,6">
+                        <Grid>
+                          <Button Classes="palette-card" Click="OnPaletteCardClick" Tag="{Binding}">
+                            <StackPanel Spacing="6" Margin="0,0,24,0">
+                              <ItemsControl ItemsSource="{Binding SwatchDots}" HorizontalAlignment="Left">
+                                <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="2" Columns="4" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                  <DataTemplate><Ellipse Width="16" Height="16" Fill="{Binding}" /></DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                              </ItemsControl>
+                              <StackPanel Spacing="1">
+                                <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" LineHeight="19" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Note}" FontSize="10" LineHeight="14" Opacity="0.72" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </StackPanel>
+                          </Button>
+                          <!--  选中环：外扩 1.5px 强调色描边（Vex palette-card-on）  -->
+                          <Border Classes="palette-ring" IsVisible="{Binding IsSelected}" />
+                          <TextBlock Classes="palette-check" Text="✓" IsVisible="{Binding IsSelected}" />
+                          <Border Classes="palette-badge" IsVisible="{Binding IsRecommended}">
+                            <TextBlock Text="{codewf:I18n Demo.Shell.Pick}" FontSize="9" FontWeight="SemiBold" Margin="4,1" />
+                          </Border>
+                          <StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                      IsVisible="{Binding IsUser}">
+                            <Button Classes="qk-btn palette-tool" Content="✎" ToolTip.Tip="{codewf:I18n Demo.Shell.EditPalette}"
+                                    Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).EditUserPaletteCommand}"
+                                    CommandParameter="{Binding}" />
+                            <Button Classes="qk-btn palette-tool" Content="×" ToolTip.Tip="{codewf:I18n Demo.Shell.RemovePalette}"
+                                    Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).RemoveUserPaletteCommand}"
+                                    CommandParameter="{Binding}" />
+                          </StackPanel>
+                        </Grid>
+                      </Panel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <!--  虚线新增卡（Vex palette-add-card）  -->
+                <Button Classes="palette-add-card" Command="{Binding AddPaletteCommand}" Margin="0,6,6,0">
+                  <Panel>
+                    <shapes:Rectangle Classes="palette-add-dash" />
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="5">
+                      <TextBlock Text="＋" FontSize="26" HorizontalAlignment="Center" />
+                      <TextBlock Text="{codewf:I18n Demo.Shell.AddPalette}" FontSize="10" Opacity="0.72" HorizontalAlignment="Center" />
+                    </StackPanel>
+                  </Panel>
+                </Button>
+              </StackPanel>
             </ScrollViewer>
-            <Button Classes="appearance-add" Content="{codewf:I18n Demo.Shell.AddPalette}" Command="{Binding AddPaletteCommand}"
-                    HorizontalAlignment="Stretch" />
           </StackPanel>
         </Border>
       </Popup>
-      <!--  语言入口：图标按钮 + 弹出列表（原型 language-menu 同构），当前项打勾  -->
-      <ToggleButton x:Name="TitleBarLanguageButton" Classes="qk-btn"
+      <!--  语言入口（Vex studio-language 口径）："文ᴬ" 触发钮 + 徽标行菜单，选中行强调底 + 右缘 ✓  -->
+      <ToggleButton x:Name="TitleBarLanguageButton" Classes="qk-btn lang-btn"
                     ToolTip.Tip="{codewf:I18n Demo.Shell.GlobalSettings.LanguageLabel}">
-        <PathIcon Width="16" Height="16" Data="{DynamicResource SemiIconLanguage}" />
+        <TextBlock Text="文ᴬ" FontSize="12" />
       </ToggleButton>
       <Popup PlacementTarget="{Binding #TitleBarLanguageButton}" Placement="Bottom" VerticalOffset="8"
-             IsLightDismissEnabled="True" IsEnabled="{Binding #TitleBarLanguageButton.IsChecked}">
-        <Border Classes="language-menu">
+             IsLightDismissEnabled="True" IsEnabled="{Binding #TitleBarLanguageButton.IsChecked}" IsOpen="{Binding #TitleBarLanguageButton.IsChecked, Mode=TwoWay}">
+        <Border Classes="language-menu" Width="236">
           <ListBox Classes="language-list" SelectedItem="{Binding SelectedCulture}" ItemsSource="{Binding Cultures}">
             <ListBox.ItemTemplate>
               <DataTemplate x:DataType="vm:CultureOption">
-                <Grid ColumnDefinitions="*,Auto">
-                  <TextBlock Text="{Binding DisplayName}" FontSize="12.5" VerticalAlignment="Center" />
-                  <PathIcon Grid.Column="1" Width="12" Height="12" Data="{StaticResource SemiIconTick}"
-                            IsVisible="{Binding $parent[ListBoxItem].IsSelected}"
-                            Foreground="{DynamicResource StudioAccent}" />
+                <Grid ColumnDefinitions="Auto,*,Auto" Height="26">
+                  <Border Classes="lang-chip" Width="24" Height="24" CornerRadius="7">
+                    <TextBlock Classes="lang-chip-text" Text="{Binding ShortName}" FontSize="11" FontWeight="SemiBold"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Border>
+                  <TextBlock Grid.Column="1" Text="{Binding DisplayName}" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="2" Text="✓" FontSize="13" Margin="8,0,0,0" VerticalAlignment="Center"
+                             Foreground="{DynamicResource StudioAccent}"
+                             IsVisible="{Binding $parent[ListBoxItem].IsSelected}" />
                 </Grid>
               </DataTemplate>
             </ListBox.ItemTemplate>

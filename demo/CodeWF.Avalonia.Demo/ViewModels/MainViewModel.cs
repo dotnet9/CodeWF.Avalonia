@@ -67,6 +67,10 @@ public partial class MainViewModel : ReactiveObject, IDisposable
         _themeController ??= new StudioThemeController(Application.Current);
         Palettes = new ObservableCollection<AppearanceOption>(AppearanceOption.CreateAll(_themeController));
         _selectedPalette = Palettes[0];
+        foreach (var option in Palettes)
+        {
+            option.IsSelected = option == _selectedPalette;
+        }
         CyclePaletteCommand = ReactiveCommand.Create(() => { SelectedPalette = Palettes[(Palettes.IndexOf(SelectedPalette) + 1) % Palettes.Count]; });
         AddPaletteCommand = ReactiveCommand.Create(AddUserPalette);
         EditUserPaletteCommand = ReactiveCommand.Create<AppearanceOption>(EditUserPalette);
@@ -358,8 +362,20 @@ public partial class MainViewModel : ReactiveObject, IDisposable
             }
 
             this.RaiseAndSetIfChanged(ref _selectedPalette, value);
+            foreach (var option in Palettes)
+            {
+                option.IsSelected = option == value;
+            }
+
             ApplyAppearance();
         }
+    }
+
+    /// <summary>外观面板的密度两档 pill（Vex appearance-pill 行）。</summary>
+    public int DensityIndex
+    {
+        get => Density == DemoDensity.Compact ? 1 : 0;
+        set => Density = value == 1 ? DemoDensity.Compact : DemoDensity.Comfort;
     }
 
     public IReadOnlyList<ThemeModeOption> ThemeModeOptions { get; } =
