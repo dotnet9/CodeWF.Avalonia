@@ -123,6 +123,9 @@ public static class StudioPaletteEngine
         }
         return 0.2126 * Channel(c.R) + 0.7152 * Channel(c.G) + 0.0722 * Channel(c.B);
     }
+    /// <summary>两色对比度（WCAG），供宿主复核用户自定义色板（规则 §5 校验清单）。</summary>
+    public static double ContrastRatio(Color a, Color b) => Contrast(a, b);
+
     private static double Contrast(Color a, Color b)
     {
         var la = Luminance(a);

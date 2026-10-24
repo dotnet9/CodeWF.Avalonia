@@ -302,16 +302,20 @@ public sealed class MarkdownMindMapView : UserControl
                 ? FormattableString.Invariant($"M {a.X},{a.Y} L {b.X},{b.Y}")
                 : FormattableString.Invariant($"M {a.X},{a.Y} C {a.X + 40},{a.Y} {b.X - 40},{b.Y} {b.X},{b.Y}");
             // 原型连线配色：缤纷=分支色、黑白=前景、其余样式统一强调色系（polish.css .map-links）。
+            // 参考软件样式：缤纷=Mermaid cScale 实色粗线（4px 实色，非半透明细线）。
             var linkColor = StyleKind switch
             {
-                MindMapStyleKind.Colorful => _branches[child],
+                MindMapStyleKind.Colorful => BranchSolid(_branches[child], dark),
                 MindMapStyleKind.Mono => dark ? Color.Parse("#E4E5E7") : Color.Parse("#30343B"),
                 _ => AccentColor
             };
+            var isColorfulLink = StyleKind == MindMapStyleKind.Colorful;
             _canvas.Children.Add(new global::Avalonia.Controls.Shapes.Path
             {
                 Data = Geometry.Parse(data),
-                Stroke = new SolidColorBrush(linkColor, StyleKind == MindMapStyleKind.Colorful ? (dark ? .6 : .38) : .42), StrokeThickness = 1.5, IsHitTestVisible = false
+                Stroke = new SolidColorBrush(linkColor, isColorfulLink ? 1.0 : .42),
+                StrokeThickness = isColorfulLink ? 3.5 : 1.5,
+                IsHitTestVisible = false
             });
         }
         foreach (var (node, rect) in _bounds)
@@ -322,13 +326,15 @@ public sealed class MarkdownMindMapView : UserControl
             var color = _branches[node];
             // 原型 Quiet 卡片：标题左对齐垂直居中，级别/文档徽标在右缘（标题节点靠上、根节点居中）。
             var body = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), VerticalAlignment = VerticalAlignment.Center };
+            IBrush? nodeForeground = StyleKind == MindMapStyleKind.Colorful && !root ? new SolidColorBrush(ContrastText(_branches[node])) : null;
             var badge = root ? MindViewLocalization.GetResource(MindViewL.MarkdownDocument) : heading ? $"H{node.HeadingLevel}" : null;
             body.Children.Add(new TextBlock
             {
                 Text = node.Title, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, MaxLines = root ? 1 : 4,
                 FontSize = root || heading ? 13 : 12, LineHeight = 20,
                 FontWeight = root || heading ? FontWeight.SemiBold : FontWeight.Normal,
-                Foreground = root ? MindViewThemeResources.AccentForeground(AccentColor) : foreground,
+                Foreground = root ? MindViewThemeResources.AccentForeground(AccentColor)
+                    : nodeForeground ?? foreground,
                 VerticalAlignment = VerticalAlignment.Center
             });
             if (badge is not null)
@@ -365,7 +371,9 @@ public sealed class MarkdownMindMapView : UserControl
                 switch (StyleKind)
                 {
                     case MindMapStyleKind.Colorful:
-                        card.Background = heading ? new SolidColorBrush(color) : Tint(color, dark ? 0.24 : 0.85);
+                        // 参考软件：节点实色填充（深色态亮一档），文字按底色亮度取黑/白。
+                        var solid = dark ? Brighten(color, 0.18) : color;
+                        card.Background = new SolidColorBrush(solid);
                         card.BorderBrush = new SolidColorBrush(color);
                         break;
                     case MindMapStyleKind.Outline:
@@ -482,7 +490,7 @@ public sealed class MarkdownMindMapView : UserControl
                 var centers = new List<double>();
                 for (var i = 0; i < node.Children.Count; i++)
                 {
-                    var childColor = root ? (i % 5) switch { 1 => SuccessColor, 2 => WarningColor, 4 => Color.Parse(dark ? "#9398B3" : "#8B91A8"), _ => AccentColor } : branch;
+                    var childColor = root ? (i % 5) switch { 1 => SuccessColor, 2 => WarningColor, 4 => Color.Parse(dark ? "#9398B3" : "#8B91A8"), _ => AccentColor } : dark ? Brighten(branch, 0.18) : branch;
                     centers.Add(Place(node.Children[i], depth + 1, childColor));
                 }
                 var subtreeHeight = row - start - 14;
@@ -735,5 +743,26 @@ public sealed class MarkdownMindMapView : UserControl
             if (IsSummary) context.DrawRectangle(null, new Pen { Brush = Line, Thickness = 1, DashStyle = new DashStyle(new double[] { 4, 3 }, 0) }, new Rect(Bounds.Size).Deflate(.5), 8, 8);
             if (Stripe is not null) context.DrawRectangle(Stripe, null, new Rect(0, 8, 3, Math.Max(0, Bounds.Height - 16)), 1, 1);
         }
+    }
+
+    /// <summary>cScale 系列实色化：深色态向白提亮 18%（与参考软件 mindmap/timeline 观感一致）。</summary>
+    private static Color BranchSolid(Color branch, bool dark) => dark ? Brighten(branch, 0.18) : branch;
+
+    private static Color Brighten(Color color, double amount) => new(
+        (byte)(color.R + (255 - color.R) * amount),
+        (byte)(color.G + (255 - color.G) * amount),
+        (byte)(color.B + (255 - color.B) * amount),
+        color.A);
+
+    /// <summary>按底色亮度取黑/白前景（WCAG 对比度）。</summary>
+    private static Color ContrastText(Color background)
+    {
+        static double Luminance(Color c)
+        {
+            static double Channel(byte v) { var d = v / 255.0; return d <= 0.04045 ? d / 12.92 : System.Math.Pow((d + 0.055) / 1.055, 2.4); }
+            return 0.2126 * Channel(c.R) + 0.7152 * Channel(c.G) + 0.0722 * Channel(c.B);
+        }
+        var l = Luminance(background);
+        return (l + 0.05) / 0.05 > 0.05 / (l + 0.05) && l > 0.18 ? Colors.Black : Colors.White;
     }
 }
