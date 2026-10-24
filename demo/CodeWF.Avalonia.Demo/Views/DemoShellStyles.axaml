@@ -13,22 +13,19 @@
     <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
 
-  <!--  Ribbon 命令按钮：横向图标与名称、悬停轻抬  -->
+  <!--  Ribbon 命令按钮：46px 紧凑命令条——横向 16px 图标 + 完整 API 名  -->
   <Style Selector="Button.rbn-cmd">
-    <Setter Property="MinWidth" Value="70" />
-    <Setter Property="MinHeight" Value="36" />
-    <Setter Property="Padding" Value="5,3" />
-    <Setter Property="CornerRadius" Value="7" />
-    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="MinWidth" Value="0" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="Padding" Value="0,9" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="Transitions">
       <Transitions>
         <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.13" />
       </Transitions>
     </Setter>
-  </Style>
-  <Style Selector="Button.rbn-cmd:pointerover">
-    <Setter Property="RenderTransform" Value="translateY(-1px)" />
   </Style>
 
   <!--  状态栏按钮：透明底、悬停加底色  -->
@@ -194,15 +191,13 @@
   </Style>
 
   <Style Selector="Button.rbn-cmd">
-    <Setter Property="MinWidth" Value="95" />
+    <Setter Property="MinWidth" Value="0" />
     <Setter Property="MinHeight" Value="0" />
-    <Setter Property="Padding" Value="8,3" />
+    <Setter Property="Padding" Value="0,9" />
   </Style>
-  <Style Selector="Button.rbn-cmd.compact"><Setter Property="MinWidth" Value="80" /><Setter Property="Padding" Value="4,3" /></Style>
-  <Style Selector="Button.rbn-cmd StackPanel.ribbon-content"><Setter Property="Orientation" Value="Vertical" /></Style>
-  <Style Selector="Button.rbn-cmd.small"><Setter Property="HorizontalContentAlignment" Value="Left" /></Style>
-  <Style Selector="Button.rbn-cmd.small StackPanel.ribbon-content"><Setter Property="Orientation" Value="Horizontal" /></Style>
-  <Style Selector="Button.nav-leaf"><Setter Property="HorizontalAlignment" Value="Stretch" /><Setter Property="HorizontalContentAlignment" Value="Stretch" /><Setter Property="FontSize" Value="11.5" /><Setter Property="MinHeight" Value="30" /></Style>
+  <Style Selector="Button.rbn-cmd.compact"><Setter Property="Padding" Value="0,9,2,9" /></Style>
+  <Style Selector="Button.rbn-cmd StackPanel.ribbon-content"><Setter Property="Orientation" Value="Horizontal" /></Style>
+  <Style Selector="Button.nav-leaf"><Setter Property="HorizontalAlignment" Value="Stretch" /><Setter Property="HorizontalContentAlignment" Value="Stretch" /><Setter Property="FontSize" Value="12.5" /><Setter Property="MinHeight" Value="30" /></Style>
   <Style Selector="ToggleButton.nav-group"><Setter Property="FontSize" Value="11" /><Setter Property="MinHeight" Value="31" /></Style>
   <Style Selector="Button.demo-action"><Setter Property="FontSize" Value="12" /><Setter Property="FontWeight" Value="Normal" /></Style>
   <Style Selector="Border.studio-card"><Setter Property="CornerRadius" Value="10" /></Style>
@@ -263,9 +258,12 @@
     <Setter Property="CornerRadius" Value="4" />
     <Setter Property="Foreground" Value="{DynamicResource StudioMuted}" />
   </Style>
-  <!-- Ribbon 使用整块选中底色；左侧强调线只用于导航行。 -->
+  <!-- Ribbon 使用整块选中底色；图标默认中性，悬停与选中显主色（对齐原型）。 -->
   <Style Selector="Button.rbn-cmd"><Setter Property="BorderThickness" Value="0" /></Style>
-  <Style Selector="PathIcon.ribbon-icon"><Setter Property="Foreground" Value="{DynamicResource StudioAccent}" /></Style>
+  <Style Selector="PathIcon.ribbon-icon"><Setter Property="Foreground" Value="{DynamicResource StudioMuted}" /></Style>
+  <Style Selector="Button.rbn-cmd:pointerover PathIcon.ribbon-icon, Button.rbn-cmd.selected PathIcon.ribbon-icon">
+    <Setter Property="Foreground" Value="{DynamicResource StudioAccent}" />
+  </Style>
   <Style Selector="PathIcon.ribbon-icon:disabled"><Setter Property="Foreground" Value="{DynamicResource SemiColorDisabledText}" /></Style>
   <Style Selector="Border.catalog-group"><Setter Property="BorderThickness" Value="0" /></Style>
 

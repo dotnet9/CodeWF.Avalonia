@@ -50,6 +50,7 @@ public partial class MainViewModel : ReactiveObject, IDisposable
     public MainViewModel()
     {
         Groups = DemoCatalog.CreateGroups();
+        Groups.Add(new ShellViewGroup(this));
         Documents = new ObservableCollection<DemoDocumentViewModel>();
 
         OpenItemCommand = ReactiveCommand.Create<DemoItemViewModel>(OpenItem);
@@ -423,6 +424,13 @@ public partial class MainViewModel : ReactiveObject, IDisposable
     {
         ArgumentNullException.ThrowIfNull(item);
 
+        // Ribbon「视图」外壳命令：直接执行外壳动作，不进入文档流程。
+        if (item is ShellViewGroup.ShellItemViewModel shell)
+        {
+            shell.Execute();
+            return;
+        }
+
         var existing = Documents.FirstOrDefault(d => d.Title == item.Title);
         if (existing is not null)
         {
@@ -533,6 +541,22 @@ public partial class MainViewModel : ReactiveObject, IDisposable
                 ToggleTool(_logTool, I18nManager.Instance.GetResource(DemoKeys.ToolLog));
                 break;
         }
+    }
+
+    /// <summary>文档区最大化：隐藏导航树与属性面板（日志保持不变，与原型 dkMax 一致）。</summary>
+    public void MaximizeDocumentArea()
+    {
+        if (_navTool is not null && _layout?.HiddenDockables?.Contains(_navTool) != true)
+        {
+            TogglePanel("nav");
+        }
+
+        if (ActiveDocument is { PropertiesVisible: true } document)
+        {
+            document.PropertiesVisible = false;
+        }
+
+        Logger.Info(I18nManager.Instance.GetResource(DemoKeys.ShellMaximize));
     }
 
     private void ToggleTool(Tool? tool, string title)

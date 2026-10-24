@@ -17,7 +17,7 @@ public class DemoItemViewModel : ReactiveObject
     private bool _isSelected;
     private bool _isFilteredOut;
 
-    public DemoItemViewModel(string titleKey, Func<DemoPageBase> pageFactory, string api = "", string package = "", string prototypeId = "", string sectionKey = "", string icon = "◆", string iconKey = "SemiIconGridView")
+    public DemoItemViewModel(string titleKey, Func<DemoPageBase> pageFactory, string api = "", string package = "", string prototypeId = "", string sectionKey = "", string icon = "◆", string iconKey = "SemiIconGridView", Geometry? ribbonIcon = null)
     {
         TitleKey = titleKey;
         PageFactory = pageFactory;
@@ -26,7 +26,8 @@ public class DemoItemViewModel : ReactiveObject
         PrototypeId = prototypeId;
         SectionKey = sectionKey;
         Icon = icon;
-        RibbonIcon = Application.Current?.FindResource(iconKey) as Geometry
+        RibbonIcon = ribbonIcon
+            ?? Application.Current?.FindResource(iconKey) as Geometry
             ?? throw new InvalidOperationException("Missing Semi icon: " + iconKey);
 
         I18nManager.Instance.CultureChanged += (_, _) =>
@@ -104,10 +105,11 @@ public class DemoGroupViewModel : ReactiveObject
     private bool _isExpanded;
     private bool _isFilteredOut;
 
-    public DemoGroupViewModel(string titleKey, string icon, IEnumerable<DemoItemViewModel> items)
+    public DemoGroupViewModel(string titleKey, string icon, IEnumerable<DemoItemViewModel> items, bool isShellGroup = false)
     {
         TitleKey = titleKey;
         Icon = icon;
+        IsShellGroup = isShellGroup;
         Items = new ObservableCollection<DemoItemViewModel>(items);
         RibbonSections = Items.GroupBy(item => string.IsNullOrEmpty(item.SectionKey) ? TitleKey : item.SectionKey)
             .Select(section => new DemoRibbonSection(section.Key, section.ToArray(), Items.Count > 7 || section.Count() > 3)).ToArray();
@@ -115,6 +117,9 @@ public class DemoGroupViewModel : ReactiveObject
 
         I18nManager.Instance.CultureChanged += (_, _) => this.RaisePropertyChanged(nameof(Title));
     }
+
+    /// <summary>外壳命令组（Ribbon「视图」）：不进导航树与 API 目录。</summary>
+    public bool IsShellGroup { get; }
 
     public string TitleKey { get; }
 
@@ -163,5 +168,5 @@ public sealed class DemoRibbonSection : ReactiveObject
     public IReadOnlyList<DemoItemViewModel> Items { get; }
     public bool UseSmallCommands { get; }
     public string Title => I18nManager.Instance.GetResource(TitleKey);
-    public double CommandHeight => UseSmallCommands ? 40 : 80;
+    public double CommandHeight => 32;
 }

@@ -39,8 +39,8 @@ public partial class MainViewModel
     /// <summary>过滤后是否一个节点都不剩（显示空态文案）。</summary>
     public bool IsNavEmpty => Groups.All(g => g.IsFilteredOut);
 
-    /// <summary>导航树数据源（过滤以 <c>IsFilteredOut</c> 标记实现，不重建集合）。</summary>
-    public IReadOnlyList<DemoGroupViewModel> FilteredGroups => Groups;
+    /// <summary>导航树数据源（过滤以 <c>IsFilteredOut</c> 标记实现，不重建集合；外壳命令组不进树）。</summary>
+    public IEnumerable<DemoGroupViewModel> FilteredGroups => Groups.Where(g => !g.IsShellGroup);
 
     public ReactiveCommand<DemoItemViewModel, RxVoid> SelectNavItemCommand { get; private set; } = null!;
 

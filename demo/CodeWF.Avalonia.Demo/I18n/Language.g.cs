@@ -1512,6 +1512,7 @@ public static class ResourceKeys
         public const string @LayoutSaved = "Demo.Shell.LayoutSaved";
         public const string @Light = "Demo.Shell.Light";
         public const string @Log = "Demo.Shell.Log";
+        public const string @Maximize = "Demo.Shell.Maximize";
         public const string @NavEmpty = "Demo.Shell.NavEmpty";
         public const string @NavFilter = "Demo.Shell.NavFilter";
         public const string @Navigation = "Demo.Shell.Navigation";
@@ -1546,6 +1547,7 @@ public static class ResourceKeys
         public const string @SampleErrorLog = "Demo.Shell.SampleErrorLog";
         public const string @SampleInformationLog = "Demo.Shell.SampleInformationLog";
         public const string @SampleWarningLog = "Demo.Shell.SampleWarningLog";
+        public const string @ViewGroup = "Demo.Shell.ViewGroup";
         public const string @WriteLogs = "Demo.Shell.WriteLogs";
     }
     public static class @Studio

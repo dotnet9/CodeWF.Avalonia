@@ -15,6 +15,8 @@ public static class DemoKeys
     public const string ShellDark = DemoResources.Shell.Dark;
     public const string ShellQuickSave = DemoResources.Shell.QuickSave;
     public const string ShellReset = DemoResources.Shell.Reset;
+    public const string ShellViewGroup = DemoResources.Shell.ViewGroup;
+    public const string ShellMaximize = DemoResources.Shell.Maximize;
     public const string ShellCommandPlaceholder = DemoResources.Shell.CommandPlaceholder;
     public const string ShellCommandHint = DemoResources.Shell.CommandHint;
     public const string ShellDensity = DemoResources.Shell.Density;
