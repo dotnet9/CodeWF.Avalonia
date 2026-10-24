@@ -275,7 +275,7 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
 
     /// <summary>缓存 Key 含主题配色：同一份图表在明暗主题下是两张不同的图。</summary>
     internal static string CreateCacheKey(string source, MermaidRenderOptions options) =>
-        $"{options.Bg}|{options.Fg}|{options.Accent}|{options.Line}|{options.Border}|{options.Surface}|{options.Default}|{string.Join(',', options.DataPalette ?? [])}|{source}";
+        $"{options.Bg}|{options.Fg}|{options.Accent}|{options.Line}|{options.Border}|{options.Surface}|{options.Default}|{string.Join(',', options.DataPalette ?? [])}|{options.FontSize}|{options.NodeSpacing}|{options.LayerSpacing}|{options.RoundedEdges}|{source}";
 
     /// <summary>
     /// 按当前主题变体构造渲染选项；颜色来自 CodeWFMarkdownMermaid* 画刷资源
@@ -297,6 +297,13 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
             Surface = ResolveOptionalHex(app, theme, "CodeWFMarkdownMermaidSurface"),
             Default = ResolveOptionalHex(app, theme, "CodeWFMarkdownMermaidDefault"),
             DataPalette = ResolveDataPalette(app, theme, source),
+            // 渲染密度联动（规则 §11）：宿主可经 CodeWFMarkdownMermaidFontSize / NodeSpacing /
+            // LayerSpacing / RoundedEdges 资源把正文字号档传导给图表（缺省用 Mermaider 内置值）。
+            FontSize = ResolveOptionalDouble(app, theme, "CodeWFMarkdownMermaidFontSize") is { } fontSize
+                ? fontSize.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + "px" : null,
+            NodeSpacing = ResolveOptionalDouble(app, theme, "CodeWFMarkdownMermaidNodeSpacing"),
+            LayerSpacing = ResolveOptionalDouble(app, theme, "CodeWFMarkdownMermaidLayerSpacing"),
+            RoundedEdges = ResolveOptionalBool(app, theme, "CodeWFMarkdownMermaidRoundedEdges") ?? true,
             Transparent = true
         };
     }
@@ -333,6 +340,21 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
 
         return fallback;
     }
+
+    /// <summary>可选数值资源（渲染密度联动）；缺失或类型不符返回 null，交由 Mermaider 内置值。</summary>
+    private static double? ResolveOptionalDouble(Application? app, ThemeVariant theme, string resourceKey)
+    {
+        if (app?.TryGetResource(resourceKey, theme, out var resource) == true)
+        {
+            if (resource is double value) return value;
+            if (resource is int integral) return integral;
+        }
+        return null;
+    }
+
+    private static bool? ResolveOptionalBool(Application? app, ThemeVariant theme, string resourceKey)
+        => app?.TryGetResource(resourceKey, theme, out var resource) == true && resource is bool value
+            ? value : null;
 
     private readonly record struct Rgb(byte R, byte G, byte B);
 
