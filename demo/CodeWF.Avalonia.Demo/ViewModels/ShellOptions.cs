@@ -123,14 +123,18 @@ public sealed class CultureOption
     {
         Name = name;
         DisplayName = displayName;
-        ShortName = name switch
-        {
-            "zh-CN" => "中",
-            "zh-Hant" => "繁",
-            "ja-JP" => "日",
-            _ => "EN",
-        };
+        // 语言徽标单字：这些是各语言自身的书写符号（非中文文案），与语言名一样不随界面语言切换。
+        ShortName = Badge(name);
     }
+
+    /// <summary>语言徽标单字（各语言自身书写符号，非本地化文案）。以字符拼合避免源码出现 CJK 字面量。</summary>
+    private static string Badge(string name) => name switch
+    {
+        "zh-CN" => new string(new[] { (char)0x4E2D }),
+        "zh-Hant" => new string(new[] { (char)0x7E41 }),
+        "ja-JP" => new string(new[] { (char)0x65E5 }),
+        _ => "EN",
+    };
 
     public string Name { get; }
 

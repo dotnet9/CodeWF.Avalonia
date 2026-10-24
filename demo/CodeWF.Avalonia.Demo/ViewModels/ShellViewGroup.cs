@@ -6,8 +6,8 @@ using CodeWF.Avalonia.Demo.Views;
 namespace CodeWF.Avalonia.Demo.ViewModels;
 
 /// <summary>
-/// Ribbon「视图」外壳命令组：面板可见性开关（导航树 / 日志），CheckBox 语义——
-/// 勾选态 = 面板显示。与 design 原型一致——外壳命令不进导航树与 API 目录。
+/// Ribbon "View" command group: panel visibility toggles (navigation tree / log) with CheckBox semantics.
+/// Checked state = panel visible. Matches the design prototype; shell commands stay out of the tree and API catalog.
 /// </summary>
 public sealed class ShellViewGroup : DemoGroupViewModel
 {
@@ -35,7 +35,7 @@ public sealed class ShellViewGroup : DemoGroupViewModel
         return new DemoItemViewModel[] { nav, log };
     }
 
-    /// <summary>把当前面板可见性同步到勾选态（切换后与布局恢复后调用）。</summary>
+    /// <summary>Syncs current panel visibility into check states (after layout switch and layout restore).</summary>
     public void Refresh()
     {
         NavItem.IsSelected = _owner.IsNavVisible;
@@ -49,7 +49,7 @@ public sealed class ShellViewGroup : DemoGroupViewModel
         return new ShellItemViewModel(titleKey, execute, icon, owner);
     }
 
-    /// <summary>外壳命令项：点击执行外壳动作，永不进入文档打开流程。</summary>
+    /// <summary>Shell command item: click runs a shell action and never enters the document-open flow.</summary>
     public sealed class ShellItemViewModel : DemoItemViewModel
     {
         private readonly MainViewModel _owner;
@@ -63,7 +63,7 @@ public sealed class ShellViewGroup : DemoGroupViewModel
 
         public Action Execute { get; }
 
-        /// <summary>外壳命令以勾选态呈现（.selected 样式 + 对勾图标）。</summary>
+        /// <summary>Shell commands render as check items (.selected style + check glyph).</summary>
         public override bool IsShellCommand => true;
 
         public void ExecuteAndRefresh()
@@ -72,6 +72,7 @@ public sealed class ShellViewGroup : DemoGroupViewModel
             _owner.ShellViewGroup?.Refresh();
         }
 
-        private static DemoPageBase ThrowFactory() => throw new InvalidOperationException("外壳命令不打开文档。");
+        private static DemoPageBase ThrowFactory() =>
+            throw new InvalidOperationException("Shell command must not open a document (defensive guard; unreachable path).");
     }
 }

@@ -123,7 +123,7 @@
       <!--  语言入口（Vex studio-language 口径）："文ᴬ" 触发钮 + 徽标行菜单，选中行强调底 + 右缘 ✓  -->
       <ToggleButton x:Name="TitleBarLanguageButton" Classes="qk-btn lang-btn"
                     ToolTip.Tip="{codewf:I18n Demo.Shell.GlobalSettings.LanguageLabel}">
-        <TextBlock Text="文ᴬ" FontSize="12" />
+        <TextBlock Text="Aa" FontSize="12" />
       </ToggleButton>
       <Popup PlacementTarget="{Binding #TitleBarLanguageButton}" Placement="Bottom" VerticalOffset="8"
              IsLightDismissEnabled="True" IsEnabled="{Binding #TitleBarLanguageButton.IsChecked}" IsOpen="{Binding #TitleBarLanguageButton.IsChecked, Mode=TwoWay}">
