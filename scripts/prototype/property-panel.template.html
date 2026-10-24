@@ -273,6 +273,11 @@
 <link rel="stylesheet" href="assets/studio.css">
 <link rel="stylesheet" href="assets/property-studio.css">
 <link rel="stylesheet" href="assets/palette-tokens.css">
+<style id="flat-surfaces">
+/* 平面化表面层：与主原型一致，浅色纯白、深色纯黑，必须位于 palette-tokens.css 之后。 */
+:root[data-theme=light][data-palette]{--bg:#ffffff;--bg2:#ffffff;--bg3:#f6f6f8;--workbg:#ffffff;--bd:#d9d9de;--bd2:#ebebef;--line:#ebebef}
+:root[data-theme=dark][data-palette]{--bg:#0a0a0b;--bg2:#0a0a0b;--bg3:#17171a;--workbg:#060607;--bd:#333338;--bd2:#232327;--line:#232327}
+</style>
 <script src="assets/palette-meta.js"></script>
 </head>
 <body>

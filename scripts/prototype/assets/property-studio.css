@@ -4,13 +4,13 @@
   --bg-toolbar:var(--bg2); --bg-group:var(--bg2); --bg-desc:var(--workbg);
   --bg-editor:var(--bg3); --bg-editor-hover:var(--hov); --bg-hover:var(--hov);
   --border:var(--bd); --border-soft:var(--bd); --accent:var(--pri);
-  --accent-text:var(--on-primary); --accent-soft:var(--pri-lt); --menu-bg:var(--bg2); --row-h:31px;
+  --accent-text:var(--on-primary); --accent-soft:var(--pri-lt); --menu-bg:var(--bg2); --row-h:34px;
 }
 /* 窄窗体 specimen：固定 400px 居中，不再铺满整个页面。 */
 body { padding:0; display:flex; justify-content:center; background:var(--workbg); }
 #app { flex:none; width:400px; height:100dvh; border-inline:1px solid var(--bd2); box-shadow:0 0 44px rgba(0,0,0,.14); }
 .property-banner { flex:none; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px 12px; padding:14px 16px; background:radial-gradient(ellipse at 0 0,var(--pri-lt),transparent 60%),var(--bg); border-bottom:1px solid var(--bd2); }
-.property-banner h1 { font-size:19px; font-weight:600; letter-spacing:-.5px; color:var(--tx); }
+.property-banner h1 { font-size:20px; font-weight:600; letter-spacing:-.5px; color:var(--tx); }
 .property-banner select { max-width:132px; }
 .property-banner p { font-size:11px; color:var(--tx2); margin-top:5px; }
 .property-banner .studio-eyebrow { font-size:9px; margin-bottom:5px; }
@@ -22,7 +22,7 @@ select, select option { text-align:left; text-align-last:left; }
 .toolbar { display:grid;grid-template-columns:auto auto 1fr auto;grid-template-rows:30px 28px;gap:5px 3px;height:auto;border-color:var(--bd);padding:6px; }
 #btnCat{grid-column:1;grid-row:1}#btnAlpha{grid-column:2;grid-row:1}.toolbar>.spacer{grid-column:3;grid-row:1}#btnMore{grid-column:4;grid-row:1}
 .toolbar .tbtn{width:32px;height:30px}.toolbar .tbtn svg{width:18px;height:18px}
-.searchbox { grid-column:1 / -1;grid-row:2;max-width:none;margin:0;background:var(--bg);border:1px solid var(--bd);border-radius:4px;height:28px; }
+.searchbox { grid-column:1 / -1;grid-row:2;max-width:none;margin:0;background:var(--bg);border:1px solid var(--bd);border-radius:6px;height:30px; }
 .grid-wrap { background:var(--bg); }
 .group .cell,.group-row .cell { background:var(--bg2); color:var(--pri); }
 .cell { border-color:var(--bd); }
@@ -39,6 +39,6 @@ textarea.ed { height:100%;min-height:0;padding:6px; }
 .desc { min-height:84px; padding:14px 20px; }
 .desc-name { color:var(--pri); font-size:12px; }
 .desc-text { font-size:11px; margin-top:5px; }
-.menu { border-radius:9px; box-shadow:0 12px 35px #0004; }
+.menu { border-radius:10px; box-shadow:0 12px 35px rgba(0,0,0,.24); }
 #moreMenu { top:132px!important; }
 @media(max-width:600px) { .property-banner { padding:15px; gap:8px; } .property-banner p { max-width:240px; } .property-banner h1 { font-size:20px; } .property-banner select { max-width:120px; } .toolbar { padding:0 8px; } }
