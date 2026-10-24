@@ -265,6 +265,9 @@
     <Setter Property="Foreground" Value="{DynamicResource StudioAccent}" />
   </Style>
   <Style Selector="PathIcon.ribbon-icon:disabled"><Setter Property="Foreground" Value="{DynamicResource SemiColorDisabledText}" /></Style>
+  <!--  「视图」外壳命令的勾选态：对勾常驻占位（Opacity 槽位），面板可见时点亮  -->
+  <Style Selector="PathIcon.shell-check"><Setter Property="Foreground" Value="{DynamicResource StudioMuted}" /></Style>
+  <Style Selector="Button.rbn-cmd.shell.selected PathIcon.shell-check"><Setter Property="Opacity" Value="1" /><Setter Property="Foreground" Value="{DynamicResource StudioAccent}" /></Style>
   <Style Selector="Border.catalog-group"><Setter Property="BorderThickness" Value="0" /></Style>
 
   <!--  外观菜单弹层（原型 appearance-choices 同构）  -->
@@ -277,9 +280,38 @@
     <Setter Property="BoxShadow" Value="0 12 36 0 #33000000" />
   </Style>
   <Style Selector="TextBlock.appearance-title">
-    <Setter Property="FontSize" Value="11" />
+    <Setter Property="FontSize" Value="12" />
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="Opacity" Value="0.8" />
+  </Style>
+  <!--  语言弹出菜单（原型 language-menu 同构）：图标触发、列表选中打勾  -->
+  <Style Selector="Border.language-menu">
+    <Setter Property="Background" Value="{DynamicResource StudioSurface}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource StudioBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Padding" Value="5" />
+    <Setter Property="MinWidth" Value="172" />
+    <Setter Property="BoxShadow" Value="0 8 24 0 #26000000" />
+  </Style>
+  <Style Selector="ListBox.language-list">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+  <Style Selector="ListBox.language-list ListBoxItem">
+    <Setter Property="Padding" Value="10,7" />
+    <Setter Property="MinHeight" Value="30" />
+    <Setter Property="FontSize" Value="12.5" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="ListBox.language-list ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
+  </Style>
+  <Style Selector="ListBox.language-list ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource SemiColorPrimaryLight}" />
+    <Setter Property="Foreground" Value="{DynamicResource StudioAccent}" />
   </Style>
   <Style Selector="ListBox.mode-chips">
     <Setter Property="Background" Value="{DynamicResource StudioBackground}" />

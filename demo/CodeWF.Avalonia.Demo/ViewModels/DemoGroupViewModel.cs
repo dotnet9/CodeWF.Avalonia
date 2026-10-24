@@ -96,6 +96,9 @@ public class DemoItemViewModel : ReactiveObject
     /// <summary>复用 Semi 矢量资源，避免字体回退造成图标大小不一致。</summary>
     public Geometry RibbonIcon { get; }
 
+    /// <summary>外壳命令项（Ribbon「视图」组）以勾选态呈现；API 命令恒为 false。</summary>
+    public virtual bool IsShellCommand => false;
+
     public override string ToString() => DisplayTitle;
 }
 

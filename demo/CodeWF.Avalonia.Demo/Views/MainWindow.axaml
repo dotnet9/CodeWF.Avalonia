@@ -49,7 +49,7 @@
       </ToggleButton>
       <Popup PlacementTarget="{Binding #AppearanceButton}" Placement="Bottom" VerticalOffset="8"
              IsLightDismissEnabled="True" IsEnabled="{Binding #AppearanceButton.IsChecked}">
-        <Border Classes="appearance-choices" Width="324">
+        <Border Classes="appearance-choices" Width="458">
           <StackPanel Spacing="10">
             <TextBlock Classes="appearance-title" Text="{codewf:I18n Demo.Shell.GlobalSettings.ModeLabel}" />
             <ListBox Classes="mode-chips" SelectedIndex="{Binding ThemeModeIndex}" ItemsSource="{Binding ThemeModes}" />
@@ -66,7 +66,7 @@
                             <ItemsControl ItemsSource="{Binding SwatchDots}">
                               <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="2" Columns="4" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                               <ItemsControl.ItemTemplate>
-                                <DataTemplate><Ellipse Width="12" Height="12" Margin="1" Fill="{Binding}" /></DataTemplate>
+                                <DataTemplate><Ellipse Width="16" Height="16" Margin="1" Fill="{Binding}" /></DataTemplate>
                               </ItemsControl.ItemTemplate>
                             </ItemsControl>
                             <Border Classes="palette-badge" IsVisible="{Binding IsRecommended}">
@@ -96,12 +96,28 @@
           </StackPanel>
         </Border>
       </Popup>
-      <ComboBox x:Name="TitleBarLanguageSelector" Width="50" MinHeight="0" Height="30" Padding="6,0"
-                ItemsSource="{Binding Cultures}" SelectedItem="{Binding SelectedCulture}"
-                HorizontalContentAlignment="Left" ToolTip.Tip="{codewf:I18n Demo.Shell.GlobalSettings.LanguageLabel}">
-        <ComboBox.SelectionBoxItemTemplate><DataTemplate><PathIcon Width="16" Height="16" Data="{DynamicResource SemiIconLanguage}" /></DataTemplate></ComboBox.SelectionBoxItemTemplate>
-        <ComboBox.ItemTemplate><DataTemplate x:DataType="vm:CultureOption"><TextBlock MinWidth="120" Text="{Binding DisplayName}" /></DataTemplate></ComboBox.ItemTemplate>
-      </ComboBox>
+      <!--  语言入口：图标按钮 + 弹出列表（原型 language-menu 同构），当前项打勾  -->
+      <ToggleButton x:Name="TitleBarLanguageButton" Classes="qk-btn"
+                    ToolTip.Tip="{codewf:I18n Demo.Shell.GlobalSettings.LanguageLabel}">
+        <PathIcon Width="16" Height="16" Data="{DynamicResource SemiIconLanguage}" />
+      </ToggleButton>
+      <Popup PlacementTarget="{Binding #TitleBarLanguageButton}" Placement="Bottom" VerticalOffset="8"
+             IsLightDismissEnabled="True" IsEnabled="{Binding #TitleBarLanguageButton.IsChecked}">
+        <Border Classes="language-menu">
+          <ListBox Classes="language-list" SelectedItem="{Binding SelectedCulture}" ItemsSource="{Binding Cultures}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:CultureOption">
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Text="{Binding DisplayName}" FontSize="12.5" VerticalAlignment="Center" />
+                  <PathIcon Grid.Column="1" Width="12" Height="12" Data="{StaticResource SemiIconTick}"
+                            IsVisible="{Binding $parent[ListBoxItem].IsSelected}"
+                            Foreground="{DynamicResource StudioAccent}" />
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Border>
+      </Popup>
       <!--  通知中心入口：徽标显示当前卡片数  -->
       <Button Classes="qk-btn" Command="{Binding NotifyDemoCommand}"
               ToolTip.Tip="{codewf:I18n Demo.Shell.NotifyDemo}">
@@ -191,19 +207,20 @@
                 <ItemsControl ItemsSource="{Binding Items}">
                   <ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                   <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="vm:DemoItemViewModel">
-                      <Button Classes="rbn-cmd" Classes.selected="{Binding IsSelected}" Margin="0,0,2,0"
-                              Height="{Binding $parent[ItemsControl].((vm:DemoRibbonSection)DataContext).CommandHeight}"
-                              Classes.compact="{Binding $parent[Window].((vm:MainViewModel)DataContext).IsCompactDensity}"
-                              Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenItemCommand}"
-                              CommandParameter="{Binding}" ToolTip.Tip="{Binding DisplayTitle}">
-                        <StackPanel Classes="ribbon-content" Spacing="7">
-                          <PathIcon Classes="ribbon-icon" Width="16" Height="16" Data="{Binding RibbonIcon}" />
-                          <TextBlock Text="{Binding DisplayTitle}" FontSize="12" HorizontalAlignment="Left"
-                                     VerticalAlignment="Center" TextWrapping="NoWrap" />
-                        </StackPanel>
-                      </Button>
-                    </DataTemplate>
+                      <DataTemplate x:DataType="vm:DemoItemViewModel">
+                        <Button Classes="rbn-cmd" Classes.selected="{Binding IsSelected}" Classes.shell="{Binding IsShellCommand}" Margin="0,0,2,0"
+                                Height="{Binding $parent[ItemsControl].((vm:DemoRibbonSection)DataContext).CommandHeight}"
+                                Classes.compact="{Binding $parent[Window].((vm:MainViewModel)DataContext).IsCompactDensity}"
+                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenItemCommand}"
+                                CommandParameter="{Binding}" ToolTip.Tip="{Binding DisplayTitle}">
+                          <StackPanel Classes="ribbon-content" Spacing="7">
+                            <PathIcon Classes="ribbon-icon" Width="16" Height="16" Data="{Binding RibbonIcon}" />
+                            <TextBlock Text="{Binding DisplayTitle}" FontSize="12" HorizontalAlignment="Left"
+                                       VerticalAlignment="Center" TextWrapping="NoWrap" />
+                            <PathIcon Classes="shell-check" Width="12" Height="12" Data="{StaticResource SemiIconTick}" Opacity="0" />
+                          </StackPanel>
+                        </Button>
+                      </DataTemplate>
                   </ItemsControl.ItemTemplate>
                 </ItemsControl>
               </Border>

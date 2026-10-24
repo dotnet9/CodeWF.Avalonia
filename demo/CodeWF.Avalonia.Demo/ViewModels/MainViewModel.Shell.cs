@@ -568,6 +568,7 @@ public partial class MainViewModel
             SetPanelVisible(_navTool, state.NavVisible);
             if (ActiveDocument is { } restoredDocument) restoredDocument.PropertiesVisible = state.PropsVisible;
             SetPanelVisible(_logTool, state.LogVisible);
+            ShellViewGroup?.Refresh();
 
             this.RaisePropertyChanged(nameof(HasRenames));
             Logger.Info(L.Instance.GetResource(DemoResources.Content.Shell.LoadLayoutFrom.LayoutRestored) + path);

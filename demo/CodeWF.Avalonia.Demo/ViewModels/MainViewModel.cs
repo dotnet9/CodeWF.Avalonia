@@ -50,7 +50,8 @@ public partial class MainViewModel : ReactiveObject, IDisposable
     public MainViewModel()
     {
         Groups = DemoCatalog.CreateGroups();
-        Groups.Add(new ShellViewGroup(this));
+        ShellViewGroup = new ShellViewGroup(this);
+        Groups.Add(ShellViewGroup);
         Documents = new ObservableCollection<DemoDocumentViewModel>();
 
         OpenItemCommand = ReactiveCommand.Create<DemoItemViewModel>(OpenItem);
@@ -541,24 +542,20 @@ public partial class MainViewModel : ReactiveObject, IDisposable
                 ToggleTool(_logTool, I18nManager.Instance.GetResource(DemoKeys.ToolLog));
                 break;
         }
+
+        ShellViewGroup?.Refresh();
     }
 
-    /// <summary>文档区最大化：隐藏导航树与属性面板（日志保持不变，与原型 dkMax 一致）。</summary>
-    public void MaximizeDocumentArea()
-    {
-        if (_navTool is not null && _layout?.HiddenDockables?.Contains(_navTool) != true)
-        {
-            TogglePanel("nav");
-        }
+    /// <summary>导航树工具当前是否可见（视图组勾选态数据源）。</summary>
+    public bool IsNavVisible => _navTool is null || _layout?.HiddenDockables?.Contains(_navTool) != true;
 
-        if (ActiveDocument is { PropertiesVisible: true } document)
-        {
-            document.PropertiesVisible = false;
-        }
+    /// <summary>日志工具当前是否可见（视图组勾选态数据源）。</summary>
+    public bool IsLogVisible => _logTool is null || _layout?.HiddenDockables?.Contains(_logTool) != true;
 
-        Logger.Info(I18nManager.Instance.GetResource(DemoKeys.ShellMaximize));
-    }
+    /// <summary>Ribbon「视图」外壳组引用，面板显隐变化时同步勾选态。</summary>
+    public ShellViewGroup? ShellViewGroup { get; private set; }
 
+    /// <summary>面板显隐切换：隐藏 = 移入 RootDock 隐藏集合，恢复 = 按 Id 取回。</summary>
     private void ToggleTool(Tool? tool, string title)
     {
         if (tool is null || _dockFactory is null || _layout is null)
