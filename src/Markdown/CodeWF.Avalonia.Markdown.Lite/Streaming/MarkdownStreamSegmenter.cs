@@ -69,6 +69,8 @@ public sealed class MarkdownStreamSegmenter
 			var isLastLine = newline < 0;
 			if (isLastLine && !sourceComplete)
 			{
+				// 未完成行：前缀具备决定性时把边界推进到行首（规格 §3.4.1），行本体留在尾部。
+				TryFreezeBeforeIncompleteLine(source, _scanned);
 				break;
 			}
 
@@ -286,6 +288,141 @@ public sealed class MarkdownStreamSegmenter
 		if (offset > FrozenBoundary)
 		{
 			FrozenBoundary = offset;
+		}
+	}
+
+	/// <summary>
+	/// 未完成行的提前冻结（规格 §3.4.1）：前缀已具备决定性时把边界推进到该行行首。
+	/// 判定只用已到达字符且追加文本不可能推翻；不满足时不动边界（少冻结无损害）。
+	/// </summary>
+	private void TryFreezeBeforeIncompleteLine(string source, int lineStart)
+	{
+		if (_state != TopLevelState.Normal || _htmlBlockOpen)
+		{
+			return;
+		}
+
+		// 全空白前缀缩进未知（可能是缩进代码续行），等首个非空白字符。
+		var indent = 0;
+		var index = lineStart;
+		while (index < source.Length)
+		{
+			var c = source[index];
+			if (c == ' ')
+			{
+				indent++;
+				index++;
+			}
+			else if (c == '\t')
+			{
+				indent += 4 - (indent % 4);
+				index++;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		if (index >= source.Length)
+		{
+			return;
+		}
+
+		var prefix = source[index..];
+
+		// E1：挂起空行 + 零缩进 + 安全新块前缀。
+		if (_pendingBlankEnd >= 0)
+		{
+			if (indent == 0 && IsSafeAfterBlankPrefix(prefix))
+			{
+				Freeze(lineStart);
+			}
+
+			return;
+		}
+
+		// E2：段落延续中的决定性新块起始（容器抑制与完整行规则一致）。
+		if (_prevParagraphish && !_containerOpen && indent <= 3 && IsDecisiveBlockStartPrefix(prefix))
+		{
+			Freeze(lineStart);
+		}
+	}
+
+	/// <summary>
+	/// 空行规则的前缀版（对照 <see cref="IsSafeAfterBlank"/>）：数字序列未见到
+	/// 非数字字符前不判定（可能是任意段落文本或更长的标记前缀）。
+	/// </summary>
+	private static bool IsSafeAfterBlankPrefix(string prefix)
+	{
+		var first = prefix[0];
+		if (first is '>' or '[' or ':')
+		{
+			return false;
+		}
+
+		if (first is '-' or '*' or '+')
+		{
+			return prefix.Length > 1 && prefix[1] is not (' ' or '\t');
+		}
+
+		if (first is >= '0' and <= '9')
+		{
+			var digits = 0;
+			while (digits < prefix.Length && prefix[digits] is >= '0' and <= '9')
+			{
+				digits++;
+			}
+
+			if (digits == prefix.Length)
+			{
+				return false;
+			}
+
+			if (prefix[digits] is '.' or ')'
+				&& (digits + 1 == prefix.Length || prefix[digits + 1] is ' ' or '\t'))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/// <summary>
+	/// 决定性新块起始的前缀版（对照 <see cref="IsDecisiveBlockStart"/>）：
+	/// 不完整的 `-`/`--`/`===` 可能是 setext 下划线（改写上一段落为标题），
+	/// 不满足完整起始形态的 `*`/`` ` ``/`~`/`#` 可能只是段落延续，一律不冻结。
+	/// </summary>
+	private static bool IsDecisiveBlockStartPrefix(string prefix)
+	{
+		switch (prefix[0])
+		{
+			case '>':
+				// `>` 行无论后续是什么都是引用起始，不可能回退为段落延续。
+				return prefix.Length == 1 || prefix[1] is ' ' or '\t' or '>';
+			case '-' or '*' or '+':
+				// 需要已见空白（列表标记）：`-` 全横线可能是 setext，`*x` 可能是强调延续。
+				return prefix.Length >= 2 && prefix[1] is ' ' or '\t';
+			case '1':
+				return prefix.Length >= 3 && prefix[1] is '.' or ')' && prefix[2] is ' ' or '\t';
+			case '`' or '~':
+				return TryMatchFenceOpen(prefix, out _, out _);
+			case '#':
+			{
+				var level = 0;
+				while (level < prefix.Length && prefix[level] == '#')
+				{
+					level++;
+				}
+
+				return level is >= 1 and <= 6
+					&& level < prefix.Length
+					&& prefix[level] is ' ' or '\t';
+			}
+
+			default:
+				return false;
 		}
 	}
 

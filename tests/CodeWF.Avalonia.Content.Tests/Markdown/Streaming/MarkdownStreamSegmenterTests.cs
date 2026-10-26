@@ -185,16 +185,129 @@ public sealed class MarkdownStreamSegmenterTests
 	}
 
 	[Fact]
-	public void IncompleteLastLine_DoesNotFreeze()
+	public void IncompleteLine_SafeFreshBlock_AfterBlank_FreezesAtLineStart()
 	{
-		var source = "段落\n\n第二段\n";
+		// 规格 §3.4.1 E1：空行后的未完成行是安全新块起始，前缀即可判定。
 		var segmenter = new MarkdownStreamSegmenter();
 		segmenter.Scan("段落\n\n第二段", sourceComplete: false);
 
+		Assert.Equal("段落\n\n".Length, segmenter.FrozenBoundary);
+
+		// 行补完后行内状态机照常接管（空行裁决推进到相同锚点，单调不回退）。
+		segmenter.Scan("段落\n\n第二段\n", sourceComplete: false);
+		Assert.Equal("段落\n\n".Length, segmenter.FrozenBoundary);
+	}
+
+	[Fact]
+	public void IncompleteLine_ListItemPrefix_AfterBlank_DoesNotFreeze()
+	{
+		// E1 反例：`- ` 可能是前一个列表的松散项，必须等行结束。
+		var segmenter = new MarkdownStreamSegmenter();
+		segmenter.Scan("- 甲\n\n- 乙", sourceComplete: false);
+
+		Assert.Equal(0, segmenter.FrozenBoundary);
+	}
+
+	[Fact]
+	public void IncompleteLine_AllDigits_AfterBlank_DoesNotFreeze()
+	{
+		// E1 反例：全数字前缀可能是任意段落文本或更长标记前缀，等非数字字符。
+		var segmenter = new MarkdownStreamSegmenter();
+		segmenter.Scan("段落\n\n123", sourceComplete: false);
+
+		Assert.Equal(0, segmenter.FrozenBoundary);
+	}
+
+	[Fact]
+	public void IncompleteLine_DecisiveStart_InterruptsParagraph_FreezesAtLineStart()
+	{
+		// 规格 §3.4.1 E2：`- ` 已是完整列表标记，段落就此定型。
+		var segmenter = new MarkdownStreamSegmenter();
+		segmenter.Scan("段落甲\n- 列表项", sourceComplete: false);
+
+		Assert.Equal("段落甲\n".Length, segmenter.FrozenBoundary);
+	}
+
+	[Fact]
+	public void IncompleteLine_AtxPrefix_InterruptsParagraph_FreezesAtLineStart()
+	{
+		var segmenter = new MarkdownStreamSegmenter();
+		segmenter.Scan("段落甲\n# 尚未完成的标题", sourceComplete: false);
+
+		Assert.Equal("段落甲\n".Length, segmenter.FrozenBoundary);
+	}
+
+	[Fact]
+	public void IncompleteLine_FenceOpenPrefix_InterruptsParagraph_FreezesAtLineStart()
+	{
+		var segmenter = new MarkdownStreamSegmenter();
+		segmenter.Scan("段落甲\n```python", sourceComplete: false);
+
+		Assert.Equal("段落甲\n".Length, segmenter.FrozenBoundary);
+	}
+
+	[Fact]
+	public void IncompleteLine_SetextRisk_DoesNotFreeze()
+	{
+		// E3：`--` 可能是 setext 下划线（会把上一段落改写为标题），必须等行结束。
+		var segmenter = new MarkdownStreamSegmenter();
+		segmenter.Scan("标题\n--", sourceComplete: false);
+
 		Assert.Equal(0, segmenter.FrozenBoundary);
 
-		segmenter.Scan(source, sourceComplete: false);
-		Assert.Equal(source.IndexOf("第二段", StringComparison.Ordinal), segmenter.FrozenBoundary);
+		// 行结束时按完整行规则正常冻结（setext 行尾）。
+		segmenter.Scan("标题\n---\n", sourceComplete: false);
+		Assert.Equal("标题\n---\n".Length, segmenter.FrozenBoundary);
+	}
+
+	[Fact]
+	public void IncompleteLine_EmphasisRisk_DoesNotFreeze()
+	{
+		// E3：`*斜体` 是段落延续不是新块，等行结束。
+		var segmenter = new MarkdownStreamSegmenter();
+		segmenter.Scan("段落甲\n*斜体", sourceComplete: false);
+
+		Assert.Equal(0, segmenter.FrozenBoundary);
+	}
+
+	[Fact]
+	public void IncompleteLine_OrderedMarkerOtherThanOne_DoesNotFreeze()
+	{
+		// E2 反例：`2. ` 不能打断段落（lazy continuation）。
+		var segmenter = new MarkdownStreamSegmenter();
+		segmenter.Scan("段落甲\n2. 乙", sourceComplete: false);
+
+		Assert.Equal(0, segmenter.FrozenBoundary);
+	}
+
+	[Fact]
+	public void IncompleteLine_InsideContainer_DoesNotFreeze()
+	{
+		// E4：容器开启期间 lazy continuation 可能吞掉顶层样式行。
+		var segmenter = new MarkdownStreamSegmenter();
+		segmenter.Scan("> 引用\n> ", sourceComplete: false);
+
+		Assert.Equal(0, segmenter.FrozenBoundary);
+	}
+
+	[Fact]
+	public void IncompleteLine_InsideFence_DoesNotFreeze()
+	{
+		// E4：围栏内不适用。
+		var segmenter = new MarkdownStreamSegmenter();
+		segmenter.Scan("```csharp\nvar x = ", sourceComplete: false);
+
+		Assert.Equal(0, segmenter.FrozenBoundary);
+	}
+
+	[Fact]
+	public void IncompleteLine_WhitespaceOnly_DoesNotFreeze()
+	{
+		// E4：全空白前缀缩进未知（可能是缩进代码续行）。
+		var segmenter = new MarkdownStreamSegmenter();
+		segmenter.Scan("段落\n\n   ", sourceComplete: false);
+
+		Assert.Equal(0, segmenter.FrozenBoundary);
 	}
 
 	[Fact]
