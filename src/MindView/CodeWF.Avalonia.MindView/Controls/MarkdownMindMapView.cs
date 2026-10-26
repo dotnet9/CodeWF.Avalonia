@@ -36,6 +36,12 @@ public sealed class MarkdownMindMapView : UserControl
         AvaloniaProperty.Register<MarkdownMindMapView, MindMapLayoutKind>(nameof(LayoutKind), MindMapLayoutKind.Right);
     public static readonly StyledProperty<MindMapStyleKind> StyleKindProperty =
         AvaloniaProperty.Register<MarkdownMindMapView, MindMapStyleKind>(nameof(StyleKind), MindMapStyleKind.Quiet);
+    /// <summary>缩放下限。宿主给了拖动条（原型 .map-controls 下探到 1%）就放开这里，控件不再自己钉死档位。</summary>
+    public static readonly StyledProperty<double> MinZoomProperty =
+        AvaloniaProperty.Register<MarkdownMindMapView, double>(nameof(MinZoom), .15);
+    /// <summary>缩放上限，与 <see cref="MinZoomProperty"/> 同族。</summary>
+    public static readonly StyledProperty<double> MaxZoomProperty =
+        AvaloniaProperty.Register<MarkdownMindMapView, double>(nameof(MaxZoom), 2.5);
     public static readonly StyledProperty<IBrush?> CanvasBrushProperty = AvaloniaProperty.Register<MarkdownMindMapView, IBrush?>(nameof(CanvasBrush));
     public static readonly StyledProperty<IBrush?> CardBrushProperty = AvaloniaProperty.Register<MarkdownMindMapView, IBrush?>(nameof(CardBrush));
     public static readonly StyledProperty<IBrush?> TextBrushProperty = AvaloniaProperty.Register<MarkdownMindMapView, IBrush?>(nameof(TextBrush));
@@ -80,6 +86,8 @@ public sealed class MarkdownMindMapView : UserControl
     public MindMapLayoutKind LayoutKind { get => GetValue(LayoutKindProperty); set => SetValue(LayoutKindProperty, value); }
     /// <summary>导图样式（清雅/缤纷/线框/胶囊/脉络/黑白），只改节点视觉。</summary>
     public MindMapStyleKind StyleKind { get => GetValue(StyleKindProperty); set => SetValue(StyleKindProperty, value); }
+    public double MinZoom { get => GetValue(MinZoomProperty); set => SetValue(MinZoomProperty, value); }
+    public double MaxZoom { get => GetValue(MaxZoomProperty); set => SetValue(MaxZoomProperty, value); }
     public double Zoom => _scale.ScaleX;
     public MarkdownMindMapNode? SelectedNode => _selected;
     public event EventHandler<MarkdownMindMapNode>? NodeSelected;
@@ -123,7 +131,7 @@ public sealed class MarkdownMindMapView : UserControl
         foreach (var node in Flatten(Root)) node.IsCollapsed = state.CollapsedIds.Contains(node.Id);
         _selected = Flatten(Root).FirstOrDefault(n => n.Id == state.SelectedId);
         Rebuild();
-        _scale.ScaleX = _scale.ScaleY = Math.Clamp(state.Zoom, .15, 2.5);
+        _scale.ScaleX = _scale.ScaleY = Math.Clamp(state.Zoom, MinZoom, MaxZoom);
         _translate.X = state.X; _translate.Y = state.Y;
         _hasViewport = true;
         _fitMinimum = null;
@@ -237,7 +245,7 @@ public sealed class MarkdownMindMapView : UserControl
     {
         _fitMinimum = null;
         var point = anchor ?? new Point(Bounds.Width / 2, Bounds.Height / 2);
-        zoom = Math.Clamp(zoom, .15, 2.5);
+        zoom = Math.Clamp(zoom, MinZoom, MaxZoom);
         var ratio = zoom / Zoom;
         _translate.X = point.X - (point.X - _translate.X) * ratio;
         _translate.Y = point.Y - (point.Y - _translate.Y) * ratio;
@@ -245,12 +253,13 @@ public sealed class MarkdownMindMapView : UserControl
         Rebuild(false);
         ZoomChanged?.Invoke(this, EventArgs.Empty);
     }
-    public void Fit(double minimum = .15)
+    public void Fit(double? minimum = null)
     {
         if (_width <= 0 || Bounds.Width <= 0 || Bounds.Height <= 0) return;
-        var scale = Math.Clamp(Math.Min((Bounds.Width - 64) / _width, (Bounds.Height - 84) / _height), minimum, 1);
+        var floor = minimum ?? MinZoom;
+        var scale = Math.Clamp(Math.Min((Bounds.Width - 64) / _width, (Bounds.Height - 84) / _height), floor, 1);
         _scale.ScaleX = _scale.ScaleY = scale;
-        _translate.X = Math.Max(minimum >= .75 ? 24 : 0, (Bounds.Width - _width * scale) / 2);
+        _translate.X = Math.Max(floor >= .75 ? 24 : 0, (Bounds.Width - _width * scale) / 2);
         _translate.Y = (Bounds.Height - _height * scale) / 2;
         _hasViewport = true;
         _fitMinimum = minimum;

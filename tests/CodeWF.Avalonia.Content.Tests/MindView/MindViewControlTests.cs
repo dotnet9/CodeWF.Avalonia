@@ -71,6 +71,28 @@ public class MindViewControlTests(AvaloniaPlatformFixture platform)
     });
 
     [Fact]
+    public void HostZoomRangeReplacesTheDefaultClamp() => platform.Run(() =>
+    {
+        var view = new MarkdownMindMapView { Root = MarkdownMindMapDocument.Parse("# 计划\n\n## 第一节\n\n正文") };
+        var window = new Window { Width = 900, Height = 600, Content = view };
+        window.Show();
+        try
+        {
+            view.MinZoom = .01; view.MaxZoom = 2;
+            view.SetZoom(.005);
+            Assert.Equal(.01, view.Zoom, 4);
+            view.SetZoom(9);
+            Assert.Equal(2, view.Zoom, 4);
+            view.RestoreViewport(view.CaptureViewport());
+            Assert.Equal(2, view.Zoom, 4);
+            view.MinZoom = .15; view.MaxZoom = 2.5;
+            view.SetZoom(.2);
+            Assert.Equal(.2, view.Zoom, 4);
+        }
+        finally { window.Close(); }
+    });
+
+    [Fact]
     public void OutlineRevealExpandsAncestorsCentersSelectionAndKeepsThemeTokens() => platform.Run(() =>
     {
         var root = MarkdownMindMapDocument.Parse("# 文档\n\n## 一节\n\n### 小节\n\n正文\n\n## 二节\n\n正文");
