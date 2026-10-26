@@ -93,6 +93,44 @@ public sealed class MarkdownViewerNavigationTests(AvaloniaPlatformFixture platfo
 		}
 	});
 
+	[Fact]
+	public void TryGetBlockAt_ReturnsBlockUnderPoint() => platform.Run(() =>
+	{
+		var source = Document;
+		var thirdHeadingOffset = source.IndexOf("### 第三章", StringComparison.Ordinal);
+		var thirdHeadingLine = 1 + source.AsSpan(0, thirdHeadingOffset).Count('\n');
+		var (window, viewer, _) = CreateViewer();
+		try
+		{
+			Dispatcher.UIThread.RunJobs();
+
+			// 视口内逐点扫描应命中已渲染块；跳到第三章后命中点在其标题附近。
+			Assert.True(viewer.ScrollToSourceOffset(thirdHeadingOffset));
+
+			var matched = false;
+			for (var y = 8.0; y < viewer.Bounds.Height; y += 16)
+			{
+				if (!viewer.TryGetBlockAt(new Point(viewer.Bounds.Width / 2, y), out var probe))
+				{
+					continue;
+				}
+
+				matched = true;
+				Assert.True(probe.SourceLine >= thirdHeadingLine - 1, $"命中行 {probe.SourceLine} 应在第三章（{thirdHeadingLine}）之后");
+				break;
+			}
+
+			Assert.True(matched, "视口内应至少命中一个已渲染块");
+
+			// 远离内容的点不命中。
+			Assert.False(viewer.TryGetBlockAt(new Point(-500, -500), out _));
+		}
+		finally
+		{
+			window.Close();
+		}
+	});
+
 	private static int IndexOfBlockAtOffset(MarkdownViewer viewer, int offset)
 	{
 		for (var i = viewer.CurrentModel.Blocks.Count - 1; i >= 0; i--)

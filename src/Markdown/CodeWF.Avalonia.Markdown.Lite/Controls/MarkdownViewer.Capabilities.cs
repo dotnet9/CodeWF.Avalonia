@@ -372,6 +372,65 @@ public partial class MarkdownViewer
         }
     }
 
+    /// <summary>
+    /// 命中结果：已渲染块序号、块类型、源码起始偏移与 1 起始的源码行号。
+    /// </summary>
+    public readonly record struct MarkdownBlockHit(int BlockIndex, MarkdownBlockKind Kind, int SourceStart, int SourceLine);
+
+    /// <summary>
+    /// 命中测试：<see cref="MarkdownViewer"/> 坐标系中的点落在哪个已渲染块内。
+    /// 宿主据此实现「指针位置 → 源码行」类交互（如右键元素菜单），无需钻可视树；
+    /// 未物化块（虚拟化离屏）与空白区域返回 false。
+    /// </summary>
+    public bool TryGetBlockAt(Point point, out MarkdownBlockHit hit)
+    {
+        hit = default;
+        if (_documentHost is null)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < _renderedBlocks.Count; i++)
+        {
+            var rendered = _renderedBlocks[i];
+            if (rendered.Control.TranslatePoint(new Point(0, 0), this) is not { } origin)
+            {
+                continue;
+            }
+
+            if (!new Rect(origin, rendered.Control.Bounds.Size).Contains(point))
+            {
+                continue;
+            }
+
+            var modelBlock = i < _renderedModel.Blocks.Count ? _renderedModel.Blocks[i] : null;
+            hit = new MarkdownBlockHit(
+                i,
+                modelBlock?.Kind ?? rendered.Kind,
+                rendered.Start,
+                GetSourceLineOfOffset(Markdown ?? string.Empty, rendered.Start));
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>源码偏移 → 1 起始行号。</summary>
+    private static int GetSourceLineOfOffset(string text, int offset)
+    {
+        var line = 1;
+        var limit = Math.Clamp(offset, 0, text.Length);
+        for (var i = 0; i < limit; i++)
+        {
+            if (text[i] == '\n')
+            {
+                line++;
+            }
+        }
+
+        return line;
+    }
+
     private ScrollViewer? ResolveScrollHost()
     {
         if (ScrollHost is not null)
