@@ -4,6 +4,9 @@ using System.Text;
 using CodeWF.Avalonia.Markdown.Shared.Rendering;
 
 using Markdig;
+using Markdig.Helpers;
+using Markdig.Syntax;
+using FencedCodeBlockParser = Markdig.Parsers.FencedCodeBlockParser;
 
 namespace CodeWF.Avalonia.Markdown.Streaming;
 
@@ -265,39 +268,55 @@ public sealed class MarkdownStreamingDocument : IDisposable
 			_frozenEnd = boundary;
 		}
 
-		// 尾部：容错补全后解析，块偏移经映射回到原始源码坐标。
+		// 尾部：开放围栏快速路径（规格 §4.4），未命中时容错补全后解析，
+		// 块偏移经映射回到原始源码坐标。
 		var tailText = source[boundary..];
-		var remend = MarkdownTailRemender.Apply(tailText);
-		var tailModel = Parse(remend.RemendedText);
-
+		var tailBlocks = new List<MarkdownDocumentBlock>();
 		var tailPlain = new StringBuilder();
-		var tailBlocks = new List<MarkdownDocumentBlock>(tailModel.Blocks.Count);
 		var tailFlags = MarkdownDependencyFlags.None;
-		foreach (var block in tailModel.Blocks)
+
+		if (TryBuildOpenFenceTailBlock(source, boundary, tailText) is { } fenceBlock)
 		{
-			var sourceStart = boundary + remend.OffsetMap.MapTempToOriginal(block.SourceSpan.Start);
-			var sourceEnd = boundary + remend.OffsetMap.MapTempToOriginal(block.SourceSpan.End);
-			var plainStart = _frozenPlain.Length + tailPlain.Length;
-			if (block.PlainText.Length > 0)
+			tailBlocks.Add(fenceBlock);
+			tailFlags = fenceBlock.DependencyFlags;
+			if (fenceBlock.PlainText.Length > 0)
 			{
-				tailPlain.Append(block.PlainText);
-			}
-
-			var plainEnd = _frozenPlain.Length + tailPlain.Length;
-			if (tailPlain.Length > 0)
-			{
+				tailPlain.Append(fenceBlock.PlainText);
 				tailPlain.AppendLine();
 				tailPlain.AppendLine();
 			}
+		}
+		else
+		{
+			var remend = MarkdownTailRemender.Apply(tailText);
+			var tailModel = Parse(remend.RemendedText);
 
-			tailFlags |= block.DependencyFlags;
-			tailBlocks.Add(block with
+			foreach (var block in tailModel.Blocks)
 			{
-				SourceSpan = new MarkdownTextSpan(
-					Math.Min(sourceStart, source.Length),
-					Math.Clamp(sourceEnd, Math.Min(sourceStart, source.Length), source.Length)),
-				PlainTextSpan = new MarkdownTextSpan(plainStart, plainEnd),
-			});
+				var sourceStart = boundary + remend.OffsetMap.MapTempToOriginal(block.SourceSpan.Start);
+				var sourceEnd = boundary + remend.OffsetMap.MapTempToOriginal(block.SourceSpan.End);
+				var plainStart = _frozenPlain.Length + tailPlain.Length;
+				if (block.PlainText.Length > 0)
+				{
+					tailPlain.Append(block.PlainText);
+				}
+
+				var plainEnd = _frozenPlain.Length + tailPlain.Length;
+				if (tailPlain.Length > 0)
+				{
+					tailPlain.AppendLine();
+					tailPlain.AppendLine();
+				}
+
+				tailFlags |= block.DependencyFlags;
+				tailBlocks.Add(block with
+				{
+					SourceSpan = new MarkdownTextSpan(
+						Math.Min(sourceStart, source.Length),
+						Math.Clamp(sourceEnd, Math.Min(sourceStart, source.Length), source.Length)),
+					PlainTextSpan = new MarkdownTextSpan(plainStart, plainEnd),
+				});
+			}
 		}
 
 		var blocks = new List<MarkdownDocumentBlock>(_frozenBlocks.Count + tailBlocks.Count);
@@ -313,6 +332,130 @@ public sealed class MarkdownStreamingDocument : IDisposable
 	}
 
 	private static MarkdownDocumentModel Parse(string text) => MarkdownParser.Parse(text, Pipeline);
+
+	/// <summary>
+	/// 开放围栏快速路径（规格 §4.4）：尾部以完整的围栏开启行开始且未闭合时，
+	/// 跳过补全与 Markdig，按围栏规则直接构造代码块。返回 null 表示未命中，
+	/// 调用方走常规补全解析路径。
+	/// </summary>
+	private MarkdownDocumentBlock? TryBuildOpenFenceTailBlock(string source, int boundary, string tailText)
+	{
+		if (!_segmenter.IsScanningFence)
+		{
+			return null;
+		}
+
+		var (fenceChar, fenceLength) = _segmenter.OpenFence;
+
+		// 末行（可能未完成）已构成闭合围栏时未命中（Q2）：补全后解析才能得到完整块。
+		var lastLineStart = tailText.LastIndexOf('\n') + 1;
+		if (IsFenceCloseLine(tailText[lastLineStart..], fenceChar, fenceLength))
+		{
+			return null;
+		}
+
+		// 开围栏行 = 尾部首行（切分器在围栏行首冻结）；未完成的开围栏行不会进入围栏态。
+		var openLineEnd = tailText.IndexOf('\n');
+		var openLine = tailText[..openLineEnd];
+		var content = tailText[(openLineEnd + 1)..];
+
+		// 行切片：与补全形态（content + 追加的"\n" + 闭合围栏）的行序列逐项一致——
+		// 追加的换行参与分行（终结末行，或在内容已换行结尾/为空时产生空行），
+		// 切片文本不含换行符，NewLine 标记 '\n'（末行无标记，ToString 由此插换行）。
+		var indent = openLine.Length - openLine.TrimStart(' ').Length;
+		var remendedTail = tailText + "\n" + new string(fenceChar, Math.Max(3, fenceLength));
+		var fenced = new FencedCodeBlock(new FencedCodeBlockParser())
+		{
+			Info = ExtractFenceInfo(openLine, fenceLength),
+		};
+		fenced.Span = new SourceSpan(indent, remendedTail.Length - 1);
+
+		var lines = (content + "\n").Split('\n');
+		for (var i = 0; i < lines.Length - 1; i++)
+		{
+			AddFenceLine(fenced, lines[i], indent, i == lines.Length - 2 ? NewLine.None : NewLine.LineFeed);
+		}
+
+		var kind = MarkdownBlockClassifier.GetKind(fenced, remendedTail);
+		var flags = MarkdownBlockClassifier.GetDependencyFlags(fenced, kind);
+		var sourceText = remendedTail[indent..];
+		var blockText = MarkdownParser.ExtractPlainText(fenced).TrimEnd();
+		var plainStart = _frozenPlain.Length;
+		var plainEnd = plainStart + (blockText.Length > 0 ? blockText.Length : 0);
+
+		return new MarkdownDocumentBlock(
+			fenced,
+			new MarkdownTextSpan(boundary + indent, source.Length),
+			new MarkdownTextSpan(plainStart, plainEnd),
+			kind,
+			flags,
+			MarkdownParser.ComputeBlockHash(sourceText, kind, flags),
+			blockText,
+			sourceText,
+			MarkdownBlockClassifier.IsHeavy(fenced, kind));
+	}
+
+	private static void AddFenceLine(FencedCodeBlock fenced, string text, int indent, NewLine newLine)
+	{
+		var slice = new StringSlice(StripFenceIndent(text, indent))
+		{
+			NewLine = newLine,
+		};
+		fenced.AppendLine(ref slice, 0, 0, 0, trackTrivia: false);
+	}
+
+	/// <summary>围栏闭合行判定（与切分器/补全器同规则：≤3 空格缩进、同字符不短于开围栏、行尾无其他内容）。</summary>
+	private static bool IsFenceCloseLine(string line, char fenceChar, int fenceLength)
+	{
+		var trimmed = line.TrimStart(' ');
+		if (line.Length - trimmed.Length > 3)
+		{
+			return false;
+		}
+
+		var run = 0;
+		while (run < trimmed.Length && trimmed[run] == fenceChar)
+		{
+			run++;
+		}
+
+		return run >= fenceLength && trimmed[run..].Trim().Length == 0;
+	}
+
+	/// <summary>开围栏行 info string：围栏字符后取首个空白分隔词；无内容时为空串（Markdig 同义）。</summary>
+	private static string ExtractFenceInfo(string openLine, int fenceLength)
+	{
+		var rest = openLine.TrimStart(' ');
+		if (rest.Length <= fenceLength)
+		{
+			return string.Empty;
+		}
+
+		var info = rest[fenceLength..].Trim();
+		if (info.Length == 0)
+		{
+			return string.Empty;
+		}
+
+		var space = info.IndexOfAny([' ', '\t']);
+		return space < 0 ? info : info[..space];
+	}
+
+	private static string StripFenceIndent(string line, int indent)
+	{
+		if (indent <= 0)
+		{
+			return line;
+		}
+
+		var stripped = 0;
+		while (stripped < indent && stripped < line.Length && line[stripped] == ' ')
+		{
+			stripped++;
+		}
+
+		return line[stripped..];
+	}
 
 	private void Post(Action action)
 	{

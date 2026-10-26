@@ -51,6 +51,12 @@ public sealed class MarkdownStreamSegmenter
 	/// <summary>当前冻结边界（原始源码偏移），单调不减。</summary>
 	public int FrozenBoundary { get; private set; }
 
+	/// <summary>切分器是否停留在未闭合围栏内（开放围栏尾部快速路径的命中条件之一）。</summary>
+	public bool IsScanningFence => _state == TopLevelState.Fence;
+
+	/// <summary>当前开放围栏的字符与开围栏长度（<see cref="IsScanningFence"/> 为 true 时有效）。</summary>
+	public (char Char, int Length) OpenFence => (_fenceChar, _fenceLength);
+
 	/// <summary>
 	/// 扫描 <paramref name="source"/> 中上次扫描位置之后的完整行，推进冻结边界。
 	/// </summary>

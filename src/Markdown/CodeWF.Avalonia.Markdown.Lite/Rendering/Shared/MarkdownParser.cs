@@ -80,6 +80,12 @@ public static class MarkdownParser
 			Math.Clamp(end, Math.Clamp(start, 0, markdownLength), markdownLength));
 	}
 
+	/// <summary>块内容哈希（开放围栏快速路径与解析器共用同一算法，保证快照内哈希可比）。</summary>
+	internal static ulong ComputeBlockHash(string sourceText, MarkdownBlockKind kind, MarkdownDependencyFlags flags)
+	{
+		return ComputeHash(sourceText, kind, flags);
+	}
+
 	private static ulong ComputeHash(string sourceText, MarkdownBlockKind kind, MarkdownDependencyFlags flags)
 	{
 		const ulong offset = 14695981039346656037UL;
@@ -99,7 +105,8 @@ public static class MarkdownParser
 		static ulong Mix(ulong hash, byte value) => (hash ^ value) * prime;
 	}
 
-	private static string ExtractPlainText(Block block)
+	/// <summary>块明文提取（开放围栏快速路径与解析器共用，保证 PlainText 逐字符一致）。</summary>
+	internal static string ExtractPlainText(Block block)
 	{
 		var builder = new StringBuilder();
 		AppendPlainTextBlock(builder, block, 0);
