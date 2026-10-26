@@ -29,7 +29,9 @@ internal sealed class CodeBlockRenderer : IMarkdownBlockRenderer
 
         var code = codeBlock.Lines.ToString();
         var language = codeBlock is FencedCodeBlock fenced ? fenced.Info ?? "text" : "text";
-        var blockKey = Math.Max(codeBlock.Span.Start, 0);
+        // 块键 = 原始源码起始偏移：相对 Span 平移解析输入原点（分段/尾部解析时非 0），
+        // 保证折叠状态与高亮会话的键跨快照稳定（规格：块键 = 原始源码起始偏移）。
+        var blockKey = context.CurrentBlockOrigin + Math.Max(codeBlock.Span.Start, 0);
         var isFolded = context.IsCodeBlockFolded(blockKey);
 
         var border = new Border();

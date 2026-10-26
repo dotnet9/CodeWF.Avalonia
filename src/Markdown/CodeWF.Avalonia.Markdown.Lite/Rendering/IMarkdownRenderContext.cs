@@ -67,6 +67,14 @@ public interface IMarkdownRenderContext
     /// <summary>更新折叠状态并就地位刷新该代码块。</summary>
     void SetCodeBlockFolded(int blockKey, bool folded);
 
+    /// <summary>
+    /// 当前顶层块的解析输入坐标系原点（原始源码绝对偏移）。分段/尾部解析时
+    /// Markdig 块的 <c>Span</c> 是解析输入内的相对坐标，渲染器派生块键
+    /// （折叠状态、高亮会话等）必须加上该原点才是跨快照稳定的绝对块键；
+    /// 整篇解析时为 0。
+    /// </summary>
+    int CurrentBlockOrigin { get; }
+
     IDisposable BindTheme<T>(
         AvaloniaObject target,
         AvaloniaProperty<T> targetProperty,

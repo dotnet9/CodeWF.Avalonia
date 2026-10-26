@@ -478,6 +478,8 @@ public partial class MarkdownViewer
             }
 
             var modelBlock = _renderedModel.Blocks[i];
+            var syntaxStart = Math.Max(modelBlock.SyntaxBlock.Span.Start, 0);
+            _currentBlockOrigin = Math.Max(modelBlock.SourceSpan.Start - syntaxStart, 0);
             var control = ConvertBlock(modelBlock.SyntaxBlock, _renderedMarkdown);
             if (control is null)
             {

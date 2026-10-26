@@ -921,6 +921,15 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         ScheduleRender(mode);
     }
 
+    /// <summary>
+    /// 流式 append-only 更新判定：绑定流式源且新文本以当前渲染文本为前缀——
+    /// 是同一文档在生长而非替换（规格：源码缓冲只追加）。此场景下块键绝对
+    /// 稳定，用户状态（折叠、高亮会话）跨快照保留。
+    /// </summary>
+    private bool IsAppendOnlyStreamingUpdate(string text) =>
+        StreamingSource is not null
+        && text.StartsWith(_renderedMarkdown ?? string.Empty, StringComparison.Ordinal);
+
     private void RenderDocumentFull(string text, MarkdownDocumentModel? parsedModel = null)
     {
         if (_documentHost is null)
@@ -935,8 +944,11 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         DisposePendingBlockDisposables(0);
         // 整篇重建后块序号全部失效，先清掉上一次的滚动锚点固定。
         _virtualizingHost?.DetachAllPinned();
-        // 换文档时折叠状态（按源码偏移键控）随之失效；同文档重渲染（主题/字号）保留。
-        if (!string.Equals(text, _renderedMarkdown, StringComparison.Ordinal))
+        // 换文档时折叠状态/高亮会话（按绝对源码偏移键控）随之失效；同文档重渲染
+        //（主题/字号）保留；流式 append-only 增长同样保留——块键绝对稳定，
+        // 新文本以旧文本为前缀说明是同一文档在生长而非替换。
+        if (!string.Equals(text, _renderedMarkdown, StringComparison.Ordinal)
+            && !IsAppendOnlyStreamingUpdate(text))
         {
             _codeBlockFoldedStates.Clear();
             _codeHighlightSessions.Clear();
@@ -1003,13 +1015,19 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         }
 
         // 被替换的源码块不再沿用旧折叠状态；未变更的块保留用户操作。
-        foreach (var block in _renderedModel.Blocks.Skip(diff.ReplaceStartIndex).Take(diff.OldRemoveCount))
+        // 流式 append-only 增长例外：被替换的尾块是同一逻辑块在生长（块键绝对
+        // 稳定），用户的折叠操作必须跨快照保留。
+        if (!IsAppendOnlyStreamingUpdate(text))
         {
-            _codeBlockFoldedStates.Remove(block.SourceSpan.Start);
-        }
-        foreach (var block in newModel.Blocks.Skip(diff.NewStartIndex).Take(diff.NewInsertCount))
-        {
-            _codeBlockFoldedStates.Remove(block.SourceSpan.Start);
+            foreach (var block in _renderedModel.Blocks.Skip(diff.ReplaceStartIndex).Take(diff.OldRemoveCount))
+            {
+                _codeBlockFoldedStates.Remove(block.SourceSpan.Start);
+            }
+
+            foreach (var block in newModel.Blocks.Skip(diff.NewStartIndex).Take(diff.NewInsertCount))
+            {
+                _codeBlockFoldedStates.Remove(block.SourceSpan.Start);
+            }
         }
 
         var renderedNewBlocks = CreateRenderedBlocks(
@@ -1048,6 +1066,10 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
     private (Control Control, List<IDisposable>? Bindings) CreateBlockContent(MarkdownDocumentBlock modelBlock, string markdown)
     {
+            // 块键原点：解析输入（分段/尾部文本）的绝对起始 = 模型块绝对起点 - 其相对 Span 起点。
+            // 代码块渲染器用它把 Markdig 的相对 Span 平移回原始源码坐标（规格：块键 = 原始源码起始偏移）。
+            var syntaxStart = Math.Max(modelBlock.SyntaxBlock.Span.Start, 0);
+            _currentBlockOrigin = Math.Max(modelBlock.SourceSpan.Start - syntaxStart, 0);
             var previousDisposableCount = _currentBlockDisposables.Count;
             var control = ConvertBlock(modelBlock.SyntaxBlock, markdown);
             if (control is null)
@@ -1862,6 +1884,11 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     // 代码块高亮行级缓存会话：键 = 块源码起始偏移。流式增长场景下同一代码块
     // 跨快照复用会话，未变行不重算；换文档时随折叠状态一起清理（见 RenderDocumentFull）。
     private readonly Dictionary<int, Rendering.MarkdownCodeHighlightSession> _codeHighlightSessions = [];
+
+    // 当前顶层块解析输入坐标系的原点（见 IMarkdownRenderContext.CurrentBlockOrigin）。
+    private int _currentBlockOrigin;
+
+    int Rendering.IMarkdownRenderContext.CurrentBlockOrigin => _currentBlockOrigin;
 
     Rendering.MarkdownCodeHighlightSession? Rendering.IMarkdownRenderContext.GetCodeHighlightSession(int blockKey)
     {
