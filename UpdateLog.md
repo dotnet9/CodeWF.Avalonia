@@ -1,5 +1,9 @@
 # 更新日志
 
+## 12.2.13 (2026-10-26)
+
+- 只读导图控件 `MarkdownMindMapView` 新增 `MinZoom`/`MaxZoom`：缩放量程交给宿主（原画布内写死 15%–250%，宿主给拖动条时下探不到 1%），`SetZoom`/视口还原/`Fit` 统一按这对属性收敛；`Fit()` 的下限参数改为可选，缺省取 `MinZoom`。
+
 ## 12.2.12 (2026-10-26)
 
 - 文档内查找：`Find/FindNext/FindPrevious/ClearSearch` 与命中高亮（`MatchCount`/`CurrentMatchIndex`/`SearchChanged` 状态事件，高亮画刷可按主题覆盖），任何重渲染后自动重扫重放。
