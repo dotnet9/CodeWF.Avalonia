@@ -992,6 +992,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
         RefreshSelectionBlocks();
         InvalidateDocumentLayout();
+        ReapplySearchIfActive();
     }
 
     private bool TryRenderIncremental(string text, MarkdownDocumentModel? parsedModel, MarkdownTextSpan? dirtySpan)
@@ -1179,6 +1180,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         ResetSelectionState();
         RefreshSelectionBlocks();
         InvalidateDocumentLayout();
+        ReapplySearchIfActive();
     }
 
     private void ReplaceRenderedBlocks(
