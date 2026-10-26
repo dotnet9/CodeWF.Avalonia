@@ -150,4 +150,33 @@ public sealed class MarkdownDiffServiceTests
 		Assert.Equal("H2 + O2 \u2192 H2O", model.PlainText);
 		Assert.Equal(MarkdownBlockKind.Math, model.Blocks.Single().Kind);
 	}
+
+	[Fact]
+	public void CanReuse_WhenBlocksAreSameInstance_ShortCircuits()
+	{
+		// 流式快照的冻结块跨快照共享同一实例（规格 §2 对象共享）：引用相同即复用。
+		var model = MarkdownParser.Parse("# Title\n\nAlpha", Pipeline);
+
+		Assert.True(MarkdownDiffService.CanReuse(model.Blocks[0], model.Blocks[0]));
+	}
+
+	[Fact]
+	public void Compare_WithSharedFrozenPrefix_ProducesTailOnlyDiff()
+	{
+		// 流式组装模型：前缀块为同一实例、尾块追加——diff 只替换尾部。
+		var oldModel = MarkdownParser.Parse("# Title\n\nAlpha", Pipeline);
+		var newModel = MarkdownParser.Parse("# Title\n\nAlpha\n\nBeta", Pipeline);
+		var assembled = oldModel with
+		{
+			Source = newModel.Source,
+			Blocks = new[] { oldModel.Blocks[0], oldModel.Blocks[1], newModel.Blocks[2] },
+		};
+
+		var diff = MarkdownDiffService.Compare(oldModel, assembled);
+
+		Assert.False(diff.RequiresFullRender);
+		Assert.Equal(2, diff.ReplaceStartIndex);
+		Assert.Equal(2, diff.ReplaceEndIndex);
+		Assert.Equal(3, diff.NewEndIndex);
+	}
 }

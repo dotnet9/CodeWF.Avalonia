@@ -198,9 +198,12 @@ public static class MarkdownDiffService
 
 	public static bool CanReuse(MarkdownDocumentBlock oldBlock, MarkdownDocumentBlock newBlock)
 	{
-		return oldBlock.ContentHash == newBlock.ContentHash
-			   && oldBlock.Kind == newBlock.Kind
-			   && oldBlock.DependencyFlags == newBlock.DependencyFlags;
+		// 流式快照的冻结块跨快照共享同一实例（规格 §2 对象共享），引用相同直接短路：
+		// 未变更前缀的比较成本从 O(总块数) 次哈希比较降到 O(新增块数)。
+		return ReferenceEquals(oldBlock, newBlock)
+			   || (oldBlock.ContentHash == newBlock.ContentHash
+				   && oldBlock.Kind == newBlock.Kind
+				   && oldBlock.DependencyFlags == newBlock.DependencyFlags);
 	}
 
 	private static int FindFirstBlockIndexAtOrAfter(MarkdownDocumentModel model, int offset)
