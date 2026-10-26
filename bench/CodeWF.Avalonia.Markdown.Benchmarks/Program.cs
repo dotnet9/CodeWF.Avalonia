@@ -49,6 +49,11 @@ internal static class Program
 			results.Add(BenchStreamingEngine(20, tokenLength: 4));
 		}
 
+		if (mode is "all" or "fence")
+		{
+			results.Add(BenchFenceStreaming(50, tokenLength: 4));
+		}
+
 		Console.WriteLine();
 		Console.WriteLine("==== 基准结果 ====");
 		foreach (var line in results)
@@ -182,6 +187,62 @@ internal static class Program
 			}
 
 			Thread.Sleep(1);
+		}
+	}
+
+	/// <summary>
+	/// 长代码块流式（开放围栏快速路径 §4.4 的主场）：单一大代码块按 token 逐片追加，
+	/// 统计引擎墙钟与分配；并给出「常规路径等价成本」对照——每步对同一尾部做
+	/// remend 补全 + Markdig 解析（即未命中快速路径时的工作量，不含切分与快照组装）。
+	/// </summary>
+	private static string BenchFenceStreaming(int sizeKb, int tokenLength)
+	{
+		var body = new StringBuilder(sizeKb * 1024);
+		var random = new Random(20261026);
+		while (body.Length < sizeKb * 1024)
+		{
+			body.AppendLine($"public void Method{random.Next(100000)}() => Console.WriteLine(\"{random.Next(100000)}\");");
+		}
+
+		var streamingSource = "```csharp\n" + body.ToString();
+		var steps = streamingSource.Length / tokenLength;
+
+		// 预热。
+		RunStreamingEngine(streamingSource, tokenLength);
+		RunFenceFallback(streamingSource, tokenLength);
+
+		GC.Collect();
+		GC.WaitForPendingFinalizers();
+		GC.Collect();
+		var allocatedBefore = GC.GetTotalAllocatedBytes(precise: true);
+
+		var engineStart = Stopwatch.GetTimestamp();
+		RunStreamingEngine(streamingSource, tokenLength);
+		var engineTotal = Stopwatch.GetElapsedTime(engineStart);
+		var engineAllocated = GC.GetTotalAllocatedBytes(precise: true) - allocatedBefore;
+
+		GC.Collect();
+		GC.WaitForPendingFinalizers();
+		GC.Collect();
+		allocatedBefore = GC.GetTotalAllocatedBytes(precise: true);
+
+		var fallbackStart = Stopwatch.GetTimestamp();
+		RunFenceFallback(streamingSource, tokenLength);
+		var fallbackTotal = Stopwatch.GetElapsedTime(fallbackStart);
+		var fallbackAllocated = GC.GetTotalAllocatedBytes(precise: true) - allocatedBefore;
+
+		return $"长代码块流式 {sizeKb,4} KB / {tokenLength,2} 字符 | 步数 {steps,6} | 引擎(快速路径) 墙钟 {engineTotal.TotalMilliseconds,8:0.0} ms / {engineAllocated / 1024.0 / 1024.0,7:0.0} MB | 常规路径对照(补全+解析尾块) {fallbackTotal.TotalMilliseconds,8:0.0} ms / {fallbackAllocated / 1024.0 / 1024.0,7:0.0} MB";
+	}
+
+	private static void RunFenceFallback(string streamingSource, int tokenLength)
+	{
+		// 常规路径等价成本：每步对「围栏开启行之后的尾部」做补全 + 解析。
+		var boundary = streamingSource.IndexOf('\n') + 1;
+		for (var offset = boundary + tokenLength; offset <= streamingSource.Length; offset += tokenLength)
+		{
+			var tail = streamingSource[boundary..offset];
+			var remend = MarkdownTailRemender.Apply(tail);
+			_ = MarkdownParser.Parse(remend.RemendedText, Pipeline);
 		}
 	}
 }
