@@ -25,6 +25,13 @@ public interface IMarkdownRenderContext
     /// <summary>相对图片路径的解析基路径。</summary>
     string? ImageBasePath { get; }
 
+    /// <summary>
+    /// 图片源解析回调：对 http(s) 图片源在远程获取前调用，返回本地文件路径即
+    /// 离线加载（CDN URL 反查本地文件），返回 null 按原样远程获取；null 成员
+    /// 表示宿主未提供回调。
+    /// </summary>
+    Func<string, string?>? ImageSourceResolver { get; }
+
     double UnorderedListMarkerWidth { get; }
 
     double OrderedListMarkerMinWidth { get; }

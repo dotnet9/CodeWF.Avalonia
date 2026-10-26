@@ -15,7 +15,8 @@ public static class MarkdownImageSourceLoader
 		string? source,
 		string? imageBasePath = null,
 		long maxRemoteImageBytes = DefaultMaxRemoteImageBytes,
-		long maxLocalImageBytes = DefaultMaxRemoteImageBytes)
+		long maxLocalImageBytes = DefaultMaxRemoteImageBytes,
+		Func<string, string?>? resolveLocalSource = null)
 	{
 		ValidateMaxImageBytes(maxRemoteImageBytes, nameof(maxRemoteImageBytes));
 		ValidateMaxImageBytes(maxLocalImageBytes, nameof(maxLocalImageBytes));
@@ -35,6 +36,14 @@ public static class MarkdownImageSourceLoader
 		{
 			if (uri.Scheme is "http" or "https")
 			{
+				// 宿主解析回调先行（如 CDN URL 反查本地文件离线显示）：返回本地路径
+				// 时仍走白名单与大小限制的本地加载；返回 null/空白时按原样远程获取。
+				var resolvedLocal = resolveLocalSource?.Invoke(normalizedSource);
+				if (!string.IsNullOrWhiteSpace(resolvedLocal))
+				{
+					return LoadLocalFile(resolvedLocal, resolvedLocal, maxLocalImageBytes);
+				}
+
 				var bytes = ReadRemoteBytesWithDiskCache(uri, maxRemoteImageBytes);
 				return new MarkdownImageSource(
 					bytes,
@@ -59,7 +68,8 @@ public static class MarkdownImageSourceLoader
 		string? imageBasePath = null,
 		CancellationToken cancellationToken = default,
 		long maxRemoteImageBytes = DefaultMaxRemoteImageBytes,
-		long maxLocalImageBytes = DefaultMaxRemoteImageBytes)
+		long maxLocalImageBytes = DefaultMaxRemoteImageBytes,
+		Func<string, string?>? resolveLocalSource = null)
 	{
 		ValidateMaxImageBytes(maxRemoteImageBytes, nameof(maxRemoteImageBytes));
 		ValidateMaxImageBytes(maxLocalImageBytes, nameof(maxLocalImageBytes));
@@ -79,6 +89,12 @@ public static class MarkdownImageSourceLoader
 		{
 			if (uri.Scheme is "http" or "https")
 			{
+				var resolvedLocal = resolveLocalSource?.Invoke(normalizedSource);
+				if (!string.IsNullOrWhiteSpace(resolvedLocal))
+				{
+					return await LoadLocalFileAsync(resolvedLocal, resolvedLocal, maxLocalImageBytes, cancellationToken);
+				}
+
 				var bytes = await ReadRemoteBytesWithDiskCacheAsync(uri, maxRemoteImageBytes, cancellationToken);
 				return new MarkdownImageSource(
 					bytes,

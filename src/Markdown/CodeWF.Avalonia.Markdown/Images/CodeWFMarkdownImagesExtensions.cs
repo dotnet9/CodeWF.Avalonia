@@ -18,7 +18,8 @@ public static class CodeWFMarkdownImagesExtensions
             {
                 Source = source,
                 AltText = altText,
-                ImageBasePath = context.ImageBasePath
+                ImageBasePath = context.ImageBasePath,
+                ImageSourceResolver = context.ImageSourceResolver
             };
             context.AddMarkdownClass(image, MarkdownStyleKeys.Image);
             return image;

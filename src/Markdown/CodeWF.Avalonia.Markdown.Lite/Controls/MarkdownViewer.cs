@@ -93,6 +93,13 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         AvaloniaProperty.Register<MarkdownViewer, string?>(nameof(ImageBasePath));
 
     /// <summary>
+    /// 图片源解析回调：对 http(s) 图片源在远程获取前调用，返回本地文件路径即
+    /// 离线加载（CDN URL 反查本地文件），返回 null 按原样远程获取。
+    /// </summary>
+    public static readonly StyledProperty<Func<string, string?>?> ImageSourceResolverProperty =
+        AvaloniaProperty.Register<MarkdownViewer, Func<string, string?>?>(nameof(ImageSourceResolver));
+
+    /// <summary>
     /// 流式文档源：设置后 Viewer 持续应用其快照（追加型输入只解析增量），
     /// 适合 AI 输出、文件下载等逐片到达的场景；此后对 <see cref="Markdown"/>
     /// 赋值会解除流式绑定并回退到整串渲染。
@@ -325,6 +332,13 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     {
         get => GetValue(ImageBasePathProperty);
         set => SetValue(ImageBasePathProperty, value);
+    }
+
+    /// <summary>图片源解析回调（http(s) 源反查本地文件离线显示），经渲染上下文传给图片能力包。</summary>
+    public Func<string, string?>? ImageSourceResolver
+    {
+        get => GetValue(ImageSourceResolverProperty);
+        set => SetValue(ImageSourceResolverProperty, value);
     }
 
     public string SelectedText
@@ -570,6 +584,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         TypographyThemeProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) => viewer.QueueRenderDocument(MarkdownRenderMode.Full));
         TypographySizeProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) => viewer.QueueRenderDocument(MarkdownRenderMode.Full));
         ImageBasePathProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) => viewer.QueueRenderDocument(MarkdownRenderMode.Full));
+        ImageSourceResolverProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) => viewer.QueueRenderDocument(MarkdownRenderMode.Full));
         // 高亮 token 的颜色在生成时固定；代码背景资源变更也需重建，
         // 防止主题切换后仍保留与新底色相反的 token 配色。
         CodeBackgroundBrushProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) => viewer.QueueRenderDocument(MarkdownRenderMode.Full));
@@ -1904,6 +1919,8 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     string? Rendering.IMarkdownRenderContext.MarkdownText => Markdown;
 
     string? Rendering.IMarkdownRenderContext.ImageBasePath => ImageBasePath;
+
+    Func<string, string?>? Rendering.IMarkdownRenderContext.ImageSourceResolver => ImageSourceResolver;
 
     private sealed record RenderedBlock(
         int Start,

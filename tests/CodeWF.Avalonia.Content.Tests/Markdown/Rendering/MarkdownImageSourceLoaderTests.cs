@@ -195,4 +195,56 @@ public sealed class MarkdownImageSourceLoaderTests
 			}
 		}
 	}
+
+	[Fact]
+	public async Task LoadAsync_WhenResolverMapsHttpToLocal_ReturnsLocalBytesWithoutNetwork()
+	{
+		var root = Path.Combine(Path.GetTempPath(), "CodeWFMarkdownImageTests", Guid.NewGuid().ToString("N"));
+		Directory.CreateDirectory(root);
+		try
+		{
+			var localPath = Path.Combine(root, "cached.png");
+			var payload = Encoding.ASCII.GetBytes("GIF89a-local");
+			await File.WriteAllBytesAsync(localPath, payload);
+
+			// 解析回调把 CDN URL 反查到本地文件：不得发起网络请求（端口不可达即失败）。
+			var result = await MarkdownImageSourceLoader.LoadAsync(
+				"http://cdn.invalid/nonexistent.png",
+				resolveLocalSource: _ => localPath);
+
+			Assert.Equal(payload, result.Bytes);
+		}
+		finally
+		{
+			if (Directory.Exists(root))
+			{
+				Directory.Delete(root, recursive: true);
+			}
+		}
+	}
+
+	[Fact]
+	public async Task LoadAsync_WhenResolverReturnsNull_FallsBackToRemote()
+	{
+		var payload = Encoding.ASCII.GetBytes("GIF89a");
+		using var listener = new TcpListener(IPAddress.Loopback, 0);
+		listener.Start();
+		var endpoint = (IPEndPoint)listener.LocalEndpoint;
+		var serverTask = ServeSingleImageAsync(listener, payload, "image/gif");
+
+		try
+		{
+			// 回调返回 null：按原样远程获取。
+			var result = await MarkdownImageSourceLoader.LoadAsync(
+				$"http://127.0.0.1:{endpoint.Port}/image.gif",
+				resolveLocalSource: _ => null);
+
+			Assert.Equal(payload, result.Bytes);
+		}
+		finally
+		{
+			listener.Stop();
+			await serverTask;
+		}
+	}
 }

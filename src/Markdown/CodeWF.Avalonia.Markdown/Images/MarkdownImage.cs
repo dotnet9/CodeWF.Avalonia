@@ -58,6 +58,14 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
     public static readonly StyledProperty<string?> ImageBasePathProperty =
         AvaloniaProperty.Register<MarkdownImage, string?>(nameof(ImageBasePath));
 
+    /// <summary>
+    /// 图片源解析回调：对 http(s) 源在远程获取前调用，返回本地文件路径即离线加载
+    /// （仍走白名单与大小限制），返回 null 按原样远程获取。典型用途：CDN URL
+    /// 反向映射本地文件离线显示。
+    /// </summary>
+    public static readonly StyledProperty<Func<string, string?>?> ImageSourceResolverProperty =
+        AvaloniaProperty.Register<MarkdownImage, Func<string, string?>?>(nameof(ImageSourceResolver));
+
     public string? Source
     {
         get => GetValue(SourceProperty);
@@ -76,10 +84,17 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
         set => SetValue(ImageBasePathProperty, value);
     }
 
+    public Func<string, string?>? ImageSourceResolver
+    {
+        get => GetValue(ImageSourceResolverProperty);
+        set => SetValue(ImageSourceResolverProperty, value);
+    }
+
     static MarkdownImage()
     {
         SourceProperty.Changed.AddClassHandler<MarkdownImage>((image, _) => image.QueueLoad());
         ImageBasePathProperty.Changed.AddClassHandler<MarkdownImage>((image, _) => image.QueueLoad());
+        ImageSourceResolverProperty.Changed.AddClassHandler<MarkdownImage>((image, _) => image.QueueLoad());
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -269,15 +284,33 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
 
     private async Task<MarkdownImageSource> LoadBytesAsync(string source, CancellationToken token)
     {
-        var cacheKey = MarkdownImageSourceLoader.CreateCacheKey(source, ImageBasePath);
+        // 解析回调只对 http(s) 源有意义；解析结果参与缓存键，避免同 URL 在
+        // 「已映射/未映射」两种取用方式间互相命中。
+        var resolvedPath = TryResolveLocalSource(source);
+        var cacheKey = MarkdownImageSourceLoader.CreateCacheKey(source, ImageBasePath)
+                       + (resolvedPath is null ? string.Empty : $"|resolved:{resolvedPath}");
         if (TryGetCachedImageBytes(cacheKey, out var cached))
         {
             return cached;
         }
 
-        var result = await MarkdownImageSourceLoader.LoadAsync(source, ImageBasePath, token);
+        var result = await MarkdownImageSourceLoader.LoadAsync(
+            source, ImageBasePath, token, resolveLocalSource: resolvedPath is null ? null : _ => resolvedPath);
         AddImageBytesToCache(cacheKey, result);
         return result;
+    }
+
+    private string? TryResolveLocalSource(string source)
+    {
+        var resolver = ImageSourceResolver;
+        if (resolver is null
+            || !Uri.TryCreate(source, UriKind.Absolute, out var uri)
+            || uri.Scheme is not ("http" or "https"))
+        {
+            return null;
+        }
+
+        return resolver(source);
     }
 
     private static bool TryGetCachedImageBytes(string source, out MarkdownImageSource result)
