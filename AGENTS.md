@@ -12,6 +12,8 @@ dotnet run --project bench/CodeWF.Avalonia.Markdown.Benchmarks -c Release -- all
 ```
 
 - 版本跟随 Avalonia：`Directory.Build.props` 的 `Version` 前三位 = Avalonia 版本，第 4 位自有修订。
+- 发版升版本号后必须重跑 `scripts/build_standalone_prototype.ps1`：原型标题栏
+  版本徽章取自版本号，漏更会导致 CI 的 `sync_design_catalog -Check` 失败。
 - 提交：中文、一个逻辑单元一个提交，随做随推。
 
 ## 改动同步清单（改这里就必须改那里）
