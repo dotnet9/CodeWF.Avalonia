@@ -810,6 +810,8 @@ window.CodeWFPrototypeSettings = {
       "WriteLogs": "写入三类日志",
       "Ready": "就绪",
       "Reset": "重置",
+      "ViewGroup": "视图",
+      "Maximize": "最大化",
       "DemoShell": "演示台",
       "QuickSave": "保存布局",
       "QuickSettings": "设置",
@@ -911,6 +913,8 @@ window.CodeWFPrototypeSettings = {
       "WriteLogs": "Write sample logs",
       "Ready": "Ready",
       "Reset": "Reset",
+      "ViewGroup": "View",
+      "Maximize": "Maximize",
       "DemoShell": "Demo Shell",
       "QuickSave": "Save layout",
       "QuickSettings": "Settings",
@@ -2936,7 +2940,16 @@ window.CodeWFMarkdownTypography = {
   },
   "GeekBlack": {},
   "Simple": {
-    "CodeWFMarkdownParagraphLineHeight": 27.0
+    "CodeWFMarkdownParagraphLineHeight": 28.5,
+    "CodeWFMarkdownBlockSpacing": 0.0,
+    "CodeWFMarkdownHeading1LineHeight": 43.5,
+    "CodeWFMarkdownHeading2LineHeight": 33.6,
+    "CodeWFMarkdownHeading3LineHeight": 28.46,
+    "CodeWFMarkdownListSpacing": 0.0,
+    "CodeWFMarkdownQuoteContentSpacing": 0.0,
+    "CodeWFMarkdownTableCellMinHeight": 24.75,
+    "CodeWFMarkdownTableCellFontSize": 12.5,
+    "CodeWFMarkdownTableCellLineHeight": 23.75
   },
   "WeChatFormat": {
     "CodeWFMarkdownParagraphFontSize": 16.0,
