@@ -430,62 +430,112 @@ static void VerifyDockDocumentTransfer(string captures)
 
 static void VerifyTitleBar(global::CodeWF.Avalonia.Demo.Views.MainWindow shell, MainViewModel model)
 {
-    var toggle = shell.FindControl<Ursa.Controls.ThemeToggleButton>("TitleBarThemeToggle")!;
-    var language = shell.FindControl<ComboBox>("TitleBarLanguageSelector")!;
-    Require(toggle.IsThreeState, "Title bar uses the existing three-state Ursa control.");
+    Dispatcher.UIThread.RunJobs();
+    shell.UpdateLayout();
+    var appearanceButton = shell.FindControl<global::Avalonia.Controls.Primitives.ToggleButton>("AppearanceButton")!;
+    var languageButton = shell.FindControl<global::Avalonia.Controls.Primitives.ToggleButton>("TitleBarLanguageButton")!;
+    Require(appearanceButton.Height == 32 && languageButton.Width == 32 && languageButton.Height == 32,
+        "Title-bar appearance and language entries keep compact dimensions.");
+    var popups = global::Avalonia.LogicalTree.LogicalExtensions.GetLogicalDescendants(shell)
+        .OfType<global::Avalonia.Controls.Primitives.Popup>()
+        .Concat(shell.GetVisualDescendants().OfType<global::Avalonia.Controls.Primitives.Popup>()).ToArray();
+    var languagePopup = popups.First(popup => (popup.Child as Border)?.Classes.Contains("language-menu") == true);
+    var appearancePopup = popups.First(popup => (popup.Child as Border)?.Classes.Contains("appearance-choices") == true);
+    var appearanceBorder = (Border)appearancePopup.Child!;
+
+    ListBox LanguageList() => ((Border)languagePopup.Child!).GetVisualDescendants().OfType<ListBox>()
+        .Single(list => list.Classes.Contains("language-list"));
+    ListBox ModePills() => appearanceBorder.GetVisualDescendants().OfType<ListBox>()
+        .Single(list => list.Classes.Contains("appearance-pills") && list.Items.Count == 3);
+    global::Avalonia.Controls.Button[] PaletteCards() => appearanceBorder.GetVisualDescendants()
+        .OfType<global::Avalonia.Controls.Button>().Where(button => button.Classes.Contains("palette-card")).ToArray();
+    void WaitFor(Func<bool> condition, string message)
+    {
+        var deadline = DateTime.UtcNow.AddSeconds(10);
+        do
+        {
+            Dispatcher.UIThread.RunJobs();
+            shell.UpdateLayout();
+            // PopupRoot 是独立布局根，必须单独驱动布局才会物化 ItemsControl 容器。
+            ((Border)languagePopup.Child!).UpdateLayout();
+            appearanceBorder.UpdateLayout();
+            try { if (condition()) return; }
+            catch (InvalidOperationException) { }
+            if (DateTime.UtcNow >= deadline) throw new TimeoutException(message);
+            Thread.Sleep(10);
+        } while (true);
+    }
+
+    // 语言弹层：徽标行列表与全局语言双向跟随（外部切换 ↔ 弹层选择）。
+    languageButton.IsChecked = true;
+    WaitFor(() => LanguageList().Items.Count == model.Cultures.Count, "The language popup did not materialize its culture list.");
+    Require(ReferenceEquals(LanguageList().ItemsSource, model.Cultures), "Language popup lists the host cultures.");
     var firstCulture = model.Cultures[0];
     var lastCulture = model.Cultures[^1];
-    language.SelectedItem = firstCulture;
     I18nManager.Instance.Culture = CultureInfo.GetCultureInfo(lastCulture.Name);
     Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
-    Require(ReferenceEquals(model.SelectedCulture, lastCulture) && ReferenceEquals(language.SelectedItem, lastCulture),
-        "Global culture changes synchronize the existing title-bar selection.");
-    language.SelectedItem = firstCulture;
+    Require(ReferenceEquals(model.SelectedCulture, lastCulture) && ReferenceEquals(LanguageList().SelectedItem, lastCulture),
+        "Global culture changes synchronize the existing title-bar language list.");
+    LanguageList().SelectedItem = firstCulture;
     Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
-    Require(I18nManager.Instance.Culture.Name == firstCulture.Name,
+    Require(I18nManager.Instance.Culture.Name == firstCulture.Name && ReferenceEquals(model.SelectedCulture, firstCulture),
         "Choosing the previous language after an external change restores the global culture.");
     Task.Run(() => I18nManager.Instance.Culture = CultureInfo.GetCultureInfo(lastCulture.Name)).GetAwaiter().GetResult();
     Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
-    Require(ReferenceEquals(language.SelectedItem, lastCulture),
-        "Background global culture changes update the existing language control on the UI thread.");
+    Require(ReferenceEquals(LanguageList().SelectedItem, lastCulture),
+        "Background global culture changes update the existing language list on the UI thread.");
     Require(model.StatusText == I18nManager.Instance.GetResource(DemoKeys.Shell.Ready),
         "The shell status refreshes after external culture changes.");
-    var button = toggle.GetVisualDescendants().OfType<Button>().Single(item => item.Name == "PART_ThemeButton");
-    foreach (var width in new[] { 1120, 1440 })
+    languageButton.IsChecked = false;
+    Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+
+    // 外观弹层：密度/模式 pill 行 + 配色卡网格（点击选中，三态模式逐色板轮询）。
+    appearanceButton.IsChecked = true;
+    WaitFor(() => ModePills().Items.Count == 3 && PaletteCards().Length == model.Palettes.Count,
+        "The appearance popup did not materialize its palette grid.");
+    var densityPills = appearanceBorder.GetVisualDescendants().OfType<ListBox>()
+        .Single(list => list.Classes.Contains("appearance-pills") && list.Items.Count == 2);
+    Require(densityPills.SelectedIndex == model.DensityIndex, "Density pills follow the current shell density.");
+    densityPills.SelectedIndex = 1;
+    Dispatcher.UIThread.RunJobs();
+    Require(model.DensityIndex == 1, "Density pills switch the shell to compact.");
+    densityPills.SelectedIndex = 0;
+    Dispatcher.UIThread.RunJobs();
+    Require(model.DensityIndex == 0, "Density pills restore the comfortable shell.");
+    Require(ModePills().Items.Count == 3, "Title bar keeps the three-state appearance mode pills.");
+    if (ModePills().SelectedIndex != model.ThemeModeIndex)
     {
-        shell.Width = width;
-        foreach (var palette in model.Palettes)
-        {
-            model.SelectedPalette = palette;
-            model.ThemeModeIndex = (int)StudioThemeMode.System;
-            foreach (var expected in new[] { StudioThemeMode.Light, StudioThemeMode.Dark, StudioThemeMode.System })
-            {
-                Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
-                button.RaiseEvent(new global::Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
-                Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
-                Require(model.ThemeModeIndex == (int)expected, "Ursa button cycles all three persisted modes: " + expected);
-                Require(ReferenceEquals(model.SelectedPalette, palette), "Mode changes preserve the selected palette.");
-                var actual = Application.Current!.RequestedThemeVariant;
-                Require(actual == palette.ResolveVariant(model.IsDarkMode), "Ursa control preserves the Studio palette variant: " + actual);
-            }
-        }
-        language.IsDropDownOpen = true;
+        // XAML 里 SelectedIndex 绑定先于 ItemsSource 激活，初始选择会丢失，这里显式对齐。
+        ModePills().SelectedIndex = model.ThemeModeIndex;
         Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
-        Require(language.IsDropDownOpen && language.Items.Count == model.Cultures.Count, "Language icon opens the complete language list.");
-        foreach (var culture in model.Cultures)
-        {
-            language.SelectedItem = culture;
-            Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
-            Require(I18nManager.Instance.Culture.Name == culture.Name, "Language popup uses the global manager.");
-            Require(global::Avalonia.Controls.ToolTip.GetTip(button) is TextBlock tip && tip.Text == model.ThemeModes[model.ThemeModeIndex],
-                "The existing Ursa button tooltip follows the host language.");
-        }
-        language.IsDropDownOpen = false;
-        Require(toggle.Bounds.Width == 30 && language.Bounds.Height == 30, "Title-bar controls keep compact dimensions.");
-        Require(!shell.GetVisualDescendants().OfType<ComboBox>().Any(item => ReferenceEquals(item.ItemsSource, model.Palettes)),
-            "The title bar has one palette entry, with no duplicate dropdown.");
     }
-    Console.WriteLine("PASS title bar: eight palettes, actual Ursa three-state clicks, language dropdown and compact widths.");
+    Require(ModePills().SelectedIndex == model.ThemeModeIndex, "Mode pills follow the current theme mode.");
+    foreach (var palette in model.Palettes)
+    {
+        model.SelectedPalette = palette;
+        foreach (var expected in new[] { StudioThemeMode.Light, StudioThemeMode.Dark, StudioThemeMode.System })
+        {
+            ModePills().SelectedIndex = (int)expected;
+            Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+            Require(model.ThemeModeIndex == (int)expected, "Mode pills select all three persisted modes: " + expected);
+            Require(ReferenceEquals(model.SelectedPalette, palette), "Mode changes preserve the selected palette.");
+            var actual = Application.Current!.RequestedThemeVariant;
+            Require(actual == palette.ResolveVariant(model.IsDarkMode), "Mode pills apply the Studio palette variant: " + actual);
+        }
+    }
+    Require(appearanceBorder.GetVisualDescendants().OfType<ItemsControl>()
+            .Count(control => ReferenceEquals(control.ItemsSource, model.Palettes)) == 1,
+        "The title bar has one palette entry, with no duplicate grid.");
+    var cards = PaletteCards();
+    cards[0].RaiseEvent(new global::Avalonia.Interactivity.RoutedEventArgs(global::Avalonia.Controls.Button.ClickEvent));
+    Require(ReferenceEquals(model.SelectedPalette, (AppearanceOption)cards[0].Tag!), "Palette card clicks apply the chosen palette.");
+    string TipText(object? tip) => tip switch { string text => text, TextBlock block => block.Text, _ => string.Empty };
+    Require(TipText(global::Avalonia.Controls.ToolTip.GetTip(languageButton)) == I18nManager.Instance.GetResource(DemoKeys.Shell.GlobalSettings.LanguageLabel)
+        && TipText(global::Avalonia.Controls.ToolTip.GetTip(appearanceButton)) == I18nManager.Instance.GetResource(DemoKeys.Shell.AppearanceMenu),
+        "The existing title-bar tooltips follow the host language.");
+    appearanceButton.IsChecked = false;
+    Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
+    Console.WriteLine("PASS title bar: appearance pills, palette cards, language list and compact entries.");
 }
 static string MissingRepositoryMessage()
 {
