@@ -87,7 +87,8 @@ public partial class CodeWFWindowPage : DemoPageBase
                 },
             };
             hero.Bind(Border.BackgroundProperty, hero.GetResourceObservable("StudioPrimary"));
-            ((TextBlock)hero.Child).Foreground = Brushes.White;
+            // 深浅两套色板的主色明暗不同，前景跟随 onPrimary 才能保证对比度。
+            ((TextBlock)hero.Child).Bind(TextBlock.ForegroundProperty, hero.GetResourceObservable("StudioOnPrimary"));
             contentPanel.Children.Add(hero);
         }
 
