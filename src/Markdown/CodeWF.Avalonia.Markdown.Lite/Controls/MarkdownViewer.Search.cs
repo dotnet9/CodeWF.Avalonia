@@ -216,7 +216,6 @@ public partial class MarkdownViewer
         var originalText = text;
         var afterRuns = new List<Run>();
         var matchRuns = new List<Run>();
-        var cursor = 0;
         // 从最后一个命中往前拆：把 source.Text 截短为当前前缀，其后的段落生成新 Run 前插在 source 之后。
         for (var i = offsets.Count - 1; i >= 0; i--)
         {
