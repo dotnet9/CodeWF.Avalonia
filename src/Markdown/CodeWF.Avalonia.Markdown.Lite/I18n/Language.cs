@@ -50,6 +50,9 @@ namespace CodeWF.Avalonia.Markdown
         public static readonly string EditorTableRemoveLastRow = "CodeWF.Avalonia.Markdown.MarkdownL.EditorTableRemoveLastRow";
         public static readonly string EditorTableAddColumn = "CodeWF.Avalonia.Markdown.MarkdownL.EditorTableAddColumn";
         public static readonly string EditorTableRemoveLastColumn = "CodeWF.Avalonia.Markdown.MarkdownL.EditorTableRemoveLastColumn";
+        public static readonly string StreamAlreadyCompleted = "CodeWF.Avalonia.Markdown.MarkdownL.StreamAlreadyCompleted";
+        public static readonly string HighlightNullTokens = "CodeWF.Avalonia.Markdown.MarkdownL.HighlightNullTokens";
+        public static readonly string LocalImageOutsideRoots = "CodeWF.Avalonia.Markdown.MarkdownL.LocalImageOutsideRoots";
     }
 
 }

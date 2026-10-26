@@ -91,7 +91,7 @@ public sealed class MarkdownStreamingDocument : IDisposable
 			ObjectDisposedException.ThrowIf(_disposed, this);
 			if (_completed)
 			{
-				throw new InvalidOperationException("流已完成，请先 Reset 再追加新内容。");
+				throw new InvalidOperationException(MarkdownLocalization.GetResource(MarkdownL.StreamAlreadyCompleted));
 			}
 
 			if (text.Length == 0)

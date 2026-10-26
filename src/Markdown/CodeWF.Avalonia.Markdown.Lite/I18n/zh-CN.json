@@ -45,7 +45,10 @@
           "EditorTableAddRow": "添加行",
           "EditorTableRemoveLastRow": "删除末行",
           "EditorTableAddColumn": "添加列",
-          "EditorTableRemoveLastColumn": "删除末列"
+          "EditorTableRemoveLastColumn": "删除末列",
+          "StreamAlreadyCompleted": "流已完成，请先 Reset 再追加新内容。",
+          "HighlightNullTokens": "代码高亮的行词法分析返回了空 token（应返回空 token 集合）。",
+          "LocalImageOutsideRoots": "本地图片不在允许的根目录内：{0}"
         }
       }
     }

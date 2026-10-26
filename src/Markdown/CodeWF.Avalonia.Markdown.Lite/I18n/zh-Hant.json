@@ -45,7 +45,10 @@
           "EditorTableAddRow": "新增列",
           "EditorTableRemoveLastRow": "刪除最後一列",
           "EditorTableAddColumn": "新增欄",
-          "EditorTableRemoveLastColumn": "刪除最後一欄"
+          "EditorTableRemoveLastColumn": "刪除最後一欄",
+          "StreamAlreadyCompleted": "串流已完成，請先 Reset 再附加新內容。",
+          "HighlightNullTokens": "程式碼高亮的行詞法分析回傳了空 token（應回傳空 token 集合）。",
+          "LocalImageOutsideRoots": "本機圖片不在允許的根目錄內：{0}"
         }
       }
     }

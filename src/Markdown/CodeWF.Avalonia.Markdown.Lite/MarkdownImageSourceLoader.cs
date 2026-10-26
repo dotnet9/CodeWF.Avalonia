@@ -339,7 +339,7 @@ public static class MarkdownImageSourceLoader
 			}
 		}
 
-		throw new UnauthorizedAccessException($"本地图片不在允许的根目录内：{fullPath}");
+		throw new UnauthorizedAccessException(string.Format(MarkdownLocalization.GetResource(MarkdownL.LocalImageOutsideRoots), fullPath));
 	}
 
 	private static async Task<byte[]> ReadRemoteBytesAsync(Uri uri, long maxRemoteImageBytes, CancellationToken cancellationToken)

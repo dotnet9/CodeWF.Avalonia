@@ -67,7 +67,7 @@ public sealed class MarkdownCodeHighlightSession
 		for (var i = reuseCount; i < lines.Length; i++)
 		{
 			var tokens = tokenizeLine(lines[i], startState, out var endState)
-				?? throw new InvalidOperationException("tokenizeLine 返回了 null token（应返回空 token 集合）");
+				?? throw new InvalidOperationException(MarkdownLocalization.GetResource(MarkdownL.HighlightNullTokens));
 			startState = endState;
 			_entries.Add(new LineEntry(lines[i], tokens, endState));
 			result[i] = tokens;

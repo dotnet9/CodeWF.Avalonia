@@ -45,7 +45,10 @@
           "EditorTableAddRow": "行を追加",
           "EditorTableRemoveLastRow": "最後の行を削除",
           "EditorTableAddColumn": "列を追加",
-          "EditorTableRemoveLastColumn": "最後の列を削除"
+          "EditorTableRemoveLastColumn": "最後の列を削除",
+          "StreamAlreadyCompleted": "ストリームは完了しました。新しい内容を追加する前に Reset を呼び出してください。",
+          "HighlightNullTokens": "コードハイライトの行トークナイザーが null トークンを返しました（空コレクションを返す必要があります）。",
+          "LocalImageOutsideRoots": "ローカル画像が許可されたルート外です: {0}"
         }
       }
     }
