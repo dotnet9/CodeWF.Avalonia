@@ -32,12 +32,15 @@ internal static class CodeHighlighter
         FontFamily fontFamily,
         double fontSize,
         double lineHeight,
+        MarkdownCodeHighlightSession? session,
         Func<bool>? hasGlobalSelection = null,
         Func<Task>? copyGlobalSelectionAsync = null)
     {
         var themeName = isDark ? ThemeName.DarkPlus : ThemeName.LightPlus;
         var (grammar, theme) = GetOrCreateGrammar(NormalizeLanguage(language), themeName);
-        var lines = grammar is null ? null : GetOrCreateHighlightedLines(code, NormalizeLanguage(language), themeName, grammar, theme, isDark);
+        var lines = grammar is null
+            ? null
+            : GetHighlightedLines(code, language, themeName, grammar, theme, isDark, session);
         var normalized = code.Replace("\r\n", "\n");
 
         // 长代码以文本样式区间排版，避免为每个 token 建立参与主题匹配的逻辑树节点。
@@ -184,6 +187,41 @@ internal static class CodeHighlighter
         return value;
     }
 
+    /// <summary>
+    /// 选择高亮缓存策略：有会话时走行级增量（流式只重算增长行），否则走整码 LRU。
+    /// 语言/主题变化时整会话重算——跨行状态与配色都随主题变。
+    /// </summary>
+    private static HighlightedLine[] GetHighlightedLines(
+        string code,
+        string language,
+        ThemeName themeName,
+        IGrammar grammar,
+        Theme theme,
+        bool isDark,
+        MarkdownCodeHighlightSession? session)
+    {
+        if (session is null)
+        {
+            return GetOrCreateHighlightedLines(code, NormalizeLanguage(language), themeName, grammar, theme, isDark);
+        }
+
+        var tag = (language, themeName);
+        if (!Equals(session.Tag, tag))
+        {
+            session.Reset();
+            session.Tag = tag;
+        }
+
+        var updated = session.Update(code, (string line, object? startState, out object? endState) =>
+        {
+            var tokens = TokenizeSingle(
+                line, grammar, theme, isDark, startState as IStateStack, out var nextState);
+            endState = nextState;
+            return tokens;
+        });
+        return updated.Cast<HighlightedLine>().ToArray();
+    }
+
     private static HighlightedLine[] GetOrCreateHighlightedLines(
         string code,
         string language,
@@ -216,26 +254,37 @@ internal static class CodeHighlighter
         IStateStack? ruleStack = null;
         foreach (var line in code.Replace("\r\n", "\n").Split('\n'))
         {
-            var result = grammar.TokenizeLine(line, ruleStack, TimeSpan.FromSeconds(2));
-            ruleStack = result.RuleStack;
-            var tokens = new List<HighlightedToken>();
-
-            foreach (var token in result.Tokens)
-            {
-                var start = Math.Min(token.StartIndex, line.Length);
-                var end = Math.Min(token.EndIndex, line.Length);
-                if (end <= start)
-                {
-                    continue;
-                }
-
-                tokens.Add(CreateHighlightedToken(line[start..end], token.Scopes, theme, isDark));
-            }
-
-            lines.Add(new HighlightedLine(tokens));
+            lines.Add(TokenizeSingle(line, grammar, theme, isDark, ruleStack, out ruleStack));
         }
 
         return lines.ToArray();
+    }
+
+    private static HighlightedLine TokenizeSingle(
+        string line,
+        IGrammar grammar,
+        Theme theme,
+        bool isDark,
+        IStateStack? startState,
+        out IStateStack? endState)
+    {
+        var result = grammar.TokenizeLine(line, startState, TimeSpan.FromSeconds(2));
+        endState = result.RuleStack;
+        var tokens = new List<HighlightedToken>();
+
+        foreach (var token in result.Tokens)
+        {
+            var start = Math.Min(token.StartIndex, line.Length);
+            var end = Math.Min(token.EndIndex, line.Length);
+            if (end <= start)
+            {
+                continue;
+            }
+
+            tokens.Add(CreateHighlightedToken(line[start..end], token.Scopes, theme, isDark));
+        }
+
+        return new HighlightedLine(tokens);
     }
 
     private static Run CreateRun(string text, IEnumerable<string> scopes, Theme theme, bool isDark)

@@ -939,6 +939,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         if (!string.Equals(text, _renderedMarkdown, StringComparison.Ordinal))
         {
             _codeBlockFoldedStates.Clear();
+            _codeHighlightSessions.Clear();
         }
 
         ClearBlockControls();
@@ -1857,6 +1858,21 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
     void Rendering.IMarkdownRenderContext.SetCodeBlockFolded(int blockKey, bool folded) =>
         SetCodeBlockFolded(blockKey, folded);
+
+    // 代码块高亮行级缓存会话：键 = 块源码起始偏移。流式增长场景下同一代码块
+    // 跨快照复用会话，未变行不重算；换文档时随折叠状态一起清理（见 RenderDocumentFull）。
+    private readonly Dictionary<int, Rendering.MarkdownCodeHighlightSession> _codeHighlightSessions = [];
+
+    Rendering.MarkdownCodeHighlightSession? Rendering.IMarkdownRenderContext.GetCodeHighlightSession(int blockKey)
+    {
+        if (!_codeHighlightSessions.TryGetValue(blockKey, out var session))
+        {
+            session = new Rendering.MarkdownCodeHighlightSession();
+            _codeHighlightSessions[blockKey] = session;
+        }
+
+        return session;
+    }
 
     string? Rendering.IMarkdownRenderContext.MarkdownText => Markdown;
 

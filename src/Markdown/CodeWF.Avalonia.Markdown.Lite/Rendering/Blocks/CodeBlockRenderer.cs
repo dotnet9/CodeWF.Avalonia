@@ -96,6 +96,7 @@ internal sealed class CodeBlockRenderer : IMarkdownBlockRenderer
                 context.CodeFontFamily,
                 context.CodeBlockFontSize,
                 context.CodeBlockLineHeight,
+                context.GetCodeHighlightSession(blockKey),
                 () => context.HasSelection,
                 context.CopySelectionAsync)
             ?? CreatePlainCodeFallback(code, context);

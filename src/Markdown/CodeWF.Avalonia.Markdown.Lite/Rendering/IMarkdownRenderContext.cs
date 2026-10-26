@@ -117,6 +117,12 @@ public interface IMarkdownRenderContext
     /// </summary>
     MarkdownCodeHighlighter? CodeHighlighter { get; }
 
+    /// <summary>
+    /// 代码块高亮行级缓存会话（按块键 = 源码起始偏移存取，跨快照复用未变行）。
+    /// 流式增长场景下默认高亮器用它只重算新增行；宿主不提供时高亮器整块重算。
+    /// </summary>
+    MarkdownCodeHighlightSession? GetCodeHighlightSession(int blockKey);
+
     bool CodeBlockIsDark { get; }
 
     FontFamily CodeFontFamily { get; }

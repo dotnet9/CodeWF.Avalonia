@@ -20,10 +20,10 @@ public sealed class CodeHighlighterTests(AvaloniaPlatformFixture platform)
     public void LongHighlightedCodeDoesNotRebuildTheFullTextForEveryToken() => platform.Run(() =>
     {
         const string line = "public int Compute(int value) => value * 42; // comment";
-        CodeHighlighter.Render(line, "csharp", false, FontFamily.Default, 13, 22);
+        CodeHighlighter.Render(line, "csharp", false, FontFamily.Default, 13, 22, null);
         var source = string.Join('\n', Enumerable.Repeat(line, 400));
         var before = GC.GetAllocatedBytesForCurrentThread();
-        var control = CodeHighlighter.Render(source, "csharp", false, FontFamily.Default, 13, 22);
+        var control = CodeHighlighter.Render(source, "csharp", false, FontFamily.Default, 13, 22, null);
         var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
         var code = control.GetLogicalDescendants().OfType<SelectableTextBlock>()
             .Single(block => block.Classes.Contains(MarkdownStyleKeys.CodeBlockText));
@@ -43,7 +43,7 @@ public sealed class CodeHighlighterTests(AvaloniaPlatformFixture platform)
     [InlineData("first\n\n", 3)]
     public void CodeHeightAndLineNumbersMatchTheActualLines(string source, int lineCount) => platform.Run(() =>
     {
-        var control = CodeHighlighter.Render(source, "csharp", false, FontFamily.Default, 13, 22);
+        var control = CodeHighlighter.Render(source, "csharp", false, FontFamily.Default, 13, 22, null);
         var blocks = control.GetLogicalDescendants().OfType<SelectableTextBlock>().ToArray();
         var code = blocks.Single(block => block.Classes.Contains(MarkdownStyleKeys.CodeBlockText));
         var numbers = blocks.Single(block => !block.Classes.Contains(MarkdownStyleKeys.CodeBlockText));
@@ -98,7 +98,7 @@ public sealed class CodeHighlighterTests(AvaloniaPlatformFixture platform)
     [InlineData(true, "#282C34")]
     public void CodeLineNumbersAndSelectedTextRemainReadable(bool dark, string codeBackground) => platform.Run(() =>
     {
-        var control = CodeHighlighter.Render("first\nsecond", "text", dark, FontFamily.Default, 13, 22);
+        var control = CodeHighlighter.Render("first\nsecond", "text", dark, FontFamily.Default, 13, 22, null);
         var blocks = control.GetLogicalDescendants().OfType<SelectableTextBlock>().ToArray();
         var code = blocks.Single(block => block.Classes.Contains(MarkdownStyleKeys.CodeBlockText));
         var numbers = blocks.Single(block => !block.Classes.Contains(MarkdownStyleKeys.CodeBlockText));
@@ -130,7 +130,7 @@ public sealed class CodeHighlighterTests(AvaloniaPlatformFixture platform)
     public void CSharpAliases_ProduceColoredTokensWithoutDefaultEmphasis(string language, bool dark) => platform.Run(() =>
     {
         var control = CodeHighlighter.Render("public int value = 42; // comment", language, dark,
-            FontFamily.Default, 13, 22);
+            FontFamily.Default, 13, 22, null);
         var text = control.GetLogicalDescendants().OfType<SelectableTextBlock>().Single(block => block.Classes.Contains(MarkdownStyleKeys.CodeBlockText));
         var runs = text.Inlines!.OfType<Run>().ToArray();
         Assert.True(runs.Select(run => run.Foreground).OfType<ISolidColorBrush>().Select(brush => brush.Color).Distinct().Count() >= 3);
