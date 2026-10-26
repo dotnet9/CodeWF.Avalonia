@@ -37,6 +37,8 @@ public partial class MainViewModel
         {
             foreach (var item in group.Items)
             {
+                // 外壳命令（导航树/日志开关）不走文档流程，没有可构建的页面。
+                if (item is ShellViewGroup.ShellItemViewModel) continue;
                 try
                 {
                     var page = item.PageFactory();

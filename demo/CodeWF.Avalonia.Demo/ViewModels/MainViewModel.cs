@@ -460,7 +460,7 @@ public partial class MainViewModel : ReactiveObject, IDisposable
         {
             overview.Navigate = key =>
             {
-                var destination = Groups.SelectMany(g => g.Items).FirstOrDefault(i => i.Title == key);
+                var destination = Groups.SelectMany(g => g.Items).FirstOrDefault(i => i.TitleKey == key);
                 if (destination is not null) OpenItem(destination);
             };
             overview.TogglePanel = TogglePanel;

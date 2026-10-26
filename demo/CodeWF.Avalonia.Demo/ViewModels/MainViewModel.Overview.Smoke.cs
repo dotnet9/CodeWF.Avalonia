@@ -252,7 +252,7 @@ public partial class MainViewModel
             foreach (var key in new[] { DemoPages.MarkdownFlow, DemoPages.DataFlow, DemoPages.DocsFlow, DemoPages.Transfer, DemoPages.Guide, DemoPages.Log })
             {
                 overview.Overview.NavigateCommand.Execute(key);
-                if (ActiveDocument?.Title != key) throw new InvalidOperationException("Overview navigation failed: " + key);
+                if (ActiveDocument?.TitleKey != key) throw new InvalidOperationException("Overview navigation failed: " + key);
             }
             overview.Overview.NavigateCommand.Execute(DemoPages.Welcome);
             foreach (var culture in Cultures)

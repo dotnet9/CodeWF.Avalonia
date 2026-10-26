@@ -59,7 +59,7 @@
               <ListBoxItem Content="{codewf:I18n Demo.Shell.DensityCompact}" />
             </ListBox>
             <TextBlock Classes="appearance-title" Text="{codewf:I18n Demo.Shell.GlobalSettings.ModeLabel}" />
-            <ListBox Classes="appearance-pills" SelectedIndex="{Binding ThemeModeIndex}" ItemsSource="{Binding ThemeModes}">
+            <ListBox Classes="appearance-pills" x:Name="ThemeModePills" SelectedIndex="{Binding ThemeModeIndex}" ItemsSource="{Binding ThemeModes}">
               <ListBox.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="3" /></ItemsPanelTemplate></ListBox.ItemsPanel>
             </ListBox>
             <TextBlock Classes="appearance-title" Text="{codewf:I18n Demo.Shell.PalettesTitle}" />

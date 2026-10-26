@@ -21,6 +21,20 @@ public partial class MainWindow : CodeWFWindow
             VersionText.Text = "Demo · v" + version.ToString(4);
         }
 
+        // 模式 pill 的 ItemsSource 随语言换新数组会重置选择，绑定重推与换源求值顺序又不保证，换源后按模型对齐。
+        if (this.FindControl<global::Avalonia.Controls.ListBox>("ThemeModePills") is { } modePills)
+        {
+            modePills.PropertyChanged += (_, args) =>
+            {
+                if (args.Property == global::Avalonia.Controls.ListBox.ItemsSourceProperty
+                    && DataContext is MainViewModel model
+                    && modePills.SelectedIndex != model.ThemeModeIndex)
+                {
+                    modePills.SelectedIndex = model.ThemeModeIndex;
+                }
+            };
+        }
+
         Loaded += OnLoaded;
     }
 

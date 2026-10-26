@@ -22,29 +22,30 @@ public partial class MainViewModel
             var originalMode = ThemeModeIndex;
             var commit = GlobalValueCommittedCommand;
             var browse = GlobalBrowseRequestedCommand;
-            try
-            {
-                foreach (var culture in Cultures)
+                try
                 {
-                    SelectedCulture = culture;
-                    Expect(ReferenceEquals(commit, GlobalValueCommittedCommand), "Commit command stays bound");
-                    Expect(ReferenceEquals(browse, GlobalBrowseRequestedCommand), "Browse command stays bound");
-                    Expect(GlobalProperties.Count > 0, "Translated settings remain available");
-                    if (global::Avalonia.Application.Current?.ApplicationLifetime is global::Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
-                        && desktop.MainWindow is { } window)
+                    foreach (var culture in Cultures)
                     {
-                        var selector = window.FindControl<global::Avalonia.Controls.ComboBox>("ThemeModeSelector")
-                            ?? throw new InvalidOperationException("Theme mode selector is missing.");
-                        for (var mode = 0; mode < ThemeModes.Count; mode++)
+                        SelectedCulture = culture;
+                        Expect(ReferenceEquals(commit, GlobalValueCommittedCommand), "Commit command stays bound");
+                        Expect(ReferenceEquals(browse, GlobalBrowseRequestedCommand), "Browse command stays bound");
+                        Expect(GlobalProperties.Count > 0, "Translated settings remain available");
+                        if (global::Avalonia.Application.Current?.ApplicationLifetime is global::Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+                            && desktop.MainWindow is { } window)
                         {
-                            ThemeModeIndex = mode;
-                            window.UpdateLayout();
-                            Expect(selector.SelectedIndex == mode, "Theme mode selection survives language changes");
-                            Expect(selector.SelectedItem is ThemeModeOption option && option.Title == ThemeModes[mode], "Translated theme mode remains visible");
+                            // 主题模式选择面已迁到外观弹层的 pill 行（名称作用域常驻，不随弹层开合重建）。
+                            var modePills = window.FindControl<global::Avalonia.Controls.ListBox>("ThemeModePills")
+                                ?? throw new InvalidOperationException("Theme mode pills are missing.");
+                            for (var mode = 0; mode < ThemeModes.Count; mode++)
+                            {
+                                ThemeModeIndex = mode;
+                                window.UpdateLayout();
+                                Expect(modePills.SelectedIndex == mode, "Theme mode selection survives language changes");
+                                Expect(modePills.Items[mode] as string == ThemeModes[mode], "Translated theme mode remains visible");
+                            }
                         }
                     }
                 }
-            }
             finally { SelectedCulture = originalCulture; ThemeModeIndex = originalMode; }
         });
 
