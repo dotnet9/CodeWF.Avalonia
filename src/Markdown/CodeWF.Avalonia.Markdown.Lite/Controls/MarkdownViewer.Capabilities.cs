@@ -183,6 +183,74 @@ public partial class MarkdownViewer
         return offset;
     }
 
+    /// <summary>
+    /// 当前文档大纲：标题层级、纯文本、1 起始源码行号与源码起始偏移。
+    /// 宿主据此构建大纲侧栏，配合 <see cref="ScrollToSourceOffset"/> 跳转；
+    /// 文档未渲染时为空。基于当前已渲染模型，流式过程中随快照更新。
+    /// </summary>
+    public IReadOnlyList<MarkdownOutlineItem> GetOutline() =>
+        _documentHost is null ? [] : MarkdownOutlineExtractor.Extract(_renderedModel);
+
+    /// <summary>
+    /// 滚动到指定块的顶部（块序号 = <see cref="CurrentModel"/> 的块序）。
+    /// 虚拟化宿主会先物化目标块；定位块尚未完成布局时返回 false，宿主可在
+    /// 布局完成后重试（与 <see cref="RestoreReadingPosition"/> 相同的多轮收敛策略）。
+    /// </summary>
+    public bool ScrollToBlock(int blockIndex)
+    {
+        if (_documentHost is null || blockIndex < 0 || blockIndex >= _renderedBlocks.Count)
+        {
+            return false;
+        }
+
+        var host = ResolveScrollHost();
+        if (host is null)
+        {
+            return false;
+        }
+
+        var index = Math.Clamp(blockIndex, 0, _renderedBlocks.Count - 1);
+        _virtualizingHost?.PinItem(index);
+        _virtualizingHost?.RealizeItem(index);
+        for (var pass = 0; pass < 4; pass++)
+        {
+            host.UpdateLayout();
+            if (_renderedBlocks[index].Control.TranslatePoint(new Point(0, 0), host) is not { } point)
+            {
+                return false;
+            }
+
+            var target = Math.Clamp(
+                host.Offset.Y + point.Y,
+                0, Math.Max(0, host.Extent.Height - host.Viewport.Height));
+            if (Math.Abs(target - host.Offset.Y) < .5)
+            {
+                return true;
+            }
+
+            host.Offset = new Vector(host.Offset.X, target);
+        }
+
+        host.UpdateLayout();
+        return true;
+    }
+
+    /// <summary>
+    /// 滚动到源码偏移所在块的顶部（如 <see cref="GetOutline"/> 条目的
+    /// <see cref="MarkdownOutlineItem.SourceOffset"/>）。偏移越界时钳制到最近块，
+    /// 与阅读锚定的定位语义一致；文档未渲染时返回 false。
+    /// </summary>
+    public bool ScrollToSourceOffset(int sourceOffset)
+    {
+        var rendered = FindRenderedBlockBySourceOffset(sourceOffset);
+        if (rendered is null)
+        {
+            return false;
+        }
+
+        return ScrollToBlock(_renderedBlocks.IndexOf(rendered));
+    }
+
     private MarkdownDocumentModel ParseMarkdownWithTiming(string text)
     {
         var start = System.Diagnostics.Stopwatch.GetTimestamp();

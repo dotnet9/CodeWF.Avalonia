@@ -3,9 +3,10 @@ using Markdig.Syntax;
 namespace CodeWF.Avalonia.Markdown.Shared.Rendering;
 
 /// <summary>
-/// 大纲条目：标题层级（1-6）、标题纯文本与 1 起始的源码行号。
+/// 大纲条目：标题层级（1-6）、标题纯文本、1 起始的源码行号与源码起始偏移
+/// （<see cref="SourceOffset"/> 配合宿主跳转/锚点定位）。
 /// </summary>
-public sealed record MarkdownOutlineItem(int Level, string Title, int Line);
+public sealed record MarkdownOutlineItem(int Level, string Title, int Line, int SourceOffset);
 
 /// <summary>
 /// 从已解析文档模型提取标题大纲。基于 Markdig AST，
@@ -40,7 +41,8 @@ public static class MarkdownOutlineExtractor
 			items.Add(new MarkdownOutlineItem(
 				Math.Clamp(heading.Level, 1, 6),
 				title,
-				GetLine(source, block.SourceSpan.Start)));
+				GetLine(source, block.SourceSpan.Start),
+				block.SourceSpan.Start));
 		}
 
 		return items;

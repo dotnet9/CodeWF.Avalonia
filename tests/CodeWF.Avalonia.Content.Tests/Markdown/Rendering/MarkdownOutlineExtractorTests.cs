@@ -22,9 +22,9 @@ public sealed class MarkdownOutlineExtractorTests
 
 		Assert.Equal(
 			[
-				new MarkdownOutlineItem(1, "A", 1),
-				new MarkdownOutlineItem(2, "B", 3),
-				new MarkdownOutlineItem(3, "C", 5)
+				new MarkdownOutlineItem(1, "A", 1, 0),
+				new MarkdownOutlineItem(2, "B", 3, 5),
+				new MarkdownOutlineItem(3, "C", 5, 11)
 			],
 			items);
 	}
