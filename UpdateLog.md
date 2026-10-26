@@ -1,5 +1,11 @@
 # 更新日志
 
+## 12.2.12 (2026-10-26)
+
+- 文档内查找：`Find/FindNext/FindPrevious/ClearSearch` 与命中高亮（`MatchCount`/`CurrentMatchIndex`/`SearchChanged` 状态事件，高亮画刷可按主题覆盖），任何重渲染后自动重扫重放。
+- 流式打字机包装 `MarkdownTypewriterStream`：任意线程喂 delta、内建节奏器按 UI 帧平滑释放、排空自动终局——LLM 流式与突发输入一步接入；演示台流式示例改走该包装。
+- 防复发：发版升版本号须重跑单文件原型生成（AGENTS.md 新增协作约定，上版漏更曾致 CI 门禁失败并已修复）。
+
 ## 12.2.11 (2026-10-26)
 
 - 流式新增输入节奏器 `MarkdownStreamPacer`：突发分片按帧平滑释放（字素簇不拆、滞留上限防饿死、超大分片直通、结束排空），规格见流式规则 §6。
