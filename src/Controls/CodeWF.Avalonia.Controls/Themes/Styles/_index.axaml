@@ -4,4 +4,6 @@
     <Style Selector="codewf|LeftTop2RightBottomLine">
         <Setter Property="BorderBrush" Value="{DynamicResource SemiColorText2}" />
     </Style>
+    <StyleInclude Source="SegmentedPanel.axaml" />
+    <StyleInclude Source="NativeMenu.axaml" />
 </Styles>

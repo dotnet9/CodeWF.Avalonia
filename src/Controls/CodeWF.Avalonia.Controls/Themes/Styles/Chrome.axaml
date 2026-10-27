@@ -1,0 +1,37 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- 这两组是宿主级的观感取向，故意不进 _index.axaml：引了本库主题的应用默认仍是 Semi 的
+         浮动细滚动条，需要常驻轨道的（长文档阅读器一类）显式 StyleInclude 本文件即可整组接管。 -->
+
+    <!-- 提示浮层永远折行：单行 ToolTip 在长文案下会被屏幕边缘裁掉。 -->
+    <Style Selector="ToolTip TextBlock">
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style Selector="ToolTip /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- 滚动条几何：Semi 默认的 8→2px 自动收起滑块难以命中，这里给一条常驻的 16px 轨道 + 10px 滑块，
+         最短 32px 保证短文档也能拖到。ScrollBarThickness 一类资源在半透主题里是 StaticResource 引用的，
+         宿主改了不生效，只能按部件名覆盖；颜色仍走 Semi 的 ScrollBarThumb* 令牌，宿主可整组换。 -->
+    <Style Selector="ScrollViewer">
+        <Setter Property="AllowAutoHide" Value="False" />
+    </Style>
+    <Style Selector="ScrollBar">
+        <Setter Property="AllowAutoHide" Value="False" />
+    </Style>
+    <Style Selector="ScrollBar:vertical">
+        <Setter Property="Width" Value="16" />
+    </Style>
+    <Style Selector="ScrollBar:horizontal">
+        <Setter Property="Height" Value="16" />
+    </Style>
+    <Style Selector="ScrollBar:vertical /template/ Thumb#thumb">
+        <Setter Property="Width" Value="10" />
+        <Setter Property="MinHeight" Value="32" />
+    </Style>
+    <Style Selector="ScrollBar:horizontal /template/ Thumb#thumb">
+        <Setter Property="Height" Value="10" />
+        <Setter Property="MinWidth" Value="32" />
+    </Style>
+</Styles>

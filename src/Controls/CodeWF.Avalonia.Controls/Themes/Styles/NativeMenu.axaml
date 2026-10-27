@@ -1,0 +1,71 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="using:Avalonia.Controls.Converters"
+        xmlns:data="using:Avalonia.Data.Converters">
+    <Styles.Resources>
+        <converters:PlatformKeyGestureConverter x:Key="MenuGestureConverter" />
+    </Styles.Resources>
+    <!-- 原生菜单的快捷键列是整组共享的一栏，标题被它挤到截断，属性层面救不回来。
+         这个类给每行单独分配标题宽度（勾选位 16 + 标题 * + 快捷键/箭头 Auto），长标题自动换行。
+         行高、内距与字号仍由宿主给出，模板只保证「标题不被快捷键列截断」。 -->
+    <Style Selector="MenuItem.wrap-entry">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="10,5" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <Border Name="PART_LayoutRoot" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}">
+                        <Grid ColumnDefinitions="16,*,Auto" ColumnSpacing="8" MinHeight="22">
+                            <TextBlock Text="✓" IsVisible="{TemplateBinding IsChecked}" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock.Foreground>
+                                    <SolidColorBrush Color="{DynamicResource StudioAccentColor}" />
+                                </TextBlock.Foreground>
+                            </TextBlock>
+                            <ContentPresenter Name="PART_HeaderPresenter" Grid.Column="1" Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" RecognizesAccessKey="True" VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Name="PART_InputGestureText" Text="{TemplateBinding InputGesture, Converter={StaticResource MenuGestureConverter}}" IsVisible="{TemplateBinding InputGesture, Converter={x:Static data:ObjectConverters.IsNotNull}}" Margin="12,0,0,0" FontSize="12" VerticalAlignment="Center">
+                                    <TextBlock.Foreground>
+                                        <SolidColorBrush Color="{DynamicResource StudioMutedColor}" />
+                                    </TextBlock.Foreground>
+                                </TextBlock>
+                                <Path Name="PART_ExpandIcon" Width="14" Height="14" Margin="12,0,0,0" Data="M5 3L9 7L5 11" StrokeThickness="1.2">
+                                    <Path.Stroke>
+                                        <SolidColorBrush Color="{DynamicResource StudioMutedColor}" />
+                                    </Path.Stroke>
+                                </Path>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Popup Name="PART_Popup" IsOpen="{TemplateBinding IsSubMenuOpen, Mode=TwoWay}" Placement="RightEdgeAlignedTop" HorizontalOffset="-4" VerticalOffset="-12" InheritsTransform="True" IsLightDismissEnabled="False" WindowManagerAddShadowHint="False">
+                        <Border Width="248" Margin="8" Padding="6" Background="{DynamicResource MenuFlyoutBackground}" BorderBrush="{DynamicResource MenuFlyoutBorderBrush}" BorderThickness="1" CornerRadius="8" BoxShadow="0 8 30 0 #18000000">
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                                <ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}" />
+                            </ScrollViewer>
+                        </Border>
+                    </Popup>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="MenuItem.wrap-entry /template/ ContentPresenter#PART_HeaderPresenter AccessText">
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style Selector="MenuItem.wrap-entry:empty /template/ Path#PART_ExpandIcon">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="MenuItem.wrap-entry:selected /template/ Border#PART_LayoutRoot">
+        <Setter Property="Background" Value="{DynamicResource StudioSelected}" />
+    </Style>
+    <!-- 危险动作（删除、清空）由宿主加 .danger，选中底换成同族的软危险色。 -->
+    <Style Selector="MenuItem.wrap-entry.danger /template/ ContentPresenter#PART_HeaderPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource SemiColorDanger}" />
+    </Style>
+    <Style Selector="MenuItem.wrap-entry.danger:selected /template/ Border#PART_LayoutRoot">
+        <Setter Property="Background" Value="{DynamicResource SemiColorDangerLight}" />
+    </Style>
+    <Style Selector="MenuItem.wrap-entry:disabled">
+        <Setter Property="Opacity" Value="0.48" />
+    </Style>
+</Styles>

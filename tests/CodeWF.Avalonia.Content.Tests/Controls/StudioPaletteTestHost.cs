@@ -1,6 +1,5 @@
 using Avalonia;
 using CodeWF.Avalonia.Controls.Themes;
-using CodeWF.Avalonia.Controls.Themes;
 
 namespace CodeWF.Avalonia.Content.Tests.Controls;
 
