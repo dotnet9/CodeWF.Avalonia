@@ -1,5 +1,12 @@
 # 更新日志
 
+## 12.2.19 (2026-10-27)
+
+- 编辑器查找补反向定位：`MarkdownEditorSearchAction` 新增 `FindPrevious`，以选区起点为界向前找严格更早的命中（停在某处命中上再按「上一个」会跳到它前一处，而不是原地不动），没有更早命中时回绕到文末命中；大小写、整词与正则在向上方向上一并生效。
+- 修复一次查找被当成一次编辑：`SelectMatch` 原先回调宿主的 `publishTextChanged`，纯定位因此把文档标脏、写进撤销栈，严重时还会把编辑器里尚未同步的旧正文回抛覆盖当前文档；`IMarkdownEditorSearchService.Search` 去掉这个回调，替换动作继续由 `runTextMutation` 自行回报。
+- `SelectMatch` 不再 `editor.Focus()`：查找栏可连按 Enter 逐档步进，焦点不会跟着命中跑进正文，与 Lite 侧 `MarkdownViewer` 的查找行为一致。
+- 测试：新增 `MarkdownEditorSearchServiceTests` 六例（双向步进、前后回绕、整词与大小写、无命中保持选区、正则反向步进、查找不回报正文变化）。
+
 ## 12.2.18 (2026-10-27)
 
 - AOT 兼容还债：任务勾选可用态绑定改编译期可观察绑定（`GetObservable(IsTaskEditingEnabledProperty)`）；Wysiwyg 块编辑器模板内 TextBox 与自绘 TextPresenter 的十四属性双向同步去反射——逐对可观察绑定等价替换字符串反射 `Binding`（反向承载光标/选区/IME 回写，数据流不变，新增 `MarkdownBlockViewPresenterBindingTests` 双向同步回归），两处 IL2026/IL3050 告警清零。
