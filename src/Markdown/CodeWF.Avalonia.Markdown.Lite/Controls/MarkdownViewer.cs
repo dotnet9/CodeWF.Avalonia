@@ -982,6 +982,9 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             return;
         }
 
+        // 即时编辑快照：块状态已由 ApplySnapshot 按行级对齐搬好，整篇重绘时保留。
+        var preserveBlockStates = _preserveBlockStatesOnNextFullRender;
+
         foreach (var block in _renderedBlocks)
         {
             block.Cleanup();
@@ -992,12 +995,16 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         // 换文档时折叠状态/高亮会话（按绝对源码偏移键控）随之失效；同文档重渲染
         //（主题/字号）保留；流式 append-only 增长同样保留——块键绝对稳定，
         // 新文本以旧文本为前缀说明是同一文档在生长而非替换。
-        if (!string.Equals(text, _renderedMarkdown, StringComparison.Ordinal)
+        // 即时编辑快照（ApplySnapshot）已经按行级对齐把键搬到新偏移，这里不再清。
+        if (!preserveBlockStates
+            && !string.Equals(text, _renderedMarkdown, StringComparison.Ordinal)
             && !IsAppendOnlyStreamingUpdate(text))
         {
             _codeBlockFoldedStates.Clear();
             _codeHighlightSessions.Clear();
         }
+
+        _preserveBlockStatesOnNextFullRender = false;
 
         ClearBlockControls();
         _renderedBlocks.Clear();
@@ -1978,6 +1985,136 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     // 跨快照复用会话，未变行不重算；换文档时随折叠状态一起清理（见 RenderDocumentFull）。
     private readonly Dictionary<int, Rendering.MarkdownCodeHighlightSession> _codeHighlightSessions = [];
 
+    /// <summary>
+    /// 整篇快照赋值（即时编辑的 450ms 防抖路径）：与直接赋值 <see cref="Markdown"/> 的区别是
+    /// 先做行级对齐，把折叠状态与高亮会话按「行存活」搬到新偏移上，再赋值渲染。
+    /// 行被删除或被替换时对应状态丢弃——那是真的换了内容，不该继承。
+    /// </summary>
+    public void ApplySnapshot(string? text)
+    {
+        text ??= string.Empty;
+        if (!string.Equals(text, _renderedMarkdown, StringComparison.Ordinal))
+        {
+            var edit = Streaming.MarkdownSnapshotEdit.Compare(_renderedMarkdown, text);
+            if (!edit.IsIdentity)
+            {
+                // 行级对齐给出「位置怎么搬」，块级哈希给出「这个块还是不是原来那个块」：
+                // 行内改一个字也要让折叠状态失效，所以两者都要过一遍。
+                var newModel = MarkdownParser.Parse(text, _documentPipeline);
+                RemapBlockStates(_renderedModel, newModel, edit);
+                // 键已经搬到新偏移，随后的整篇重绘不能再按「换文档」清空它们。
+                _preserveBlockStatesOnNextFullRender = true;
+            }
+        }
+
+        Markdown = text;
+    }
+
+    /// <summary>下一次整篇重绘是否保留块状态（由 <see cref="ApplySnapshot"/> 置位，重绘时消费）。</summary>
+    private bool _preserveBlockStatesOnNextFullRender;
+
+    /// <summary>
+    /// 按快照编辑把以源码偏移为键的块状态搬到新偏移：位置走行级映射，
+    /// 身份走块内容哈希——内容变了（Replaced）的块不继承状态，整块消失（Deleted）同理。
+    /// </summary>
+    private void RemapBlockStates(
+        MarkdownDocumentModel oldModel,
+        MarkdownDocumentModel newModel,
+        Streaming.MarkdownSnapshotEdit edit)
+    {
+        if (_codeBlockFoldedStates.Count == 0 && _codeHighlightSessions.Count == 0)
+        {
+            return;
+        }
+
+        // 旧块起点 → 新块起点（内容哈希相同且保持先后顺序）。
+        var blockMap = AlignBlocksByHash(oldModel.Blocks, newModel.Blocks);
+
+        RemapOffsets(_codeBlockFoldedStates);
+        RemapOffsets(_codeHighlightSessions);
+
+        void RemapOffsets<T>(Dictionary<int, T> states)
+        {
+            if (states.Count == 0)
+            {
+                return;
+            }
+
+            var remapped = new Dictionary<int, T>(states.Count);
+            foreach (var (oldOffset, value) in states)
+            {
+                // 块级身份优先；块对齐不可用（超大文档）时退回行级映射。
+                int? target = blockMap.TryGetValue(oldOffset, out var sameBlock) ? sameBlock
+                    : blockMap.Count == 0 && edit.MapOffset(oldOffset) is { } shifted ? shifted
+                    : null;
+                if (target is { } newOffset)
+                {
+                    remapped.TryAdd(newOffset, value);
+                }
+            }
+
+            states.Clear();
+            foreach (var (offset, value) in remapped)
+            {
+                states[offset] = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 旧块 → 新块起点映射：对块哈希做 LCS（顺序保持），只配对内容完全相同的块。
+    /// 块数过大（远端超长文档）时返回空表，调用方退回行级映射。
+    /// </summary>
+    private static Dictionary<int, int> AlignBlocksByHash(
+        IReadOnlyList<MarkdownDocumentBlock> oldBlocks,
+        IReadOnlyList<MarkdownDocumentBlock> newBlocks)
+    {
+        var map = new Dictionary<int, int>();
+        if (oldBlocks.Count == 0 || newBlocks.Count == 0)
+        {
+            return map;
+        }
+
+        var width = newBlocks.Count + 1;
+        if ((long)(oldBlocks.Count + 1) * width > 400_000)
+        {
+            return map;
+        }
+
+        var table = new int[(oldBlocks.Count + 1) * width];
+        for (var i = oldBlocks.Count - 1; i >= 0; i--)
+        {
+            for (var j = newBlocks.Count - 1; j >= 0; j--)
+            {
+                table[i * width + j] = oldBlocks[i].ContentHash == newBlocks[j].ContentHash
+                    ? table[(i + 1) * width + j + 1] + 1
+                    : Math.Max(table[(i + 1) * width + j], table[i * width + j + 1]);
+            }
+        }
+
+        var x = 0;
+        var y = 0;
+        while (x < oldBlocks.Count && y < newBlocks.Count)
+        {
+            if (oldBlocks[x].ContentHash == newBlocks[y].ContentHash)
+            {
+                map[oldBlocks[x].SourceSpan.Start] = newBlocks[y].SourceSpan.Start;
+                x++;
+                y++;
+            }
+            else if (table[(x + 1) * width + y] >= table[x * width + y + 1])
+            {
+                x++;
+            }
+            else
+            {
+                y++;
+            }
+        }
+
+        return map;
+    }
+
     // 当前顶层块解析输入坐标系的原点（见 IMarkdownRenderContext.CurrentBlockOrigin）。
     private int _currentBlockOrigin;
 
@@ -2137,3 +2274,4 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         _documentHost?.Children.Clear();
     }
 }
+
