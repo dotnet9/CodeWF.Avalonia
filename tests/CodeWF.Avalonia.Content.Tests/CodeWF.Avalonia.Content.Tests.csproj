@@ -31,6 +31,7 @@
     <ProjectReference Include="..\..\src\DataGrid\CodeWF.Avalonia.DataGrid\CodeWF.Avalonia.DataGrid.csproj" />
     <ProjectReference Include="..\..\src\Dock\CodeWF.Avalonia.Dock\CodeWF.Avalonia.Dock.csproj" />
     <ProjectReference Include="..\..\src\Lang\CodeWF.Avalonia.Lang\CodeWF.Avalonia.Lang.csproj" />
+    <ProjectReference Include="..\..\src\Motion\CodeWF.Avalonia.Motion\CodeWF.Avalonia.Motion.csproj" />
     <ProjectReference Include="..\..\src\Lang\CodeWF.Avalonia.Lang.Generator\CodeWF.Avalonia.Lang.Generator.csproj" />
     <ProjectReference Include="..\..\src\Log\CodeWF.Avalonia.Log\CodeWF.Avalonia.Log.csproj" />
   </ItemGroup>

@@ -9,6 +9,7 @@
     <Project Path="src/Markdown/CodeWF.Avalonia.Markdown/CodeWF.Avalonia.Markdown.csproj" />
     <Project Path="src/Log/CodeWF.Avalonia.Log/CodeWF.Avalonia.Log.csproj" />
     <Project Path="src/Lang/CodeWF.Avalonia.Lang/CodeWF.Avalonia.Lang.csproj" />
+    <Project Path="src/Motion/CodeWF.Avalonia.Motion/CodeWF.Avalonia.Motion.csproj" />
     <Project Path="src/Lang/CodeWF.Avalonia.Lang.Generator/CodeWF.Avalonia.Lang.Generator.csproj" />
   </Folder>
   <Folder Name="/demo/">

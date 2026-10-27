@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Description>Avalonia 动效引擎：弹簧物理（闭式解、可中断保速）、声明式弹簧过渡、动效分级（Full/Reduced/Off）与常驻循环。移植自 TKCode.Arc（MIT）。Spring-physics motion engine for Avalonia: interruptible velocity-preserving values, declarative spring transitions, motion levels and live loops. Ported from TKCode.Arc (MIT).</Description>
+    <PackageTags>avalonia;motion;spring;animation;codewf</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>
