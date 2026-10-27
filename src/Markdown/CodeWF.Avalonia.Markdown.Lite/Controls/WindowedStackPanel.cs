@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -62,6 +62,35 @@ public class WindowedStackPanel : Panel
     }
 
     private readonly List<ItemEntry> _entries = [];
+
+    /// <summary>
+    /// 宿主直接挂进 <see cref="Panel.Children"/>、没有登记为条目的装饰子项（表格工具条这类）。
+    /// 它不属于任何索引序列，但必须占位：否则排位游标与 <c>Children</c> 下标一错位，
+    /// 后面的块会拿到邻居的高度，正文尾部被下一块盖掉。
+    /// </summary>
+    private sealed class DecoratorEntry
+    {
+        public DecoratorEntry(int band, Control control, bool above)
+        {
+            Band = band;
+            Control = control;
+            Above = above;
+        }
+
+        /// <summary>挂靠的条目索引（装饰排在它之上或之下）。</summary>
+        public int Band { get; }
+
+        public Control Control { get; }
+
+        /// <summary>排在所属条目之上（工具条在表格上方）；false 表示排在末条之下。</summary>
+        public bool Above { get; }
+
+        /// <summary>本轮量测出的高度（含自身外边距），排位与条带总高都用它。</summary>
+        public double Height { get; set; }
+    }
+
+    private readonly List<DecoratorEntry> _decorators = [];
+    private double[] _decoratorHeights = [];
     private ScrollViewer? _subscribedScrollHost;
     private double _lastWidth = double.NaN;
     private double[] _sizeBuffer = [];
@@ -222,9 +251,12 @@ public class WindowedStackPanel : Panel
     }
 
     /// <summary>
-    /// 在锚点子项之前插入门兄弟项。调用方只拿到控件引用（如渲染器插入工具条）时用本重载，
-    /// 避免直接操作 <see cref="Panel.Children"/> 造成 <c>_entries</c> 与子项位置映射错位。
-    /// 锚点不是本面板子项时返回 false。
+    /// 在锚点子项之前插入门兄弟项。返回 false 表示锚点不是本面板子项。
+    /// 注意：插入会把锚点及其后所有条目整体后移一位。宿主若另有一份与条目下标对齐的
+    /// 数据序列（如按块号增删的渲染表），插入必须同步那一侧，否则按号替换会落错块。
+    /// 只想在某个块旁边挂一块装饰（工具条、角标）又不想动条目下标时，直接把它加进
+    /// <see cref="Panel.Children"/> 即可：未登记的子项会被当作所属条目的附加高度排布
+    /// （见 <see cref="CollectDecorators"/>），不再造成排位串位。
     /// </summary>
     public bool InsertItemBefore(Control anchor, Control control, bool pinned = false, bool pinnedByKind = false)
     {
@@ -262,6 +294,7 @@ public class WindowedStackPanel : Panel
         _anchorIndex = 0;
         _entries.Clear();
         Children.Clear();
+        _decorators.Clear();
         InvalidateMeasure();
     }
 
@@ -342,7 +375,7 @@ public class WindowedStackPanel : Panel
 
         for (var i = 0; i < index; i++)
         {
-            top += ResolveSize(_entries[i]) + Spacing;
+            top += BandSize(i) + Spacing;
         }
 
         return true;
@@ -350,7 +383,7 @@ public class WindowedStackPanel : Panel
 
     /// <summary>子项尺寸：已量测优先，其次估算。</summary>
     public double GetItemHeight(int index) =>
-        index >= 0 && index < _entries.Count ? ResolveSize(_entries[index]) : 0d;
+        index >= 0 && index < _entries.Count ? BandSize(index) : 0d;
 
     /// <summary>该子项是否已经量测出真实尺寸（否则按 <see cref="EstimatedItemHeight"/> 占位）。</summary>
     public bool IsItemMeasured(int index) =>
@@ -359,6 +392,7 @@ public class WindowedStackPanel : Panel
     protected override Size MeasureOverride(Size availableSize)
     {
         PrepareAnchor();
+        CollectDecorators();
         var width = double.IsFinite(availableSize.Width) ? availableSize.Width : _lastWidth;
         if (!double.IsFinite(width))
         {
@@ -407,7 +441,8 @@ public class WindowedStackPanel : Panel
                 maxWidth = Math.Max(maxWidth, desired.Width);
             }
 
-            y += ResolveSize(entry) + Spacing;
+            maxWidth = Math.Max(maxWidth, MeasureDecorators(i, width));
+            y += ResolveSize(entry) + _decoratorHeights[i] + Spacing;
         }
 
         if (_entries.Count > 0)
@@ -424,21 +459,22 @@ public class WindowedStackPanel : Panel
     protected override Size ArrangeOverride(Size finalSize)
     {
         double y = 0;
-        var childIndex = 0;
-        foreach (var entry in _entries)
+        for (var i = 0; i < _entries.Count; i++)
         {
+            var entry = _entries[i];
+            // 条带 = 装饰总高 + 条目槽位。排位按引用取 entry.Control，绝不再按 Children 下标取：
+            // 下标一旦和条目错位，邻居的高度就排到了错的块上（表格被裁、末段被下一块盖住）。
+            var cursor = y;
+            cursor = ArrangeDecorators(i, cursor, finalSize.Width, true);
             if (entry.Realized)
             {
-                if (childIndex < Children.Count)
-                {
-                    var height = entry.Measured ? entry.Size : entry.Control.DesiredSize.Height;
-                    Children[childIndex].Arrange(new Rect(0, y, finalSize.Width, Math.Max(0, height)));
-                }
-
-                childIndex++;
+                var height = entry.Measured ? entry.Size : entry.Control.DesiredSize.Height;
+                entry.Control.Arrange(new Rect(0, cursor, finalSize.Width, Math.Max(0, height)));
+                cursor += height;
             }
 
-            y += ResolveSize(entry) + Spacing;
+            ArrangeDecorators(i, cursor, finalSize.Width, false);
+            y += ResolveSize(entry) + _decoratorHeights[i] + Spacing;
         }
 
         return finalSize;
@@ -526,7 +562,7 @@ public class WindowedStackPanel : Panel
 
         for (var i = 0; i < _entries.Count; i++)
         {
-            _sizeBuffer[i] = ResolveSize(_entries[i]);
+            _sizeBuffer[i] = BandSize(i);
         }
 
         return _sizeBuffer;
@@ -686,7 +722,7 @@ public class WindowedStackPanel : Panel
         {
             if (top > offset) break;
             _anchorIndex = i;
-            top += ResolveSize(_entries[i]) + Spacing;
+            top += BandSize(i) + Spacing;
         }
         _anchorTop = FindAnchorTop();
     }
@@ -695,7 +731,7 @@ public class WindowedStackPanel : Panel
     {
         var top = 0d;
         for (var i = 0; i < Math.Min(_anchorIndex, _entries.Count); i++)
-            top += ResolveSize(_entries[i]) + Spacing;
+            top += BandSize(i) + Spacing;
         return top;
     }
 
@@ -720,20 +756,124 @@ public class WindowedStackPanel : Panel
         }
     }
 
+    /// <summary>
+    /// 新物化/插入的子项应落在 <c>Children</c> 的哪个下标：取其后第一个已登记子项的实际位置。
+    /// 不能数「之前有多少个已登记条目」——宿主直接挂进来的装饰也占 Children 下标，
+    /// 数条目会把工具条挤到它所属表格的后面去。
+    /// </summary>
     private int RealizedIndexBefore(int entryIndex)
     {
-        var count = 0;
-        for (var i = 0; i < entryIndex && i < _entries.Count; i++)
+        for (var i = entryIndex; i < _entries.Count; i++)
         {
-            if (_entries[i].Realized)
+            if (!_entries[i].Realized)
             {
-                count++;
+                continue;
+            }
+
+            var at = Children.IndexOf(_entries[i].Control);
+            if (at >= 0)
+            {
+                return at;
             }
         }
 
-        return count;
+        return Children.Count;
     }
 
     private double ResolveSize(ItemEntry entry) =>
         entry.Measured ? entry.Size : Math.Max(0, EstimatedItemHeight);
+
+    /// <summary>条目在文档空间里实际占的高：自身槽位加上挂在它身上的装饰。</summary>
+    private double BandSize(int index) =>
+        ResolveSize(_entries[index]) + DecoratorHeight(index);
+
+    private double DecoratorHeight(int band) =>
+        band >= 0 && band < _decoratorHeights.Length ? _decoratorHeights[band] : 0d;
+
+    /// <summary>
+    /// 找出宿主直接挂进 <see cref="Panel.Children"/> 的未登记子项，按文档顺序归到紧随其后的条目名下。
+    /// 单遍扫描：已登记子项在 Children 里的相对顺序与条目顺序一致（物化时按
+    /// <see cref="RealizedIndexBefore"/> 插入），所以条目游标只需前进，先跳过不在树上的未物化条目。
+    /// </summary>
+    private void CollectDecorators()
+    {
+        _decorators.Clear();
+        if (_decoratorHeights.Length != _entries.Count)
+        {
+            _decoratorHeights = new double[_entries.Count];
+        }
+        else
+        {
+            Array.Clear(_decoratorHeights);
+        }
+
+        if (_entries.Count == 0)
+        {
+            return;
+        }
+
+        var band = 0;
+        foreach (var child in Children)
+        {
+            while (band < _entries.Count && !_entries[band].Realized)
+            {
+                band++;
+            }
+
+            if (band < _entries.Count && ReferenceEquals(_entries[band].Control, child))
+            {
+                band++;
+                continue;
+            }
+
+            _decorators.Add(new DecoratorEntry(
+                band < _entries.Count ? band : _entries.Count - 1,
+                child,
+                band < _entries.Count));
+        }
+    }
+
+    /// <summary>量测挂在指定条目上的装饰，回填 <see cref="_decoratorHeights"/>，返回它们的最大宽度。</summary>
+    private double MeasureDecorators(int band, double width)
+    {
+        if (_decorators.Count == 0)
+        {
+            return 0d;
+        }
+
+        var height = 0d;
+        var maxWidth = 0d;
+        foreach (var decorator in _decorators)
+        {
+            if (decorator.Band != band)
+            {
+                continue;
+            }
+
+            decorator.Control.Measure(new Size(width, double.PositiveInfinity));
+            decorator.Height = decorator.Control.DesiredSize.Height;
+            height += decorator.Height;
+            maxWidth = Math.Max(maxWidth, decorator.Control.DesiredSize.Width);
+        }
+
+        _decoratorHeights[band] = height;
+        return maxWidth;
+    }
+
+    /// <summary>把指定条带上的一侧装饰依次排下去，返回新的游标。</summary>
+    private double ArrangeDecorators(int band, double cursor, double width, bool above)
+    {
+        foreach (var decorator in _decorators)
+        {
+            if (decorator.Band != band || decorator.Above != above)
+            {
+                continue;
+            }
+
+            decorator.Control.Arrange(new Rect(0, cursor, width, Math.Max(0, decorator.Height)));
+            cursor += decorator.Height;
+        }
+
+        return cursor;
+    }
 }
