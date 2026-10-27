@@ -359,8 +359,8 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
     private readonly record struct Rgb(byte R, byte G, byte B);
 
     /// <summary>
-    /// 把 Mermaider 的 CSS 自定义属性引用（var(--_xxx)）替换为计算后的 hex 色值，
-    /// 公式镜像自 Mermaider 样式块中的 color-mix 定义。
+    /// 把 Mermaider 的 CSS 自定义属性引用展开为字面量色值。表中的公式镜像自 Mermaider 样式块里的
+    /// color-mix 定义；命中表值即用它，不看 Mermaider 自带的回退，保证同一主题升级前后色值不变。
     /// </summary>
     internal static string InlineCssVariables(string svg, MermaidRenderOptions options)
     {
@@ -368,51 +368,40 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
         var fg = Parse(options.Fg ?? "#27272A");
         var acc = Parse(options.Accent ?? "#3b82f6");
 
-        var vars = new (string Token, Rgb Color)[]
+        var tokens = new Dictionary<string, string>(StringComparer.Ordinal)
         {
-            ("var(--_text)", fg),
-            ("var(--_text-sec)", Mix(fg, 55, bg)),
-            ("var(--_text-muted)", Mix(fg, 35, bg)),
-            ("var(--_text-faint)", Mix(fg, 20, bg)),
-            ("var(--_line)", Mix(fg, 32, bg)),
-            ("var(--_arrow)", acc),
-            ("var(--_node-fill)", Mix(fg, 4, bg)),
-            ("var(--_node-stroke)", Mix(fg, 22, bg)),
-            ("var(--_group-fill)", bg),
-            ("var(--_group-hdr)", Mix(fg, 4, bg)),
-            ("var(--_group-stroke)", Mix(fg, 10, bg)),
-            ("var(--_inner-stroke)", Mix(fg, 10, bg)),
-            ("var(--_key-badge)", Mix(fg, 8, bg)),
-            ("var(--_accent-fill)", Mix(acc, 8, bg)),
-            ("var(--_accent-stroke)", Mix(acc, 20, bg)),
-            ("var(--_accent-text)", Mix(acc, 65, bg))
+            ["--bg"] = Hex(bg),
+            ["--fg"] = Hex(fg),
+            ["--accent"] = Hex(acc),
+            ["--line"] = options.Line ?? Hex(Mix(fg, 32, bg)),
+            ["--border"] = options.Border ?? Hex(Mix(fg, 10, bg)),
+            ["--surface"] = options.Surface ?? Hex(Mix(fg, 4, bg)),
+            ["--muted"] = options.Muted ?? Hex(Mix(fg, 55, bg)),
+            ["--fs-xs"] = "12",
+            ["--fs-s"] = "14",
+            ["--fs-m"] = "16",
+            ["--fs-l"] = "18",
+            ["--_text"] = Hex(fg),
+            ["--_text-sec"] = Hex(Mix(fg, 55, bg)),
+            ["--_text-muted"] = Hex(Mix(fg, 35, bg)),
+            ["--_text-faint"] = Hex(Mix(fg, 20, bg)),
+            ["--_line"] = Hex(Mix(fg, 32, bg)),
+            ["--_arrow"] = Hex(acc),
+            ["--_node-fill"] = Hex(Mix(fg, 4, bg)),
+            ["--_node-stroke"] = Hex(Mix(fg, 22, bg)),
+            ["--_group-fill"] = Hex(bg),
+            ["--_group-hdr"] = Hex(Mix(fg, 4, bg)),
+            ["--_group-stroke"] = Hex(Mix(fg, 10, bg)),
+            ["--_inner-stroke"] = Hex(Mix(fg, 10, bg)),
+            ["--_key-badge"] = Hex(Mix(fg, 8, bg)),
+            ["--_accent-fill"] = Hex(Mix(acc, 8, bg)),
+            ["--_accent-stroke"] = Hex(Mix(acc, 20, bg)),
+            ["--_accent-text"] = Hex(Mix(acc, 65, bg))
         };
 
-        var builder = new StringBuilder(svg);
-        foreach (var (token, color) in vars)
-        {
-            builder.Replace(token, Hex(color));
-        }
-
-        // 0.14.x 除样式块外还以属性形式（fill=\"var(--bg)\"、var(--fg)）引用根变量
-        builder.Replace("var(--bg)", Hex(bg));
-        builder.Replace("var(--fg)", Hex(fg));
-        builder.Replace("var(--accent)", Hex(acc));
-        builder.Replace("var(--line)", options.Line ?? Hex(Mix(fg, 32, bg)));
-        builder.Replace("var(--border)", options.Border ?? Hex(Mix(fg, 10, bg)));
-        builder.Replace("var(--surface)", options.Surface ?? Hex(Mix(fg, 4, bg)));
-        builder.Replace("var(--muted)", options.Muted ?? Hex(Mix(fg, 55, bg)));
-        builder.Replace("var(--fs-xs)", "12");
-        builder.Replace("var(--fs-s)", "14");
-        builder.Replace("var(--fs-m)", "16");
-        builder.Replace("var(--fs-l)", "18");
-
-        // Mermaider 0.14.x 在节点 fill 属性里也直接输出 color-mix，Skia 会将
-        // 不支持的颜色当作黑色。变量替换后将这些具体混色表达式一并计算。
-        return Regex.Replace(builder.ToString(),
-            @"color-mix\(\s*in\s+srgb,\s*(#[0-9a-fA-F]{6})\s+(\d+(?:\.\d+)?)%,\s*(#[0-9a-fA-F]{6})\s*\)",
-            match => Hex(Mix(Parse(match.Groups[1].Value),
-                double.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture), Parse(match.Groups[3].Value))));
+        // 象限图四格这类写法是 color-mix(in srgb, var(--accent, #FAFAFA) 8%, #18181B)：
+        // 回退语法里的 var() 不先展开，任何按字面量匹配 color-mix 的做法都会漏掉它，Skia 随后画成黑色。
+        return CssColorResolver.Flatten(svg, tokens);
 
         static Rgb Parse(string hex)
         {
