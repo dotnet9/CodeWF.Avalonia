@@ -19,11 +19,19 @@ public static class StudioPaletteEngine
     };
 
     private static Color Parse(string hex) => Color.Parse(hex);
+
+    /// <summary>
+    /// 与原型 <c>palette-rules.js</c> 同式：先四舍五入（.5 一律向上）再钳位。
+    /// 早先直接 (byte) 截断，半档差被吞成 1/255，运行时字典与静态令牌（原型生成）就差一档。
+    /// </summary>
+    private static byte Channel(double value) => (byte)Math.Clamp(Math.Round(value, MidpointRounding.AwayFromZero), 0d, 255d);
+
+    /// <summary><see cref="Color"/> 的构造参数是 A-R-G-B（不是 R-G-B-A）：写成 (r, g, b, 255) 会让派生色蓝通道钉满、透明度跟着红通道走。</summary>
     private static Color Mix(Color a, Color b, double weight) => new(
-        (byte)(a.R * (1 - weight) + b.R * weight),
-        (byte)(a.G * (1 - weight) + b.G * weight),
-        (byte)(a.B * (1 - weight) + b.B * weight),
-        255);
+        255,
+        Channel(a.R * (1 - weight) + b.R * weight),
+        Channel(a.G * (1 - weight) + b.G * weight),
+        Channel(a.B * (1 - weight) + b.B * weight));
     private static Color Over(Color baseColor, Color foreground, double alpha) => Mix(baseColor, foreground, alpha);
 
     /// <summary>§5.1 画布中性化：paper/surface 去色温、保留相对明度（海拔差不变），色相只留在墨、强调与交互态。</summary>
@@ -48,7 +56,6 @@ public static class StudioPaletteEngine
         var borderAlpha = dark ? 0.16 : 0.12;
         var controlBorderAlpha = dark ? 0.26 : 0.20;
         var hoverAlpha = dark ? 0.07 : 0.05;
-        var raisedAlpha = dark ? 0.06 : 0.04;
         var selectedAlpha = dark ? 0.18 : 0.12;
         var accentSoftAlpha = dark ? 0.16 : 0.10;
         var selectionAlpha = dark ? 0.30 : 0.24;
@@ -59,8 +66,8 @@ public static class StudioPaletteEngine
         var black = Colors.Black;
         var white = Colors.White;
 
-        Color StatusSoft(string hex) => StatusSoftFor(paper, Parse(hex), statusSoftAlpha, dark);
-        Color StatusPressedSoft(string hex) => StatusSoftFor(paper, Parse(hex), statusSoftAlpha + 0.04, dark);
+        Color StatusSoft(string hex) => SoftFor(paper, Parse(hex), statusSoftAlpha, dark);
+        Color StatusPressedSoft(string hex) => SoftFor(paper, Parse(hex), statusSoftAlpha + 0.04, dark);
 
         var danger = StatusColorFor(paper, surface, ink, Parse(status.Danger), dark);
         var success = StatusColorFor(paper, surface, ink, Parse(status.Success), dark);
@@ -76,12 +83,25 @@ public static class StudioPaletteEngine
             ["StudioBackgroundColor"] = bg,
             ["StudioSurfaceColor"] = surface,
             ["StudioPaperColor"] = paper,
-            ["StudioRaisedColor"] = Over(paper, ink, raisedAlpha),
+            // 分段控件与浮起面（规则 §5.1 之后仍按原型 .vex-segmented / --elevated 取色，底色一律用去色温后的画布）：
+            // 亮色轨道 = 墨 4% 叠纸面、指示块 = 白 55% 叠纸面；深色轨道 = 墨 4.5% 叠面板、指示块回到面板色；
+            // elevated = 纸面 88% + 面板 12%。这三键此前只在静态令牌里有，用户配色走运行时 Fill 会漏掉。
+            ["StudioSegmentedTrackColor"] = dark ? Over(surface, ink, 0.045) : Over(paper, ink, 0.04),
+            ["StudioSegmentedThumbColor"] = dark ? surface : Over(paper, Colors.White, 0.55),
+            ["StudioElevatedColor"] = Mix(paper, surface, 0.12),
+            // 原生令牌词汇表里「浮起面」与「悬停面」取同一个值：静态令牌由 Vex 的 sync_native_design.cjs
+            // 把 StudioRaisedColor 映射到原型 --hover（不是 --raised），运行时必须同式，否则自定义配色的
+            // 列表/卡片浮起面比内置配色暗一档。
+            ["StudioRaisedColor"] = Over(paper, ink, hoverAlpha),
             ["StudioBorderColor"] = Over(paper, ink, borderAlpha),
             ["StudioControlBorderColor"] = Over(paper, ink, controlBorderAlpha),
-            ["StudioHoverColor"] = Over(surface, ink, hoverAlpha),
+            // 原型 --hover 落在纸面：resolveConstants 传给回底规则的是公式里的前景键（ink），不是派生键名，
+            // 「hover 落 surface」那条特例在这条路径上从不生效。照面板算会暗一档，与静态令牌不同式。
+            ["StudioHoverColor"] = Over(paper, ink, hoverAlpha),
             ["StudioPressedColor"] = Over(paper, accent, selectedAlpha),
-            ["StudioSelectedColor"] = Over(paper, accent, selectedAlpha),
+            // 选中面用强调软底（原型 --accent-soft，静态令牌同源）：accent 作字落在软底上不足 4.5 时
+            // 按 1% 减淡（规则 §3 收敛），写死 10% 会让暖色板的自定义配色选中底比内置深一档。
+            ["StudioSelectedColor"] = SoftFor(paper, accent, accentSoftAlpha, dark),
             ["StudioFocusRingColor"] = accent,
             ["StudioDisabledColor"] = Over(paper, ink, 0.40),
             // 文字
@@ -147,14 +167,14 @@ public static class StudioPaletteEngine
     }
 
     /// <summary>状态软底（规则 §3 组件可读性约束）：浅色态向 paper 回退、深色态向状态色加深，保证状态文字 ≥4.5:1。</summary>
-    private static Color StatusSoftFor(Color paper, Color status, double alpha, bool dark)
+    private static Color SoftFor(Color paper, Color foreground, double alpha, bool dark)
     {
         var a = alpha;
-        var bg = Over(paper, status, a);
-        while (Contrast(status, bg) < 4.5 && a > (dark ? 0.40 : 0.03))
+        var bg = Over(paper, foreground, a);
+        while (Contrast(foreground, bg) < 4.5 && a > (dark ? 0.40 : 0.03))
         {
             a += dark ? 0.01 : -0.01;
-            bg = Over(paper, status, a);
+            bg = Over(paper, foreground, a);
         }
         return bg;
     }
@@ -209,7 +229,9 @@ public static class StudioPaletteEngine
     public static Dictionary<string, Color> DeriveExtras(StudioPaletteDefinition palette, bool dark)
     {
         var ink = Parse(dark ? palette.Dark.Ink : palette.Light.Ink);
-        var paper = Parse(dark ? palette.Dark.Paper : palette.Light.Paper);
+        // 与 Derive 同源：规则 §3 的 hover/渐变端点都朝「画布」收敛，而 §5.1 之后画布是去色温的，
+        // 拿原始 paper 收敛会让用户配色的这两键与九套静态令牌不同式。
+        var paper = Neutralize(Parse(dark ? palette.Dark.Paper : palette.Light.Paper));
         var accent = Parse(dark ? palette.Dark.Accent : palette.Light.Accent);
         return new Dictionary<string, Color>
         {
