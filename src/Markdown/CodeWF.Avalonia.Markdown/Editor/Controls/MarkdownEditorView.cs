@@ -510,7 +510,7 @@ public class MarkdownEditorView : UserControl
             return false;
         }
 
-        var result = CodeWF.Avalonia.Controls.Text.TextAutoPair.HandleBackspace(
+        var result = TextAutoPair.HandleBackspace(
             document.Text,
             _editor.SelectionStart,
             _editor.SelectionLength);
@@ -786,7 +786,7 @@ public class MarkdownEditorView : UserControl
             return;
         }
 
-        var result = CodeWF.Avalonia.Controls.Text.TextAutoPair.HandleTextInput(
+        var result = TextAutoPair.HandleTextInput(
             document.Text,
             _editor.SelectionStart,
             _editor.SelectionLength,

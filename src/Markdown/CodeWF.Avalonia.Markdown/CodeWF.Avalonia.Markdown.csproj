@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CodeWF.Avalonia.Markdown.Lite\CodeWF.Avalonia.Markdown.Lite.csproj" />
-    <ProjectReference Include="..\..\Controls\CodeWF.Avalonia.Controls\CodeWF.Avalonia.Controls.csproj" />
     <ProjectReference Include="..\..\Lang\CodeWF.Avalonia.Lang\CodeWF.Avalonia.Lang.csproj" />
   </ItemGroup>
 

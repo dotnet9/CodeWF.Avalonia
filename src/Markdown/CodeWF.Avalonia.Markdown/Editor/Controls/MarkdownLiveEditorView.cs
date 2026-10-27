@@ -9,8 +9,8 @@ using global::Avalonia.Layout;
 using global::Avalonia.Media;
 using global::Avalonia.Styling;
 
-using CodeWF.Avalonia.Controls.Text;
-using CodeWF.Avalonia.Controls.Controls;
+using CodeWF.Avalonia.Markdown.Editor;
+using CodeWF.Avalonia.Markdown.Controls;
 
 using CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
 using CodeWF.Avalonia.Markdown.Editor.Services;

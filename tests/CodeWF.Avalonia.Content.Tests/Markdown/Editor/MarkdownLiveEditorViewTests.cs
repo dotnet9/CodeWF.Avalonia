@@ -112,7 +112,7 @@ public sealed class MarkdownLiveEditorViewTests
         var source = prefix + table + "\n\n## End\n\nLast paragraph.";
         var view = new MarkdownLiveEditorView { DocumentMaxWidth = 810 };
         view.SetText(source);
-        var panel = view.GetLogicalDescendants().OfType<CodeWF.Avalonia.Controls.Controls.WindowedStackPanel>().Single();
+        var panel = view.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.WindowedStackPanel>().Single();
         var scroll = view.GetLogicalDescendants().OfType<ScrollViewer>().Single();
         scroll.Template = new global::Avalonia.Controls.Templates.FuncControlTemplate<ScrollViewer>((_, scope) =>
         {
@@ -535,7 +535,7 @@ public sealed class MarkdownLiveEditorViewTests
     [Fact]
     public void MeasuredBlocksKeepTheFirstScreenAndTheScrolledAnchorStable() => _platform.Run(() =>
     {
-        var panel = new CodeWF.Avalonia.Controls.Controls.WindowedStackPanel { EnableVirtualization = false };
+        var panel = new CodeWF.Avalonia.Markdown.Controls.WindowedStackPanel { EnableVirtualization = false };
         var items = Enumerable.Range(0, 30).Select(_ => new Border { Height = 40 }).ToArray();
         foreach (var item in items) panel.AddItem(item);
         var presenter = new global::Avalonia.Controls.Presenters.ScrollContentPresenter { Content = panel };

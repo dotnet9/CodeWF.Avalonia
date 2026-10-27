@@ -14,7 +14,6 @@ using global::Avalonia.Media;
 using global::Avalonia.Styling;
 using global::Avalonia.Threading;
 using global::Avalonia.VisualTree;
-using CodeWF.Avalonia.Controls.Controls;
 using CodeWF.Avalonia.Markdown.Helpers;
 using CodeWF.Avalonia.Markdown.Rendering;
 using CodeWF.Avalonia.Markdown.Shared.Rendering;

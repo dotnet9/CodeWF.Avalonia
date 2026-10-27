@@ -1,7 +1,7 @@
 using Avalonia.Automation.Peers;
 
 using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
-using CodeWF.Avalonia.Controls.Controls;
+using CodeWF.Avalonia.Markdown.Controls;
 using CodeWF.Avalonia.Markdown;
 using CodeWF.Avalonia.Markdown.Automation;
 using CodeWF.Avalonia.Markdown.Controls;

@@ -1,5 +1,5 @@
 using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
-using CodeWF.Avalonia.Controls.Controls;
+using CodeWF.Avalonia.Markdown.Controls;
 using CodeWF.Avalonia.Markdown.Controls;
 
 using global::Avalonia;
