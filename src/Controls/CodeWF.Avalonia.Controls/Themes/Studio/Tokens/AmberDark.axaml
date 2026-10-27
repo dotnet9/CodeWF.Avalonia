@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Color x:Key="StudioPaperColor">#171310</Color>
+    <Color x:Key="StudioPaperColor">#141414</Color>
     <Color x:Key="StudioHoverColor">#242322</Color>
     <SolidColorBrush x:Key="StudioHover" Color="{StaticResource StudioHoverColor}"/>
     <Color x:Key="StudioPressedColor">#3e361e</Color>
@@ -15,10 +15,10 @@
     <SolidColorBrush x:Key="StudioDisabled" Color="{StaticResource StudioDisabledColor}"/>
     <!-- 颜色令牌与画刷遵循 Semi 的主题字典结构。 -->
     <Color x:Key="StudioBackgroundColor">#171717</Color>
-    <Color x:Key="StudioSegmentedTrackColor">#2B251E</Color>
-    <Color x:Key="StudioSegmentedThumbColor">#221C15</Color>
-    <Color x:Key="StudioElevatedColor">#181411</Color>
-    <Color x:Key="StudioSurfaceColor">#221C15</Color>
+    <Color x:Key="StudioSegmentedTrackColor">#272626</Color>
+    <Color x:Key="StudioSegmentedThumbColor">#1d1d1d</Color>
+    <Color x:Key="StudioElevatedColor">#151515</Color>
+    <Color x:Key="StudioSurfaceColor">#1d1d1d</Color>
     <Color x:Key="StudioRaisedColor">#242322</Color>
     <Color x:Key="StudioBorderColor">#383734</Color>
     <Color x:Key="StudioTextColor">#F3EDDF</Color>

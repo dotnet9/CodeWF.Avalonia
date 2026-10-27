@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Color x:Key="StudioPaperColor">#FFFFFF</Color>
+    <Color x:Key="StudioPaperColor">#ffffff</Color>
     <Color x:Key="StudioHoverColor">#f3f3f4</Color>
     <SolidColorBrush x:Key="StudioHover" Color="{StaticResource StudioHoverColor}"/>
     <Color x:Key="StudioPressedColor">#e8e8e9</Color>
@@ -18,7 +18,7 @@
     <Color x:Key="StudioSegmentedTrackColor">#F6F6F6</Color>
     <Color x:Key="StudioSegmentedThumbColor">#FFFFFF</Color>
     <Color x:Key="StudioElevatedColor">#FEFEFE</Color>
-    <Color x:Key="StudioSurfaceColor">#F4F4F5</Color>
+    <Color x:Key="StudioSurfaceColor">#f4f4f4</Color>
     <Color x:Key="StudioRaisedColor">#f3f3f4</Color>
     <Color x:Key="StudioBorderColor">#e3e3e4</Color>
     <Color x:Key="StudioTextColor">#18181B</Color>
