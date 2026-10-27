@@ -111,7 +111,9 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
         };
         void UpdateWidth()
         {
-            if (sizeHost?.Viewport.Width is > 0 and var width) image.MaxWidth = Math.Min(width, 800);
+            // 只钳上限：image 是 DownOnly，窄图仍按自身尺寸居中，宽图则能用满整个视口。
+            // 这里曾写死 800，宿主阅读宽大于 800 时（如 1100 栏宽）C4/时序图会被无故压小一档。
+            if (sizeHost?.Viewport.Width is > 0 and var width) image.MaxWidth = width;
         }
         void OnSizeChanged(object? sender, SizeChangedEventArgs e) => UpdateWidth();
 
