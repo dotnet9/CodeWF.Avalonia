@@ -101,4 +101,16 @@ public sealed class MermaidCssColorTests
         const string markup = "<rect fill=\"color-mix(in oklab, var(--nope), #000)\"/>";
         Assert.Equal(markup, CssColorResolver.Flatten(markup, new Dictionary<string, string>()));
     }
+
+    /// <summary>宿主显式给出的 Muted 色要压过镜像公式，否则这一档主题色永远读不到。</summary>
+    [Fact]
+    public void HostMutedOverridesTheDerivedTint()
+    {
+        const string markup = "fill=\"var(--muted, #666666)\"";
+        var options = new RenderOptions { Bg = "#18181B", Fg = "#FAFAFA", Muted = "#FF0000" };
+        Assert.Equal("fill=\"#FF0000\"", MermaidBlockRenderer.InlineCssVariables(markup, options));
+
+        // 没给 Muted 时才回到 fg 55% 的镜像公式，保持既有主题下的既有色值。
+        Assert.Equal("fill=\"#949495\"", MermaidBlockRenderer.InlineCssVariables(markup, options with { Muted = null }));
+    }
 }

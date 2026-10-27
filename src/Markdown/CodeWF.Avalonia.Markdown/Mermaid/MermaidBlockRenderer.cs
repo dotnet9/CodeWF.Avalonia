@@ -277,7 +277,7 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
 
     /// <summary>缓存 Key 含主题配色：同一份图表在明暗主题下是两张不同的图。</summary>
     internal static string CreateCacheKey(string source, MermaidRenderOptions options) =>
-        $"{options.Bg}|{options.Fg}|{options.Accent}|{options.Line}|{options.Border}|{options.Surface}|{options.Default}|{string.Join(',', options.DataPalette ?? [])}|{options.FontSize}|{options.NodeSpacing}|{options.LayerSpacing}|{options.RoundedEdges}|{source}";
+        $"{options.Bg}|{options.Fg}|{options.Accent}|{options.Line}|{options.Border}|{options.Surface}|{options.Muted}|{options.Default}|{string.Join(',', options.DataPalette ?? [])}|{options.FontSize}|{options.NodeSpacing}|{options.LayerSpacing}|{options.RoundedEdges}|{source}";
 
     /// <summary>
     /// 按当前主题变体构造渲染选项；颜色来自 CodeWFMarkdownMermaid* 画刷资源
@@ -297,6 +297,7 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
             Line = ResolveOptionalHex(app, theme, "CodeWFMarkdownMermaidLine"),
             Border = ResolveOptionalHex(app, theme, "CodeWFMarkdownMermaidBorder"),
             Surface = ResolveOptionalHex(app, theme, "CodeWFMarkdownMermaidSurface"),
+            Muted = ResolveOptionalHex(app, theme, "CodeWFMarkdownMermaidMuted"),
             Default = ResolveOptionalHex(app, theme, "CodeWFMarkdownMermaidDefault"),
             DataPalette = ResolveDataPalette(app, theme, source),
             // 渲染密度联动（规则 §11）：宿主可经 CodeWFMarkdownMermaidFontSize / NodeSpacing /
