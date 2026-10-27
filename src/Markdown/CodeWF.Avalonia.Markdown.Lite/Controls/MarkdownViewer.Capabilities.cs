@@ -492,7 +492,8 @@ public partial class MarkdownViewer
     private void AttachTaskMarkerInteraction(CheckBox checkBox, int markerStart)
     {
         checkBox.Tag = markerStart;
-        checkBox.Bind(IsEnabledProperty, new global::Avalonia.Data.Binding(nameof(IsTaskEditingEnabled)) { Source = this });
+        // 编译期可观察绑定等价替换字符串反射 Binding（AOT 门禁 IL2026/IL3050 欠账偿还）。
+        checkBox.Bind(IsEnabledProperty, this.GetObservable(IsTaskEditingEnabledProperty));
         checkBox.IsHitTestVisible = true;
         checkBox.Click += OnTaskMarkerClickHandler;
         _currentBlockDisposables.Add(new TaskMarkerBinding(this, checkBox));
