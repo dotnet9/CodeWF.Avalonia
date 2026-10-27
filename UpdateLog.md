@@ -1,5 +1,11 @@
 # 更新日志
 
+## 12.2.17 (2026-10-27)
+
+- 流式渐显闭环：`MarkdownStreamPacer` 新增显示登记（每次实际放行都记 [起, 止) 偏移与显示时刻，环形缓冲 256 批，`RevealedLength`/`EarliestRevealedOffset`/`TryGetRevealTime`）；`MarkdownViewer` 新增 `StreamingReveal`/`StreamingRevealDuration`——流式 append-only 增长时只让本次新出现的块淡入（默认 160ms），已显示内容透明度全程不变。
+- 即时编辑状态搬运：新增 `MarkdownSnapshotEdit`（公共前后缀剥离 + 中间段行内容 LCS 对齐 → 行级编辑段与旧偏移→新偏移映射、行去向判定）与 `MarkdownViewer.ApplySnapshot(text)`——整篇快照赋值时折叠状态与高亮会话按「行存活 + 块内容哈希」搬到新偏移，内容被替换/删除的块不继承。
+- 工程：AOT 冒烟新增 IL 裁剪告警门禁（只卡源自本仓代码的告警，第三方整包摘要按告警码白名单放行）；`CodeWF.Avalonia.Motion` 开启 `IsAotCompatible` 并把 IL 告警升为错误。
+
 ## 12.2.16 (2026-10-27)
 
 - 新增包 `CodeWF.Avalonia.Motion`：移植 Arc Motion 引擎（Springs / MotionValue / ArcMotion / LiveLoop / MotionTimeline / SpringTransitions / PausableTimer），弹簧预设与时长/错峰参数与 Vex·Vox 动效契约同一套；零 AtomUI 依赖（MIT），可直接被 Semi/Ursa 与 Arc 两种基座的宿主引用。
