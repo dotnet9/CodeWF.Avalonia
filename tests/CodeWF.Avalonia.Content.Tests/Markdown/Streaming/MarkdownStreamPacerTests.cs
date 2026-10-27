@@ -202,6 +202,65 @@ public sealed class MarkdownStreamPacerTests
 		Assert.Throws<ArgumentOutOfRangeException>(() => new MarkdownStreamPacer(TimeSpan.Zero));
 	}
 
+	[Fact]
+	public void RevealHistory_RecordsDisplayTimePerReleasedBatch()
+	{
+		var pacer = new MarkdownStreamPacer(TimeSpan.FromMilliseconds(1));
+		var clock = TimeSpan.Zero;
+		pacer.Tick(clock); // 预热帧：首帧无间隔不释放，先建立节拍
+		Assert.Equal(0, pacer.RevealedLength);
+		Assert.False(pacer.TryGetRevealTime(0, out _)); // 还没显示任何字符
+
+		pacer.Push("abc", clock);
+		var firstTick = Next(ref clock, Frame);
+		Assert.Equal("abc", pacer.Tick(firstTick));
+		Assert.Equal(3, pacer.RevealedLength);
+		Assert.True(pacer.TryGetRevealTime(0, out var firstReveal));
+		Assert.True(pacer.TryGetRevealTime(2, out var lastReveal));
+		Assert.Equal(firstTick, firstReveal);
+		Assert.Equal(firstTick, lastReveal); // 同一批释放共用一个显示时刻
+		Assert.False(pacer.TryGetRevealTime(3, out _)); // 越界（尚未显示）
+
+		pacer.Push("de", clock);
+		var secondTick = Next(ref clock, Frame);
+		Assert.Equal("de", pacer.Tick(secondTick));
+		Assert.Equal(5, pacer.RevealedLength);
+		Assert.True(pacer.TryGetRevealTime(3, out var laterReveal));
+		Assert.Equal(secondTick, laterReveal);
+		Assert.True(pacer.TryGetRevealTime(1, out var stillFirst));
+		Assert.Equal(firstTick, stillFirst); // 旧批次仍可按偏移回查
+	}
+
+	[Fact]
+	public void RevealHistory_KeepsNewestBatches_AndClearsOnReset()
+	{
+		// 每 5 帧到达 1 字符、约每 5 帧放行 1 字符：批次数超过环形容量，最旧批次被覆盖。
+		var pacer = new MarkdownStreamPacer(MarkdownStreamPacer.PacingPreset.Balanced);
+		var clock = TimeSpan.Zero;
+		var pushCount = MarkdownStreamPacer.RevealHistoryCapacity + 60;
+		pacer.Tick(clock); // 预热帧
+		for (var i = 0; i < pushCount; i++)
+		{
+			pacer.Push("a", clock);
+			for (var frame = 0; frame < 5; frame++)
+			{
+				clock += Frame;
+				pacer.Tick(clock);
+			}
+		}
+
+		Assert.True(pacer.RevealedLength > MarkdownStreamPacer.RevealHistoryCapacity);
+		Assert.True(pacer.TryGetRevealTime(pacer.RevealedLength - 1, out _));
+		// 环形缓冲只保留最近 256 批：最早可回查的偏移已经往后移，更早的偏移查不到时刻。
+		Assert.True(pacer.EarliestRevealedOffset > 0);
+		Assert.False(pacer.TryGetRevealTime(0, out _));
+
+		pacer.Reset();
+		Assert.Equal(0, pacer.RevealedLength);
+		Assert.Equal(0, pacer.EarliestRevealedOffset);
+		Assert.False(pacer.TryGetRevealTime(0, out _));
+	}
+
 	private static TimeSpan Next(ref TimeSpan clock, TimeSpan delta)
 	{
 		clock += delta;

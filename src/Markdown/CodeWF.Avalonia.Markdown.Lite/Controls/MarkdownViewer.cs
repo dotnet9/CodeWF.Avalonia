@@ -1,4 +1,6 @@
 using Avalonia;
+using global::Avalonia.Animation;
+using global::Avalonia.Animation.Easings;
 using global::Avalonia.Automation;
 using global::Avalonia.Automation.Peers;
 using global::Avalonia.Controls;
@@ -271,6 +273,18 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     public static readonly StyledProperty<bool> ShowCodeBlockHeaderProperty =
         AvaloniaProperty.Register<MarkdownViewer, bool>(nameof(ShowCodeBlockHeader), true);
 
+    /// <summary>
+    /// 流式渐显：流式源 append-only 增长时，新出现的块以淡入入场（旧块不动、不改透明度）。
+    /// 与 <see cref="MarkdownStreamPacer"/> 的显示时刻登记配合——节奏器决定「何时出现」，本属性决定「怎么出现」。
+    /// </summary>
+    public static readonly StyledProperty<bool> StreamingRevealProperty =
+        AvaloniaProperty.Register<MarkdownViewer, bool>(nameof(StreamingReveal));
+
+    /// <summary>流式渐显时长（默认 160ms，逼近 Motion 的 Fast 档）。</summary>
+    public static readonly StyledProperty<TimeSpan> StreamingRevealDurationProperty =
+        AvaloniaProperty.Register<MarkdownViewer, TimeSpan>(nameof(StreamingRevealDuration),
+            TimeSpan.FromMilliseconds(160));
+
     public static readonly StyledProperty<double> UnorderedListMarkerWidthProperty =
         AvaloniaProperty.Register<MarkdownViewer, double>(nameof(UnorderedListMarkerWidth), 24);
 
@@ -305,6 +319,23 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         get => GetValue(StreamingSourceProperty);
         set => SetValue(StreamingSourceProperty, value);
     }
+
+    /// <summary>流式渐显开关；语义见 <see cref="StreamingRevealProperty"/>。</summary>
+    public bool StreamingReveal
+    {
+        get => GetValue(StreamingRevealProperty);
+        set => SetValue(StreamingRevealProperty, value);
+    }
+
+    /// <summary>流式渐显时长。</summary>
+    public TimeSpan StreamingRevealDuration
+    {
+        get => GetValue(StreamingRevealDurationProperty);
+        set => SetValue(StreamingRevealDurationProperty, value);
+    }
+
+    /// <summary>本实例累计触发渐显的块数（测试与宿主诊断用）。</summary>
+    public int RevealedBlockCount { get; private set; }
 
     /// <summary>
     /// 单个 MarkdownViewer 的排版主题 Key；未设置或设置为空时使用全局 MarkdownThemes 资源，默认行为为 Basic。
@@ -1157,6 +1188,11 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         }
 
         var removeCount = replaceEndIndex - replaceStartIndex;
+        // 渐显判定要在摘除之前取：旧块数之后的位置才是「这次新出现的块」。
+        var previousBlockCount = _renderedBlocks.Count;
+        var revealNewBlocks = StreamingReveal
+            && StreamingSource is not null
+            && newModel.Source.StartsWith(_renderedMarkdown ?? string.Empty, StringComparison.Ordinal);
         for (var i = 0; i < removeCount; i++)
         {
             _renderedBlocks[replaceStartIndex].Cleanup();
@@ -1169,6 +1205,10 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             var renderedBlock = newBlocks[i];
             AddBlockControl(replaceStartIndex + i, renderedBlock.Control);
             _renderedBlocks.Insert(replaceStartIndex + i, renderedBlock);
+            if (revealNewBlocks && replaceStartIndex + i >= previousBlockCount)
+            {
+                RevealBlock(renderedBlock.Control);
+            }
         }
 
         for (var i = 0; i < _renderedBlocks.Count && i < newModel.Blocks.Count; i++)
@@ -1180,6 +1220,43 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         RefreshSelectionBlocks();
         InvalidateDocumentLayout();
         ReapplySearchIfActive();
+    }
+
+    /// <summary>
+    /// 流式新块入场：从透明淡入到不透明（时长取 <see cref="StreamingRevealDuration"/>）。
+    /// 只动新出现的块——已显示内容的透明度全程不变，避免整篇「呼吸」。
+    /// </summary>
+    private void RevealBlock(Control control)
+    {
+        var duration = StreamingRevealDuration;
+        if (duration <= TimeSpan.Zero)
+        {
+            control.Opacity = 1;
+            return;
+        }
+
+        control.Opacity = 0;
+        var animation = new Animation
+        {
+            Duration = duration,
+            Easing = new CubicEaseOut(),
+            FillMode = FillMode.Forward,
+            Children =
+            {
+                new KeyFrame
+                {
+                    Cue = new Cue(0d),
+                    Setters = { new Setter(Visual.OpacityProperty, 0d) },
+                },
+                new KeyFrame
+                {
+                    Cue = new Cue(1d),
+                    Setters = { new Setter(Visual.OpacityProperty, 1d) },
+                },
+            },
+        };
+        _ = animation.RunAsync(control);
+        RevealedBlockCount++;
     }
 
     private void ReplaceRenderedBlocks(

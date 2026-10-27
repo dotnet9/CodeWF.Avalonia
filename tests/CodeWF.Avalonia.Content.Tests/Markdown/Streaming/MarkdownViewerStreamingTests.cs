@@ -93,6 +93,42 @@ public sealed class MarkdownViewerStreamingTests(AvaloniaPlatformFixture platfor
 	});
 
 	[Fact]
+	public void StreamingReveal_FadesInOnlyNewBlocks() => platform.Run(() =>
+	{
+		using var document = new MarkdownStreamingDocument();
+		var (window, viewer, panel, _) = CreateViewer(document);
+		try
+		{
+			viewer.StreamingReveal = true;
+			viewer.StreamingRevealDuration = TimeSpan.FromMilliseconds(80);
+			document.Append("# 标题\n\n第一段。\n\n");
+			WaitForSource(viewer, "# 标题\n\n第一段。\n\n");
+			Assert.Equal(0, viewer.RevealedBlockCount); // 首屏整篇渲染不做渐显
+
+			document.Append("第二段。\n\n");
+			WaitForSource(viewer, "# 标题\n\n第一段。\n\n第二段。\n\n");
+			Assert.True(viewer.RevealedBlockCount >= 1, "追加的新块应触发渐显");
+
+			// 渐显结束（含掉帧）后所有块都应回到完全不透明。
+			var deadline = DateTime.UtcNow.AddSeconds(5);
+			while (DateTime.UtcNow < deadline
+				&& panel.Children.OfType<Control>().Any(control => control.Opacity < 0.999))
+			{
+				global::Avalonia.Headless.AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+				Dispatcher.UIThread.RunJobs();
+				Thread.Sleep(16);
+			}
+
+			Assert.All(panel.Children.OfType<Control>(), control => Assert.True(control.Opacity >= 0.999,
+				$"块透明度未回到 1（当前 {control.Opacity:F3}）"));
+		}
+		finally
+		{
+			window.Close();
+		}
+	});
+
+	[Fact]
 	public void Complete_PublishesFinalBlocks() => platform.Run(() =>
 	{
 		using var document = new MarkdownStreamingDocument();
