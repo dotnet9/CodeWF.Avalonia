@@ -170,6 +170,29 @@
       el.innerHTML='<div class="demo"><h4>LogNotifications</h4><button class="btn pri">'+esc(text('Notifications'))+'</button></div>';
       el.querySelector('button').onclick=function(){notify('warn','LogNotifications',text('Notification'));};
     }});
+    REG('segmented',{zh:apiMeta(entries.segmented),props:[],
+      xaml:'<Border Classes="segmented-track">\n  <codewf:SegmentedPanel Spacing="2" FillItems="False" CornerRadius="999">\n    <Button Content="Demo" codewf:SegmentedPanel.IsActive="True" />\n    <Button Content="XAML" />\n    <Button Content="C#" />\n  </codewf:SegmentedPanel>\n</Border>',
+      cs:'SegmentedPanel.SetIsActive(demoButton, true);\npanel.Spacing = 2;\npanel.FillItems = false;\npanel.CornerRadius = new CornerRadius(999);',
+      render:function(el){
+        var seg=window.CodeWFPrototypeResources[LANG].Segment;
+        el.innerHTML='<div class="demo catalog-api-card"><h4>'+esc(seg.Demo)+'</h4><div class="catalog-seg-track" data-control="segmented"><i class="catalog-seg-thumb"></i>'+
+          ['Demo','Xaml','CSharp'].map(function(key,index){ return '<button type="button" aria-selected="'+(index===0)+'">'+esc(seg[key])+'</button>'; }).join('')+'</div></div>';
+        var track=el.querySelector('.catalog-seg-track'),thumb=el.querySelector('.catalog-seg-thumb');
+        var buttons=Array.prototype.slice.call(track.querySelectorAll('button'));
+        function place(){
+          var active=buttons.filter(function(button){ return button.getAttribute('aria-selected')==='true'; })[0];
+          if(!active||!active.offsetWidth){ thumb.style.opacity='0'; return; }
+          thumb.style.transform='translateX('+active.offsetLeft+'px)';
+          thumb.style.width=active.offsetWidth+'px';
+          thumb.style.opacity='1';
+        }
+        buttons.forEach(function(button){ button.onclick=function(){ buttons.forEach(function(other){ other.setAttribute('aria-selected',String(other===button)); }); place(); }; });
+        // 属性区改的是轨道排布（间距、等宽、圆角），改完段宽就变了：由它回调重量，指示块才不会盖错段。
+        track.place = place;
+        // 重开文档或切语会重建这段 DOM，内联样式随之丢失：按属性区的当前值回灌一遍。
+        (PROTO.segmented.props||[]).forEach(function(item){ item.apply(item.value); });
+        requestAnimationFrame(place);
+      }});
   }
   Object.keys(entries).forEach(function(id) { if (!PROTO[id] || entries[id].page.indexOf("HelperDemoPage") === 0) REG(id,generic(entries[id])); });
   REG('about',{zh:apiMeta(entries.about),props:[],render:function(el){

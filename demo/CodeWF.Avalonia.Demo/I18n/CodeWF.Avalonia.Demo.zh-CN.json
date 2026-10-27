@@ -141,6 +141,7 @@
       "TreeDataGrid": "TreeDataGridExtension",
       "TitleBar": "CodeWFTitleBar",
       "DiagonalLine": "LeftTop2RightBottomLine",
+      "SegmentedPanel": "SegmentedPanel",
       "If": "If",
       "Switch": "Switch",
       "ContentExpansionAnimator": "ContentExpansionAnimator"
@@ -439,6 +440,9 @@
       },
       "DiagonalLine": {
         "Desc": "调整 BorderThickness，实时查看对角线的绘制效果。"
+      },
+      "SegmentedPanel": {
+        "Desc": "点选各段，实时查看轨道间距、等宽排布与指示块圆角。"
       },
       "MarkdownViewer": {
         "Desc": "渲染 Markdown、代码、公式和图表，切换排版主题。"

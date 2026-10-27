@@ -17,6 +17,9 @@ public sealed class ControlApiViewModel : ReactiveObject
 {
     private string _title = "CodeWFTitleBar";
     private double _thickness = 3;
+    private double _segmentedSpacing = 2;
+    private bool _segmentedFillItems;
+    private decimal _segmentedCornerRadius = 999;
     private PropertyItem? _titleProperty;
     private PropertyItem? _thicknessProperty;
 
@@ -44,6 +47,9 @@ public sealed class ControlApiViewModel : ReactiveObject
 
     public string Title { get => _title; set { this.RaiseAndSetIfChanged(ref _title, value); if (_titleProperty is not null) _titleProperty.Value = value; } }
     public double Thickness { get => _thickness; set { this.RaiseAndSetIfChanged(ref _thickness, value); if (_thicknessProperty is not null) _thicknessProperty.Value = (decimal)value; } }
+    public double SegmentedSpacing { get => _segmentedSpacing; set => this.RaiseAndSetIfChanged(ref _segmentedSpacing, value); }
+    public bool SegmentedFillItems { get => _segmentedFillItems; set => this.RaiseAndSetIfChanged(ref _segmentedFillItems, value); }
+    public decimal SegmentedCornerRadius { get => _segmentedCornerRadius; set => this.RaiseAndSetIfChanged(ref _segmentedCornerRadius, value); }
     public ObservableCollection<ControlRow> Rows { get; } = new(
         new[] { 10, 2, 1, 20, 3, 11 }.Select(value => new ControlRow("item" + value, value,
             I18nManager.Instance.GetResource(DemoResources.Catalog.TreeLongText))));
@@ -67,6 +73,16 @@ public sealed class ControlApiViewModel : ReactiveObject
         if (api == "TreeDataGrid")
             return [new PropertyItem { Id = "SingleSelect", Name = "SingleSelect", Kind = PropertyItemKind.Boolean,
                 Value = Source.RowSelection!.SingleSelect, DefaultValue = false }];
+        if (api == "SegmentedPanel")
+            return
+            [
+                new PropertyItem { Id = nameof(SegmentedSpacing), Name = "Spacing", Kind = PropertyItemKind.Number,
+                    Value = (decimal)SegmentedSpacing, DefaultValue = 2m, Minimum = 0, Maximum = 12, Increment = 1 },
+                new PropertyItem { Id = nameof(SegmentedFillItems), Name = "FillItems", Kind = PropertyItemKind.Boolean,
+                    Value = SegmentedFillItems, DefaultValue = false },
+                new PropertyItem { Id = nameof(SegmentedCornerRadius), Name = "CornerRadius", Kind = PropertyItemKind.Number,
+                    Value = SegmentedCornerRadius, DefaultValue = 999m, Minimum = 0, Maximum = 999, Increment = 1 },
+            ];
         return [new PropertyItem { Id = "Message", Name = "Message", Value = NotificationMessage,
             DefaultValue = I18nManager.Instance.GetResource(DemoResources.Catalog.Notification) }];
     }
@@ -79,6 +95,9 @@ public sealed class ControlApiViewModel : ReactiveObject
         {
             case nameof(Title): Title = change.NewValue?.ToString() ?? ""; break;
             case nameof(Thickness): Thickness = Convert.ToDouble(change.NewValue); break;
+            case nameof(SegmentedSpacing): SegmentedSpacing = Convert.ToDouble(change.NewValue); break;
+            case nameof(SegmentedFillItems): SegmentedFillItems = change.NewValue is true; break;
+            case nameof(SegmentedCornerRadius): SegmentedCornerRadius = Convert.ToDecimal(change.NewValue); break;
             case "SingleSelect": Source.RowSelection!.SingleSelect = change.NewValue is true; break;
             case "Message": NotificationMessage = change.NewValue?.ToString() ?? ""; break;
         }

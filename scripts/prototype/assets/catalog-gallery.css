@@ -127,3 +127,9 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
 .catalog-scene-steps{flex-wrap:wrap}.catalog-scene-body{min-width:0}
 .dbody [hidden]{display:none!important}.catalog-property-demo th{box-sizing:border-box}
 #pGrid .rw:has(.catalog-radio-options){height:auto;min-height:84px}.catalog-radio-options{display:flex;flex-direction:column;gap:4px;padding:5px 0}.catalog-radio-options label{display:flex;align-items:center;font-size:11px;white-space:nowrap}
+/* 分段选择器：轨道 + 一颗滑动伸缩的指示块，底色只由指示块表达、按钮恒透明。轨道与指示块色取自 Themes/Studio/Tokens 的分段两键（随九套配色与明暗走）；位移 260ms、淡出 140ms 线性、标准曲线 .2,.8,.2,1，与原生 Themes/Styles/SegmentedPanel.axaml 同式。 */
+.catalog-seg-track{position:relative;display:inline-flex;gap:var(--seg-gap,2px);padding:3px;border-radius:999px;background:var(--seg-track);vertical-align:middle}
+.catalog-seg-thumb{position:absolute;left:0;top:3px;bottom:3px;width:0;border-radius:var(--seg-radius,999px);background:var(--seg-thumb);box-shadow:0 1px 4px rgba(0,0,0,.12);opacity:0;transition:transform .26s cubic-bezier(.2,.8,.2,1),width .26s cubic-bezier(.2,.8,.2,1),opacity .14s linear;pointer-events:none}
+.catalog-seg-track>button{position:relative;z-index:1;flex:0 0 auto;min-width:0;border:0;background:transparent;color:var(--tx2);font-size:12px;padding:0 10px;height:26px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.catalog-seg-track>button:hover{color:var(--tx)}.catalog-seg-track>button[aria-selected=true]{color:var(--pri);font-weight:600}
+.catalog-seg-track[data-fill=true]{display:flex}.catalog-seg-track[data-fill=true]>button{flex:1 1 0}

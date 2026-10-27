@@ -309,6 +309,20 @@ window.CodeWFDemoCatalog = [
         "iconKey": "SemiIconEdit"
       },
       {
+        "titleKey": "Demo.Item.SegmentedPanel",
+        "page": "ControlApiPage(\"SegmentedPanel\")",
+        "api": "SegmentedPanel",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "segmented",
+        "titleZh": "SegmentedPanel",
+        "titleEn": "SegmentedPanel",
+        "description": "SegmentedPanel",
+        "sectionKey": "Demo.Catalog.SectionNavigation",
+        "icon": "◧",
+        "prototypeIcon": "<path d=\"M3 7.5A1.5 1.5 0 0 1 4.5 6h7A1.5 1.5 0 0 1 13 7.5v9A1.5 1.5 0 0 1 11.5 18h-7A1.5 1.5 0 0 1 3 16.5v-9Zm11 1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-7Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconTabsStroked"
+      },
+      {
         "titleKey": "Demo.Item.ContentExpansionAnimator",
         "page": "ContentExpansionPage",
         "api": "ContentExpansionAnimator",
@@ -679,6 +693,9 @@ window.CodeWFCatalogDescriptions = {
     "DiagonalLine": {
       "Desc": "调整 BorderThickness，实时查看对角线的绘制效果。"
     },
+    "SegmentedPanel": {
+      "Desc": "点选各段，实时查看轨道间距、等宽排布与指示块圆角。"
+    },
     "MarkdownViewer": {
       "Desc": "渲染 Markdown、代码、公式和图表，切换排版主题。"
     },
@@ -764,6 +781,9 @@ window.CodeWFCatalogDescriptions = {
     },
     "DiagonalLine": {
       "Desc": "Change BorderThickness to preview diagonal line rendering."
+    },
+    "SegmentedPanel": {
+      "Desc": "Select a segment to preview track spacing, equal-width layout, and thumb corner radius."
     },
     "MarkdownViewer": {
       "Desc": "Render Markdown, code, formulas and diagrams with typography themes."

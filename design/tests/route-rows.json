@@ -125,6 +125,14 @@
   ],
   "rows": 1
  },
+ "segmented": {
+  "contract": [
+   "number",
+   "bool",
+   "number"
+  ],
+  "rows": 3
+ },
  "expansion": {
   "contract": [],
   "rows": 2

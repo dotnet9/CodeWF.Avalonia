@@ -82,6 +82,13 @@
   replace('titlebar',function(el){el.innerHTML=apiCard('<div class="catalog-titlebar catalog-titlebar-preview"><strong>'+esc(value('titlebar','Title'))+'</strong><span>.NET</span></div>');});
   PROTO['diagonal-line'].props=[number('Thickness',null,'BorderThickness',3,1,12,function(thickness){each('diagonal-line',function(el){el.querySelector('line').setAttribute('stroke-width',thickness);});})];
   replace('diagonal-line',function(el){el.innerHTML=apiCard('<svg class="catalog-line" viewBox="0 0 280 180"><line x1="0" y1="0" x2="280" y2="180" stroke="currentColor" stroke-width="'+value('diagonal-line','Thickness')+'" /></svg>');});
+  // 分段选择器的三项属性对应 SegmentedPanel 的三个可样式化属性：段间距、等宽排布、指示块圆角。
+  function segmented(effect) { return function (v) { each('segmented', function (el) { effect(el, v); if (el.place) el.place(); }); }; }
+  PROTO.segmented.props=[
+    number('Spacing',null,'Spacing',2,0,12,segmented(function(el,v){el.style.setProperty('--seg-gap',v+'px');})),
+    prop('FillItems',null,'FillItems','bool',false,{apply:segmented(function(el,v){el.dataset.fill=String(v);})}),
+    number('CornerRadius',null,'CornerRadius',999,0,999,segmented(function(el,v){el.style.setProperty('--seg-radius',v+'px');}))
+  ];
   PROTO.notifications.props=[prop('Message',null,'Message','text',text('Notification'))];
   replace('notifications',function(el){el.innerHTML='<div class="demo"><button class="btn pri">'+esc(text('Notifications'))+'</button></div>';el.querySelector('button').onclick=function(){notify('warn','LogNotifications',value('notifications','Message'));};});
   PROTO.treegrid.props=[prop('SingleSelect',null,'SingleSelect','bool',false,{apply:function(){each('treegrid',function(el){el.dispatchEvent(new Event('selection-mode-change'));});}})];

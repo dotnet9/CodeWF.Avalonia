@@ -78,6 +78,10 @@ public static class ResourceKeys
         {
             public const string @Desc = "Demo.Api.SearchListBox.Desc";
         }
+        public static class @SegmentedPanel
+        {
+            public const string @Desc = "Demo.Api.SegmentedPanel.Desc";
+        }
         public static class @StatusBadge
         {
             public const string @CSharp = "Demo.Api.StatusBadge.CSharp";
@@ -1270,6 +1274,7 @@ public static class ResourceKeys
         public const string @Notifications = "Demo.Item.Notifications";
         public const string @PropertyGrid = "Demo.Item.PropertyGrid";
         public const string @SearchListBox = "Demo.Item.SearchListBox";
+        public const string @SegmentedPanel = "Demo.Item.SegmentedPanel";
         public const string @Status = "Demo.Item.Status";
         public const string @StatusBadge = "Demo.Item.StatusBadge";
         public const string @StatusCard = "Demo.Item.StatusCard";

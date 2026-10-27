@@ -28,6 +28,7 @@ public static class DemoPages
     public const string TrapezoidTab = "Demo.Item.TrapezoidTab";
     public const string WindowedStackPanel = "Demo.Item.WindowedStackPanel";
     public const string DiagonalLine = "Demo.Item.DiagonalLine";
+    public const string SegmentedPanel = "Demo.Item.SegmentedPanel";
     public const string ContentExpansionAnimator = "Demo.Item.ContentExpansionAnimator";
     public const string MarkdownViewer = "Demo.Item.MarkdownViewer";
     public const string MarkdownLite = "Demo.Item.MarkdownLite";
@@ -66,6 +67,7 @@ public static partial class DemoCatalog
         DemoPages.TrapezoidTab => new TrapezoidTabPage(),
         DemoPages.WindowedStackPanel => new WindowedStackPanelPage(),
         DemoPages.DiagonalLine => new ControlApiPage("LeftTop2RightBottomLine"),
+        DemoPages.SegmentedPanel => new ControlApiPage("SegmentedPanel"),
         DemoPages.ContentExpansionAnimator => new ContentExpansionPage(),
         DemoPages.MarkdownViewer => new MarkdownViewerPage(),
         DemoPages.MarkdownLite => new MarkdownLitePage(),

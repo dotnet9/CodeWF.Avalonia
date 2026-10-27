@@ -849,6 +849,12 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
 .catalog-scene-steps{flex-wrap:wrap}.catalog-scene-body{min-width:0}
 .dbody [hidden]{display:none!important}.catalog-property-demo th{box-sizing:border-box}
 #pGrid .rw:has(.catalog-radio-options){height:auto;min-height:84px}.catalog-radio-options{display:flex;flex-direction:column;gap:4px;padding:5px 0}.catalog-radio-options label{display:flex;align-items:center;font-size:11px;white-space:nowrap}
+/* 分段选择器：轨道 + 一颗滑动伸缩的指示块，底色只由指示块表达、按钮恒透明。轨道与指示块色取自 Themes/Studio/Tokens 的分段两键（随九套配色与明暗走）；位移 260ms、淡出 140ms 线性、标准曲线 .2,.8,.2,1，与原生 Themes/Styles/SegmentedPanel.axaml 同式。 */
+.catalog-seg-track{position:relative;display:inline-flex;gap:var(--seg-gap,2px);padding:3px;border-radius:999px;background:var(--seg-track);vertical-align:middle}
+.catalog-seg-thumb{position:absolute;left:0;top:3px;bottom:3px;width:0;border-radius:var(--seg-radius,999px);background:var(--seg-thumb);box-shadow:0 1px 4px rgba(0,0,0,.12);opacity:0;transition:transform .26s cubic-bezier(.2,.8,.2,1),width .26s cubic-bezier(.2,.8,.2,1),opacity .14s linear;pointer-events:none}
+.catalog-seg-track>button{position:relative;z-index:1;flex:0 0 auto;min-width:0;border:0;background:transparent;color:var(--tx2);font-size:12px;padding:0 10px;height:26px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.catalog-seg-track>button:hover{color:var(--tx)}.catalog-seg-track>button[aria-selected=true]{color:var(--pri);font-weight:600}
+.catalog-seg-track[data-fill=true]{display:flex}.catalog-seg-track[data-fill=true]>button{flex:1 1 0}
 
 </style>
 <style>
@@ -879,6 +885,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#15803d;
   --warn:#b45309;
   --err:#d82626;
+  --seg-track:#f6f6f6;
+  --seg-thumb:#ffffff;
   --badge-text:#ffffff;
   --card-top:#5c6370;
   --badge-debug:#3f3f46;
@@ -930,6 +938,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#4ade80;
   --warn:#fbbf24;
   --err:#f87171;
+  --seg-track:#262626;
+  --seg-thumb:#1c1c1c;
   --badge-text:#000000;
   --card-top:#f4f4f5;
   --badge-debug:#d4d4d8;
@@ -981,6 +991,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#157f3d;
   --warn:#b25209;
   --err:#d62626;
+  --seg-track:#f4f4f5;
+  --seg-thumb:#fefefe;
   --badge-text:#ffffff;
   --card-top:#5c6370;
   --badge-debug:#4338ca;
@@ -1032,6 +1044,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#4ade80;
   --warn:#fbbf24;
   --err:#f87171;
+  --seg-track:#252526;
+  --seg-thumb:#1c1c1c;
   --badge-text:#000000;
   --card-top:#e6e7f2;
   --badge-debug:#a5b4fc;
@@ -1083,6 +1097,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#15803d;
   --warn:#b45309;
   --err:#d82626;
+  --seg-track:#f4f4f4;
+  --seg-thumb:#fefefe;
   --badge-text:#ffffff;
   --card-top:#5c6370;
   --badge-debug:#0f766e;
@@ -1134,6 +1150,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#4ade80;
   --warn:#fbbf24;
   --err:#f87171;
+  --seg-track:#272827;
+  --seg-thumb:#1e1e1e;
   --badge-text:#000000;
   --card-top:#dff2ee;
   --badge-debug:#5eead4;
@@ -1185,6 +1203,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#15803d;
   --warn:#b45309;
   --err:#d82626;
+  --seg-track:#f3f3f3;
+  --seg-thumb:#fefefe;
   --badge-text:#ffffff;
   --card-top:#5c6370;
   --badge-debug:#166534;
@@ -1236,6 +1256,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#4ade80;
   --warn:#fbbf24;
   --err:#f87171;
+  --seg-track:#272727;
+  --seg-thumb:#1e1e1e;
   --badge-text:#000000;
   --card-top:#e2efe6;
   --badge-debug:#86efac;
@@ -1287,6 +1309,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#15803d;
   --warn:#b45309;
   --err:#d62626;
+  --seg-track:#f3f4f5;
+  --seg-thumb:#fefefe;
   --badge-text:#ffffff;
   --card-top:#5c6370;
   --badge-debug:#0369a1;
@@ -1338,6 +1362,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#4ade80;
   --warn:#fbbf24;
   --err:#f87171;
+  --seg-track:#282829;
+  --seg-thumb:#1f1f1f;
   --badge-text:#000000;
   --card-top:#ddebf7;
   --badge-debug:#7dd3fc;
@@ -1389,6 +1415,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#15803d;
   --warn:#b45309;
   --err:#d62625;
+  --seg-track:#f4f4f4;
+  --seg-thumb:#fefefe;
   --badge-text:#ffffff;
   --card-top:#5c6370;
   --badge-debug:#b45309;
@@ -1440,6 +1468,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#4ade80;
   --warn:#fbbf24;
   --err:#f87171;
+  --seg-track:#272626;
+  --seg-thumb:#1d1d1d;
   --badge-text:#000000;
   --card-top:#f3eddf;
   --badge-debug:#fcd34d;
@@ -1491,6 +1521,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#157f3d;
   --warn:#b35209;
   --err:#d52525;
+  --seg-track:#f4f3f3;
+  --seg-thumb:#fefefe;
   --badge-text:#ffffff;
   --card-top:#5c6370;
   --badge-debug:#be123c;
@@ -1542,6 +1574,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#4ade80;
   --warn:#fbbf24;
   --err:#f87171;
+  --seg-track:#262525;
+  --seg-thumb:#1c1c1c;
   --badge-text:#000000;
   --card-top:#f6e7e9;
   --badge-debug:#fda4af;
@@ -1593,6 +1627,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#157f3d;
   --warn:#b35209;
   --err:#d62626;
+  --seg-track:#f3f3f4;
+  --seg-thumb:#fefefe;
   --badge-text:#ffffff;
   --card-top:#5c6370;
   --badge-debug:#6d28d9;
@@ -1644,6 +1680,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#4ade80;
   --warn:#fbbf24;
   --err:#f87171;
+  --seg-track:#242425;
+  --seg-thumb:#1b1b1b;
   --badge-text:#000000;
   --card-top:#ece7f5;
   --badge-debug:#c4b5fd;
@@ -1695,6 +1733,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#157e3c;
   --warn:#b35209;
   --err:#d32625;
+  --seg-track:#f4f3f3;
+  --seg-thumb:#fefefe;
   --badge-text:#ffffff;
   --card-top:#5c6370;
   --badge-debug:#c2410c;
@@ -1746,6 +1786,8 @@ body.hideR .document-splitter,body.hideR .p-props{display:none}
   --ok:#4ade80;
   --warn:#fbbf24;
   --err:#f87171;
+  --seg-track:#262525;
+  --seg-thumb:#1c1c1c;
   --badge-text:#000000;
   --card-top:#f4eae2;
   --badge-debug:#fdba74;
@@ -2451,6 +2493,20 @@ window.CodeWFDemoCatalog = [
         "iconKey": "SemiIconEdit"
       },
       {
+        "titleKey": "Demo.Item.SegmentedPanel",
+        "page": "ControlApiPage(\"SegmentedPanel\")",
+        "api": "SegmentedPanel",
+        "package": "CodeWF.Avalonia.Controls",
+        "prototypeId": "segmented",
+        "titleZh": "SegmentedPanel",
+        "titleEn": "SegmentedPanel",
+        "description": "SegmentedPanel",
+        "sectionKey": "Demo.Catalog.SectionNavigation",
+        "icon": "◧",
+        "prototypeIcon": "<path d=\"M3 7.5A1.5 1.5 0 0 1 4.5 6h7A1.5 1.5 0 0 1 13 7.5v9A1.5 1.5 0 0 1 11.5 18h-7A1.5 1.5 0 0 1 3 16.5v-9Zm11 1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-7Z\" fill=\"currentColor\" stroke=\"none\"/>",
+        "iconKey": "SemiIconTabsStroked"
+      },
+      {
         "titleKey": "Demo.Item.ContentExpansionAnimator",
         "page": "ContentExpansionPage",
         "api": "ContentExpansionAnimator",
@@ -2821,6 +2877,9 @@ window.CodeWFCatalogDescriptions = {
     "DiagonalLine": {
       "Desc": "调整 BorderThickness，实时查看对角线的绘制效果。"
     },
+    "SegmentedPanel": {
+      "Desc": "点选各段，实时查看轨道间距、等宽排布与指示块圆角。"
+    },
     "MarkdownViewer": {
       "Desc": "渲染 Markdown、代码、公式和图表，切换排版主题。"
     },
@@ -2906,6 +2965,9 @@ window.CodeWFCatalogDescriptions = {
     },
     "DiagonalLine": {
       "Desc": "Change BorderThickness to preview diagonal line rendering."
+    },
+    "SegmentedPanel": {
+      "Desc": "Select a segment to preview track spacing, equal-width layout, and thumb corner radius."
     },
     "MarkdownViewer": {
       "Desc": "Render Markdown, code, formulas and diagrams with typography themes."
@@ -7151,6 +7213,29 @@ boot();
       el.innerHTML='<div class="demo"><h4>LogNotifications</h4><button class="btn pri">'+esc(text('Notifications'))+'</button></div>';
       el.querySelector('button').onclick=function(){notify('warn','LogNotifications',text('Notification'));};
     }});
+    REG('segmented',{zh:apiMeta(entries.segmented),props:[],
+      xaml:'<Border Classes="segmented-track">\n  <codewf:SegmentedPanel Spacing="2" FillItems="False" CornerRadius="999">\n    <Button Content="Demo" codewf:SegmentedPanel.IsActive="True" />\n    <Button Content="XAML" />\n    <Button Content="C#" />\n  </codewf:SegmentedPanel>\n</Border>',
+      cs:'SegmentedPanel.SetIsActive(demoButton, true);\npanel.Spacing = 2;\npanel.FillItems = false;\npanel.CornerRadius = new CornerRadius(999);',
+      render:function(el){
+        var seg=window.CodeWFPrototypeResources[LANG].Segment;
+        el.innerHTML='<div class="demo catalog-api-card"><h4>'+esc(seg.Demo)+'</h4><div class="catalog-seg-track" data-control="segmented"><i class="catalog-seg-thumb"></i>'+
+          ['Demo','Xaml','CSharp'].map(function(key,index){ return '<button type="button" aria-selected="'+(index===0)+'">'+esc(seg[key])+'</button>'; }).join('')+'</div></div>';
+        var track=el.querySelector('.catalog-seg-track'),thumb=el.querySelector('.catalog-seg-thumb');
+        var buttons=Array.prototype.slice.call(track.querySelectorAll('button'));
+        function place(){
+          var active=buttons.filter(function(button){ return button.getAttribute('aria-selected')==='true'; })[0];
+          if(!active||!active.offsetWidth){ thumb.style.opacity='0'; return; }
+          thumb.style.transform='translateX('+active.offsetLeft+'px)';
+          thumb.style.width=active.offsetWidth+'px';
+          thumb.style.opacity='1';
+        }
+        buttons.forEach(function(button){ button.onclick=function(){ buttons.forEach(function(other){ other.setAttribute('aria-selected',String(other===button)); }); place(); }; });
+        // 属性区改的是轨道排布（间距、等宽、圆角），改完段宽就变了：由它回调重量，指示块才不会盖错段。
+        track.place = place;
+        // 重开文档或切语会重建这段 DOM，内联样式随之丢失：按属性区的当前值回灌一遍。
+        (PROTO.segmented.props||[]).forEach(function(item){ item.apply(item.value); });
+        requestAnimationFrame(place);
+      }});
   }
   Object.keys(entries).forEach(function(id) { if (!PROTO[id] || entries[id].page.indexOf("HelperDemoPage") === 0) REG(id,generic(entries[id])); });
   REG('about',{zh:apiMeta(entries.about),props:[],render:function(el){
@@ -7476,6 +7561,13 @@ boot();
   replace('titlebar',function(el){el.innerHTML=apiCard('<div class="catalog-titlebar catalog-titlebar-preview"><strong>'+esc(value('titlebar','Title'))+'</strong><span>.NET</span></div>');});
   PROTO['diagonal-line'].props=[number('Thickness',null,'BorderThickness',3,1,12,function(thickness){each('diagonal-line',function(el){el.querySelector('line').setAttribute('stroke-width',thickness);});})];
   replace('diagonal-line',function(el){el.innerHTML=apiCard('<svg class="catalog-line" viewBox="0 0 280 180"><line x1="0" y1="0" x2="280" y2="180" stroke="currentColor" stroke-width="'+value('diagonal-line','Thickness')+'" /></svg>');});
+  // 分段选择器的三项属性对应 SegmentedPanel 的三个可样式化属性：段间距、等宽排布、指示块圆角。
+  function segmented(effect) { return function (v) { each('segmented', function (el) { effect(el, v); if (el.place) el.place(); }); }; }
+  PROTO.segmented.props=[
+    number('Spacing',null,'Spacing',2,0,12,segmented(function(el,v){el.style.setProperty('--seg-gap',v+'px');})),
+    prop('FillItems',null,'FillItems','bool',false,{apply:segmented(function(el,v){el.dataset.fill=String(v);})}),
+    number('CornerRadius',null,'CornerRadius',999,0,999,segmented(function(el,v){el.style.setProperty('--seg-radius',v+'px');}))
+  ];
   PROTO.notifications.props=[prop('Message',null,'Message','text',text('Notification'))];
   replace('notifications',function(el){el.innerHTML='<div class="demo"><button class="btn pri">'+esc(text('Notifications'))+'</button></div>';el.querySelector('button').onclick=function(){notify('warn','LogNotifications',value('notifications','Message'));};});
   PROTO.treegrid.props=[prop('SingleSelect',null,'SingleSelect','bool',false,{apply:function(){each('treegrid',function(el){el.dispatchEvent(new Event('selection-mode-change'));});}})];

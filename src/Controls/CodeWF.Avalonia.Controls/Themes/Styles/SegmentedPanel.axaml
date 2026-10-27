@@ -1,4 +1,5 @@
 <Styles xmlns="https://github.com/avaloniaui"
+        xmlns:anim="using:Avalonia.Animation.Easings"
         xmlns:ac="https://codewf.com">
     <!-- 分段选择器的画法配方：轨道 + 一颗滑动伸缩的指示块，选中项只换字色字重，底色绝不自画。
          颜色一律取 Studio 派生令牌（随九套配色与明暗走），几何留给宿主：轨道圆角写在自己的
@@ -21,8 +22,13 @@
         <Setter Property="BoxShadow" Value="0 1 4 0 #1F000000" />
         <Setter Property="Transitions">
             <Transitions>
-                <DoubleTransition Property="Width" Duration="0:0:0.26" Easing="CubicEaseInOut" />
-                <ThicknessTransition Property="Margin" Duration="0:0:0.26" Easing="CubicEaseInOut" />
+                <!-- 位移走标准曲线 (.2,.8,.2,1)，与原型分段控件的缓动同一条；淡出走线性快档。 -->
+                <DoubleTransition Property="Width" Duration="0:0:0.26">
+                    <DoubleTransition.Easing><anim:SplineEasing X1="0.2" Y1="0.8" X2="0.2" Y2="1" /></DoubleTransition.Easing>
+                </DoubleTransition>
+                <ThicknessTransition Property="Margin" Duration="0:0:0.26">
+                    <ThicknessTransition.Easing><anim:SplineEasing X1="0.2" Y1="0.8" X2="0.2" Y2="1" /></ThicknessTransition.Easing>
+                </ThicknessTransition>
                 <DoubleTransition Property="Opacity" Duration="0:0:0.14" Easing="LinearEasing" />
             </Transitions>
         </Setter>

@@ -7,6 +7,7 @@ const contracts = {
   datagrid:['bool','number'],colde:['text:r'],treegrid:['bool'],propgrid:['combo','bool','bool','number'],log:['combo','number'],
   codewfwindow:['number','number','number','bool'],titlebar:['text'],dock:['text:r'],trapezoid:['text:r'],
   wsp:['bool','number','number','number'],'diagonal-line':['number'],expansion:[],
+  segmented:['number','bool','number'],
   'md-viewer':['combo','combo','bool','number'],'md-lite':['combo','combo'],'md-editor':['number','bool','bool'],
   'md-live':['combo','number'],'md-export':['combo','combo','radio'],if:['text:r'],switch:['text:r'],lang:[],
   'flow-write':['combo','combo','bool','number'],'flow-data':['bool','number'],'flow-docs':['text:r'],appguide:['text:r']
@@ -77,6 +78,26 @@ exports.verifyEffects = async function (page,culture) {
   assert.equal(await page.locator('#seg-titlebar strong').innerText(),'CodeWF '+culture);
   await open('diagonal-line');await edit('Thickness',9);
   assert.equal(await page.locator('#seg-diagonal-line line').getAttribute('stroke-width'),'9');
+  await edit('Thickness',3);
+  await open('segmented');
+  // 指示块按属性区改完的排布重新贴合所选段；它自身带过渡，只能比对我写进去的目标值。
+  async function thumbFollowsSelection(){
+    const fitted=await page.locator('.catalog-seg-thumb').evaluate(el=>{
+      const active=el.parentElement.querySelector('[aria-selected=true]');
+      return [Math.round(parseFloat(el.style.width)),active.offsetWidth,Math.round(parseFloat((el.style.transform||'').match(/[\d.]+(?=px)/)||[0])),active.offsetLeft];
+    });
+    assert.ok(Math.abs(fitted[0]-fitted[1])<1&&Math.abs(fitted[2]-fitted[3])<1,'Thumb stays fitted to the selected segment');
+  }
+  await edit('Spacing',6);
+  assert.equal(await page.locator('.catalog-seg-track').evaluate(el=>getComputedStyle(el).gap),'6px');
+  await thumbFollowsSelection();
+  await toggle('FillItems');
+  const widths=await page.locator('#seg-segmented .catalog-seg-track>button').evaluateAll(items=>items.map(item=>Math.round(item.offsetWidth)));
+  assert.equal(new Set(widths).size,1,'FillItems gives every segment the same width');
+  await thumbFollowsSelection();
+  await edit('CornerRadius',6);
+  assert.equal(await page.locator('.catalog-seg-thumb').evaluate(el=>getComputedStyle(el).borderRadius),'6px');
+  await toggle('FillItems');await edit('Spacing',2);await edit('CornerRadius',999);
   await open('notifications');await edit('Message','Notification '+culture);await page.locator('#seg-notifications button').click();
   assert.ok((await page.locator('body').innerText()).includes('Notification '+culture));
   await open('treegrid');await page.locator('#seg-treegrid table').press('Control+a');

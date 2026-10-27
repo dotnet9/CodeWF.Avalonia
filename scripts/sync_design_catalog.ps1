@@ -142,6 +142,7 @@ $roles = [ordered]@{
     'glow' = 'StudioAccentColor'; 'secondary' = 'StudioSecondaryColor'; 'text-gradient-end' = 'StudioTextGradientEndColor'
     'button-bg' = 'StudioPrimaryColor'; 'button-hover' = 'StudioPrimaryHover'; 'button-pressed' = 'StudioPrimaryPressed'; 'on-primary' = 'StudioOnPrimary'
     'ok' = 'SemiColorSuccess'; 'warn' = 'SemiColorWarning'; 'err' = 'SemiColorDanger'
+    'seg-track' = 'StudioSegmentedTrackColor'; 'seg-thumb' = 'StudioSegmentedThumbColor'
     'badge-text' = 'StatusBadgeLeftTextForeground'; 'card-top' = 'StatusCardTopTextForeground'
 }
 foreach ($palette in $paletteNames.Keys) {

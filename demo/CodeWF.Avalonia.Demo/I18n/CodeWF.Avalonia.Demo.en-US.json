@@ -141,6 +141,7 @@
       "TreeDataGrid": "TreeDataGridExtension",
       "TitleBar": "CodeWFTitleBar",
       "DiagonalLine": "LeftTop2RightBottomLine",
+      "SegmentedPanel": "SegmentedPanel",
       "If": "If",
       "Switch": "Switch",
       "ContentExpansionAnimator": "ContentExpansionAnimator"
@@ -439,6 +440,9 @@
       },
       "DiagonalLine": {
         "Desc": "Change BorderThickness to preview diagonal line rendering."
+      },
+      "SegmentedPanel": {
+        "Desc": "Select a segment to preview track spacing, equal-width layout, and thumb corner radius."
       },
       "MarkdownViewer": {
         "Desc": "Render Markdown, code, formulas and diagrams with typography themes."
