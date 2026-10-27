@@ -1,5 +1,12 @@
 # 更新日志
 
+## 12.2.16 (2026-10-27)
+
+- 新增包 `CodeWF.Avalonia.Motion`：移植 Arc Motion 引擎（Springs / MotionValue / ArcMotion / LiveLoop / MotionTimeline / SpringTransitions / PausableTimer），弹簧预设与时长/错峰参数与 Vex·Vox 动效契约同一套；零 AtomUI 依赖（MIT），可直接被 Semi/Ursa 与 Arc 两种基座的宿主引用。
+- 新增 Studio 分段控件专用派生色 `StudioSegmentedTrackColor` / `StudioSegmentedThumbColor`：轨道 = 亮色前景 4% 叠纸面、暗色前景 4.5% 叠面板；指示块 = 亮色白 55% 叠纸面、暗色取面板色（原型 `segmented.css` + 令牌层公式，随 18 份色板 × 明暗逐份生成）。修复弹层（白底）上轨道与表面近同色、分段条只剩选中项描边的问题。
+- 新增派生色 `StudioElevatedColor`：弹出层/对话框浮起底色 = 纸面 88% 叠面板（原型 `--elevated`）。此前宿主只能写死纯白，暗色与配色色相都对不上。
+- 生成链：由 Vex `scripts/sync_native_design.cjs` 再生成（该脚本已带 `--check` 漂移门禁）；CI 调色审计门禁按 Vex 色板校准 4.4。
+
 ## 12.2.15 (2026-10-27)
 
 - 修复：Studio 状态浅色按明暗派生——暗色徽章/状态卡出现浅底配浅字（对比度 1.0:1）不可读；暗色 SuccessLight/WarningLight 改深色调（#1a3524/#3a3014）、DangerLightActive 恢复 #432525、DangerActive 为亮红前景语义。
