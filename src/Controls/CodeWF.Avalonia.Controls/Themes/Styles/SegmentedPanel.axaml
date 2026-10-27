@@ -23,7 +23,7 @@
             <Transitions>
                 <DoubleTransition Property="Width" Duration="0:0:0.26" Easing="CubicEaseInOut" />
                 <ThicknessTransition Property="Margin" Duration="0:0:0.26" Easing="CubicEaseInOut" />
-                <DoubleTransition Property="Opacity" Duration="0:0:0.14" Easing="Linear" />
+                <DoubleTransition Property="Opacity" Duration="0:0:0.14" Easing="LinearEasing" />
             </Transitions>
         </Setter>
     </Style>
