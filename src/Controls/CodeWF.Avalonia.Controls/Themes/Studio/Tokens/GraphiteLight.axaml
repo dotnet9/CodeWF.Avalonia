@@ -50,8 +50,8 @@
     <SolidColorBrush x:Key="SemiColorWarning">#B45309</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDanger">#d82626</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDangerActive">#d82626</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorSuccessLight">#E4F5E8</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorWarningLight">#FDF3DC</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorSuccessLight">#ecf5ef</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWarningLight">#faf3ee</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDangerLight">#fdf2f2</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDangerLightActive">#fdf2f2</SolidColorBrush>
     <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#FFFFFF</SolidColorBrush>

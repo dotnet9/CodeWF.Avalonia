@@ -50,10 +50,10 @@
     <SolidColorBrush x:Key="SemiColorWarning">#FBBF24</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDanger">#F87171</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDangerActive">#F87171</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorSuccessLight">#E4F5E8</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorWarningLight">#FDF3DC</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorSuccessLight">#1d3827</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorWarningLight">#3d3216</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDangerLight">#3c2424</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerLightActive">#3c2424</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerLightActive">#452828</SolidColorBrush>
     <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#000000</SolidColorBrush>
     <!-- 白字操作面使用独立渐变，装饰渐变保留明亮副色。 -->
     <LinearGradientBrush x:Key="StudioActionGradient" StartPoint="0%,0%" EndPoint="100%,100%">
@@ -241,7 +241,7 @@
     <StaticResource x:Key="StatusBadgeWarnBackground" ResourceKey="SemiColorWarningLight" />
     <StaticResource x:Key="StatusBadgeErrorBackground" ResourceKey="SemiColorDangerLight" />
     <StaticResource x:Key="StatusBadgeFatalBackground" ResourceKey="SemiColorDangerLightActive" />
-    <SolidColorBrush x:Key="StatusCardTopTextForeground">#5C6370</SolidColorBrush>
+    <SolidColorBrush x:Key="StatusCardTopTextForeground">#F4EAE2</SolidColorBrush>
     <StaticResource x:Key="StatusCardDebugBackground" ResourceKey="StudioRaised" />
     <StaticResource x:Key="StatusCardInfoBackground" ResourceKey="SemiColorSuccessLight" />
     <StaticResource x:Key="StatusCardWarnBackground" ResourceKey="SemiColorWarningLight" />
