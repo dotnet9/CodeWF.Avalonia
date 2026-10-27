@@ -109,17 +109,30 @@ internal sealed class MarkdownBlockView : UserControl
         {
             var presenter = new MarkdownInlinePresenter(options, isCode || model.Kind == MarkdownBlockKind.Raw) { Name = "PART_TextPresenter" };
             scope.Register("PART_TextPresenter", presenter);
-            foreach (var property in new[] { "Text", "CaretIndex", "SelectionStart", "SelectionEnd", "FontFamily", "FontSize", "FontWeight", "FontStyle", "Foreground", "CaretBrush", "SelectionBrush", "SelectionForegroundBrush", "TextWrapping", "LineHeight" })
-                presenter.Bind(property switch
-                {
-                    "Text" => TextPresenter.TextProperty, "CaretIndex" => TextPresenter.CaretIndexProperty,
-                    "SelectionStart" => TextPresenter.SelectionStartProperty, "SelectionEnd" => TextPresenter.SelectionEndProperty,
-                    "FontFamily" => global::Avalonia.Controls.Documents.TextElement.FontFamilyProperty, "FontSize" => global::Avalonia.Controls.Documents.TextElement.FontSizeProperty,
-                    "FontWeight" => global::Avalonia.Controls.Documents.TextElement.FontWeightProperty, "FontStyle" => global::Avalonia.Controls.Documents.TextElement.FontStyleProperty,
-                    "Foreground" => global::Avalonia.Controls.Documents.TextElement.ForegroundProperty, "CaretBrush" => TextPresenter.CaretBrushProperty,
-                    "SelectionBrush" => TextPresenter.SelectionBrushProperty, "SelectionForegroundBrush" => TextPresenter.SelectionForegroundBrushProperty,
-                    "LineHeight" => TextPresenter.LineHeightProperty, _ => TextPresenter.TextWrappingProperty
-                }, new Binding(property) { Source = box, Mode = BindingMode.TwoWay });
+            // TextBox 模板部件与自绘 presenter 的双向同步：成对可观察绑定等价替换字符串反射 Binding
+            // （AOT 门禁 IL2026/IL3050 欠账偿还）。反向（presenter→box）承载光标/选区/文本回写，
+            // 正向（box→presenter）承载排版与文本下发；等值写回被属性系统短路，无回环。
+            foreach (var (boxProperty, presenterProperty) in new (AvaloniaProperty, AvaloniaProperty)[]
+                     {
+                         (TextBox.TextProperty, TextPresenter.TextProperty),
+                         (TextBox.CaretIndexProperty, TextPresenter.CaretIndexProperty),
+                         (TextBox.SelectionStartProperty, TextPresenter.SelectionStartProperty),
+                         (TextBox.SelectionEndProperty, TextPresenter.SelectionEndProperty),
+                         (TextBox.FontFamilyProperty, global::Avalonia.Controls.Documents.TextElement.FontFamilyProperty),
+                         (TextBox.FontSizeProperty, global::Avalonia.Controls.Documents.TextElement.FontSizeProperty),
+                         (TextBox.FontWeightProperty, global::Avalonia.Controls.Documents.TextElement.FontWeightProperty),
+                         (TextBox.FontStyleProperty, global::Avalonia.Controls.Documents.TextElement.FontStyleProperty),
+                         (TextBox.ForegroundProperty, global::Avalonia.Controls.Documents.TextElement.ForegroundProperty),
+                         (TextBox.CaretBrushProperty, TextPresenter.CaretBrushProperty),
+                         (TextBox.SelectionBrushProperty, TextPresenter.SelectionBrushProperty),
+                         (TextBox.SelectionForegroundBrushProperty, TextPresenter.SelectionForegroundBrushProperty),
+                         (TextBox.TextWrappingProperty, TextPresenter.TextWrappingProperty),
+                         (TextBox.LineHeightProperty, TextPresenter.LineHeightProperty),
+                     })
+            {
+                presenter.Bind(presenterProperty, box.GetObservable(boxProperty));
+                box.Bind(boxProperty, presenter.GetObservable(presenterProperty));
+            }
             var scroll = new ScrollViewer { Name = "PART_ScrollViewer", Content = presenter,
                 HorizontalScrollBarVisibility = global::Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
                 VerticalScrollBarVisibility = global::Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
