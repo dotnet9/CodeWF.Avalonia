@@ -1,5 +1,12 @@
 # 更新日志
 
+## 12.2.20 (2026-10-28)
+
+- 修复图表颜色解析：象限图四格输出 `color-mix(in srgb, var(--accent, #FAFAFA) 8%, #18181B)`，旧的替换只认字面量 `var(--accent)`，`color-mix` 正则又要求首参是 `#rrggbb`，两处都落空后 Skia 按无效颜色画黑。新增 `CssColorResolver` 按 CSS 求值顺序递归展平：`var()` 只切第一个顶层逗号、缺省百分比取补数、通道按预乘 alpha 插值、解不出的表达式原样交回；令牌表沿用既有镜像公式，同主题色值零漂移。
+- 图表宽度只受视口约束：去掉 `UpdateWidth` 里 `Math.Min(width, 800)` 这道无条件常数钳。image 本就 DownOnly，窄图仍按自身尺寸居中，宽图（C4、时序图）不再被宿主栏宽之外的常数压小一档，字号随之不再缩小。
+- 宿主 `CodeWFMarkdownMermaidMuted` 补进渲染选项与缓存 Key：`InlineCssVariables` 一直读 `options.Muted`，但 `GetRenderOptions` 从不填它，这条资源在宿主侧是死配置；缓存 Key 也没带 Muted，只差这一档的两套主题会共用同一张已渲染 SVG。补解析与 Key 位。
+- 测试：`MermaidCssColorTests` 钉住四格异色非黑、四类图无 CSS 函数残留、回退链优先取令牌与 Muted 两条路径；`MermaidLifecycleTests.DiagramCeilingFollowsTheViewportInsteadOfAFixedWidth` 用注入的最小 ScrollViewer 模板把 1100 视口钉住；`MermaidThemeOptionsTests` 覆盖 Muted 解析与缓存 Key。
+
 ## 12.2.19 (2026-10-27)
 
 - 编辑器查找补反向定位：`MarkdownEditorSearchAction` 新增 `FindPrevious`，以选区起点为界向前找严格更早的命中（停在某处命中上再按「上一个」会跳到它前一处，而不是原地不动），没有更早命中时回绕到文末命中；大小写、整词与正则在向上方向上一并生效。
