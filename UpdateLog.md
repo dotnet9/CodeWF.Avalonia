@@ -1,5 +1,10 @@
 # 更新日志
 
+## 12.2.18 (2026-10-27)
+
+- AOT 兼容还债：任务勾选可用态绑定改编译期可观察绑定（`GetObservable(IsTaskEditingEnabledProperty)`）；Wysiwyg 块编辑器模板内 TextBox 与自绘 TextPresenter 的十四属性双向同步去反射——逐对可观察绑定等价替换字符串反射 `Binding`（反向承载光标/选区/IME 回写，数据流不变，新增 `MarkdownBlockViewPresenterBindingTests` 双向同步回归），两处 IL2026/IL3050 告警清零。
+- 工程：`TrimmerRoots.xml` 清理三条陈旧程序集根（未引用的 Avalonia.Themes.Fluent、重复的 Avalonia.AvaloniaEdit、Xaml.Behaviors.Interactivity→Xaml.Behaviors——修正后 Xaml.Behaviors 自发布以来首次真正被 preserve）；裁剪告警门禁白名单注释更新为真实欠账状态（demo 三页字符串反射绑定待还）。
+
 ## 12.2.17 (2026-10-27)
 
 - 流式渐显闭环：`MarkdownStreamPacer` 新增显示登记（每次实际放行都记 [起, 止) 偏移与显示时刻，环形缓冲 256 批，`RevealedLength`/`EarliestRevealedOffset`/`TryGetRevealTime`）；`MarkdownViewer` 新增 `StreamingReveal`/`StreamingRevealDuration`——流式 append-only 增长时只让本次新出现的块淡入（默认 160ms），已显示内容透明度全程不变。
