@@ -23,11 +23,9 @@
   <assembly fullname="Avalonia.Markup" preserve="all" />
   <assembly fullname="Avalonia.Markup.Xaml" preserve="all" />
   <assembly fullname="Avalonia.Markup.Xaml.Loader" preserve="all" />
-  <assembly fullname="Avalonia.Themes.Fluent" preserve="all" />
   <assembly fullname="Semi.Avalonia" preserve="all" />
   <assembly fullname="Avalonia.Controls.DataGrid" preserve="all" />
   <assembly fullname="Avalonia.Controls.ColorPicker" preserve="all" />
-  <assembly fullname="Avalonia.AvaloniaEdit" preserve="all" />
   <assembly fullname="AvaloniaEdit" preserve="all" />
   <assembly fullname="AvaloniaEdit.TextMate" preserve="all" />
   <assembly fullname="TextMateSharp" preserve="all" />
@@ -35,5 +33,5 @@
   <assembly fullname="Dock.Model" preserve="all" />
   <assembly fullname="Dock.Model.ReactiveUI" preserve="all" />
   <assembly fullname="Markdig" preserve="all" />
-  <assembly fullname="Xaml.Behaviors.Interactivity" preserve="all" />
+  <assembly fullname="Xaml.Behaviors" preserve="all" />
 </linker>
