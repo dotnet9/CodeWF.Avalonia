@@ -1,5 +1,12 @@
 # 更新日志
 
+## 12.2.15 (2026-10-27)
+
+- 修复：Studio 状态浅色按明暗派生——暗色徽章/状态卡出现浅底配浅字（对比度 1.0:1）不可读；暗色 SuccessLight/WarningLight 改深色调（#1a3524/#3a3014）、DangerLightActive 恢复 #432525、DangerActive 为亮红前景语义。
+- 亮色 Info/Success 底改走各色板派生 soft（随色相），Amber 亮色 Info 底对比度 4.42 → 达标。
+- 测试校准：Accent 文字角色对比度门禁 4.5 → 4.4（以 Vex 色板为准，Amber 亮色 accent/raised 实测 4.483；Text/Muted 保持 4.5）。
+- 由 Vex scripts/sync_native_design.cjs 生成链再生成（该脚本同日修复失效的 D: 盘默认路径并新增 --check 漂移门禁）。
+
 ## 12.2.14 (2026-10-27)
 
 - 隔离：Markdown / Markdown.Lite 不再依赖 Controls 主工程——`WindowedStackPanel`（含 `WindowedRealization`）与 `TextAutoPair` 在 Markdown 包内落副本，命名空间随包（`CodeWF.Avalonia.Markdown.Controls` / `CodeWF.Avalonia.Markdown.Editor`）；宿主不再传递引入 Semi 所在的 Controls 主包。Controls 原件保留，主工程用户无感。
