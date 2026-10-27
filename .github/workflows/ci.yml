@@ -1,4 +1,4 @@
-﻿name: CI
+name: CI
 
 on:
   push:
@@ -43,7 +43,16 @@ jobs:
 
       - name: AOT 发布 Demo
         shell: pwsh
-        run: pwsh scripts/publish_avalonia_demo.ps1 -RuntimeIdentifier win-x64
+        run: |
+          New-Item -ItemType Directory -Force artifacts | Out-Null
+          pwsh scripts/publish_avalonia_demo.ps1 -RuntimeIdentifier win-x64 2>&1 | Tee-Object -FilePath artifacts/aot-publish.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      # 灰度门禁：先只卡「本仓代码产生的 IL 告警」（第三方整包摘要 IL2104/IL3053 与
+      # 单文件反射提示按告警码白名单放行）。新增包必须保持 AOT 干净，否则这里红。
+      - name: IL 裁剪告警门禁（本仓代码零告警）
+        shell: pwsh
+        run: pwsh scripts/tests/il_trim_warnings_test.ps1 -Log artifacts/aot-publish.log
 
       # 库侧主题令牌已逐变体字面量化（Themes/{Light,Dark,HighContrast}），逐色板渲染不再抛资源异常，
       # 因此冒烟按退出码阻塞流水线。

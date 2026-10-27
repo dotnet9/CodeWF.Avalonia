@@ -3,6 +3,10 @@
   <PropertyGroup>
     <IsPackable>true</IsPackable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- AOT 灰度门禁第一站：动效引擎是纯计算包，必须全程裁剪/AOT 安全。
+         分析器告警升为错误，新增反射用法要显式抑制并写清理由。 -->
+    <IsAotCompatible>true</IsAotCompatible>
+    <WarningsAsErrors>$(WarningsAsErrors);IL2026;IL2067;IL2070;IL2072;IL2075;IL3050;IL3051</WarningsAsErrors>
     <Description>Avalonia 动效引擎：弹簧物理（闭式解、可中断保速）、声明式弹簧过渡、动效分级（Full/Reduced/Off）与常驻循环。移植自 TKCode.Arc（MIT）。Spring-physics motion engine for Avalonia: interruptible velocity-preserving values, declarative spring transitions, motion levels and live loops. Ported from TKCode.Arc (MIT).</Description>
     <PackageTags>avalonia;motion;spring;animation;codewf</PackageTags>
   </PropertyGroup>
