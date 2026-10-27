@@ -1,5 +1,10 @@
 # 更新日志
 
+## 12.2.14 (2026-10-27)
+
+- 隔离：Markdown / Markdown.Lite 不再依赖 Controls 主工程——`WindowedStackPanel`（含 `WindowedRealization`）与 `TextAutoPair` 在 Markdown 包内落副本，命名空间随包（`CodeWF.Avalonia.Markdown.Controls` / `CodeWF.Avalonia.Markdown.Editor`）；宿主不再传递引入 Semi 所在的 Controls 主包。Controls 原件保留，主工程用户无感。
+- 破坏性提示：直接 `new WindowedStackPanel()` / 使用 `TextAutoPair` 的宿主，using 从 `CodeWF.Avalonia.Controls.*` 改为 `CodeWF.Avalonia.Markdown.*`。
+
 ## 12.2.13 (2026-10-26)
 
 - 只读导图控件 `MarkdownMindMapView` 新增 `MinZoom`/`MaxZoom`：缩放量程交给宿主（原画布内写死 15%–250%，宿主给拖动条时下探不到 1%），`SetZoom`/视口还原/`Fit` 统一按这对属性收敛；`Fit()` 的下限参数改为可选，缺省取 `MinZoom`。
