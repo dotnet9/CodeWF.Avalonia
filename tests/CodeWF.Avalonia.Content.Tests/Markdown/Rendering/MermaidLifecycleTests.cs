@@ -38,7 +38,8 @@ public sealed class MermaidLifecycleTests(AvaloniaPlatformFixture platform)
     public void DiagramCeilingFollowsTheViewportInsteadOfAFixedWidth() => platform.Run(() =>
     {
         var block = MermaidBlockRenderer.CreateMermaidBlock("flowchart LR\nA[Input] --> B[Output]");
-        var image = ((Border)block).Child!;
+        var card = (Border)((Border)block).Child!;
+        var image = card.Child!;
         var scroll = new ScrollViewer { Content = block };
         // 此夹具没有主题，裸 ScrollViewer 取不到模板、Viewport 恒为 0；按本仓既有做法塞一个最小 presenter 模板。
         scroll.Template = new global::Avalonia.Controls.Templates.FuncControlTemplate<ScrollViewer>((_, scope) =>
@@ -57,5 +58,23 @@ public sealed class MermaidLifecycleTests(AvaloniaPlatformFixture platform)
             Assert.Equal(scroll.Viewport.Width, image.MaxWidth);
         }
         finally { window.Close(); }
+    });
+
+    /// <summary>
+    /// 图表必须嵌在原型 .diagram-preview 那张卡里：22 留白 + 120 最低高 + 1px 描边。
+    /// 宿主把语言徽标悬浮在卡片右上角，靠的就是这条留白带；少了它，缩放把图压扁后徽标就盖住节点。
+    /// </summary>
+    [Fact]
+    public void DiagramSitsInAPreviewCardThatReservesTheBadgeBand() => platform.Run(() =>
+    {
+        var block = MermaidBlockRenderer.CreateMermaidBlock("flowchart LR\nA[Input] --> B[Output]");
+        Assert.Contains("MdMermaid", block.Classes);
+        var card = Assert.IsType<Border>(((Border)block).Child);
+        Assert.Contains("MdMermaidPreview", card.Classes);
+        Assert.Equal(new Thickness(22), card.Padding);
+        Assert.Equal(120, card.MinHeight);
+        Assert.Equal(new Thickness(1), card.BorderThickness);
+        Assert.Equal(new CornerRadius(8), card.CornerRadius);
+        Assert.IsType<Image>(card.Child);
     });
 }

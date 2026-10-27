@@ -53,10 +53,10 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
             return null;
         }
 
-        return CreateMermaidBlock(ExtractSource(fenced));
+        return CreateMermaidBlock(ExtractSource(fenced), context);
     }
 
-    internal static Control CreateMermaidBlock(string source)
+    internal static Control CreateMermaidBlock(string source, IMarkdownRenderContext? context = null)
     {
         var image = new Image
         {
@@ -65,7 +65,21 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
             HorizontalAlignment = HorizontalAlignment.Center
         };
 
-        var border = new Border { Child = image, MinHeight = 180 };
+        // 原型 .diagram-preview：图嵌在带边框的预览卡里，四周 22 留白、最低 120。
+        // 宿主把语言徽标悬浮在卡片右上角，全靠这条留白带站位——没有它，
+        // 放大后图表被压扁，徽标就直接压在节点上。
+        var preview = new Border
+        {
+            Child = image,
+            MinHeight = 120,
+            Padding = new Thickness(22),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(8)
+        };
+        preview.Classes.Add("MdMermaidPreview");
+        context?.BindTheme(preview, Border.BorderBrushProperty, MarkdownViewer.BorderLineBrushProperty);
+
+        var border = new Border { Child = preview, MinHeight = 180 };
         border.Classes.Add("MdMermaid");
 
         CancellationTokenSource? cts = null;
