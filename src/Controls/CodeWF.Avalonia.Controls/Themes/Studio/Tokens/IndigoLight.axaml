@@ -15,8 +15,9 @@
     <SolidColorBrush x:Key="StudioDisabled" Color="{StaticResource StudioDisabledColor}"/>
     <!-- 颜色令牌与画刷遵循 Semi 的主题字典结构。 -->
     <Color x:Key="StudioBackgroundColor">#fafafa</Color>
-    <Color x:Key="StudioSegmentedTrackColor">#E9E9ED</Color>
-    <Color x:Key="StudioSegmentedThumbColor">#F9F9FB</Color>
+    <Color x:Key="StudioSegmentedTrackColor">#F4F4F6</Color>
+    <Color x:Key="StudioSegmentedThumbColor">#FEFEFF</Color>
+    <Color x:Key="StudioElevatedColor">#FCFCFD</Color>
     <Color x:Key="StudioSurfaceColor">#F2F2F5</Color>
     <Color x:Key="StudioRaisedColor">#f2f2f3</Color>
     <Color x:Key="StudioBorderColor">#e2e2e4</Color>
