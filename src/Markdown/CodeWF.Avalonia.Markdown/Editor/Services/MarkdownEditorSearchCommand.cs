@@ -5,6 +5,7 @@ public enum MarkdownEditorSearchAction
 {
     Count,
     FindNext,
+    FindPrevious,
     ReplaceNext,
     ReplaceAll
 }

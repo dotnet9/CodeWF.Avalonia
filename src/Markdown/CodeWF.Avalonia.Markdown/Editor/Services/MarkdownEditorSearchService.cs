@@ -18,7 +18,6 @@ public sealed class MarkdownEditorSearchService : IMarkdownEditorSearchService
         TextEditor editor,
         MarkdownEditorSearchCommand command,
         Action<Action> runTextMutation,
-        Action publishTextChanged,
         MarkdownEditorSearchResultHandler report)
     {
         _report = report;
@@ -35,10 +34,13 @@ public sealed class MarkdownEditorSearchService : IMarkdownEditorSearchService
                 CountMatches(editor, command);
                 break;
             case MarkdownEditorSearchAction.FindNext:
-                FindNext(editor, command, editor.CaretOffset + Math.Max(0, editor.SelectionLength), publishTextChanged);
+                FindNext(editor, command, editor.CaretOffset + Math.Max(0, editor.SelectionLength));
+                break;
+            case MarkdownEditorSearchAction.FindPrevious:
+                FindPrevious(editor, command, editor.SelectionStart);
                 break;
             case MarkdownEditorSearchAction.ReplaceNext:
-                ReplaceNext(editor, command, runTextMutation, publishTextChanged);
+                ReplaceNext(editor, command, runTextMutation);
                 break;
             case MarkdownEditorSearchAction.ReplaceAll:
                 ReplaceAll(editor, command, runTextMutation);
@@ -46,15 +48,14 @@ public sealed class MarkdownEditorSearchService : IMarkdownEditorSearchService
         }
     }
 
-    private void FindNext(TextEditor editor, MarkdownEditorSearchCommand command, int startOffset, Action publishTextChanged)
+    private void FindNext(TextEditor editor, MarkdownEditorSearchCommand command, int startOffset)
     {
         if (editor.Document is null)
         {
             return;
         }
 
-        var text = editor.Text ?? string.Empty;
-        var matches = FindMatches(text, command);
+        var matches = FindMatches(editor.Text ?? string.Empty, command);
         if (matches is null)
         {
             return;
@@ -67,12 +68,48 @@ public sealed class MarkdownEditorSearchService : IMarkdownEditorSearchService
             return;
         }
 
+        SelectMatch(editor, command, matches, matchIndex, wrapped);
+    }
+
+    /// <summary>
+    /// 向上查找。起点取选区起点，只接受严格在它之前开始的命中，
+    /// 因此停在某个命中上再按「上一个」会跳到它前一个，而不是原地不动；全部落空时回绕到文末命中。
+    /// </summary>
+    private void FindPrevious(TextEditor editor, MarkdownEditorSearchCommand command, int startOffset)
+    {
+        if (editor.Document is null)
+        {
+            return;
+        }
+
+        var matches = FindMatches(editor.Text ?? string.Empty, command);
+        if (matches is null)
+        {
+            return;
+        }
+
+        var matchIndex = GetPreviousMatchIndex(matches, startOffset, out var wrapped);
+        if (matchIndex < 0)
+        {
+            PublishSearchResultFormat(MarkdownEditorText.SearchNoMatchFormat, command.SearchText);
+            return;
+        }
+
+        SelectMatch(editor, command, matches, matchIndex, wrapped);
+    }
+
+    private void SelectMatch(
+        TextEditor editor,
+        MarkdownEditorSearchCommand command,
+        IReadOnlyList<SearchMatch> matches,
+        int matchIndex,
+        bool wrapped)
+    {
         var match = matches[matchIndex];
         editor.Select(match.Index, match.Length);
         editor.CaretOffset = match.Index + match.Length;
         editor.TextArea.Caret.BringCaretToView();
-        editor.Focus();
-        var line = editor.Document.GetLineByOffset(match.Index).LineNumber;
+        var line = editor.Document!.GetLineByOffset(match.Index).LineNumber;
         var messageKey = wrapped
             ? MarkdownEditorText.SearchFoundWrappedOnLineFormat
             : MarkdownEditorText.SearchFoundOnLineFormat;
@@ -80,14 +117,12 @@ public sealed class MarkdownEditorSearchService : IMarkdownEditorSearchService
             _localizer.Format(messageKey, command.SearchText, line, matchIndex + 1, matches.Count),
             matchIndex + 1,
             matches.Count);
-        publishTextChanged();
     }
 
     private void ReplaceNext(
         TextEditor editor,
         MarkdownEditorSearchCommand command,
-        Action<Action> runTextMutation,
-        Action publishTextChanged)
+        Action<Action> runTextMutation)
     {
         if (editor.Document is null)
         {
@@ -100,7 +135,7 @@ public sealed class MarkdownEditorSearchService : IMarkdownEditorSearchService
         var currentMatch = FindCurrentSelectionMatch(text, command, start, length);
         if (currentMatch is null)
         {
-            FindNext(editor, command, editor.CaretOffset, publishTextChanged);
+            FindNext(editor, command, editor.CaretOffset);
             return;
         }
 
@@ -116,7 +151,7 @@ public sealed class MarkdownEditorSearchService : IMarkdownEditorSearchService
             editor.Select(start, replacementText.Length);
         });
         PublishSearchResultFormat(MarkdownEditorText.SearchReplacedNextFormat, command.SearchText);
-        FindNext(editor, command, start + replacementText.Length, publishTextChanged);
+        FindNext(editor, command, start + replacementText.Length);
     }
 
     private void ReplaceAll(
@@ -494,6 +529,27 @@ public sealed class MarkdownEditorSearchService : IMarkdownEditorSearchService
 
         wrapped = true;
         return 0;
+    }
+
+    private static int GetPreviousMatchIndex(IReadOnlyList<SearchMatch> matches, int startOffset, out bool wrapped)
+    {
+        wrapped = false;
+        if (matches.Count == 0)
+        {
+            return -1;
+        }
+
+        var start = Math.Max(0, startOffset);
+        for (var i = matches.Count - 1; i >= 0; i--)
+        {
+            if (matches[i].Index < start)
+            {
+                return i;
+            }
+        }
+
+        wrapped = true;
+        return matches.Count - 1;
     }
 
     private readonly record struct SearchMatch(int Index, int Length, Match? RegexMatch = null);

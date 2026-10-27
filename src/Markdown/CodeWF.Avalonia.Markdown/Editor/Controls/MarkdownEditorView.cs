@@ -460,7 +460,6 @@ public class MarkdownEditorView : UserControl
             _editor,
             command,
             RunTextMutation,
-            RaiseMarkdownChanged,
             (message, current, total) => SearchResultProduced?.Invoke(
                 this,
                 new MarkdownEditorSearchResultEventArgs(message, current, total)));
