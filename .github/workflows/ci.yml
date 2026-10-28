@@ -55,9 +55,22 @@ jobs:
         run: pwsh scripts/tests/il_trim_warnings_test.ps1 -Log artifacts/aot-publish.log
 
       # 库侧主题令牌已逐变体字面量化（Themes/{Light,Dark,HighContrast}），逐色板渲染不再抛资源异常，
-      # 因此冒烟按退出码阻塞流水线。
+      # 冒烟本该按退出码阻塞流水线——但裸 run: 卡不住：Actions 在 windows runner 上把整步交给
+      # pwsh -command ". '<脚本>'" 点执行，本机实测这种形状下脚本最后一条原生命令返回 7 时子 pwsh
+      # 仍退 0（同一脚本补一句 exit $LASTEXITCODE 才退 7），冒烟再怎么红流水线照样绿。
+      # 与 --verify-runtime 步同式，用 Process 直接取 ExitCode。
+      # 超时按 CI 实测给：进程 03:13:03.673→03:13:07.936 约 4.3 秒、整步 6 秒，留 60 秒余量。
       - name: 运行冒烟演示
-        run: artifacts\publish\win-x64\CodeWF.Avalonia.Demo\CodeWF.Avalonia.Demo.exe --smoke
+        shell: pwsh
+        run: |
+          $start = [Diagnostics.ProcessStartInfo]::new((Resolve-Path './artifacts/publish/win-x64/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo.exe').Path)
+          $start.UseShellExecute = $false
+          $start.CreateNoWindow = $true
+          $start.ArgumentList.Add('--smoke')
+          $process = [Diagnostics.Process]::Start($start)
+          if (-not $process.WaitForExit(60000)) { throw 'Smoke demo timed out.' }
+          if ($process.ExitCode -ne 0) { throw "Smoke demo failed: $($process.ExitCode)" }
+        timeout-minutes: 2
 
       # 覆盖空洞：`--verify-runtime` 过去只在 release 工作流跑。12.2.21 的目录路由数写死成字面量，
       # CI 全绿、发版当场红。读的是同一份 win-x64 产物，日常提交顺手跑一遍，别再等打标签才发现。
