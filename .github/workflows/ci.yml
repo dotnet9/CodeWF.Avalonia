@@ -59,18 +59,34 @@ jobs:
       # pwsh -command ". '<脚本>'" 点执行，本机实测这种形状下脚本最后一条原生命令返回 7 时子 pwsh
       # 仍退 0（同一脚本补一句 exit $LASTEXITCODE 才退 7），冒烟再怎么红流水线照样绿。
       # 与 --verify-runtime 步同式，用 Process 直接取 ExitCode。
-      # 超时按 CI 实测给：进程 03:13:03.673→03:13:07.936 约 4.3 秒、整步 6 秒，留 60 秒余量。
+      # 超时按本机同一条发布产物的实测给：--smoke 从启动到退出 91.2 秒（退出码 0），60 秒是拍脑袋，
+      # 上一版就是这么在 CI 里判了「timed out」——红的是门禁参数，不是冒烟本身。给 240 秒，runner 慢一倍也够。
+      # 输出必须重定向再自己写回日志：CreateNoWindow 下子进程不接控制台，冒烟的逐条 check 全看不见，
+      # 超时或失败就只剩一个退出码，等于把这次踩的坑留给下一个人。
       - name: 运行冒烟演示
         shell: pwsh
         run: |
           $start = [Diagnostics.ProcessStartInfo]::new((Resolve-Path './artifacts/publish/win-x64/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo.exe').Path)
           $start.UseShellExecute = $false
           $start.CreateNoWindow = $true
+          $start.RedirectStandardOutput = $true
+          $start.RedirectStandardError = $true
           $start.ArgumentList.Add('--smoke')
+          $clock = [Diagnostics.Stopwatch]::StartNew()
           $process = [Diagnostics.Process]::Start($start)
-          if (-not $process.WaitForExit(60000)) { throw 'Smoke demo timed out.' }
+          $stdout = $process.StandardOutput.ReadToEndAsync()
+          $stderr = $process.StandardError.ReadToEndAsync()
+          if (-not $process.WaitForExit(240000)) {
+              Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+              Write-Host $stdout.Result
+              Write-Host $stderr.Result
+              throw "Smoke demo timed out after 240s (last check above)."
+          }
+          Write-Host ("Smoke demo finished in " + [Math]::Round($clock.Elapsed.TotalSeconds, 1) + "s with exit code " + $process.ExitCode)
+          Write-Host $stdout.Result
+          Write-Host $stderr.Result
           if ($process.ExitCode -ne 0) { throw "Smoke demo failed: $($process.ExitCode)" }
-        timeout-minutes: 2
+        timeout-minutes: 5
 
       # 覆盖空洞：`--verify-runtime` 过去只在 release 工作流跑。12.2.21 的目录路由数写死成字面量，
       # CI 全绿、发版当场红。读的是同一份 win-x64 产物，日常提交顺手跑一遍，别再等打标签才发现。
