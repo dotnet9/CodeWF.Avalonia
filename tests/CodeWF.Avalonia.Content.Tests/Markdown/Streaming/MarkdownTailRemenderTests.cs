@@ -1,5 +1,6 @@
-using CodeWF.Avalonia.Markdown.Streaming;
+﻿using CodeWF.Avalonia.Markdown.Streaming;
 
+using System.Linq;
 using Xunit;
 
 namespace CodeWF.Avalonia.Content.Tests.Markdown.Streaming;
@@ -9,6 +10,7 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Streaming;
 /// </summary>
 public sealed class MarkdownTailRemenderTests
 {
+	private static readonly string ZeroWidthSpace = new string((char)0x200B, 1);
 	[Theory]
 	[InlineData("**粗体", "**粗体**")]
 	[InlineData("__下划", "__下划__")]
@@ -22,7 +24,30 @@ public sealed class MarkdownTailRemenderTests
 		Assert.Equal(expected, MarkdownTailRemender.Apply(tail).RemendedText);
 	}
 
-	[Fact]
+	[Theory]
+	[InlineData("上一段正文\n-")]
+	[InlineData("上一段正文\n--")]
+	[InlineData("上一段正文\n= ")]
+	[InlineData("上一段正文\n\t-")]
+	public void Apply_HalfListDashWithPrecedingContent_InsertsZeroWidthSpace(string tail)
+	{
+		// 半个列表项不能被判成 setext 标题下划线：插入零宽空格打破（P45）。
+		var result = MarkdownTailRemender.Apply(tail);
+		Assert.Contains(ZeroWidthSpace, result.RemendedText);
+	}
+
+	[Theory]
+	[InlineData("-")]
+	[InlineData("\n-")]
+	[InlineData("# 标题\n正文")]
+	[InlineData("上一段正文\n- 列表文字")]
+	public void Apply_WithoutSetextAmbiguity_KeepsTailIntact(string tail)
+	{
+		// 无前文内容的 "-" 只是列表项起点；带文字的行不是下划线行。
+		var result = MarkdownTailRemender.Apply(tail).RemendedText;
+		Assert.DoesNotContain(ZeroWidthSpace, result, StringComparison.Ordinal);
+	}
+
 	public void Apply_OpenMathBlock_AppendsClosingLine()
 	{
 		Assert.Equal("$$\nx\n$$", MarkdownTailRemender.Apply("$$\nx").RemendedText);

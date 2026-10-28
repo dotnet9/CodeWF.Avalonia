@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 
 namespace CodeWF.Avalonia.Markdown.Streaming;
 
@@ -175,6 +175,14 @@ public static class MarkdownTailRemender
 			{
 				insertions.Add((remained.Length, "\n$$"));
 			}
+
+			// P45 setext 歧义打破：尾行只有 1-2 个 =/-（可带空白）且上一非空行有内容时，
+			// 半个列表项会被解析器判成 setext 标题下划线；插入零宽空格打破
+			// （借鉴 vercel/streamdown remend 的 SetextHeadingHandler，Apache-2.0）。
+			if (EndsWithIncompleteSetextUnderline(remained))
+			{
+				insertions.Add((remained.Length, "\u200B"));
+			}
 		}
 
 		if (insertions.Count == 0)
@@ -196,6 +204,37 @@ public static class MarkdownTailRemender
 		return new MarkdownTailRemendResult(
 			builder.ToString(),
 			MarkdownTailOffsetMap.Build(remained.Length, tail.Length, insertions));
+	}
+
+	/// <summary>
+	/// 尾行是否为"半截 setext 下划线"：只有 1-2 个 =/-（可带空白）且上一非空行有内容。
+	/// 单个 =/- 本就构成合法下划线，此处的危害是流式中的半个列表项（如只敲出 "-"）被误判成标题。
+	/// </summary>
+	private static bool EndsWithIncompleteSetextUnderline(string text)
+	{
+		var lastNewline = text.LastIndexOf('\n');
+		var lastLine = lastNewline < 0 ? text : text[(lastNewline + 1)..];
+		var trimmed = lastLine.Trim(' ', '\t');
+		if (trimmed is not ("=" or "==" or "-" or "--"))
+		{
+			return false;
+		}
+
+		// 上一非空行需要有内容，否则不存在 setext 标题的成立条件。
+		var scanEnd = lastNewline;
+		while (scanEnd > 0)
+		{
+			var lineStart = text.LastIndexOf('\n', scanEnd - 1);
+			lineStart = lineStart < 0 ? 0 : lineStart + 1;
+			if (text[lineStart..scanEnd].Trim(' ', '\t').Length > 0)
+			{
+				return true;
+			}
+
+			scanEnd = lineStart - 1;
+		}
+
+		return false;
 	}
 
 	/// <summary>

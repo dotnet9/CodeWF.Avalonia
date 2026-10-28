@@ -1,4 +1,10 @@
-# 更新日志
+﻿# 更新日志
+
+## 12.2.24 (2026-10-28)
+
+- 代码围栏语言别名表扩容：`NormalizeLanguage` 从 6 条硬编码别名扩为约 130 个语言名/别名映射（移植自 StreamMark 的 LanguageAliases 表，MIT）——`bash`/`zsh`、`yaml`/`yml`、`axaml`/`xaml`/`csproj` 等常见围栏名此前落到 log 兜底语法渲染成近乎单色，现在映射到正确的 TextMate 语法；表外名字保持原样再走 language id 解析。
+- 高亮预热：`CodeWFMarkdownHighlightingExtensions.UseHighlighting(params string[] prewarmLanguages)` 支持启动时预热常用语言在明暗两套主题下的语法装载（内部 `CodeHighlighter.Prewarm`），首个代码块渲染不再付语法解析冷启动成本；不传参行为与旧版一致。
+- 流式尾部容错补 P45 setext 歧义打破（借鉴 vercel/streamdown remend 的 SetextHeadingHandler，Apache-2.0）：尾行只有 1-2 个 `=`/`-`（可带空白）且上一非空行有内容时插入零宽空格——流式中刚敲出的半个列表项（`-`）此前会被解析器判成 setext 标题下划线，正文瞬间抖动成标题。规格表 §4.1 同步；新增 8 条 TailRemender 行为测试。
 
 ## 12.2.22 (2026-10-28)
 

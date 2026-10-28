@@ -9,9 +9,15 @@ namespace CodeWF.Avalonia.Markdown.Highlighting;
 /// </summary>
 public static class CodeWFMarkdownHighlightingExtensions
 {
-    /// <summary>全局注册高亮能力，应用启动时调用一次。</summary>
-    public static void UseHighlighting() =>
+    /// <summary>全局注册高亮能力，应用启动时调用一次；可传入常用语言预热语法装载（如 "csharp"、"bash"）。</summary>
+    public static void UseHighlighting(params string[] prewarmLanguages)
+    {
         MarkdownViewer.RegisterCodeHighlighter(CodeHighlighter.Render);
+        if (prewarmLanguages is { Length: > 0 })
+        {
+            CodeHighlighter.Prewarm(prewarmLanguages);
+        }
+    }
 
     /// <summary>按实例注册高亮能力（覆盖全局注册）。</summary>
     public static MarkdownViewer UseHighlighting(this MarkdownViewer viewer)
