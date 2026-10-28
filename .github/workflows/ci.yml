@@ -55,12 +55,12 @@ jobs:
         run: pwsh scripts/tests/il_trim_warnings_test.ps1 -Log artifacts/aot-publish.log
 
       # 库侧主题令牌已逐变体字面量化（Themes/{Light,Dark,HighContrast}），逐色板渲染不再抛资源异常，
-      # 冒烟本该按退出码阻塞流水线——但裸 run: 卡不住：Actions 在 windows runner 上把整步交给
-      # pwsh -command ". '<脚本>'" 点执行，本机实测这种形状下脚本最后一条原生命令返回 7 时子 pwsh
-      # 仍退 0（同一脚本补一句 exit $LASTEXITCODE 才退 7），冒烟再怎么红流水线照样绿。
-      # 与 --verify-runtime 步同式，用 Process 直接取 ExitCode。
-      # 超时按本机同一条发布产物的实测给：--smoke 从启动到退出 91.2 秒（退出码 0），60 秒是拍脑袋，
-      # 上一版就是这么在 CI 里判了「timed out」——红的是门禁参数，不是冒烟本身。给 240 秒，runner 慢一倍也够。
+      # 冒烟就该按退出码阻塞流水线。取退出码用 Process 而不是依赖隐式传播：本机 PowerShell 7.6 实测
+      # `pwsh -command ". '<脚本>'"` 这种点执行形状下，脚本最后一条原生命令返回 7 时子进程仍退 0，
+      # 补一句 exit $LASTEXITCODE 才非 0；而 runner 的 pwsh 不是这个行为（历史上裸 `dotnet test` 步
+      # 真的红过，run 40440121548）。两下里只有「自己取 ExitCode」在哪版都对，不拿版本相关语义当门禁。
+      # 上一版红的是参数不是冒烟：--smoke 从启动到退出实测 91.2 秒（退出码 0），却照日志时间戳差写了
+      # 60 秒上限。给 240 秒，runner 慢一倍也够。
       # 输出必须重定向再自己写回日志：CreateNoWindow 下子进程不接控制台，冒烟的逐条 check 全看不见，
       # 超时或失败就只剩一个退出码，等于把这次踩的坑留给下一个人。
       - name: 运行冒烟演示
