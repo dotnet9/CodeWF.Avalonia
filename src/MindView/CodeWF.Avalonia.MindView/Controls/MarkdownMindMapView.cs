@@ -499,7 +499,11 @@ public sealed class MarkdownMindMapView : UserControl
                 var centers = new List<double>();
                 for (var i = 0; i < node.Children.Count; i++)
                 {
-                    var childColor = root ? (i % 5) switch { 1 => SuccessColor, 2 => WarningColor, 4 => Color.Parse(dark ? "#9398B3" : "#8B91A8"), _ => AccentColor } : dark ? Brighten(branch, 0.18) : branch;
+                    // 根层分支取色：缤纷档优先吃宿主覆写的 DefaultPalette 色表（与编辑器 NextColor、
+                    // 图表 series 同源，解决缤纷偏素）；其余档与未覆写宿主维持强调色家族五档不变。
+                    var childColor = root
+                        ? StyleKind == MindMapStyleKind.Colorful ? BranchPalette()[i % BranchPalette().Length] : LegacyRootChildColor(i, dark)
+                        : dark ? Brighten(branch, 0.18) : branch;
                     centers.Add(Place(node.Children[i], depth + 1, childColor));
                 }
                 var subtreeHeight = row - start - 14;
@@ -511,6 +515,27 @@ public sealed class MarkdownMindMapView : UserControl
             return rect.Center.Y;
         }
     }
+
+    /// <summary>缤纷档根层色表：读宿主覆写的 <see cref="MindViewStyleKeys.DefaultPaletteResource"/>
+    /// （分号分隔的十六进制色串），缺失或不可解析时回退强调色家族五档，保持既有观感。</summary>
+    private Color[] BranchPalette()
+    {
+        var paletteText = MindViewThemeResources.GetString(this, MindViewStyleKeys.DefaultPaletteResource, string.Empty);
+        var colors = new List<Color>();
+        foreach (var value in paletteText.Split([';', ','], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            try { colors.Add(Color.Parse(value)); } catch { /* 单个坏值跳过，不影响其余颜色。 */ }
+        }
+        return colors.Count > 0 ? [.. colors] : [LegacyRootChildColor(0, false), LegacyRootChildColor(1, false), LegacyRootChildColor(2, false), LegacyRootChildColor(3, false), LegacyRootChildColor(4, false)];
+    }
+
+    private Color LegacyRootChildColor(int index, bool dark) => (index % 5) switch
+    {
+        1 => SuccessColor,
+        2 => WarningColor,
+        4 => Color.Parse(dark ? "#9398B3" : "#8B91A8"),
+        _ => AccentColor
+    };
 
     /// <summary>Place 先按单侧树铺出尺寸，再按所选布局重排坐标（尺寸沿用测量结果）。</summary>
     private void ApplyLayoutKind()
