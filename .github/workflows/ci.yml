@@ -59,6 +59,26 @@ jobs:
       - name: 运行冒烟演示
         run: artifacts\publish\win-x64\CodeWF.Avalonia.Demo\CodeWF.Avalonia.Demo.exe --smoke
 
+      # 覆盖空洞：`--verify-runtime` 过去只在 release 工作流跑。12.2.21 的目录路由数写死成字面量，
+      # CI 全绿、发版当场红。读的是同一份 win-x64 产物，日常提交顺手跑一遍，别再等打标签才发现。
+      # 取退出码用 Process 而不是 $LASTEXITCODE：Demo 是 GUI 子系统程序，本机实测 pwsh 调它之后
+      # $LASTEXITCODE 仍为空——按那个判等，自检再怎么过都会红。与 release.yml 的验证步保持同式。
+      - name: 验证产物运行时自检
+        shell: pwsh
+        run: |
+          $directory = Join-Path $env:RUNNER_TEMP ('ci-runtime-' + [guid]::NewGuid().ToString('N'))
+          $start = [Diagnostics.ProcessStartInfo]::new((Resolve-Path './artifacts/publish/win-x64/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo.exe').Path)
+          $start.UseShellExecute = $false
+          $start.CreateNoWindow = $true
+          $start.ArgumentList.Add('--verify-runtime')
+          $start.ArgumentList.Add($directory)
+          $process = [Diagnostics.Process]::Start($start)
+          if (-not $process.WaitForExit(30000)) { throw 'Native runtime verification timed out.' }
+          if ($process.ExitCode -ne 0) { throw "Native runtime verification failed: $($process.ExitCode)" }
+          $result = Get-Content -LiteralPath (Join-Path $directory 'runtime-verification.txt') -Raw
+          if ($result -notmatch '^NativeAOT runtime verification passed;') { throw 'Native runtime evidence is missing.' }
+          Write-Output $result
+
       - name: AOT 发布共享国际化离屏验证
         run: dotnet publish scripts/localization-verification/LocalizationVerification.csproj -c Release -r win-x64 -p:PublishAot=true -p:IlcGenerateCompleteTypeMetadata=true -p:IlcTrimMetadata=false -p:IlcSingleThreaded=true -o artifacts/aot-localization
 

@@ -46,6 +46,9 @@ public static class DemoPages
 
 public static partial class DemoCatalog
 {
+    /// <summary>目录条目数随 catalog.json 一起生成，运行时的自检与它比对，不再另记一份常数。</summary>
+    public const int RouteCount = 33;
+
     private static DemoPageBase CreatePage(string key) => key switch
     {
         DemoPages.Welcome => new WelcomePage(),

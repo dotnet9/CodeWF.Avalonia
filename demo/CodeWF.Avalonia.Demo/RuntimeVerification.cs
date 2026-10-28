@@ -26,8 +26,14 @@ internal static class RuntimeVerification
         var groups = JsonSerializer.Deserialize(stream, DemoCatalogJsonContext.Default.CatalogGroupArray)
             ?? throw new InvalidOperationException("Published API catalog is empty.");
         var entries = groups.SelectMany(group => group.Items).ToArray();
-        if (entries.Length != 32 || entries.Select(entry => entry.PrototypeId).Distinct().Count() != 32)
-            throw new InvalidOperationException("Published API catalog routes are incomplete or duplicated.");
+        // 常数由 sync_design_catalog.ps1 随目录一起生成：目录加了一页而这里仍是字面量，
+        // 报错的是自检而不是产品，所以两边只留一个来源。
+        if (entries.Length != DemoCatalog.RouteCount
+            || entries.Select(entry => entry.PrototypeId).Distinct().Count() != DemoCatalog.RouteCount)
+        {
+            throw new InvalidOperationException(
+                $"Published API catalog routes are incomplete or duplicated: {entries.Length} entries vs {DemoCatalog.RouteCount} generated routes.");
+        }
         var labels = new HashSet<string>();
         foreach (var culture in new[] { "en-US", "zh-CN" })
         {

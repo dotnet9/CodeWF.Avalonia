@@ -1,5 +1,9 @@
 # 更新日志
 
+## 12.2.22 (2026-10-28)
+
+- 修复发布门禁：`RuntimeVerification` 把目录条目数写死成字面量 32，而 12.2.21 给 demo 加 `SegmentedPanel` 一页后 `design/catalog.json` 长到 33 条，`--verify-runtime` 当场抛异常；NativeAOT 下未处理异常以 0xC0000409 退出，release 工作流的 win-x64 作业红、`创建 GitHub Release` 被跳过，标签有了但资产为空。CI 的 AOT 冒烟走 `--smoke`，不经过这段自检，所以只有发版时才炸。现在条目数由 `sync_design_catalog.ps1` 随目录一并生成 `DemoCatalog.RouteCount`，自检与路由表同源——再加一页不必两头改；忘了重跑同步脚本时先被 `-Check` 在 CI 拦下，而不是等发版才红。同一件事还暴露了覆盖空洞：`--verify-runtime` 只在 release 工作流的 win-x64 作业跑，CI 的 AOT 作业只跑 `--smoke`，压根不经过这段自检——现在 CI 在冒烟之后用同一份 win-x64 产物补跑一次，取退出码走 `Process` 而不是 `$LASTEXITCODE`：Demo 是 GUI 子系统程序，实测 `& exe` 0.01 秒就返回且 `$LASTEXITCODE` 根本没定义，按后者判等会把过了的自检读成红的。
+
 ## 12.2.21 (2026-10-28)
 
 - 控件下沉：分段选择器的轨道排段 + 单颗滑动指示块（`SegmentedPanel`）、把控件中心线钉到距底若干像素的轴对齐（`BottomAxis`）、菜单行因共享快捷键列而截断标题的换行模板（`MenuItem.wrap-entry`）从宿主侧收进 `CodeWF.Avalonia.Controls`——这三样是画法不是业务，每个 Avalonia 项目都要再抄一遍。选中态只留 `SegmentedPanel.IsActive` 一个入口，附加属性变了就代宿主同步 `.active` 类，主题按那个类换字色字重；指示块排在子项最前画在按钮之下且按整行尺寸测量，选中末段不会把轨道撑宽。`BottomAxis` 只搬换算，宿主常量留在宿主。补 SegmentedPanel 十条、BottomAxis 五条 headless 断言。
