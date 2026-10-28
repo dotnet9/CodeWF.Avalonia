@@ -1,5 +1,14 @@
 # 更新日志
 
+## 12.2.21 (2026-10-28)
+
+- 控件下沉：分段选择器的轨道排段 + 单颗滑动指示块（`SegmentedPanel`）、把控件中心线钉到距底若干像素的轴对齐（`BottomAxis`）、菜单行因共享快捷键列而截断标题的换行模板（`MenuItem.wrap-entry`）从宿主侧收进 `CodeWF.Avalonia.Controls`——这三样是画法不是业务，每个 Avalonia 项目都要再抄一遍。选中态只留 `SegmentedPanel.IsActive` 一个入口，附加属性变了就代宿主同步 `.active` 类，主题按那个类换字色字重；指示块排在子项最前画在按钮之下且按整行尺寸测量，选中末段不会把轨道撑宽。`BottomAxis` 只搬换算，宿主常量留在宿主。补 SegmentedPanel 十条、BottomAxis 五条 headless 断言。
+- 观感改为宿主自选：常驻滚动条轨道与 ToolTip 折行放进不挂进 `_index.axaml` 的 `Themes/Styles/Chrome.axaml`，宿主显式 `StyleInclude` 才生效——引了本库主题的应用默认仍是 Semi 的浮动细滚动条，整组接管会强改所有宿主的观感。`ScrollBarThickness` 一类资源在 Semi 里是 `StaticResource` 引用的，宿主改资源不生效，只能按部件名 `thumb` 覆盖。
+- 配色令牌去色温（规则 §5.1）：静态令牌重生成，暗色画布不再随色板染色，九套暗色的 `--bg2` 归成等相对明度的中性灰，浅色同理去掉面板自带的绿味蓝味。`StudioPaletteEngine` 让用户自定义配色与静态令牌逐键同式派生，运行时字典补齐分段与浮起三键；新增 `StudioTokenParityTests` 逐键钉住两条派生路径一致——以前只有生成器跑过那条路径，用户配色漏键不会有任何提示。
+- 修复：分段指示块的淡出缓动选择器改用 Avalonia 12 的类名，主题装载不再抛异常。
+- 图表预览卡：mermaid 图嵌进带描边的预览卡，宿主徽标才有站位。`WindowedStackPanel` 把未登记子项排进所属条带，不再整体串位。
+- 工程：版本翻到 12.2.21 后重跑 `sync_design_catalog.ps1` 与 `build_standalone_prototype.ps1`，两份单文件原型的版本徽标随版本号走（只要翻版本就得同批重生成，否则 `-Check` 判陈旧）；demo 补 `SegmentedPanel` 的目录条目、属性区与原型路由。
+
 ## 12.2.20 (2026-10-28)
 
 - 修复图表颜色解析：象限图四格输出 `color-mix(in srgb, var(--accent, #FAFAFA) 8%, #18181B)`，旧的替换只认字面量 `var(--accent)`，`color-mix` 正则又要求首参是 `#rrggbb`，两处都落空后 Skia 按无效颜色画黑。新增 `CssColorResolver` 按 CSS 求值顺序递归展平：`var()` 只切第一个顶层逗号、缺省百分比取补数、通道按预乘 alpha 插值、解不出的表达式原样交回；令牌表沿用既有镜像公式，同主题色值零漂移。
