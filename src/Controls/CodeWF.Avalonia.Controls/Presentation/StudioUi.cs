@@ -39,7 +39,7 @@ public static class StudioUi
         var panel = new StackPanel { Spacing = 8 };
         if (!string.IsNullOrEmpty(header))
         {
-            panel.Children.Add(BindText(new TextBlock { FontWeight = FontWeight.SemiBold, FontSize = 12.5 }, TextBlock.TextProperty, header));
+            panel.Children.Add(BindText(new TextBlock { FontWeight = FontWeight.SemiBold, FontSize = 12 }, TextBlock.TextProperty, header));
         }
 
         foreach (var child in content)
@@ -155,7 +155,7 @@ public static class StudioUi
             var header = BindText(new TextBlock
             {
                 FontWeight = FontWeight.SemiBold,
-                FontSize = 11.5,
+                FontSize = 11,
                 Margin = new Thickness(0, 0, 16, 6),
             }, TextBlock.TextProperty, headers[column]);
             Grid.SetRow(header, 0);
@@ -169,7 +169,7 @@ public static class StudioUi
             {
                 var cell = BindText(new TextBlock
                 {
-                    FontSize = 11.5,
+                    FontSize = 11,
                     TextWrapping = TextWrapping.Wrap,
                     Opacity = column == 0 ? 0.95 : 0.75,
                     Margin = new Thickness(0, 0, 16, 4),

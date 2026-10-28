@@ -162,7 +162,7 @@
                                                             Data="M 1 1 L 11 11 M 11 1 L 1 11"
                                                             Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                             StrokeLineCap="Round"
-                                                            StrokeThickness="1.6"
+                                                            StrokeThickness="1.4"
                                                             Stretch="Uniform" />
                                                     </Button>
                                                 </StackPanel>
