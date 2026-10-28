@@ -51,12 +51,18 @@ public static class ArticleTypographyResolver
         }
     }
 
-    /// <summary>以内置「简约」为模板派生用户排版：改名称/强调与装饰色/字体/行距，其余沿用。</summary>
+    /// <summary>
+    /// 以内置「简约」为模板派生用户排版：改名称/强调与装饰色/字体/行距/H2 装饰，其余沿用。
+    /// <paramref name="h2Decoration"/> 取 leftBar / underline / tint / none，与编写层同名档位一致；
+    /// 只重写 H2 的边框、内距、色块与圆角，正文字号与行距不动。
+    /// </summary>
     public static ArticleTypography CreateCustom(string key, string name, string accentLight, string accentDark,
-        string decorationLight, string decorationDark, string font, double leading)
+        string decorationLight, string decorationDark, string font, double leading, string h2Decoration = "leftBar")
     {
         var template = ArticleTypographyCatalog.Find("Simple")
             ?? ArticleTypographyCatalog.All.First();
+        var headings = template.Headings.ToArray();
+        if (headings.Length > 1) headings[1] = WithHeadingStyle(headings[1], h2Decoration);
         return template with
         {
             Key = key,
@@ -70,6 +76,22 @@ public static class ArticleTypographyResolver
             DarkDecoration = decorationDark,
             Font = font,
             Leading = Math.Clamp(leading, 1.5, 2.4),
+            Headings = headings,
+        };
+    }
+
+    /// <summary>把编写层的四档 H2 装饰换成渲染层资源能表达的边框/内距/色块/圆角；em 按该级字号折算成像素。</summary>
+    private static ArticleHeadingStyle WithHeadingStyle(ArticleHeadingStyle heading, string decoration)
+    {
+        static string Em(double size, double top, double right, double bottom, double left) => string.Create(
+            System.Globalization.CultureInfo.InvariantCulture,
+            $"{Math.Round(size * left, 2)},{Math.Round(size * top, 2)},{Math.Round(size * right, 2)},{Math.Round(size * bottom, 2)}");
+        return decoration switch
+        {
+            "underline" => heading with { Border = "0,0,0,2", Padding = Em(heading.Size, 0, 0, .35, 0), Tint = 0, Radius = 0 },
+            "tint" => heading with { Border = "0,0,0,0", Padding = Em(heading.Size, .4, .7, .4, .7), Tint = .1, Radius = 4 },
+            "none" => heading with { Border = "0,0,0,0", Padding = "0,0,0,0", Tint = 0, Radius = 0 },
+            _ => heading with { Border = "4,0,0,0", Padding = Em(heading.Size, .3, .7, .3, .7), Tint = 0, Radius = 0 },
         };
     }
 }

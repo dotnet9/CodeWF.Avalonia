@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Styling;
@@ -48,6 +49,42 @@ public sealed class ArticleTypographyTests(AvaloniaPlatformFixture platform)
                 }
             }
         }
+        });
+    }
+
+    [Theory]
+    [InlineData("leftBar", "4,0,0,0", "15.68,6.72,15.68,6.72", 0d, 0d)]
+    [InlineData("underline", "0,0,0,2", "0,0,0,7.84", 0d, 0d)]
+    [InlineData("tint", "0,0,0,0", "15.68,8.96,15.68,8.96", .1d, 4d)]
+    [InlineData("none", "0,0,0,0", "0,0,0,0", 0d, 0d)]
+    public void CustomTypographyRewritesOnlyTheH2Decoration(string decoration, string border, string padding,
+        double tint, double radius)
+    {
+        platform.Run(() =>
+        {
+            var key = "user:typography-test";
+            var custom = ArticleTypographyResolver.CreateCustom(key, "测试", "#24766B", "#4CBFA8",
+                "#C4704A", "#D89A6E", "serif", 1.7d, decoration);
+            var simple = ArticleTypographyCatalog.Find("Simple")!;
+
+            Assert.Equal(border, custom.Headings[1].Border);
+            Assert.Equal(padding, custom.Headings[1].Padding);
+            Assert.Equal(tint, custom.Headings[1].Tint);
+            Assert.Equal(radius, custom.Headings[1].Radius);
+            // 装饰只动 H2：其余级别与字号、行距、字体沿用模板。
+            Assert.Equal(simple.Headings[0], custom.Headings[0]);
+            Assert.Equal(simple.Headings[2], custom.Headings[2]);
+            Assert.Equal(simple.BodySize, custom.BodySize);
+            Assert.Equal(1.7d, custom.Leading);
+            Assert.Equal("serif", custom.Font);
+
+            var resources = custom.CreateResources();
+            Assert.Equal(Thickness.Parse(border), Assert.IsType<Thickness>(resources["CodeWFMarkdownHeading2BorderThickness"]));
+            Assert.Equal(Thickness.Parse(padding), Assert.IsType<Thickness>(resources["CodeWFMarkdownHeading2Padding"]));
+            Assert.Equal(new CornerRadius(radius), Assert.IsType<CornerRadius>(resources["CodeWFMarkdownHeading2CornerRadius"]));
+            var light = Assert.IsType<ResourceDictionary>(resources.ThemeDictionaries[ThemeVariant.Light]);
+            Assert.IsAssignableFrom<IBrush>(light["CodeWFMarkdownHeading2Background"]);
+            Assert.IsAssignableFrom<IBrush>(light["CodeWFMarkdownHeading2BorderBrush"]);
         });
     }
 
