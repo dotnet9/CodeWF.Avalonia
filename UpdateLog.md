@@ -1,5 +1,11 @@
 ﻿# 更新日志
 
+## 12.2.29 (2026-10-29)
+
+- 代码块外观对齐 AI 对话场景：顶栏改为左侧「语言 · 路径#L起-止」标题（围栏信息串支持 `cs src/App.cs#L10-20`，解析时合并 Markdig 拆开的 `Info`/`Arguments`），右侧图标工具条收纳下载、换行、复制与折叠（≥8 行才出现折叠），复制后图标 1.5s 勾选反馈；折叠态在代码下方给出「展开全部 N 行」。下载走 `CodeBlockSaveRequested`（宿主可 `Handled` 接管），未接管时用 StorageProvider 存为建议文件名（围栏路径优先，否则按语言扩展名）。新增 `MarkdownStyleKeys` 的 `MdCodeBlockToolbar`/`MdCodeBlockToolButton`/`MdCodeBlockFooter`/`MdCodeExpandButton` 与三条排版资源，明暗主题同一套。
+- 流式代码块原地更新：append-only 快照里围栏仍在生长时，`MarkdownViewer` 不再重建块控件，而是在同一 `CodeBlockFrame` 内只替换代码正文——外层 `ScrollViewer` 实例不变，横向滚动位置、块内文本选区、逐块换行与折叠状态跨快照保留；围栏闭合时新增的块接在尾块之后插入。非前缀增长（语言/围栏变化、替换）仍走原块级替换路径。`MarkdownSelectionController.SetBlocks` 增加按控件引用恢复块级选区。
+- 测试：新增 `MarkdownCodeBlockFrameTests` 五例（标题/行段、隐藏顶栏、复制-下载-换行、折叠与展开底栏、短代码无折叠）与 `MarkdownCodeBlockStreamingTests` 三例（同一 ScrollViewer + 选区保留、围栏闭合插入后续块、换行/折叠跨增长保留）；本地化测试改为按工具条提示断言翻译刷新。
+
 ## 12.2.27 (2026-10-29)
 
 - 新增 `Controls.Helpers.ToolTipHelper`：普通文本 ToolTip 的统一封装——`ToolTipHelper.Text` 附加属性可在 XAML 直接绑定视图模型，内部用 TextBlock 承载（折行 + MaxWidth 320，默认对齐 Semi 的 ToolTipMaxWidth，附 `MaxWidth` 附加属性可按控件覆盖），空文本不显示提示；前景走 `ToolTipForeground` 主题令牌（明暗反色跟随），不用硬编码白色。
