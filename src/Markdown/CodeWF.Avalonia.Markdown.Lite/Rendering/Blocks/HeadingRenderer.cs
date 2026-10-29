@@ -32,6 +32,8 @@ internal sealed class HeadingRenderer : IMarkdownBlockRenderer
 
         var textBlock = context.CreateSelectableText(MarkdownStyleKeys.Heading, MarkdownStyleKeys.GetHeadingClass(heading.Level));
         textBlock.FontWeight = FontWeight.Bold;
+        // 读屏按标题级别导航（Avalonia 12 无 TextPattern，级别是最有用的语义信息）。
+        global::Avalonia.Automation.AutomationProperties.SetHeadingLevel(textBlock, heading.Level);
         context.BindTheme(textBlock, SelectableTextBlock.ForegroundProperty, MarkdownViewer.TextBrushProperty, BindingPriority.Style);
         context.BindTheme(textBlock, SelectableTextBlock.FontFamilyProperty, MarkdownViewer.ContentFontFamilyProperty);
         context.BindTheme(textBlock, SelectableTextBlock.FontSizeProperty, GetHeadingFontSizeProperty(heading.Level));

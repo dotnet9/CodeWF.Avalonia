@@ -65,6 +65,29 @@ public sealed class MarkdownViewerAutomationTests(AvaloniaPlatformFixture platfo
 	});
 
 	[Fact]
+	public void Headings_ExposeAutomationLevel() => platform.Run(() =>
+	{
+		var (window, viewer) = CreateViewer("# 一级\n\n正文\n\n### 三级\n");
+		try
+		{
+			var headings = viewer.GetVisualDescendants().OfType<SelectableTextBlock>()
+				.Where(text => text.Classes.Contains(MarkdownStyleKeys.Heading))
+				.ToArray();
+
+			Assert.Equal(2, headings.Length);
+			Assert.Equal(1, AutomationProperties.GetHeadingLevel(headings[0]));
+			Assert.Equal(3, AutomationProperties.GetHeadingLevel(headings[1]));
+			Assert.Equal(0, AutomationProperties.GetHeadingLevel(
+				viewer.GetVisualDescendants().OfType<SelectableTextBlock>()
+					.Single(text => text.Classes.Contains(MarkdownStyleKeys.Paragraph))));
+		}
+		finally
+		{
+			window.Close();
+		}
+	});
+
+	[Fact]
 	public void CopyButton_NameIncludesLanguage() => platform.Run(() =>
 	{
 		var (window, viewer) = CreateViewer("```csharp\nvar value = 1;\n```\n");
