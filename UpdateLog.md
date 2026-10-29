@@ -1,5 +1,12 @@
 ﻿# 更新日志
 
+## 12.2.31 (2026-10-30)
+
+- 源码编辑器三连对齐原型：选区不再本地写死蓝底白字（高亮代码块改绑 SemiColorDanger 系的 TextBlockSelection 资源，宿主可整包接管，深色主题不再与文档选区割裂）；行号边距重写为当前行强调加粗（AvaloniaEdit 内置边距无逐行着色，新增 `MarkdownLineNumberMargin` 与 `LineNumberBrushKey`/`CurrentLineNumberBrushKey` 令牌键）；语法高亮换自定义 `VexMarkDown-Mode.xshd`——围栏、表格、任务列表、行内强调的符号全部压到 Marker 灰，标题/引用/代码/链接按语义色，`MarkdownEditorPalette` 新增 `MarkerKey`。
+- 导图画布拖拽光标改 grab/grabbing（原型 workbench.css:139-140）：内嵌两枚 32×32 PNG 光标（指尖/掌心热点），Windows 经 Bitmap+hotspot 构造，其他平台回退 Hand/SizeAll。
+- 踩坑记录：xshd 正则按宽松空白模式编译，`#` 会被当注释吞掉模式后半段，须 `#` 转义；无 End 的 span 把状态带入后续行并以零宽 `$` 触发死循环保护，改行首负向断言。
+- 测试：新增高亮加载与 Marker 注入回归；全量 Markdown 测试 573 例全绿。
+
 ## 12.2.30 (2026-10-30)
 
 - 长代码块分块排版：纯文本代码块按行分块渲染，流式追加只重建尾部变化的块，长代码不再整块重排；高亮代码块同样分块，行号列与代码列保持等高（`CodeHighlighter` 增加分块排版路径）。
