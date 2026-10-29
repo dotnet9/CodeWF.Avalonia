@@ -42,23 +42,25 @@ internal static class CodeHighlighter
             ? null
             : GetHighlightedLines(code, language, themeName, grammar, theme, isDark, session);
         var normalized = code.Replace("\r\n", "\n");
+        var lineCount = normalized.Count(character => character == '\n') + 1;
+
+        // 长代码按行切块：每块独立排版，流式追加只重建尾部块，前面的排版结果不重算。
+        // 词法状态经同一会话跨块延续，分块不改变配色。
+        if (lines is not null && lineCount > MarkdownCodeChunking.ThresholdLines)
+        {
+            var chunked = new ChunkedHighlightedCodeBody(
+                normalized, lines, fontFamily, fontSize, lineHeight, isDark,
+                text => GetHighlightedLines(text, language, themeName, grammar, theme, isDark, session),
+                hasGlobalSelection, copyGlobalSelectionAsync);
+            return Wrap(chunked, isDark, lineCount, fontFamily, fontSize, lineHeight);
+        }
 
         // 长代码以文本样式区间排版，避免为每个 token 建立参与主题匹配的逻辑树节点。
         SelectableTextBlock textBlock = lines is { Length: >= 64 }
             ? new HighlightedCodeTextBlock(normalized, lines)
             : new SelectableTextBlock();
-        textBlock.TextWrapping = TextWrapping.NoWrap;
-        textBlock.FontFamily = fontFamily;
-        textBlock.FontSize = fontSize;
-        textBlock.LineHeight = lineHeight;
-            // 选区使用不透明底色，避免与浅色代码背景合成后降低白字对比度。
-        textBlock.SelectionBrush = new ImmutableSolidColorBrush(Color.FromRgb(0x24, 0x5F, 0xC0));
-        textBlock.SelectionForegroundBrush = Brushes.White;
-        textBlock.Classes.Add(MarkdownStyleKeys.CodeBlockText);
-        TextOptions.SetBaselinePixelAlignment(textBlock, BaselinePixelAlignment.Aligned);
-        textBlock.ContextMenu = CreateCopyContextMenu(textBlock, hasGlobalSelection, copyGlobalSelectionAsync);
-        var lineCount = normalized.Count(character => character == '\n') + 1;
-        if (textBlock is HighlightedCodeTextBlock) return Wrap(textBlock, isDark, lineCount);
+        ConfigureCodeTextBlock(textBlock, fontFamily, fontSize, lineHeight, hasGlobalSelection, copyGlobalSelectionAsync);
+        if (textBlock is HighlightedCodeTextBlock) return Wrap(textBlock, isDark, lineCount, fontFamily, fontSize, lineHeight);
         // SelectableTextBlock 每次收到 Inlines 变化都会重新拼接全文来校正选区。
         // 先在未绑定的集合内完成构造，避免长代码的 token 数量带来平方级复制。
         var inlines = new InlineCollection();
@@ -67,7 +69,7 @@ internal static class CodeHighlighter
         {
             inlines.Add(new Run(code) { Foreground = isDark ? Brushes.White : Brushes.Black });
             textBlock.Inlines = inlines;
-            return Wrap(textBlock, isDark, lineCount);
+            return Wrap(textBlock, isDark, lineCount, fontFamily, fontSize, lineHeight);
         }
 
         for (var index = 0; index < lines!.Length; index++)
@@ -81,28 +83,42 @@ internal static class CodeHighlighter
         }
 
         textBlock.Inlines = inlines;
-        return Wrap(textBlock, isDark, lineCount);
+        return Wrap(textBlock, isDark, lineCount, fontFamily, fontSize, lineHeight);
     }
 
-    private static Control Wrap(Control content, bool isDark, int lineCount)
+    private static SelectableTextBlock ConfigureCodeTextBlock(
+        SelectableTextBlock textBlock,
+        FontFamily fontFamily,
+        double fontSize,
+        double lineHeight,
+        Func<bool>? hasGlobalSelection,
+        Func<Task>? copyGlobalSelectionAsync)
     {
-        if (content is SelectableTextBlock textBlock)
-        {
-            var lineNumbers = new SelectableTextBlock
-            {
-                Tag = "CodeLineNumbers",
-                Text = string.Join(Environment.NewLine, Enumerable.Range(1, lineCount).Select(i => i.ToString())),
-                TextWrapping = TextWrapping.NoWrap,
-                FontFamily = textBlock.FontFamily,
-                FontSize = textBlock.FontSize,
-                LineHeight = textBlock.LineHeight,
-                // 依据实际代码背景选择行号颜色，不随窗口明暗误判，也不额外衰减透明度。
-                Foreground = new ImmutableSolidColorBrush(isDark ? Color.FromRgb(0xAD, 0xB7, 0xC5) : Color.FromRgb(0x52, 0x60, 0x75)),
-                TextAlignment = TextAlignment.Right,
-                Margin = new Thickness(0, 0, 12, 0),
-                IsHitTestVisible = false
-            };
+        textBlock.TextWrapping = TextWrapping.NoWrap;
+        textBlock.FontFamily = fontFamily;
+        textBlock.FontSize = fontSize;
+        textBlock.LineHeight = lineHeight;
+        // 选区使用不透明底色，避免与浅色代码背景合成后降低白字对比度。
+        textBlock.SelectionBrush = new ImmutableSolidColorBrush(Color.FromRgb(0x24, 0x5F, 0xC0));
+        textBlock.SelectionForegroundBrush = Brushes.White;
+        textBlock.Classes.Add(MarkdownStyleKeys.CodeBlockText);
+        TextOptions.SetBaselinePixelAlignment(textBlock, BaselinePixelAlignment.Aligned);
+        textBlock.ContextMenu = CreateCopyContextMenu(textBlock, hasGlobalSelection, copyGlobalSelectionAsync);
+        return textBlock;
+    }
 
+    private static Control Wrap(
+        Control content,
+        bool isDark,
+        int lineCount,
+        FontFamily fontFamily,
+        double fontSize,
+        double lineHeight)
+    {
+        // 分块正文自带行号列（行号与代码列等高），这里只包滚动容器。
+        if (content is not ChunkedHighlightedCodeBody)
+        {
+            var lineNumbers = CreateLineNumbers(lineCount, isDark, fontFamily, fontSize, lineHeight);
             var grid = new Grid
             {
                 ColumnDefinitions =
@@ -135,6 +151,29 @@ internal static class CodeHighlighter
             if (Math.Abs(margin.Bottom - height) > .5) content.Margin = new Thickness(margin.Left, margin.Top, margin.Right, height);
         };
         return scrollViewer;
+    }
+
+    private static SelectableTextBlock CreateLineNumbers(
+        int lineCount,
+        bool isDark,
+        FontFamily fontFamily,
+        double fontSize,
+        double lineHeight)
+    {
+        return new SelectableTextBlock
+        {
+            Tag = "CodeLineNumbers",
+            Text = string.Join(Environment.NewLine, Enumerable.Range(1, lineCount).Select(i => i.ToString())),
+            TextWrapping = TextWrapping.NoWrap,
+            FontFamily = fontFamily,
+            FontSize = fontSize,
+            LineHeight = lineHeight,
+            // 依据实际代码背景选择行号颜色，不随窗口明暗误判，也不额外衰减透明度。
+            Foreground = new ImmutableSolidColorBrush(isDark ? Color.FromRgb(0xAD, 0xB7, 0xC5) : Color.FromRgb(0x52, 0x60, 0x75)),
+            TextAlignment = TextAlignment.Right,
+            Margin = new Thickness(0, 0, 12, 0),
+            IsHitTestVisible = false
+        };
     }
 
     private static ContextMenu CreateCopyContextMenu(
@@ -485,6 +524,114 @@ internal static class CodeHighlighter
                 FontSize, Foreground, TextAlignment, TextWrapping, lineHeight: LineHeight,
                 letterSpacing: LetterSpacing, textStyleOverrides: styles);
         }
+    }
+
+    /// <summary>
+    /// 长代码分块正文：每块 <see cref="MarkdownCodeChunking.LinesPerChunk"/> 行独立排版，
+    /// 行号按整篇行数一次生成（与代码列等高）；流式追加时只重建首个变化行所在的块及其后续块。
+    /// </summary>
+    private sealed class ChunkedHighlightedCodeBody : Grid, IMarkdownCodeBodyUpdate
+    {
+        private readonly StackPanel _codeColumn;
+        private readonly Func<string, HighlightedLine[]?> _tokenize;
+        private readonly FontFamily _fontFamily;
+        private readonly double _fontSize;
+        private readonly double _lineHeight;
+        private readonly Func<bool>? _hasGlobalSelection;
+        private readonly Func<Task>? _copyGlobalSelectionAsync;
+        private readonly List<HighlightedCodeTextBlock> _chunks = [];
+        private string _normalized;
+
+        public ChunkedHighlightedCodeBody(
+            string code,
+            HighlightedLine[] lines,
+            FontFamily fontFamily,
+            double fontSize,
+            double lineHeight,
+            bool isDark,
+            Func<string, HighlightedLine[]?> tokenize,
+            Func<bool>? hasGlobalSelection,
+            Func<Task>? copyGlobalSelectionAsync)
+        {
+            ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+            ColumnDefinitions.Add(new ColumnDefinition(new GridLength(1, GridUnitType.Star)));
+            _fontFamily = fontFamily;
+            _fontSize = fontSize;
+            _lineHeight = lineHeight;
+            _normalized = code;
+            _tokenize = tokenize;
+            _hasGlobalSelection = hasGlobalSelection;
+            _copyGlobalSelectionAsync = copyGlobalSelectionAsync;
+
+            var codeLines = code.Split('\n');
+            Children.Add(CreateLineNumbers(codeLines.Length, isDark, fontFamily, fontSize, lineHeight));
+            _codeColumn = new StackPanel { Orientation = global::Avalonia.Layout.Orientation.Vertical };
+            Grid.SetColumn(_codeColumn, 1);
+            Children.Add(_codeColumn);
+            for (var chunk = 0; chunk < ChunkCount(codeLines.Length); chunk++)
+            {
+                AddChunk(chunk, codeLines, lines);
+            }
+        }
+
+        public bool TryUpdate(string code)
+        {
+            var normalized = code.Replace("\r\n", "\n");
+            var lines = normalized.Split('\n');
+            if (lines.Length <= MarkdownCodeChunking.ThresholdLines)
+            {
+                return false;
+            }
+
+            var highlighted = _tokenize(normalized);
+            if (highlighted is null || highlighted.Length != lines.Length)
+            {
+                return false;
+            }
+
+            var oldLines = _normalized.Split('\n');
+            var shared = Math.Min(oldLines.Length, lines.Length);
+            var firstChanged = 0;
+            while (firstChanged < shared && oldLines[firstChanged] == lines[firstChanged])
+            {
+                firstChanged++;
+            }
+
+            var firstChunk = firstChanged / MarkdownCodeChunking.LinesPerChunk;
+            while (_chunks.Count > firstChunk)
+            {
+                _codeColumn.Children.Remove(_chunks[^1]);
+                _chunks.RemoveAt(_chunks.Count - 1);
+            }
+
+            for (var chunk = firstChunk; chunk < ChunkCount(lines.Length); chunk++)
+            {
+                AddChunk(chunk, lines, highlighted);
+            }
+
+            _normalized = normalized;
+            return true;
+        }
+
+        private void AddChunk(int chunk, string[] lines, IReadOnlyList<HighlightedLine> highlighted)
+        {
+            var start = chunk * MarkdownCodeChunking.LinesPerChunk;
+            var end = Math.Min(start + MarkdownCodeChunking.LinesPerChunk, lines.Length);
+            var chunkLines = new HighlightedLine[end - start];
+            for (var line = start; line < end; line++)
+            {
+                chunkLines[line - start] = highlighted[line];
+            }
+
+            var text = string.Join('\n', lines, start, end - start);
+            var block = new HighlightedCodeTextBlock(text, chunkLines);
+            ConfigureCodeTextBlock(block, _fontFamily, _fontSize, _lineHeight, _hasGlobalSelection, _copyGlobalSelectionAsync);
+            _chunks.Add(block);
+            _codeColumn.Children.Add(block);
+        }
+
+        private static int ChunkCount(int lineCount) =>
+            (lineCount + MarkdownCodeChunking.LinesPerChunk - 1) / MarkdownCodeChunking.LinesPerChunk;
     }
 
     private sealed record HighlightedToken(

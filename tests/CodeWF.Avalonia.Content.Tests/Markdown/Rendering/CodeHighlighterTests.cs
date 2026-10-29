@@ -17,7 +17,7 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 public sealed class CodeHighlighterTests(AvaloniaPlatformFixture platform)
 {
     [Fact]
-    public void LongHighlightedCodeDoesNotRebuildTheFullTextForEveryToken() => platform.Run(() =>
+    public void LongHighlightedCodeIsChunkedWithoutRebuildingTheFullText() => platform.Run(() =>
     {
         const string line = "public int Compute(int value) => value * 42; // comment";
         CodeHighlighter.Render(line, "csharp", false, FontFamily.Default, 13, 22, null);
@@ -25,16 +25,23 @@ public sealed class CodeHighlighterTests(AvaloniaPlatformFixture platform)
         var before = GC.GetAllocatedBytesForCurrentThread();
         var control = CodeHighlighter.Render(source, "csharp", false, FontFamily.Default, 13, 22, null);
         var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
-        var code = control.GetLogicalDescendants().OfType<SelectableTextBlock>()
-            .Single(block => block.Classes.Contains(MarkdownStyleKeys.CodeBlockText));
-        Assert.Equal(source, (code.Text ?? code.Inlines!.Text).Replace("\r\n", "\n"));
+        var codeBlocks = control.GetLogicalDescendants().OfType<SelectableTextBlock>()
+            .Where(block => block.Classes.Contains(MarkdownStyleKeys.CodeBlockText)).ToArray();
+        // 400 行按 128 行切块：128 + 128 + 128 + 16。
+        Assert.Equal(4, codeBlocks.Length);
+        Assert.Equal(source, string.Join('\n', codeBlocks.Select(block => block.Text)));
         Assert.True(allocated < 64L * 1024 * 1024, $"400 code lines allocated {allocated / 1048576d:F1} MiB");
-        code.Measure(new global::Avalonia.Size(800, double.PositiveInfinity));
-        Assert.Equal(400 * 22, code.DesiredSize.Height, 1);
-        code.SelectionStart = source.IndexOf("Compute", StringComparison.Ordinal);
-        code.SelectionEnd = code.SelectionStart + 7;
-        Assert.Equal("Compute", code.SelectedText);
-        Assert.True(code.GetLogicalDescendants().Count() < 10, "Long code should not create a logical element for every token");
+        foreach (var block in codeBlocks)
+        {
+            block.Measure(new global::Avalonia.Size(800, double.PositiveInfinity));
+        }
+
+        Assert.Equal(400 * 22, codeBlocks.Sum(block => block.DesiredSize.Height), 1);
+        var first = codeBlocks[0];
+        first.SelectionStart = first.Text!.IndexOf("Compute", StringComparison.Ordinal);
+        first.SelectionEnd = first.SelectionStart + 7;
+        Assert.Equal("Compute", first.SelectedText);
+        Assert.True(control.GetLogicalDescendants().Count() < 24, "Long code should not create a logical element for every token");
     });
 
     [Theory]
