@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Input;
 using global::Avalonia.Input.Platform;
@@ -41,6 +41,8 @@ public class MarkdownEditorView : UserControl
     private const string DefaultWarningKey = "CodeWFMarkdownEditorWarningBrush";
     private const string DefaultDangerKey = "CodeWFMarkdownEditorDangerBrush";
     private const string DefaultSeparatorKey = "CodeWFMarkdownEditorSeparatorBrush";
+    private const string DefaultLineNumberKey = "CodeWFMarkdownEditorLineNumberBrush";
+    private const string DefaultCurrentLineNumberKey = "CodeWFMarkdownEditorCurrentLineNumberBrush";
 
     private readonly MarkdownEditorOptions _options;
     private readonly IHighlightingDefinition _codeHighlighting;
@@ -48,6 +50,7 @@ public class MarkdownEditorView : UserControl
     private readonly IMarkdownEditorSearchService _search;
     private readonly Border _container;
     private readonly TextEditor _editor;
+    private MarkdownLineNumberMargin? _lineNumberMargin;
     private readonly double _defaultLineHeightFactor;
     private readonly Border _paneHead;
     private readonly Border _chipHost;
@@ -65,6 +68,9 @@ public class MarkdownEditorView : UserControl
             if (view._container is not null) view._container.Padding = view.EditorPadding;
         });
         EditorLineHeightProperty.Changed.AddClassHandler<MarkdownEditorView>((view, _) => view.UpdateEditorLineHeight());
+        HighlightCurrentLineProperty.Changed.AddClassHandler<MarkdownEditorView>((view, _) => view.ApplyThemedVisuals());
+        LineNumberBrushKeyProperty.Changed.AddClassHandler<MarkdownEditorView>((view, _) => view.ApplyThemedVisuals());
+        CurrentLineNumberBrushKeyProperty.Changed.AddClassHandler<MarkdownEditorView>((view, _) => view.ApplyThemedVisuals());
     }
 
     public MarkdownEditorView()
@@ -92,7 +98,6 @@ public class MarkdownEditorView : UserControl
             FontFamily = new FontFamily("Cascadia Mono, Consolas, Microsoft YaHei UI"),
             FontSize = _options.FontSize,
             HorizontalScrollBarVisibility = global::Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
-            ShowLineNumbers = _options.ShowLineNumbers,
             VerticalScrollBarVisibility = global::Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
             WordWrap = true
         };
@@ -101,6 +106,8 @@ public class MarkdownEditorView : UserControl
         // 每个编辑器拥有独立配色，避免不同主题的并存编辑器改写全局语法定义。
         _codeHighlighting = LoadHighlighting("CSharp-Mode", HighlightingManager.Instance);
         _editor.SyntaxHighlighting = LoadHighlighting("MarkDown-Mode", new EditorHighlightingResolver(_codeHighlighting));
+        _showLineNumbers = _options.ShowLineNumbers;
+        UpdateLineNumberMargin();
         _editor.TextArea.TextEntering += OnTextEntering;
         _editor.TextChanged += (_, _) => RaiseMarkdownChanged();
         _editor.TextArea.Caret.PositionChanged += (_, _) => RaiseSelectionChanged();
@@ -187,6 +194,12 @@ public class MarkdownEditorView : UserControl
     public static readonly StyledProperty<string> CurrentLineBorderKeyProperty =
         AvaloniaProperty.Register<MarkdownEditorView, string>(nameof(CurrentLineBorderKey), DefaultCurrentLineBorderKey);
 
+    public static readonly StyledProperty<string> LineNumberBrushKeyProperty =
+        AvaloniaProperty.Register<MarkdownEditorView, string>(nameof(LineNumberBrushKey), DefaultLineNumberKey);
+
+    public static readonly StyledProperty<string> CurrentLineNumberBrushKeyProperty =
+        AvaloniaProperty.Register<MarkdownEditorView, string>(nameof(CurrentLineNumberBrushKey), DefaultCurrentLineNumberKey);
+
     /// <summary>设计令牌键：标题等强调色。</summary>
     public static readonly StyledProperty<string> AccentKeyProperty =
         AvaloniaProperty.Register<MarkdownEditorView, string>(nameof(AccentKey), DefaultAccentKey);
@@ -259,6 +272,18 @@ public class MarkdownEditorView : UserControl
         set => SetValue(CurrentLineBorderKeyProperty, value);
     }
 
+    public string LineNumberBrushKey
+    {
+        get => GetValue(LineNumberBrushKeyProperty);
+        set => SetValue(LineNumberBrushKeyProperty, value);
+    }
+
+    public string CurrentLineNumberBrushKey
+    {
+        get => GetValue(CurrentLineNumberBrushKeyProperty);
+        set => SetValue(CurrentLineNumberBrushKeyProperty, value);
+    }
+
     public string AccentKey
     {
         get => GetValue(AccentKeyProperty);
@@ -327,11 +352,22 @@ public class MarkdownEditorView : UserControl
         set => SetText(value);
     }
 
-    /// <summary>是否显示行号。</summary>
+    private bool _showLineNumbers;
+
+    /// <summary>是否显示行号：使用库内行号边距（当前行强调色加粗），不用 AvaloniaEdit 内置边距。</summary>
     public bool ShowLineNumbers
     {
-        get => _editor.ShowLineNumbers;
-        set => _editor.ShowLineNumbers = value;
+        get => _showLineNumbers;
+        set
+        {
+            if (_showLineNumbers == value)
+            {
+                return;
+            }
+
+            _showLineNumbers = value;
+            UpdateLineNumberMargin();
+        }
     }
 
     /// <summary>编辑器字号（不占用 UserControl 的 FontSize，避免与控件自身字体语义混淆）。</summary>
@@ -615,8 +651,36 @@ public class MarkdownEditorView : UserControl
 
         _editor.TextArea.TextView.CurrentLineBackground = ResolveBrush(CurrentLineBackgroundKey) ?? Brushes.Transparent;
         _editor.TextArea.TextView.CurrentLineBorder = new Pen(ResolveBrush(CurrentLineBorderKey) ?? Brushes.Transparent, 1);
+        UpdateLineNumberMargin();
 
         ApplyThemedSyntaxHighlighting();
+    }
+
+    // 行号边距：AvaloniaEdit 内置边距无逐行着色能力，改用库内边距实现当前行强调。
+    private void UpdateLineNumberMargin()
+    {
+        if (_showLineNumbers && _lineNumberMargin is null)
+        {
+            _lineNumberMargin = new MarkdownLineNumberMargin();
+            _editor.TextArea.LeftMargins.Insert(0, _lineNumberMargin);
+        }
+        else if (!_showLineNumbers && _lineNumberMargin is not null)
+        {
+            _editor.TextArea.LeftMargins.Remove(_lineNumberMargin);
+            _lineNumberMargin = null;
+        }
+
+        if (_lineNumberMargin is null)
+        {
+            return;
+        }
+
+        _lineNumberMargin.LineNumbersBrush = ResolveBrush(LineNumberBrushKey) ?? ResolveBrush(EditorForegroundKey);
+        _lineNumberMargin.CurrentLineBrush = ResolveBrush(CurrentLineNumberBrushKey)
+                                             ?? ResolveBrush(AccentKey)
+                                             ?? ResolveBrush(EditorForegroundKey);
+        _lineNumberMargin.InvalidateMeasure();
+        _lineNumberMargin.InvalidateVisual();
     }
 
     // Markdown 语法着色：标题用强调色，代码/引用/链接/图片各自语义色，颜色全部可被宿主资源键覆盖。
