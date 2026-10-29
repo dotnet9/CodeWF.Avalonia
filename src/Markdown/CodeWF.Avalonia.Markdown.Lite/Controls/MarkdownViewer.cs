@@ -1093,6 +1093,14 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             }
         }
 
+        if (TryUpdateStreamingTailCodeBlock(diff, newModel, text))
+        {
+            _renderedMarkdown = text;
+            _renderedModel = newModel;
+            _lastRenderMode = MarkdownRenderMode.Incremental;
+            return true;
+        }
+
         var renderedNewBlocks = CreateRenderedBlocks(
             newModel.Blocks.Skip(diff.NewStartIndex).Take(diff.NewInsertCount),
             text, newModel.Blocks.Count);
@@ -1101,6 +1109,62 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         _renderedMarkdown = text;
         _renderedModel = newModel;
         _lastRenderMode = MarkdownRenderMode.Incremental;
+        return true;
+    }
+
+    /// <summary>
+    /// 流式追加时在旧尾块控件上原地更新代码：不重建 ScrollViewer，横向偏移与块内选区
+    /// 保持；只有新代码以旧代码为前缀（同一代码块在生长）时才走此路径，否则返回 false
+    /// 由调用方按普通替换处理。围栏刚闭合时多出的新块接在尾块之后插入。
+    /// </summary>
+    private bool TryUpdateStreamingTailCodeBlock(
+        MarkdownRenderDiff diff,
+        MarkdownDocumentModel newModel,
+        string text)
+    {
+        if (!IsAppendOnlyStreamingUpdate(text)
+            || diff.OldRemoveCount != 1
+            || diff.NewInsertCount < 1
+            || diff.ReplaceStartIndex != diff.NewStartIndex
+            || diff.ReplaceStartIndex != _renderedBlocks.Count - 1
+            || diff.ReplaceStartIndex >= newModel.Blocks.Count
+            || _renderedBlocks[diff.ReplaceStartIndex].Kind != MarkdownBlockKind.Code
+            || _renderedBlocks[diff.ReplaceStartIndex].Control is not IStreamingCodeBlock streamingBlock
+            || newModel.Blocks[diff.ReplaceStartIndex].SyntaxBlock is not CodeBlock codeBlock
+            || !streamingBlock.TryUpdateStreaming(codeBlock, this))
+        {
+            return false;
+        }
+
+        var index = diff.ReplaceStartIndex;
+        _renderedBlocks[index] = _renderedBlocks[index].WithModel(newModel.Blocks[index]);
+
+        var extraCount = diff.NewInsertCount - 1;
+        if (extraCount > 0)
+        {
+            var extraBlocks = CreateRenderedBlocks(
+                newModel.Blocks.Skip(index + 1).Take(extraCount), text, newModel.Blocks.Count);
+            var reveal = StreamingReveal && StreamingSource is not null;
+            for (var i = 0; i < extraBlocks.Count; i++)
+            {
+                AddBlockControl(index + 1 + i, extraBlocks[i].Control);
+                _renderedBlocks.Insert(index + 1 + i, extraBlocks[i]);
+                if (reveal)
+                {
+                    RevealBlock(extraBlocks[i].Control);
+                }
+            }
+        }
+
+        for (var i = 0; i < _renderedBlocks.Count && i < newModel.Blocks.Count; i++)
+        {
+            _renderedBlocks[i] = _renderedBlocks[i].WithModel(newModel.Blocks[i]);
+        }
+
+        // 控件实例未变：保留块级选中的块集合与块内的文本选区。
+        RefreshSelectionBlocks(preserveSelection: true);
+        InvalidateDocumentLayout();
+        ReapplySearchIfActive();
         return true;
     }
 
@@ -1398,13 +1462,13 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         e.Pointer.Capture(null);
     }
 
-    private void RefreshSelectionBlocks()
+    private void RefreshSelectionBlocks(bool preserveSelection = false)
     {
         _selectionController.SetBlocks(_renderedBlocks.Select(block =>
             new MarkdownSelectionBlock(
                 block.Control,
                 new MarkdownTextSpan(block.PlainTextStart, block.PlainTextEnd),
-                block.PlainText)), _documentHost);
+                block.PlainText)), _documentHost, preserveSelection);
         UpdateSelectionState();
     }
 

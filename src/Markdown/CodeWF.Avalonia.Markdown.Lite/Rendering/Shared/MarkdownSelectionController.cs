@@ -43,8 +43,11 @@ internal sealed class MarkdownSelectionController
 		}
 	}
 
-	public void SetBlocks(IEnumerable<MarkdownSelectionBlock> blocks, Visual? coordinateRoot = null)
+	public void SetBlocks(IEnumerable<MarkdownSelectionBlock> blocks, Visual? coordinateRoot = null, bool preserveSelection = false)
 	{
+		// 控件实例未重建（如流式尾块原地更新）时按控件引用恢复块级选区；
+		// 控件被替换时引用对不上，恢复自然落空。
+		var selectedControls = preserveSelection ? CaptureSelectedControls() : null;
 		ClearVisualState();
 		_blocks.Clear();
 		_blocks.AddRange(blocks.Where(block => block.PlainTextSpan.Length > 0));
@@ -52,6 +55,49 @@ internal sealed class MarkdownSelectionController
 		_anchorIndex = null;
 		_activeIndex = null;
 		_hasVisualSelection = false;
+		RestoreSelection(selectedControls);
+	}
+
+	private List<Control>? CaptureSelectedControls()
+	{
+		if (!_hasVisualSelection || !_anchorIndex.HasValue || !_activeIndex.HasValue)
+		{
+			return null;
+		}
+
+		var (start, end) = GetOrderedIndexes();
+		var controls = new List<Control>();
+		for (var i = start; i <= end && i < _blocks.Count; i++)
+		{
+			controls.Add(_blocks[i].Control);
+		}
+
+		return controls;
+	}
+
+	private void RestoreSelection(List<Control>? selectedControls)
+	{
+		if (selectedControls is not { Count: > 0 })
+		{
+			return;
+		}
+
+		var indexes = new List<int>(selectedControls.Count);
+		foreach (var control in selectedControls)
+		{
+			var index = _blocks.FindIndex(block => ReferenceEquals(block.Control, control));
+			if (index < 0)
+			{
+				return;
+			}
+
+			indexes.Add(index);
+		}
+
+		indexes.Sort();
+		_anchorIndex = indexes[0];
+		_activeIndex = indexes[^1];
+		ApplyVisualState();
 	}
 
 	public bool Begin(Point point)
