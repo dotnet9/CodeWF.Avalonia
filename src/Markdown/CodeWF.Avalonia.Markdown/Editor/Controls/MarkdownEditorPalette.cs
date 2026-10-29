@@ -1,4 +1,4 @@
-using global::Avalonia.Media;
+﻿using global::Avalonia.Media;
 using global::Avalonia.Styling;
 
 namespace CodeWF.Avalonia.Markdown.Editor.Controls;
@@ -24,6 +24,7 @@ public static class MarkdownEditorPalette
     public const string WarningKey = "CodeWFMarkdownEditorWarningBrush";
     public const string DangerKey = "CodeWFMarkdownEditorDangerBrush";
     public const string SeparatorKey = "CodeWFMarkdownEditorSeparatorBrush";
+    public const string MarkerKey = "CodeWFMarkdownEditorMarkerBrush";
 
     private static readonly IReadOnlyDictionary<string, Color> LightColors = new Dictionary<string, Color>
     {
@@ -39,6 +40,7 @@ public static class MarkdownEditorPalette
         [WarningKey] = Color.Parse("#B54708"),
         [DangerKey] = Color.Parse("#CF222E"),
         [SeparatorKey] = Color.Parse("#F2F4F7"),
+        [MarkerKey] = Color.Parse("#667085"),
     };
 
     private static readonly IReadOnlyDictionary<string, Color> DarkColors = new Dictionary<string, Color>
@@ -55,6 +57,7 @@ public static class MarkdownEditorPalette
         [WarningKey] = Color.Parse("#FBBF24"),
         [DangerKey] = Color.Parse("#F87171"),
         [SeparatorKey] = Color.Parse("#232B38"),
+        [MarkerKey] = Color.Parse("#AAB4C3"),
     };
 
     /// <summary>按主题变体解析内置调色板颜色；未知键返回 null。</summary>

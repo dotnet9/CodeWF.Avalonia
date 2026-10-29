@@ -41,6 +41,7 @@ public class MarkdownEditorView : UserControl
     private const string DefaultWarningKey = "CodeWFMarkdownEditorWarningBrush";
     private const string DefaultDangerKey = "CodeWFMarkdownEditorDangerBrush";
     private const string DefaultSeparatorKey = "CodeWFMarkdownEditorSeparatorBrush";
+    private const string DefaultMarkerKey = "CodeWFMarkdownEditorMarkerBrush";
     private const string DefaultLineNumberKey = "CodeWFMarkdownEditorLineNumberBrush";
     private const string DefaultCurrentLineNumberKey = "CodeWFMarkdownEditorCurrentLineNumberBrush";
 
@@ -105,7 +106,7 @@ public class MarkdownEditorView : UserControl
 
         // 每个编辑器拥有独立配色，避免不同主题的并存编辑器改写全局语法定义。
         _codeHighlighting = LoadHighlighting("CSharp-Mode", HighlightingManager.Instance);
-        _editor.SyntaxHighlighting = LoadHighlighting("MarkDown-Mode", new EditorHighlightingResolver(_codeHighlighting));
+        _editor.SyntaxHighlighting = LoadEditorHighlighting();
         _showLineNumbers = _options.ShowLineNumbers;
         UpdateLineNumberMargin();
         _editor.TextArea.TextEntering += OnTextEntering;
@@ -200,6 +201,9 @@ public class MarkdownEditorView : UserControl
     public static readonly StyledProperty<string> CurrentLineNumberBrushKeyProperty =
         AvaloniaProperty.Register<MarkdownEditorView, string>(nameof(CurrentLineNumberBrushKey), DefaultCurrentLineNumberKey);
 
+    public static readonly StyledProperty<string> MarkerKeyProperty =
+        AvaloniaProperty.Register<MarkdownEditorView, string>(nameof(MarkerKey), DefaultMarkerKey);
+
     /// <summary>设计令牌键：标题等强调色。</summary>
     public static readonly StyledProperty<string> AccentKeyProperty =
         AvaloniaProperty.Register<MarkdownEditorView, string>(nameof(AccentKey), DefaultAccentKey);
@@ -282,6 +286,12 @@ public class MarkdownEditorView : UserControl
     {
         get => GetValue(CurrentLineNumberBrushKeyProperty);
         set => SetValue(CurrentLineNumberBrushKeyProperty, value);
+    }
+
+    public string MarkerKey
+    {
+        get => GetValue(MarkerKeyProperty);
+        set => SetValue(MarkerKeyProperty, value);
     }
 
     public string AccentKey
@@ -692,6 +702,9 @@ public class MarkdownEditorView : UserControl
         }
 
         SetHighlightingForeground(definition, "Heading", ResolveBrush(AccentKey));
+        SetHighlightingForeground(definition, "Marker", ResolveBrush(MarkerKey) ?? ResolveBrush(EditorForegroundKey));
+        SetHighlightingForeground(definition, "Strike", ResolveBrush(QuoteKey));
+        SetHighlightingForeground(definition, "Url", ResolveBrush(MarkerKey) ?? ResolveBrush(EditorForegroundKey));
         SetHighlightingForeground(definition, "Code", ResolveBrush(CodeKey));
         SetHighlightingForeground(definition, "BlockQuote", ResolveBrush(QuoteKey));
         SetHighlightingForeground(definition, "Link", ResolveBrush(LinkKey));
@@ -756,6 +769,16 @@ public class MarkdownEditorView : UserControl
         {
             color.Background = new SimpleHighlightingBrush(solid.Color);
         }
+    }
+
+    // 源码着色用库内自定义 xshd（符号降调、围栏/表格/任务列表齐备），镜像原型 source-highlight.js。
+    private IHighlightingDefinition LoadEditorHighlighting()
+    {
+        using var stream = typeof(MarkdownEditorView).Assembly.GetManifestResourceStream(
+            "CodeWF.Avalonia.Markdown.Editor.Highlighting.VexMarkDown-Mode.xshd")
+            ?? throw new InvalidOperationException("Missing editor highlighting resource: VexMarkDown-Mode.xshd");
+        using var reader = XmlReader.Create(stream);
+        return HighlightingLoader.Load(reader, new EditorHighlightingResolver(_codeHighlighting));
     }
 
     private static HighlightingColor? FindColor(IHighlightingDefinition definition, string colorName) =>
