@@ -57,6 +57,7 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
     private string _highlightLanguage;
     private string _titleLanguage;
     private int _lineCount;
+    private bool _isOpen;
     private bool _folded;
     private bool _wrap;
     private int _copyGeneration;
@@ -70,7 +71,9 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
         _highlightLanguage = (codeBlock as FencedCodeBlock)?.Info is { Length: > 0 } info ? info : "text";
         _titleLanguage = _fence.ToTitle();
         _lineCount = CountLines(codeBlock);
-        _folded = context.IsCodeBlockFolded(blockKey);
+        _isOpen = codeBlock.IsOpen;
+        // 流式输出中（围栏未闭合）不允许折叠：用户正看着的代码不该被收起。
+        _folded = !_isOpen && context.IsCodeBlockFolded(blockKey);
         _wrap = context.IsCodeBlockWrapped(blockKey);
 
         context.AddMarkdownClass(this, MarkdownStyleKeys.CodeBlock);
@@ -186,10 +189,17 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
         _highlightLanguage = (codeBlock as FencedCodeBlock)?.Info is { Length: > 0 } info ? info : "text";
         _titleLanguage = _fence.ToTitle();
         _lineCount = CountLines(codeBlock);
+        var wasOpen = _isOpen;
+        _isOpen = codeBlock.IsOpen;
 
         _title.Text = _titleLanguage;
         _expandButton.Content = ExpandAllText(_lineCount);
         EnsureFoldButton();
+        // 闭合那一刻补上折叠：流式期间不提供折叠，但状态可能已被 API 设置过。
+        if (wasOpen && !_isOpen)
+        {
+            SetFolded(context.IsCodeBlockFolded(_blockKey), persist: false);
+        }
         UpdateAutomationNames();
 
         var selection = CaptureSelection();
@@ -294,7 +304,9 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
 
     private void EnsureFoldButton()
     {
-        var collapsible = _context.EnableCodeBlockFolding && _lineCount >= FoldableLineThreshold;
+        var collapsible = _context.EnableCodeBlockFolding
+                          && !_isOpen
+                          && _lineCount >= FoldableLineThreshold;
         if (collapsible && _foldButton is null)
         {
             _foldButton = CreateToolButton("CodeFold", _titleLanguage, mutedForeground: false);

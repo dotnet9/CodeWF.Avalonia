@@ -367,6 +367,8 @@ public sealed class MarkdownStreamingDocument : IDisposable
 		var fenced = new FencedCodeBlock(new FencedCodeBlockParser())
 		{
 			Info = ExtractFenceInfo(openLine, fenceLength),
+			// 未闭合标记：渲染层据此在流式输出期间禁用折叠（用户正在看的内容不该被收起）。
+			IsOpen = true
 		};
 		fenced.Span = new SourceSpan(indent, remendedTail.Length - 1);
 

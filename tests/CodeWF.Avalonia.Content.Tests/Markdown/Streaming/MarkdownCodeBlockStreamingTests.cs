@@ -1,4 +1,4 @@
-using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
+﻿using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 using CodeWF.Avalonia.Markdown;
 using CodeWF.Avalonia.Markdown.Controls;
 using CodeWF.Avalonia.Markdown.Streaming;
@@ -102,16 +102,51 @@ public sealed class MarkdownCodeBlockStreamingTests(AvaloniaPlatformFixture plat
 			}
 
 			Click(FindButton(viewer, "CodeWrap"), window);
-			Click(FindButton(viewer, "CodeFold"), window);
-			Assert.False(IsCodeContentVisible(viewer));
+			Assert.Equal(TextWrapping.Wrap, FindCodeText(viewer).TextWrapping);
 
 			builder.Append("var tail = 10;\n");
 			document.Append("var tail = 10;\n");
 			WaitForSource(viewer, builder.ToString());
 
-			Assert.False(IsCodeContentVisible(viewer), "流式追加不应展开已折叠的代码块");
 			Assert.Equal(TextWrapping.Wrap, FindCodeText(viewer).TextWrapping);
-			Assert.Equal("▸", FindButton(viewer, "CodeFold").Content);
+			Assert.Throws<InvalidOperationException>(() => FindButton(viewer, "CodeFold"));
+		}
+		finally
+		{
+			window.Close();
+		}
+	});
+
+	[Fact]
+	public void OpenFence_HasNoFoldButton_FoldAppearsOnlyAfterClose() => platform.Run(() =>
+	{
+		using var document = new MarkdownStreamingDocument();
+		var (window, viewer) = CreateViewer(document);
+		try
+		{
+			var builder = new System.Text.StringBuilder("```csharp\n");
+			document.Append(builder.ToString());
+			WaitForSource(viewer, builder.ToString());
+
+			for (var i = 0; i < 9; i++)
+			{
+				builder.Append($"var value{i} = {i};\n");
+				document.Append($"var value{i} = {i};\n");
+				WaitForSource(viewer, builder.ToString());
+			}
+
+			// 围栏未闭合：行数早已过阈值，但用户正看着的代码不能被收起。
+			Assert.Throws<InvalidOperationException>(() => FindButton(viewer, "CodeFold"));
+			Assert.True(IsCodeContentVisible(viewer));
+
+			builder.Append("```\n");
+			document.Append("```\n");
+			WaitForSource(viewer, builder.ToString());
+
+			var fold = FindButton(viewer, "CodeFold");
+			Assert.Equal("▾", fold.Content);
+			Click(fold, window);
+			Assert.False(IsCodeContentVisible(viewer), "围栏闭合后应可折叠");
 		}
 		finally
 		{
