@@ -29,6 +29,9 @@
     <x:Double x:Key="CodeWFMarkdownCopyButtonHeight">27.1</x:Double>
     <Thickness x:Key="CodeWFMarkdownCopyButtonPadding">8 0</Thickness>
     <CornerRadius x:Key="CodeWFMarkdownCopyButtonCornerRadius">4</CornerRadius>
+    <x:Double x:Key="CodeWFMarkdownCodeBlockToolButtonSize">27</x:Double>
+    <x:Double x:Key="CodeWFMarkdownCodeBlockToolbarSpacing">2.5</x:Double>
+    <x:Double x:Key="CodeWFMarkdownCodeBlockFooterSpacing">4.5</x:Double>
 
     <x:Double x:Key="CodeWFMarkdownListSpacing">3.4</x:Double>
     <Thickness x:Key="CodeWFMarkdownListMargin">0 1 0 5</Thickness>

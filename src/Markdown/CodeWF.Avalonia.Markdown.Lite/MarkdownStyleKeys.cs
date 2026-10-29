@@ -31,6 +31,10 @@ public static class MarkdownStyleKeys
     public const string CodeBlockText = "MdCodeBlockText";
     public const string CodeLanguage = "MdCodeLanguage";
     public const string CopyButton = "MdCopyButton";
+    public const string CodeBlockToolbar = "MdCodeBlockToolbar";
+    public const string CodeBlockToolButton = "MdCodeBlockToolButton";
+    public const string CodeBlockFooter = "MdCodeBlockFooter";
+    public const string CodeExpandButton = "MdCodeExpandButton";
     public const string List = "MdList";
     public const string ListItem = "MdListItem";
     public const string ListItemContent = "MdListItemContent";

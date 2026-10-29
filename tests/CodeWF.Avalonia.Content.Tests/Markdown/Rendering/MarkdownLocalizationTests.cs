@@ -65,14 +65,14 @@ public sealed class MarkdownLocalizationTests(AvaloniaPlatformFixture platform)
             {
                 manager.Culture = new CultureInfo(culture);
                 var deadline = DateTime.UtcNow.AddSeconds(5);
-                while (!viewer.GetVisualDescendants().OfType<Button>().Any(button => Equals(button.Content, copy)))
+                while (!viewer.GetVisualDescendants().OfType<Button>().Any(button => Equals(ToolTip.GetTip(button), copy)))
                 {
                     Dispatcher.UIThread.RunJobs();
                     Assert.True(DateTime.UtcNow < deadline, "Code block translation did not refresh: " + culture);
                     Thread.Sleep(10);
                 }
                 Assert.Equal(rendered, Assert.IsType<MenuItem>(viewer.ContextMenu!.Items[0]).Header);
-                Assert.Contains(viewer.GetVisualDescendants().OfType<Button>(), button => Equals(button.Content, copy));
+                Assert.Contains(viewer.GetVisualDescendants().OfType<Button>(), button => Equals(ToolTip.GetTip(button), copy));
                 var paragraph = viewer.GetVisualDescendants().OfType<SelectableTextBlock>().First(text => text.ContextMenu?.Items.Count == 2);
                 Assert.Equal(selected, Assert.IsType<MenuItem>(paragraph.ContextMenu!.Items[0]).Header);
             }

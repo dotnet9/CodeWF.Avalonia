@@ -13,6 +13,7 @@ using global::Avalonia.Input.Platform;
 using global::Avalonia.Interactivity;
 using global::Avalonia.Layout;
 using global::Avalonia.Media;
+using global::Avalonia.Platform.Storage;
 using global::Avalonia.Styling;
 using global::Avalonia.Threading;
 using global::Avalonia.VisualTree;
@@ -590,6 +591,12 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     /// </summary>
     public event EventHandler<CodeBlockToolRenderEventArgs>? CodeBlockToolRender;
 
+    /// <summary>
+    /// 代码块下载请求：未置 <see cref="CodeBlockSaveEventArgs.Handled" /> 时由 Viewer
+    /// 弹出系统保存对话框写入代码。
+    /// </summary>
+    public event EventHandler<CodeBlockSaveEventArgs>? CodeBlockSaveRequested;
+
     static MarkdownViewer()
     {
         SyntaxOptionsProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) =>
@@ -1001,6 +1008,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             && !IsAppendOnlyStreamingUpdate(text))
         {
             _codeBlockFoldedStates.Clear();
+            _codeBlockWrapStates.Clear();
             _codeHighlightSessions.Clear();
         }
 
@@ -1075,11 +1083,13 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             foreach (var block in _renderedModel.Blocks.Skip(diff.ReplaceStartIndex).Take(diff.OldRemoveCount))
             {
                 _codeBlockFoldedStates.Remove(block.SourceSpan.Start);
+                _codeBlockWrapStates.Remove(block.SourceSpan.Start);
             }
 
             foreach (var block in newModel.Blocks.Skip(diff.NewStartIndex).Take(diff.NewInsertCount))
             {
                 _codeBlockFoldedStates.Remove(block.SourceSpan.Start);
+                _codeBlockWrapStates.Remove(block.SourceSpan.Start);
             }
         }
 
@@ -1981,6 +1991,51 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     void Rendering.IMarkdownRenderContext.SetCodeBlockFolded(int blockKey, bool folded) =>
         SetCodeBlockFolded(blockKey, folded);
 
+    bool Rendering.IMarkdownRenderContext.EnableCodeBlockFolding => EnableCodeBlockFolding;
+
+    // 代码块换行状态：按块键保存用户对单个代码块的切换，未切换过的块回落到
+    // Viewer 级 CodeBlockWrap。键与折叠状态一致（源码起始偏移），换文档时一并清理。
+    private readonly Dictionary<int, bool> _codeBlockWrapStates = [];
+
+    /// <summary>查询某代码块是否按块换行（未单独切换过时取 <see cref="CodeBlockWrap" />）。</summary>
+    public bool IsCodeBlockWrapped(int blockKey) =>
+        _codeBlockWrapStates.TryGetValue(blockKey, out var wrapped) ? wrapped : CodeBlockWrap;
+
+    void Rendering.IMarkdownRenderContext.PersistCodeBlockWrap(int blockKey, bool wrapped) =>
+        _codeBlockWrapStates[blockKey] = wrapped;
+
+    void Rendering.IMarkdownRenderContext.PersistCodeBlockFolded(int blockKey, bool folded) =>
+        _codeBlockFoldedStates[blockKey] = folded;
+
+    async Task Rendering.IMarkdownRenderContext.SaveCodeBlockAsync(string code, string? language, string? path)
+    {
+        var args = new CodeBlockSaveEventArgs(
+            code, language, path, Rendering.MarkdownCodeFileNames.Suggest(language, path));
+        CodeBlockSaveRequested?.Invoke(this, args);
+        if (args.Handled)
+        {
+            return;
+        }
+
+        if (TopLevel.GetTopLevel(this)?.StorageProvider is not { CanSave: true } storage)
+        {
+            return;
+        }
+
+        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            SuggestedFileName = args.SuggestedFileName
+        });
+        if (file is null)
+        {
+            return;
+        }
+
+        await using var stream = await file.OpenWriteAsync();
+        await using var writer = new StreamWriter(stream, new UTF8Encoding(false));
+        await writer.WriteAsync(args.Code);
+    }
+
     // 代码块高亮行级缓存会话：键 = 块源码起始偏移。流式增长场景下同一代码块
     // 跨快照复用会话，未变行不重算；换文档时随折叠状态一起清理（见 RenderDocumentFull）。
     private readonly Dictionary<int, Rendering.MarkdownCodeHighlightSession> _codeHighlightSessions = [];
@@ -2022,7 +2077,9 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         MarkdownDocumentModel newModel,
         Streaming.MarkdownSnapshotEdit edit)
     {
-        if (_codeBlockFoldedStates.Count == 0 && _codeHighlightSessions.Count == 0)
+        if (_codeBlockFoldedStates.Count == 0
+            && _codeBlockWrapStates.Count == 0
+            && _codeHighlightSessions.Count == 0)
         {
             return;
         }
@@ -2031,6 +2088,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         var blockMap = AlignBlocksByHash(oldModel.Blocks, newModel.Blocks);
 
         RemapOffsets(_codeBlockFoldedStates);
+        RemapOffsets(_codeBlockWrapStates);
         RemapOffsets(_codeHighlightSessions);
 
         void RemapOffsets<T>(Dictionary<int, T> states)

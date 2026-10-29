@@ -127,6 +127,44 @@
                 Value="{Binding Background, RelativeSource={RelativeSource AncestorType=Button}}" />
     </Style>
 
+    <Style Selector="StackPanel.MdCodeBlockToolbar">
+        <Setter Property="Spacing" Value="{DynamicResource CodeWFMarkdownCodeBlockToolbarSpacing}" />
+    </Style>
+
+    <Style Selector="Button.MdCodeBlockToolButton">
+        <Setter Property="Width" Value="{DynamicResource CodeWFMarkdownCodeBlockToolButtonSize}" />
+        <Setter Property="Height" Value="{DynamicResource CodeWFMarkdownCodeBlockToolButtonSize}" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="CornerRadius" Value="{DynamicResource CodeWFMarkdownCopyButtonCornerRadius}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Button.MdCodeBlockToolButton:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                     Button.MdCodeBlockToolButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ButtonDefaultBackground}" />
+    </Style>
+
+    <Style Selector="StackPanel.MdCodeBlockFooter">
+        <Setter Property="Spacing" Value="{DynamicResource CodeWFMarkdownCodeBlockFooterSpacing}" />
+        <Setter Property="Margin" Value="0 2 0 0" />
+    </Style>
+
+    <Style Selector="Button.MdCodeExpandButton">
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Padding" Value="4 2" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="CornerRadius" Value="{DynamicResource CodeWFMarkdownCopyButtonCornerRadius}" />
+    </Style>
+
+    <Style Selector="Button.MdCodeExpandButton:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                     Button.MdCodeExpandButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background"
+                Value="{Binding Background, RelativeSource={RelativeSource AncestorType=Button}}" />
+    </Style>
+
     <Style Selector="StackPanel.MdList">
         <Setter Property="Spacing" Value="{DynamicResource CodeWFMarkdownListSpacing}" />
         <Setter Property="Margin" Value="{DynamicResource CodeWFMarkdownListMargin}" />

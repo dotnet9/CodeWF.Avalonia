@@ -74,6 +74,23 @@ public interface IMarkdownRenderContext
     /// <summary>更新折叠状态并就地位刷新该代码块。</summary>
     void SetCodeBlockFolded(int blockKey, bool folded);
 
+    /// <summary>折叠功能是否开启（关闭时渲染器不提供折叠按钮）。</summary>
+    bool EnableCodeBlockFolding { get; }
+
+    /// <summary>代码块按块键的换行状态；未单独切换过时回落到 Viewer 的全局 <c>CodeBlockWrap</c>。</summary>
+    bool IsCodeBlockWrapped(int blockKey);
+
+    /// <summary>保存某块的换行状态（控件已就地应用，不再触发重渲染）。</summary>
+    void PersistCodeBlockWrap(int blockKey, bool wrapped);
+
+    /// <summary>保存某块的折叠状态（控件已就地收起/展开，不再触发重渲染）。</summary>
+    void PersistCodeBlockFolded(int blockKey, bool folded);
+
+    /// <summary>
+    /// 下载代码块：先触发宿主的保存事件，未处理时弹出系统保存对话框。
+    /// </summary>
+    Task SaveCodeBlockAsync(string code, string? language, string? path);
+
     /// <summary>
     /// 当前顶层块的解析输入坐标系原点（原始源码绝对偏移）。分段/尾部解析时
     /// Markdig 块的 <c>Span</c> 是解析输入内的相对坐标，渲染器派生块键

@@ -25,6 +25,10 @@ namespace CodeWF.Avalonia.Markdown
         public static readonly string CopySelectedText = "CodeWF.Avalonia.Markdown.MarkdownL.CopySelectedText";
         public static readonly string CopyRenderedText = "CodeWF.Avalonia.Markdown.MarkdownL.CopyRenderedText";
         public static readonly string Copy = "CodeWF.Avalonia.Markdown.MarkdownL.Copy";
+        public static readonly string CodeWrapLines = "CodeWF.Avalonia.Markdown.MarkdownL.CodeWrapLines";
+        public static readonly string CodeUnwrapLines = "CodeWF.Avalonia.Markdown.MarkdownL.CodeUnwrapLines";
+        public static readonly string CodeDownload = "CodeWF.Avalonia.Markdown.MarkdownL.CodeDownload";
+        public static readonly string CodeExpandAllLinesFormat = "CodeWF.Avalonia.Markdown.MarkdownL.CodeExpandAllLinesFormat";
         public static readonly string SocialCopyToolName = "CodeWF.Avalonia.Markdown.MarkdownL.SocialCopyToolName";
         public static readonly string SocialCopySuffixFormat = "CodeWF.Avalonia.Markdown.MarkdownL.SocialCopySuffixFormat";
         public static readonly string EditorBoldPlaceholder = "CodeWF.Avalonia.Markdown.MarkdownL.EditorBoldPlaceholder";
