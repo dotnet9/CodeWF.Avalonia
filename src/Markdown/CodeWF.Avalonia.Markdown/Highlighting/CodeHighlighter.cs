@@ -98,9 +98,12 @@ internal static class CodeHighlighter
         textBlock.FontFamily = fontFamily;
         textBlock.FontSize = fontSize;
         textBlock.LineHeight = lineHeight;
-        // 选区使用不透明底色，避免与浅色代码背景合成后降低白字对比度。
-        textBlock.SelectionBrush = new ImmutableSolidColorBrush(Color.FromRgb(0x24, 0x5F, 0xC0));
-        textBlock.SelectionForegroundBrush = Brushes.White;
+        // 选区底/前景不再本地写死：绑 Semi 的 TextBlockSelection* 资源（与宿主 SelectableTextBlock
+        // 样式同源），宿主可按资源键覆盖；此前深色主题下固定蓝底白字。
+        textBlock.Bind(SelectableTextBlock.SelectionBrushProperty,
+            textBlock.GetResourceObservable("TextBlockSelectionBackground"));
+        textBlock.Bind(SelectableTextBlock.SelectionForegroundBrushProperty,
+            textBlock.GetResourceObservable("TextBlockSelectionForeground"));
         textBlock.Classes.Add(MarkdownStyleKeys.CodeBlockText);
         TextOptions.SetBaselinePixelAlignment(textBlock, BaselinePixelAlignment.Aligned);
         textBlock.ContextMenu = CreateCopyContextMenu(textBlock, hasGlobalSelection, copyGlobalSelectionAsync);

@@ -103,17 +103,16 @@ public sealed class CodeHighlighterTests(AvaloniaPlatformFixture platform)
     [InlineData(true, "#0D1117")]
     [InlineData(true, "#202124")]
     [InlineData(true, "#282C34")]
-    public void CodeLineNumbersAndSelectedTextRemainReadable(bool dark, string codeBackground) => platform.Run(() =>
+    public void CodeLineNumbersRemainReadable(bool dark, string codeBackground) => platform.Run(() =>
     {
         var control = CodeHighlighter.Render("first\nsecond", "text", dark, FontFamily.Default, 13, 22, null);
         var blocks = control.GetLogicalDescendants().OfType<SelectableTextBlock>().ToArray();
         var code = blocks.Single(block => block.Classes.Contains(MarkdownStyleKeys.CodeBlockText));
         var numbers = blocks.Single(block => !block.Classes.Contains(MarkdownStyleKeys.CodeBlockText));
         AssertReadable(numbers.Foreground!, Color.Parse(codeBackground), numbers.Opacity);
-        var selection = Assert.IsAssignableFrom<ISolidColorBrush>(code.SelectionBrush);
-        Assert.Equal(255, selection.Color.A);
-        Assert.Equal(1, selection.Opacity);
-        AssertReadable(code.SelectionForegroundBrush!, selection.Color, 1);
+        // 选区底/前景交宿主主题样式统一（深色主题曾本地写死蓝底白字），控件自身不再覆盖。
+        Assert.Null(code.SelectionBrush);
+        Assert.Null(code.SelectionForegroundBrush);
     });
 
     private static void AssertReadable(IBrush foreground, Color background, double opacity)
