@@ -7,96 +7,98 @@ namespace CodeWF.Avalonia.Markdown.Shared.Rendering;
 
 internal sealed record MarkdownSelectionBlock(
 	Control Control,
+	int BlockKey,
 	MarkdownTextSpan PlainTextSpan,
 	string PlainText);
+
+/// <summary>
+/// 选区坐标：只存值——块键（源码起始偏移）与块内纯文本偏移。文本始终按块模型
+/// 取，不依赖控件实例，所以流式重建控件、虚拟化回收之后选区与复制都不受影响。
+/// </summary>
+internal readonly record struct MarkdownTextPoint(int BlockKey, int Offset);
 
 internal sealed class MarkdownSelectionController
 {
 	private const string SelectedBlockClass = "MdSelectedBlock";
 	private readonly List<MarkdownSelectionBlock> _blocks = [];
 	private Visual? _coordinateRoot;
-	private int? _anchorIndex;
-	private int? _activeIndex;
+	private MarkdownTextPoint? _anchor;
+	private MarkdownTextPoint? _active;
 	private bool _hasVisualSelection;
 
 	public bool HasSelection => _hasVisualSelection
-								&& _anchorIndex.HasValue
-								&& _activeIndex.HasValue
+								&& _anchor.HasValue
+								&& _active.HasValue
 								&& SelectedText.Length > 0;
 
 	public string SelectedText
 	{
 		get
 		{
-			if (!_hasVisualSelection || !_anchorIndex.HasValue || !_activeIndex.HasValue || _blocks.Count == 0)
+			if (!_hasVisualSelection || !_anchor.HasValue || !_active.HasValue || _blocks.Count == 0)
 			{
 				return string.Empty;
 			}
 
-			var (start, end) = GetOrderedIndexes();
-			var parts = _blocks
-				.Skip(start)
-				.Take(end - start + 1)
-				.Select(block => block.PlainText)
-				.Where(text => !string.IsNullOrEmpty(text));
+			var (start, end) = GetOrderedPoints();
+			var startIndex = FindIndex(start.BlockKey);
+			var endIndex = FindIndex(end.BlockKey);
+			if (startIndex < 0 || endIndex < 0 || endIndex < startIndex)
+			{
+				return string.Empty;
+			}
+
+			var parts = new List<string>();
+			for (var i = startIndex; i <= endIndex; i++)
+			{
+				var text = _blocks[i].PlainText;
+				if (text.Length == 0)
+				{
+					continue;
+				}
+
+				var from = i == startIndex ? Math.Clamp(start.Offset, 0, text.Length) : 0;
+				var to = i == endIndex ? Math.Clamp(end.Offset, 0, text.Length) : text.Length;
+				if (to > from)
+				{
+					parts.Add(text[from..to]);
+				}
+			}
+
 			return string.Join(Environment.NewLine + Environment.NewLine, parts);
 		}
 	}
 
-	public void SetBlocks(IEnumerable<MarkdownSelectionBlock> blocks, Visual? coordinateRoot = null, bool preserveSelection = false)
+	/// <summary>
+	/// 重建块列表。选区按块键重新定位：键仍在（同一块的控件被替换/回收）就保留，
+	/// 键消失（内容真的换了）就清空。控件引用只用于绘制选中底色与命中测试。
+	/// </summary>
+	public void SetBlocks(
+		IEnumerable<MarkdownSelectionBlock> blocks,
+		Visual? coordinateRoot = null,
+		bool preserveSelection = false)
 	{
-		// 控件实例未重建（如流式尾块原地更新）时按控件引用恢复块级选区；
-		// 控件被替换时引用对不上，恢复自然落空。
-		var selectedControls = preserveSelection ? CaptureSelectedControls() : null;
 		ClearVisualState();
 		_blocks.Clear();
 		_blocks.AddRange(blocks.Where(block => block.PlainTextSpan.Length > 0));
 		_coordinateRoot = coordinateRoot;
-		_anchorIndex = null;
-		_activeIndex = null;
-		_hasVisualSelection = false;
-		RestoreSelection(selectedControls);
-	}
-
-	private List<Control>? CaptureSelectedControls()
-	{
-		if (!_hasVisualSelection || !_anchorIndex.HasValue || !_activeIndex.HasValue)
+		if (!preserveSelection)
 		{
-			return null;
-		}
-
-		var (start, end) = GetOrderedIndexes();
-		var controls = new List<Control>();
-		for (var i = start; i <= end && i < _blocks.Count; i++)
-		{
-			controls.Add(_blocks[i].Control);
-		}
-
-		return controls;
-	}
-
-	private void RestoreSelection(List<Control>? selectedControls)
-	{
-		if (selectedControls is not { Count: > 0 })
-		{
+			_anchor = null;
+			_active = null;
+			_hasVisualSelection = false;
 			return;
 		}
 
-		var indexes = new List<int>(selectedControls.Count);
-		foreach (var control in selectedControls)
+		if (_anchor is { } anchor && FindIndex(anchor.BlockKey) < 0
+			|| _active is { } active && FindIndex(active.BlockKey) < 0)
 		{
-			var index = _blocks.FindIndex(block => ReferenceEquals(block.Control, control));
-			if (index < 0)
-			{
-				return;
-			}
-
-			indexes.Add(index);
+			_anchor = null;
+			_active = null;
+			_hasVisualSelection = false;
+			return;
 		}
 
-		indexes.Sort();
-		_anchorIndex = indexes[0];
-		_activeIndex = indexes[^1];
 		ApplyVisualState();
 	}
 
@@ -110,14 +112,15 @@ internal sealed class MarkdownSelectionController
 		}
 
 		ClearVisualState();
-		_anchorIndex = index;
-		_activeIndex = index;
+		var block = _blocks[index];
+		_anchor = new MarkdownTextPoint(block.BlockKey, 0);
+		_active = new MarkdownTextPoint(block.BlockKey, block.PlainText.Length);
 		return true;
 	}
 
 	public bool Extend(Point point)
 	{
-		if (!_anchorIndex.HasValue)
+		if (!_anchor.HasValue)
 		{
 			return false;
 		}
@@ -128,12 +131,15 @@ internal sealed class MarkdownSelectionController
 			return false;
 		}
 
-		if (_activeIndex == index)
+		var block = _blocks[index];
+		var movingDown = FindIndex(_anchor.Value.BlockKey) <= index;
+		var next = new MarkdownTextPoint(block.BlockKey, movingDown ? block.PlainText.Length : 0);
+		if (_active == next)
 		{
 			return false;
 		}
 
-		_activeIndex = index;
+		_active = next;
 		ApplyVisualState();
 		return true;
 	}
@@ -146,9 +152,22 @@ internal sealed class MarkdownSelectionController
 	public void Clear()
 	{
 		ClearVisualState();
-		_anchorIndex = null;
-		_activeIndex = null;
+		_anchor = null;
+		_active = null;
 		_hasVisualSelection = false;
+	}
+
+	private int FindIndex(int blockKey)
+	{
+		for (var i = 0; i < _blocks.Count; i++)
+		{
+			if (_blocks[i].BlockKey == blockKey)
+			{
+				return i;
+			}
+		}
+
+		return -1;
 	}
 
 	private int HitTestBlock(Point documentPoint)
@@ -181,22 +200,41 @@ internal sealed class MarkdownSelectionController
 		return HitTestBlock(documentPoint);
 	}
 
-	private (int Start, int End) GetOrderedIndexes()
+	private (MarkdownTextPoint Start, MarkdownTextPoint End) GetOrderedPoints()
 	{
-		var anchor = _anchorIndex.GetValueOrDefault();
-		var active = _activeIndex.GetValueOrDefault();
-		return anchor <= active ? (anchor, active) : (active, anchor);
+		var anchor = _anchor.GetValueOrDefault();
+		var active = _active.GetValueOrDefault();
+		var anchorIndex = FindIndex(anchor.BlockKey);
+		var activeIndex = FindIndex(active.BlockKey);
+		if (anchorIndex > activeIndex
+			|| anchorIndex == activeIndex && anchor.Offset > active.Offset)
+		{
+			return (active, anchor);
+		}
+
+		return (anchor, active);
 	}
 
 	private void ApplyVisualState()
 	{
 		ClearVisualState();
-		if (!_anchorIndex.HasValue || !_activeIndex.HasValue)
+		if (!_anchor.HasValue || !_active.HasValue)
 		{
 			return;
 		}
 
-		var (start, end) = GetOrderedIndexes();
+		var start = FindIndex(_anchor.Value.BlockKey);
+		var end = FindIndex(_active.Value.BlockKey);
+		if (start < 0 || end < 0)
+		{
+			return;
+		}
+
+		if (start > end)
+		{
+			(start, end) = (end, start);
+		}
+
 		for (var i = start; i <= end; i++)
 		{
 			_blocks[i].Control.Classes.Add(SelectedBlockClass);

@@ -991,6 +991,9 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
         // 即时编辑快照：块状态已由 ApplySnapshot 按行级对齐搬好，整篇重绘时保留。
         var preserveBlockStates = _preserveBlockStatesOnNextFullRender;
+        // 选区坐标是块键 + 纯文本偏移：同一文档重绘（主题/字号）控件换了也能按键恢复；
+        // 文本真的变了则块键不再可信，交由下方清空。
+        var sameDocument = string.Equals(text, _renderedMarkdown, StringComparison.Ordinal);
 
         foreach (var block in _renderedBlocks)
         {
@@ -1019,7 +1022,13 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         _renderedModel = parsedModel ?? _scheduler.ParseNow(text, out _lastParseDuration);
 
         _lastRenderMode = MarkdownRenderMode.Full;
-        ResetSelectionState();
+        _pointerSelectionState = null;
+        _nativeSelectionTextBlock = null;
+        _isPointerSelecting = false;
+        if (!sameDocument)
+        {
+            _selectionController.Clear();
+        }
 
         if (string.IsNullOrWhiteSpace(text))
         {
@@ -1033,7 +1042,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             _renderedBlocks.Add(renderedBlock);
         }
 
-        RefreshSelectionBlocks();
+        RefreshSelectionBlocks(preserveSelection: sameDocument);
         InvalidateDocumentLayout();
         ReapplySearchIfActive();
     }
@@ -1293,8 +1302,8 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             _renderedBlocks[i] = _renderedBlocks[i].WithModel(newModel.Blocks[i]);
         }
 
-        ResetSelectionState();
-        RefreshSelectionBlocks();
+        // 选区按块键重新定位：只有被选中的块本身消失时才落空。
+        RefreshSelectionBlocks(preserveSelection: true);
         InvalidateDocumentLayout();
         ReapplySearchIfActive();
     }
@@ -1463,6 +1472,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         _selectionController.SetBlocks(_renderedBlocks.Select(block =>
             new MarkdownSelectionBlock(
                 block.Control,
+                block.Start,
                 new MarkdownTextSpan(block.PlainTextStart, block.PlainTextEnd),
                 block.PlainText)), _documentHost, preserveSelection);
         UpdateSelectionState();
