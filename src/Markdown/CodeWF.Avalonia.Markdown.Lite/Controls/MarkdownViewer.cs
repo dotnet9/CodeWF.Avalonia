@@ -1007,9 +1007,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             && !string.Equals(text, _renderedMarkdown, StringComparison.Ordinal)
             && !IsAppendOnlyStreamingUpdate(text))
         {
-            _codeBlockFoldedStates.Clear();
-            _codeBlockWrapStates.Clear();
-            _codeHighlightSessions.Clear();
+            _blockStates.Clear();
         }
 
         _preserveBlockStatesOnNextFullRender = false;
@@ -1082,14 +1080,12 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         {
             foreach (var block in _renderedModel.Blocks.Skip(diff.ReplaceStartIndex).Take(diff.OldRemoveCount))
             {
-                _codeBlockFoldedStates.Remove(block.SourceSpan.Start);
-                _codeBlockWrapStates.Remove(block.SourceSpan.Start);
+                _blockStates.RemoveBlock(block.SourceSpan.Start);
             }
 
             foreach (var block in newModel.Blocks.Skip(diff.NewStartIndex).Take(diff.NewInsertCount))
             {
-                _codeBlockFoldedStates.Remove(block.SourceSpan.Start);
-                _codeBlockWrapStates.Remove(block.SourceSpan.Start);
+                _blockStates.RemoveBlock(block.SourceSpan.Start);
             }
         }
 
@@ -2022,18 +2018,21 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     void Rendering.IMarkdownRenderContext.RaiseLinkClicked(MarkdownLinkClickEventArgs args) =>
         LinkClicked?.Invoke(this, args);
 
-    // 代码块折叠状态：键 = 块源码起始偏移。存放在 Viewer 而非控件上，
-    // 因此虚拟化回收、块重建、主题切换（同文档全量重渲染）都不丢状态。
-    private readonly Dictionary<int, bool> _codeBlockFoldedStates = [];
+    // 块绑定的视图状态（折叠、换行、高亮会话）：键 = 块源码起始偏移。
+    // 存放在 Viewer 而非控件上，因此虚拟化回收、块重建、主题切换（同文档全量重渲染）
+    // 都不丢状态；整篇刷新时按块身份把键搬到新偏移（见 RemapBlockStates）。
+    private readonly MarkdownBlockStateStore _blockStates = new();
 
     /// <summary>查询折叠状态（宿主与渲染器共用；未折叠过返回 false）。</summary>
     public bool IsCodeBlockFolded(int blockKey) =>
-        EnableCodeBlockFolding && _codeBlockFoldedStates.TryGetValue(blockKey, out var folded) && folded;
+        EnableCodeBlockFolding
+        && _blockStates.TryGet(blockKey, MarkdownBlockStateStore.CodeBlockFolded, out bool folded)
+        && folded;
 
     /// <summary>切换折叠状态并就地位刷新该代码块。</summary>
     public void SetCodeBlockFolded(int blockKey, bool folded)
     {
-        _codeBlockFoldedStates[blockKey] = folded;
+        _blockStates.Set(blockKey, MarkdownBlockStateStore.CodeBlockFolded, folded);
 
         var index = _renderedBlocks.FindIndex(
             rendered => rendered.Start == blockKey && rendered.Kind == MarkdownBlockKind.Code);
@@ -2057,19 +2056,17 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
     bool Rendering.IMarkdownRenderContext.EnableCodeBlockFolding => EnableCodeBlockFolding;
 
-    // 代码块换行状态：按块键保存用户对单个代码块的切换，未切换过的块回落到
-    // Viewer 级 CodeBlockWrap。键与折叠状态一致（源码起始偏移），换文档时一并清理。
-    private readonly Dictionary<int, bool> _codeBlockWrapStates = [];
-
     /// <summary>查询某代码块是否按块换行（未单独切换过时取 <see cref="CodeBlockWrap" />）。</summary>
     public bool IsCodeBlockWrapped(int blockKey) =>
-        _codeBlockWrapStates.TryGetValue(blockKey, out var wrapped) ? wrapped : CodeBlockWrap;
+        _blockStates.TryGet(blockKey, MarkdownBlockStateStore.CodeBlockWrapped, out bool wrapped)
+            ? wrapped
+            : CodeBlockWrap;
 
     void Rendering.IMarkdownRenderContext.PersistCodeBlockWrap(int blockKey, bool wrapped) =>
-        _codeBlockWrapStates[blockKey] = wrapped;
+        _blockStates.Set(blockKey, MarkdownBlockStateStore.CodeBlockWrapped, wrapped);
 
     void Rendering.IMarkdownRenderContext.PersistCodeBlockFolded(int blockKey, bool folded) =>
-        _codeBlockFoldedStates[blockKey] = folded;
+        _blockStates.Set(blockKey, MarkdownBlockStateStore.CodeBlockFolded, folded);
 
     async Task Rendering.IMarkdownRenderContext.SaveCodeBlockAsync(string code, string? language, string? path)
     {
@@ -2100,10 +2097,8 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         await writer.WriteAsync(args.Code);
     }
 
-    // 代码块高亮行级缓存会话：键 = 块源码起始偏移。流式增长场景下同一代码块
-    // 跨快照复用会话，未变行不重算；换文档时随折叠状态一起清理（见 RenderDocumentFull）。
-    private readonly Dictionary<int, Rendering.MarkdownCodeHighlightSession> _codeHighlightSessions = [];
-
+    // 代码块高亮行级缓存会话：流式增长场景下同一代码块跨快照复用会话，未变行不重算；
+    // 换文档时随折叠状态一起清理（见 RenderDocumentFull）。
     /// <summary>
     /// 整篇快照赋值（即时编辑的 450ms 防抖路径）：与直接赋值 <see cref="Markdown"/> 的区别是
     /// 先做行级对齐，把折叠状态与高亮会话按「行存活」搬到新偏移上，再赋值渲染。
@@ -2141,9 +2136,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         MarkdownDocumentModel newModel,
         Streaming.MarkdownSnapshotEdit edit)
     {
-        if (_codeBlockFoldedStates.Count == 0
-            && _codeBlockWrapStates.Count == 0
-            && _codeHighlightSessions.Count == 0)
+        if (_blockStates.Count == 0)
         {
             return;
         }
@@ -2151,36 +2144,11 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         // 旧块起点 → 新块起点（内容哈希相同且保持先后顺序）。
         var blockMap = AlignBlocksByHash(oldModel.Blocks, newModel.Blocks);
 
-        RemapOffsets(_codeBlockFoldedStates);
-        RemapOffsets(_codeBlockWrapStates);
-        RemapOffsets(_codeHighlightSessions);
-
-        void RemapOffsets<T>(Dictionary<int, T> states)
-        {
-            if (states.Count == 0)
-            {
-                return;
-            }
-
-            var remapped = new Dictionary<int, T>(states.Count);
-            foreach (var (oldOffset, value) in states)
-            {
-                // 块级身份优先；块对齐不可用（超大文档）时退回行级映射。
-                int? target = blockMap.TryGetValue(oldOffset, out var sameBlock) ? sameBlock
-                    : blockMap.Count == 0 && edit.MapOffset(oldOffset) is { } shifted ? shifted
-                    : null;
-                if (target is { } newOffset)
-                {
-                    remapped.TryAdd(newOffset, value);
-                }
-            }
-
-            states.Clear();
-            foreach (var (offset, value) in remapped)
-            {
-                states[offset] = value;
-            }
-        }
+        _blockStates.Remap(oldOffset =>
+            // 块级身份优先；块对齐不可用（超大文档）时退回行级映射。
+            blockMap.TryGetValue(oldOffset, out var sameBlock) ? sameBlock
+            : blockMap.Count == 0 && edit.MapOffset(oldOffset) is { } shifted ? shifted
+            : null);
     }
 
     /// <summary>
@@ -2242,16 +2210,9 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
     int Rendering.IMarkdownRenderContext.CurrentBlockOrigin => _currentBlockOrigin;
 
-    Rendering.MarkdownCodeHighlightSession? Rendering.IMarkdownRenderContext.GetCodeHighlightSession(int blockKey)
-    {
-        if (!_codeHighlightSessions.TryGetValue(blockKey, out var session))
-        {
-            session = new Rendering.MarkdownCodeHighlightSession();
-            _codeHighlightSessions[blockKey] = session;
-        }
-
-        return session;
-    }
+    Rendering.MarkdownCodeHighlightSession? Rendering.IMarkdownRenderContext.GetCodeHighlightSession(int blockKey) =>
+        _blockStates.GetOrAdd(blockKey, MarkdownBlockStateStore.CodeBlockHighlight,
+            static () => new Rendering.MarkdownCodeHighlightSession());
 
     string? Rendering.IMarkdownRenderContext.MarkdownText => Markdown;
 
