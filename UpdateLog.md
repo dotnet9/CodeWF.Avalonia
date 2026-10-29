@@ -1,5 +1,13 @@
 ﻿# 更新日志
 
+## 12.2.30 (2026-10-30)
+
+- 长代码块分块排版：纯文本代码块按行分块渲染，流式追加只重建尾部变化的块，长代码不再整块重排；高亮代码块同样分块，行号列与代码列保持等高（`CodeHighlighter` 增加分块排版路径）。
+- 代码块状态并入块状态存储：折叠、换行、高亮会话统一记入 `MarkdownBlockStateStore`，整篇刷新按块身份重映射；围栏未闭合时不提供折叠，闭合后按已存状态恢复。
+- 选区改值坐标：选区身份存块键与纯文本偏移，重绘后按块恢复，流式刷新不再丢选区。
+- 无障碍标题：标题块按级别输出 `HeadingLevel`，读屏可按标题导航。
+- 测试：新增 `MarkdownBlockStateStore`、选区值坐标、代码块分块（纯文本/高亮）等行为测试，扩展流式与自动化测试。
+
 ## 12.2.29 (2026-10-29)
 
 - 代码块外观对齐 AI 对话场景：顶栏改为左侧「语言 · 路径#L起-止」标题（围栏信息串支持 `cs src/App.cs#L10-20`，解析时合并 Markdig 拆开的 `Info`/`Arguments`），右侧图标工具条收纳下载、换行、复制与折叠（≥8 行才出现折叠），复制后图标 1.5s 勾选反馈；折叠态在代码下方给出「展开全部 N 行」。下载走 `CodeBlockSaveRequested`（宿主可 `Handled` 接管），未接管时用 StorageProvider 存为建议文件名（围栏路径优先，否则按语言扩展名）。新增 `MarkdownStyleKeys` 的 `MdCodeBlockToolbar`/`MdCodeBlockToolButton`/`MdCodeBlockFooter`/`MdCodeExpandButton` 与三条排版资源，明暗主题同一套。
