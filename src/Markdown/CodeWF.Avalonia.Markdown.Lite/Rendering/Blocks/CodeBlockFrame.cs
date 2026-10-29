@@ -118,7 +118,7 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
         _toolbar.Children.Add(_wrapButton);
         _toolbar.Children.Add(_copyButton);
         EnsureFoldButton();
-        UpdateAutomationNames();
+        UpdateLocalizedChrome();
 
         var headerGrid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
         headerGrid.Children.Add(_title);
@@ -200,7 +200,7 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
         {
             SetFolded(context.IsCodeBlockFolded(_blockKey), persist: false);
         }
-        UpdateAutomationNames();
+        UpdateLocalizedChrome();
 
         var selection = CaptureSelection();
         // 分块正文（长代码）可原地增长：只重建尾部变化的块，前面的排版结果不重算。
@@ -291,9 +291,7 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
 
         _scroll.HorizontalScrollBarVisibility = _wrap ? ScrollBarVisibility.Disabled : ScrollBarVisibility.Auto;
         Classes.Set("wrapped", _wrap);
-        ToolTip.SetTip(_wrapButton,
-            MarkdownLocalization.GetResource(_wrap ? MarkdownL.CodeUnwrapLines : MarkdownL.CodeWrapLines));
-        UpdateAutomationNames();
+        UpdateLocalizedChrome();
     }
 
     private void SetFolded(bool folded, bool persist)
@@ -358,7 +356,7 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
         AutomationProperties.SetName(_foldButton, $"{_titleLanguage} {glyph}");
     }
 
-    private void UpdateAutomationNames()
+    private void UpdateLocalizedChrome()
     {
         // 多代码块场景下读屏器需要可区分的按钮名称："语言 操作"。
         AutomationProperties.SetName(_copyButton,
@@ -367,6 +365,12 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
             $"{_titleLanguage} {MarkdownLocalization.GetResource(_wrap ? MarkdownL.CodeUnwrapLines : MarkdownL.CodeWrapLines)}");
         AutomationProperties.SetName(_downloadButton,
             $"{_titleLanguage} {MarkdownLocalization.GetResource(MarkdownL.CodeDownload)}");
+        // 工具条是图标钮，操作文案只在 ToolTip 上；语言切换时框架可能按块身份原样复用，
+        // 这里统一重写，悬停提示才与读屏名字保持同文化。
+        ToolTip.SetTip(_copyButton, MarkdownLocalization.GetResource(MarkdownL.Copy));
+        ToolTip.SetTip(_wrapButton,
+            MarkdownLocalization.GetResource(_wrap ? MarkdownL.CodeUnwrapLines : MarkdownL.CodeWrapLines));
+        ToolTip.SetTip(_downloadButton, MarkdownLocalization.GetResource(MarkdownL.CodeDownload));
     }
 
     private Button CreateToolButton(string tag, string label, bool mutedForeground = true)

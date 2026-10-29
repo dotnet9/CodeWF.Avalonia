@@ -24,7 +24,10 @@ public partial class MainViewModel
                 global::CodeWF.Toolkit.Lang.I18nManager.Instance.Culture = new CultureInfo(culture);
                 var expected = MarkdownLocalization.GetResource(MarkdownL.Copy);
                 var deadline = DateTime.UtcNow.AddSeconds(8);
-                while (!viewer.GetVisualDescendants().OfType<Button>().Any(button => Equals(button.Content, expected)))
+                // 12.2.29 起代码块工具条为图标钮（Content=Path），操作文案改挂在 ToolTip 上；
+                // 全量重渲染（含框架复用路径）后图标钮的提示应随文化刷新。
+                while (!viewer.GetVisualDescendants().OfType<Button>().Any(button =>
+                           Equals(ToolTip.GetTip(button) as string, expected) || Equals(button.Content, expected)))
                 {
                     await Task.Delay(30, cancellation);
                     if (DateTime.UtcNow >= deadline) throw new TimeoutException("Markdown button did not refresh: " + culture);
