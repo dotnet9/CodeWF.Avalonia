@@ -203,6 +203,14 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
         UpdateAutomationNames();
 
         var selection = CaptureSelection();
+        // 分块正文（长代码）可原地增长：只重建尾部变化的块，前面的排版结果不重算。
+        if (_body is IMarkdownCodeBodyUpdate updatable && updatable.TryUpdate(_code))
+        {
+            ApplyWrapState();
+            RestoreSelection(selection);
+            return true;
+        }
+
         _body = CreateBody(_code);
         _scroll.Content = _body;
         ApplyWrapState();
@@ -232,8 +240,13 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
         return view is ScrollViewer { Content: Control inner } ? inner : view;
     }
 
-    private SelectableTextBlock CreatePlainBody(string code)
+    private Control CreatePlainBody(string code)
     {
+        if (PlainCodeChunkBody.SplitLines(code).Length > MarkdownCodeChunking.ThresholdLines)
+        {
+            return new PlainCodeChunkBody(_context, code);
+        }
+
         var textBlock = _context.CreateSelectableText("MdCodeBlockPlain");
         textBlock.FontFamily = _context.CodeFontFamily;
         textBlock.FontSize = _context.CodeBlockFontSize;
@@ -446,6 +459,8 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
 
     private (int Start, int End) CaptureSelection()
     {
+        // 分块正文按「整篇代码偏移」记录选区：块间换行计 1 个字符，追加后偏移不变。
+        var offset = 0;
         foreach (var text in EnumerateCodeTextBlocks())
         {
             if (IsLineNumbers(text))
@@ -453,12 +468,15 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
                 continue;
             }
 
+            var length = CodeTextLength(text);
             var start = Math.Min(text.SelectionStart, text.SelectionEnd);
             var end = Math.Max(text.SelectionStart, text.SelectionEnd);
             if (end > start)
             {
-                return (start, end);
+                return (offset + start, offset + end);
             }
+
+            offset += length + 1;
         }
 
         return (0, 0);
@@ -471,6 +489,7 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
             return;
         }
 
+        var offset = 0;
         foreach (var text in EnumerateCodeTextBlocks())
         {
             if (IsLineNumbers(text))
@@ -478,17 +497,20 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
                 continue;
             }
 
-            var length = text.Text?.Length ?? text.Inlines?.Text?.Length ?? 0;
-            if (length == 0)
+            var length = CodeTextLength(text);
+            if (length > 0 && selection.Start <= offset + length)
             {
-                continue;
+                text.SelectionStart = Math.Clamp(selection.Start - offset, 0, length);
+                text.SelectionEnd = Math.Clamp(selection.End - offset, 0, length);
+                return;
             }
 
-            text.SelectionStart = Math.Clamp(selection.Start, 0, length);
-            text.SelectionEnd = Math.Clamp(selection.End, 0, length);
-            return;
+            offset += length + 1;
         }
     }
+
+    private static int CodeTextLength(SelectableTextBlock text) =>
+        text.Text?.Length ?? text.Inlines?.Text?.Length ?? 0;
 
     private static int CountLines(CodeBlock codeBlock) => Math.Max(1, codeBlock.Lines.Count);
 
