@@ -1,5 +1,11 @@
 ﻿# 更新日志
 
+## 12.2.27 (2026-10-29)
+
+- 新增 `Controls.Helpers.ToolTipHelper`：普通文本 ToolTip 的统一封装——`ToolTipHelper.Text` 附加属性可在 XAML 直接绑定视图模型，内部用 TextBlock 承载（折行 + MaxWidth 320，默认对齐 Semi 的 ToolTipMaxWidth，附 `MaxWidth` 附加属性可按控件覆盖），空文本不显示提示；前景走 `ToolTipForeground` 主题令牌（明暗反色跟随），不用硬编码白色。
+- Chrome 提示浮层形态与全站精修对齐：FontSize 12（原型 tooltip/toast 同档）、Padding 10,7、CornerRadius 6——此前保持 Semi 生形态（14px 字号大内边距），与宿主 4pt 网格精修观感不搭。
+- 新增 5 条 ToolTipHelper 行为测试（空文本、折行、宽度覆盖、附加/移除）。
+
 ## 12.2.24 (2026-10-28)
 
 - 代码围栏语言别名表扩容：`NormalizeLanguage` 从 6 条硬编码别名扩为约 130 个语言名/别名映射（移植自 StreamMark 的 LanguageAliases 表，MIT）——`bash`/`zsh`、`yaml`/`yml`、`axaml`/`xaml`/`csproj` 等常见围栏名此前落到 log 兜底语法渲染成近乎单色，现在映射到正确的 TextMate 语法；表外名字保持原样再走 language id 解析。

@@ -1,4 +1,4 @@
-<Styles xmlns="https://github.com/avaloniaui"
+﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- 这两组是宿主级的观感取向，故意不进 _index.axaml：引了本库主题的应用默认仍是 Semi 的
          浮动细滚动条，需要常驻轨道的（长文档阅读器一类）显式 StyleInclude 本文件即可整组接管。 -->
@@ -9,6 +9,13 @@
     </Style>
     <Style Selector="ToolTip /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+    </Style>
+    <!-- ToolTip 形态与全站精修对齐：12px 字号（原型 tooltip/toast 同档）、8,11 内边距与 6px 圆角
+         （4pt 网格档），Semi 默认是 14px 大内边距生形态，与精修后的宿主观感不搭。 -->
+    <Style Selector="ToolTip">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Padding" Value="10,7" />
+        <Setter Property="CornerRadius" Value="6" />
     </Style>
 
     <!-- 滚动条几何：Semi 默认的 8→2px 自动收起滑块难以命中，这里给一条常驻的 16px 轨道 + 10px 滑块，
