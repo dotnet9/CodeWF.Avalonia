@@ -174,7 +174,7 @@ public partial class MindMapEditor : UserControl
     private readonly Canvas _canvas = new()
     {
         Background = Brushes.Transparent,
-        Cursor = new Cursor(StandardCursorType.Hand),
+        Cursor = MindMapCursors.Grab ?? new Cursor(StandardCursorType.Hand),
     };
     private readonly LayoutTransformControl _zoomHost;
     private readonly ScrollViewer _scrollViewer;

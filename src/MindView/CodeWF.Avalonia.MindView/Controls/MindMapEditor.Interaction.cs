@@ -1,4 +1,4 @@
-using CodeWF.Avalonia.MindView;
+﻿using CodeWF.Avalonia.MindView;
 using global::Avalonia;
 using global::Avalonia.Animation;
 using global::Avalonia.Collections;
@@ -414,8 +414,9 @@ public partial class MindMapEditor
         _isPanningCanvas = true;
         _panStartPointer = e.GetPosition(_scrollViewer);
         _panStartOffset = _scrollViewer.Offset;
-        _canvas.Cursor = new Cursor(StandardCursorType.SizeAll);
-        _scrollViewer.Cursor = new Cursor(StandardCursorType.SizeAll);
+        // 原型 workbench.css:140：拖动中 grabbing（握拳），Windows 走内嵌 .cur，其他平台回退四向箭头。
+        _canvas.Cursor = MindMapCursors.Grabbing ?? new Cursor(StandardCursorType.SizeAll);
+        _scrollViewer.Cursor = MindMapCursors.Grabbing ?? new Cursor(StandardCursorType.SizeAll);
         e.Pointer.Capture(_scrollViewer);
         e.Handled = true;
     }
@@ -451,7 +452,8 @@ public partial class MindMapEditor
     private void StopCanvasPan()
     {
         _isPanningCanvas = false;
-        _canvas.Cursor = new Cursor(StandardCursorType.Hand);
+        // 原型 workbench.css:139：画布常态 grab（张手），Windows 走内嵌 .cur，其他平台回退手掌。
+        _canvas.Cursor = MindMapCursors.Grab ?? new Cursor(StandardCursorType.Hand);
         _scrollViewer.Cursor = Cursor.Default;
     }
 
