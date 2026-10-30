@@ -72,6 +72,49 @@ public sealed record MarkdownSpanStyle(string? Foreground = null, string? Backgr
         return Math.Clamp(double.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture), 8, 64);
     }
 
+    /// <summary>
+    /// 作者色可读性回退（移植 StreamMark HtmlPaint 的 Readable 策略）：作者色与背景对比度不足时
+    /// 放弃该色改用主题色，避免暗色主题下深色文字变黑洞。背景优先取 span 自身背景色，
+    /// 否则按前景亮度推断主题底（亮文字视为暗色主题 #1E1E1E，否则白色）。
+    /// </summary>
+    public static Color? EnsureReadable(Color? authored, Color? background, Color fallback)
+    {
+        if (authored is not { } color)
+        {
+            return null;
+        }
+
+        var surface = background ?? InferSurface(color);
+        return ContrastRatio(color, surface) < 2.2 ? fallback : color;
+    }
+
+    private static Color InferSurface(Color foreground)
+    {
+        return RelativeLuminance(foreground) > 0.5
+            ? Color.FromRgb(0x1E, 0x1E, 0x1E)
+            : Colors.White;
+    }
+
+    private static double ContrastRatio(Color a, Color b)
+    {
+        var la = RelativeLuminance(a);
+        var lb = RelativeLuminance(b);
+        var lighter = Math.Max(la, lb);
+        var darker = Math.Min(la, lb);
+        return (lighter + 0.05) / (darker + 0.05);
+    }
+
+    private static double RelativeLuminance(Color color)
+    {
+        static double Channel(byte value)
+        {
+            var normalized = value / 255.0;
+            return normalized <= 0.03928 ? normalized / 12.92 : Math.Pow((normalized + 0.055) / 1.055, 2.4);
+        }
+
+        return 0.2126 * Channel(color.R) + 0.7152 * Channel(color.G) + 0.0722 * Channel(color.B);
+    }
+
     /// <summary>颜色解析：#RGB/#RGBA/#RRGGBB/#RRGGBBAA、rgb()/rgba()、常用 CSS 命名色。</summary>
     public static Color? TryGetColor(string? value)
     {

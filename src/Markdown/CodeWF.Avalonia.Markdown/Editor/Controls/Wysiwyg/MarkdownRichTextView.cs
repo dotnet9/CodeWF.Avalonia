@@ -71,23 +71,27 @@ internal sealed class MarkdownRichTextView : TextBlock
                 FontSize = run.FontSize ?? _fontSize,
             };
 
-            // 样式优先级：行内代码 > <span style> > 链接 > 默认。
+            // 样式优先级：行内代码 > <span style>（对比度不足回退主题） > 链接 > 默认。
+            var spanBackgroundColor = MarkdownSpanStyle.TryGetColor(run.Background);
             if (run.Code)
             {
                 textRun.Foreground = _options.CodeBrush;
             }
-            else if (MarkdownSpanStyle.GetBrush(run.Foreground) is { } spanForeground)
+            else if (MarkdownSpanStyle.EnsureReadable(
+                         MarkdownSpanStyle.TryGetColor(run.Foreground),
+                         spanBackgroundColor,
+                         (_options.TextBrush as SolidColorBrush)?.Color ?? Colors.Black) is { } spanForeground)
             {
-                textRun.Foreground = spanForeground;
+                textRun.Foreground = new SolidColorBrush(spanForeground);
             }
             else
             {
                 textRun.Foreground = run.LinkUrl is null ? _options.TextBrush : _options.LinkBrush;
             }
 
-            if (MarkdownSpanStyle.GetBrush(run.Background) is { } spanBackground)
+            if (spanBackgroundColor is { } backgroundColor)
             {
-                textRun.Background = spanBackground;
+                textRun.Background = new SolidColorBrush(backgroundColor);
             }
 
             if (run.Bold)

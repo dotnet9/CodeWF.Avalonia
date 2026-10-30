@@ -133,14 +133,18 @@ internal sealed class MarkdownInlineRenderer(IMarkdownRenderContext context)
             return span;
         }
 
-        if (MarkdownSpanStyle.GetBrush(style.Foreground) is { } foreground)
+        // 作者色可读性回退：与主题文字对比不足（如暗色主题配深色文字）时弃用作者色。
+        var themeText = (_context as MarkdownViewer)?.TextBrush is SolidColorBrush themeBrush ? themeBrush.Color : default(Color?);
+        var background = MarkdownSpanStyle.TryGetColor(style.Background);
+        if (MarkdownSpanStyle.EnsureReadable(MarkdownSpanStyle.TryGetColor(style.Foreground), background,
+                themeText ?? Color.FromRgb(0x33, 0x33, 0x33)) is { } foreground)
         {
-            span.Foreground = foreground;
+            span.Foreground = new SolidColorBrush(foreground);
         }
 
-        if (MarkdownSpanStyle.GetBrush(style.Background) is { } background)
+        if (background is { } backgroundColor)
         {
-            span.Background = background;
+            span.Background = new SolidColorBrush(backgroundColor);
         }
 
         if (style.FontSize is { } fontSize)

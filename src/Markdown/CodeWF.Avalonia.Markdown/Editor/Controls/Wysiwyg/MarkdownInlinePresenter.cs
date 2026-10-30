@@ -36,11 +36,18 @@ internal sealed class MarkdownInlinePresenter(MarkdownBlockViewOptions options, 
                 var typeface = new Typeface(run.Code ? options.CodeFontFamily : FontFamily,
                     run.Italic ? FontStyle.Italic : FontStyle, run.Bold ? FontWeight.Bold : FontWeight, FontStretch);
                 var decoration = run.Strike ? TextDecorations.Strikethrough : run.LinkUrl is not null ? TextDecorations.Underline : null;
-                // 样式优先级：行内代码 > <span style> > 链接 > 默认前景。
+                // 样式优先级：行内代码 > <span style>（对比度不足回退主题） > 链接 > 默认前景。
+                var themeTextColor = (Foreground as SolidColorBrush)?.Color ?? Colors.Black;
+                var spanBackgroundColor = MarkdownSpanStyle.TryGetColor(run.Background);
                 var foreground = run.Code ? options.CodeBrush
-                    : MarkdownSpanStyle.GetBrush(run.Foreground)
-                    ?? (run.LinkUrl is not null ? options.LinkBrush : Foreground);
-                var background = run.Code ? options.CodeBackgroundBrush : MarkdownSpanStyle.GetBrush(run.Background);
+                    : MarkdownSpanStyle.EnsureReadable(
+                          MarkdownSpanStyle.TryGetColor(run.Foreground),
+                          spanBackgroundColor,
+                          themeTextColor) is { } readable
+                        ? new SolidColorBrush(readable)
+                        : (run.LinkUrl is not null ? options.LinkBrush : Foreground);
+                var background = run.Code ? options.CodeBackgroundBrush
+                    : spanBackgroundColor is { } backgroundColor ? new SolidColorBrush(backgroundColor) : null;
                 styles.Add(new(start, length, new GenericTextRunProperties(typeface, run.FontSize ?? FontSize, decoration,
                     foreground, background)));
             }
