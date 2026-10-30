@@ -166,6 +166,9 @@ public sealed class MarkdownEditorActionService : IMarkdownEditorActionService
             case MarkdownEditorAction.Outdent:
                 MutateEditor(editor, _textMutationService.OutdentSelection, runTextMutation);
                 break;
+            case MarkdownEditorAction.ClearSpanStyles:
+                MutateEditor(editor, _textMutationService.ClearSpanStyles, runTextMutation);
+                break;
             case MarkdownEditorAction.FocusEditor:
                 editor.Focus();
                 break;

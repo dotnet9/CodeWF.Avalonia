@@ -42,6 +42,24 @@ public sealed class MarkdownEditorMutationService : IMarkdownEditorMutationServi
         editor.CaretOffset = newEnd;
     }
 
+    public void ClearSpanStyles(TextEditor editor)
+    {
+        var text = editor.Text ?? string.Empty;
+        var start = Math.Clamp(editor.SelectionStart, 0, text.Length);
+        var end = Math.Clamp(editor.SelectionStart + editor.SelectionLength, start, text.Length);
+        if (start == end)
+        {
+            return;
+        }
+
+        var (updated, newStart, newEnd) = MarkdownSpanOperations.Clear(text, start, end);
+        editor.Text = updated;
+        editor.SelectionLength = 0;
+        editor.SelectionStart = newStart;
+        editor.SelectionLength = newEnd - newStart;
+        editor.CaretOffset = newEnd;
+    }
+
     public void InsertText(TextEditor editor, string insertion)
     {
         var text = editor.Text ?? string.Empty;

@@ -965,6 +965,9 @@ public partial class MarkdownLiveEditorView : UserControl
             case MarkdownEditorAction.InlineCode:
                 WrapActive("`", "`");
                 break;
+            case MarkdownEditorAction.ClearSpanStyles:
+                ClearSpanStyles();
+                break;
             case MarkdownEditorAction.Link:
                 WrapActive("[", $"]({_options.LinkUrlPlaceholder})");
                 break;
@@ -1037,6 +1040,56 @@ public partial class MarkdownLiveEditorView : UserControl
         _restoringHistory = true;
         try { RaiseChanged(); }
         finally { _restoringHistory = false; }
+    }
+
+    /// <summary>剥掉当前选区（跨块或块内）的所有行内样式 span 标签。</summary>
+    public void ClearSpanStyles()
+    {
+        if (_documentSelection is { } range && range.Length > 0)
+        {
+            var (updated, newStart, newEnd) = Shared.Rendering.MarkdownSpanOperations.Clear(Text, range.Start, range.Start + range.Length);
+            if (updated == Text)
+            {
+                return;
+            }
+
+            var previous = CaptureSnapshot();
+            _restoringHistory = true;
+            try { SetText(updated); }
+            finally { _restoringHistory = false; }
+            _lastSnapshot = previous;
+            FocusSourceOffset(newEnd);
+            RaiseChanged();
+            return;
+        }
+
+        if (_activeIndex >= 0 && _activeIndex < _blockViews.Count && FindActiveEditor(_blockViews[_activeIndex]) is { } box)
+        {
+            var text = box.Text ?? string.Empty;
+            var start = Math.Clamp(Math.Min(box.SelectionStart, box.SelectionEnd), 0, text.Length);
+            var end = Math.Clamp(Math.Max(box.SelectionStart, box.SelectionEnd), start, text.Length);
+            if (start == end)
+            {
+                return;
+            }
+
+            var (updated, newStart, newEnd) = Shared.Rendering.MarkdownSpanOperations.Clear(text, start, end);
+            if (updated == text)
+            {
+                return;
+            }
+
+            box.Text = updated;
+            box.CaretIndex = newEnd;
+            box.SelectionStart = newStart;
+            box.SelectionEnd = newEnd;
+            if (_models[_activeIndex].Kind is Wysiwyg.MarkdownBlockKind.Paragraph or Wysiwyg.MarkdownBlockKind.Heading or Wysiwyg.MarkdownBlockKind.ListItem or Wysiwyg.MarkdownBlockKind.Quote)
+            {
+                _models[_activeIndex].Text = box.Text ?? string.Empty;
+            }
+
+            RaiseChanged();
+        }
     }
 
     /// <summary>读当前选区所在的行内样式值（紧贴同款 span 时返回，供宿主面板预填），否则 null。</summary>

@@ -36,6 +36,7 @@ public enum MarkdownEditorAction
     SmartNewLine,
     Indent,
     Outdent,
+    ClearSpanStyles,
     FocusEditor,
     Strikethrough,
     Highlight,
