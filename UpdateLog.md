@@ -1,5 +1,18 @@
 ﻿# 更新日志
 
+## 12.2.32 ~ 12.2.39 (2026-10-31)
+
+- 行内样式 `<span style>` 全链路（字号/前景色/背景色，对齐原型 selection-menu）：
+  - 解析：`MarkdownTextRun` 增加 `Foreground`/`Background`/`FontSize`；行内解析带 span 样式栈（开/闭标签兄弟节点配对、嵌套层叠、白名单 color/background-color/font-size）；`MarkdownSpanStyle` 提供 CSS 解析（hex/rgb()/命名色、px 字号 clamp 8–64）与共享画刷缓存。
+  - 文本操作：`MarkdownSpanOperations.Wrap`（同款同值 toggle 解包、`toggle:false` 供选色器明确设值、紧贴 span 合并属性）、`Clear`（剥选区 span 标签）、`CurrentValue`（面板预填查询）。
+  - 渲染：Lite 阅读视图切片式 span 包裹（支持嵌套）；WYSIWYG 渲染态/编辑态应用三样式，优先级 代码 > span > 链接 > 默认；可读性回退（移植 StreamMark `HtmlPaint` Readable 策略，对比度 < 2.2 弃作者色改主题色）接入三处渲染点。
+  - 动作：`MarkdownEditorAction.ClearSpanStyles` 全链路（ActionService → MutationService → 即时编辑跨块/块内双路径）；`ApplySpanStyle`/`GetSpanStyle` 公开 API 供宿主工具条与浮动条调用。
+  - 选区浮动条：即时编辑选中文本在释放点上方弹 Popup 快捷条（加粗/斜体/删除线/行内代码/H1/H2/列表 + 字号六档 + Semi 深浅两排色板 + 清除），按钮不抢焦点保住选区。
+  - 往返：块重序列化 `AppendInline` 保留 HtmlInline 原文（表格单元格/链接内文不再丢标签）；明文提取跳过 span 标签、`<br>` 视为换行。
+  - 导出：PDF（颜色/字号/背景）与 Word（w:color/w:shd/w:sz）按 span 样式映射，嵌套容器透传同一栈，屏显与导出同一可读性回退。
+  - 源码高亮：xshd 增加 span 标签 Marker 规则（Rule 一次性匹配）。
+- 测试：新增 `tests/CodeWF.Avalonia.Markdown.Tests`（37 例）——span 样式解析、文本操作、行内 runs、嵌套继承、往返保标签；测试暴露并修复嵌套 span 开标签压栈基误用参数样式（内层丢外层继承）的真 bug。
+
 ## 12.2.31 (2026-10-30)
 
 - 源码编辑器三连对齐原型：选区不再本地写死蓝底白字（高亮代码块改绑 SemiColorDanger 系的 TextBlockSelection 资源，宿主可整包接管，深色主题不再与文档选区割裂）；行号边距重写为当前行强调加粗（AvaloniaEdit 内置边距无逐行着色，新增 `MarkdownLineNumberMargin` 与 `LineNumberBrushKey`/`CurrentLineNumberBrushKey` 令牌键）；语法高亮换自定义 `VexMarkDown-Mode.xshd`——围栏、表格、任务列表、行内强调的符号全部压到 Marker 灰，标题/引用/代码/链接按语义色，`MarkdownEditorPalette` 新增 `MarkerKey`。
