@@ -2,6 +2,7 @@ using System.Globalization;
 using System.IO.Compression;
 using System.Net;
 using System.Xml.Linq;
+using CodeWF.Avalonia.Markdown.Shared.Rendering;
 using Markdig;
 using Markdig.Extensions.Tables;
 using Markdig.Extensions.TaskLists;
@@ -594,17 +595,19 @@ public static class MarkdownDocxExporter
         }
     }
 
-    private static IEnumerable<XElement> CreateRuns(ContainerInline? inline, MarkdownExportStyle style, DocxExportContext context)
+    private static IEnumerable<XElement> CreateRuns(ContainerInline? inline, MarkdownExportStyle style, DocxExportContext context, Stack<MarkdownSpanStyle>? outerStack = null)
     {
         if (inline is null)
         {
             yield break;
         }
 
+        // 行内 <span style>：开/闭标签以兄弟节点出现，栈式携带样式给后续兄弟（嵌套容器透传同一栈）。
+        var spanStack = outerStack ?? new Stack<MarkdownSpanStyle>();
         var current = inline.FirstChild;
         while (current is not null)
         {
-            foreach (var run in CreateRun(current, style, context))
+            foreach (var run in CreateRun(current, style, context, spanStack))
             {
                 yield return run;
             }
@@ -613,15 +616,97 @@ public static class MarkdownDocxExporter
         }
     }
 
+    /// <summary>把 span 样式映射进运行属性：颜色 → w:color，背景 → w:shd，字号(px) → w:sz 半磅。</summary>
+    private static IEnumerable<XElement> WithSpanProps(
+        IEnumerable<XElement> runs,
+        MarkdownSpanStyle span,
+        MarkdownExportStyle style)
+    {
+        foreach (var run in runs)
+        {
+            var properties = run.Element(W + "rPr");
+            if (properties is null)
+            {
+                properties = new XElement(W + "rPr");
+                run.AddFirst(properties);
+            }
+
+            if (MarkdownSpanStyle.TryGetColor(span.Foreground) is { } foreground)
+            {
+                properties.Element(W + "color")?.Remove();
+                properties.Add(new XElement(W + "color", new XAttribute(W + "val", $"{foreground.R:X2}{foreground.G:X2}{foreground.B:X2}")));
+            }
+
+            if (MarkdownSpanStyle.TryGetColor(span.Background) is { } background)
+            {
+                properties.Element(W + "shd")?.Remove();
+                properties.Add(new XElement(W + "shd",
+                    new XAttribute(W + "val", "clear"),
+                    new XAttribute(W + "fill", $"{background.R:X2}{background.G:X2}{background.B:X2}")));
+            }
+
+            if (span.FontSize is { } fontSize)
+            {
+                var halfPoints = ToHalfPoints(fontSize);
+                properties.Element(W + "sz")?.Remove();
+                properties.Element(W + "szCs")?.Remove();
+                properties.Add(new XElement(W + "sz", new XAttribute(W + "val", halfPoints)));
+                properties.Add(new XElement(W + "szCs", new XAttribute(W + "val", halfPoints)));
+            }
+
+            yield return run;
+        }
+    }
+
+    /// <summary>处理 span 开/闭标签；其余标签按原文输出（与旧行为一致）。</summary>
+    private static void ApplySpanTag(MarkdigInline inline, Stack<MarkdownSpanStyle> spanStack)
+    {
+        if (inline is not HtmlInline html || string.IsNullOrWhiteSpace(html.Tag))
+        {
+            return;
+        }
+
+        if (html.Tag.Equals("</span>", StringComparison.OrdinalIgnoreCase))
+        {
+            if (spanStack.Count > 0)
+            {
+                spanStack.Pop();
+            }
+
+            return;
+        }
+
+        var match = System.Text.RegularExpressions.Regex.Match(
+            html.Tag, @"<span\b[^>]*\bstyle\s*=\s*""([^""]*)""", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        if (match.Success)
+        {
+            var outer = spanStack.Count > 0 ? spanStack.Peek() : new MarkdownSpanStyle();
+            var own = MarkdownSpanStyle.FromDeclarations(match.Groups[1].Value);
+            spanStack.Push(own is null ? outer : outer.Over(own));
+        }
+    }
+
     private static IEnumerable<XElement> CreateRun(
         MarkdigInline inline,
         MarkdownExportStyle style,
-        DocxExportContext context)
+        DocxExportContext context,
+        Stack<MarkdownSpanStyle>? spanStack = null)
     {
         switch (inline)
         {
             case LiteralInline literal:
-                yield return CreateTextRun(literal.Content.ToString());
+                if (spanStack is { Count: > 0 })
+                {
+                    foreach (var run in WithSpanProps([CreateTextRun(literal.Content.ToString())], spanStack.Peek(), style))
+                    {
+                        yield return run;
+                    }
+                }
+                else
+                {
+                    yield return CreateTextRun(literal.Content.ToString());
+                }
+
                 break;
             case CodeInline code:
                 var codeRun = CreateTextRun(code.Content);
@@ -637,7 +722,7 @@ public static class MarkdownDocxExporter
                 yield return new XElement(W + "r", new XElement(W + "br"));
                 break;
             case EmphasisInline emphasis:
-                foreach (var run in CreateRuns(emphasis, style, context))
+                foreach (var run in CreateRuns(emphasis, style, context, spanStack))
                 {
                     AddRunProperty(run, emphasis.DelimiterCount >= 2 ? new XElement(W + "b") : new XElement(W + "i"));
                     yield return run;
@@ -656,7 +741,7 @@ public static class MarkdownDocxExporter
 
                 break;
             case LinkInline link:
-                foreach (var run in CreateRuns(link, style, context))
+                foreach (var run in CreateRuns(link, style, context, spanStack))
                 {
                     AddRunProperty(run,
                         new XElement(W + "color", new XAttribute(W + "val", CssColorToWordColor(style.LinkColor))),
@@ -673,11 +758,11 @@ public static class MarkdownDocxExporter
             case TaskList taskList:
                 yield return CreateTextRun(taskList.Checked ? "[x] " : "[ ] ");
                 break;
-            case HtmlInline html:
-                yield return CreateTextRun(html.Tag);
+            case HtmlInline:
+                ApplySpanTag(inline, spanStack ?? new Stack<MarkdownSpanStyle>());
                 break;
             case ContainerInline nested:
-                foreach (var run in CreateRuns(nested, style, context))
+                foreach (var run in CreateRuns(nested, style, context, spanStack))
                 {
                     yield return run;
                 }

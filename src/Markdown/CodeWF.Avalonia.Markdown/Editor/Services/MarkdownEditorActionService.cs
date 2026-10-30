@@ -172,6 +172,11 @@ public sealed class MarkdownEditorActionService : IMarkdownEditorActionService
         }
     }
 
+    public void ExecuteSpan(TextEditor editor, string property, string value, Action<Action> runTextMutation)
+    {
+        MutateEditor(editor, currentEditor => _textMutationService.WrapSpan(currentEditor, property, value), runTextMutation);
+    }
+
     private async Task<bool> TryPasteHtmlAsMarkdownAsync(TextEditor editor, Action<Action> runTextMutation)
     {
         if (_htmlPaste is null)

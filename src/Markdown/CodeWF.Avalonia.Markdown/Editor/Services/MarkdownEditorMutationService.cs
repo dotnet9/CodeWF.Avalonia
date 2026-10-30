@@ -1,5 +1,7 @@
 using AvaloniaEdit;
 
+using CodeWF.Avalonia.Markdown.Shared.Rendering;
+
 namespace CodeWF.Avalonia.Markdown.Editor.Services;
 
 public sealed class MarkdownEditorMutationService : IMarkdownEditorMutationService
@@ -20,6 +22,24 @@ public sealed class MarkdownEditorMutationService : IMarkdownEditorMutationServi
         editor.SelectionStart = start + prefix.Length;
         editor.SelectionLength = selected.Length;
         editor.CaretOffset = start + replacement.Length;
+    }
+
+    public void WrapSpan(TextEditor editor, string property, string value)
+    {
+        var text = editor.Text ?? string.Empty;
+        var start = Math.Clamp(editor.SelectionStart, 0, text.Length);
+        var end = Math.Clamp(editor.SelectionStart + editor.SelectionLength, start, text.Length);
+        if (start == end)
+        {
+            return;
+        }
+
+        var (updated, newStart, newEnd) = MarkdownSpanOperations.Wrap(text, start, end, property, value);
+        editor.Text = updated;
+        editor.SelectionLength = 0;
+        editor.SelectionStart = newStart;
+        editor.SelectionLength = newEnd - newStart;
+        editor.CaretOffset = newEnd;
     }
 
     public void InsertText(TextEditor editor, string insertion)
@@ -431,12 +451,19 @@ public sealed class MarkdownEditorMutationService : IMarkdownEditorMutationServi
 
         for (var i = 0; i < lines.Length; i++)
         {
-            lines[i] = RemoveMarkdownLinePrefix(lines[i])
-                .Replace("![", "[", StringComparison.Ordinal)
-                .Replace("](", " (", StringComparison.Ordinal)
-                .Replace(")", string.Empty, StringComparison.Ordinal);
+            lines[i] = SpanTagPattern.Replace(
+                RemoveMarkdownLinePrefix(lines[i])
+                    .Replace("![", "[", StringComparison.Ordinal)
+                    .Replace("](", " (", StringComparison.Ordinal)
+                    .Replace(")", string.Empty, StringComparison.Ordinal),
+                string.Empty);
         }
 
         return string.Join('\n', lines);
     }
+
+    /// <summary>剥掉行内样式 span 标签（清除格式时颜色/字号随标记一起去除）。</summary>
+    private static readonly System.Text.RegularExpressions.Regex SpanTagPattern = new(
+        @"<span\b[^>]*>|</span\s*>",
+        System.Text.RegularExpressions.RegexOptions.Compiled | System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 }

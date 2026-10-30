@@ -9,4 +9,7 @@ namespace CodeWF.Avalonia.Markdown.Editor.Services;
 public interface IMarkdownEditorActionService
 {
     Task ExecuteAsync(TextEditor editor, MarkdownEditorAction action, Action<Action> runTextMutation);
+
+    /// <summary>给选区包上行内 <c>&lt;span style&gt;</c>（property 见 <see cref="MarkdownSpanOperations.Properties"/>）；同款再执行一次解包。</summary>
+    void ExecuteSpan(TextEditor editor, string property, string value, Action<Action> runTextMutation);
 }

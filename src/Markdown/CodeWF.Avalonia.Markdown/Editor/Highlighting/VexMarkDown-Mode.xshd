@@ -50,6 +50,15 @@
       <Begin>\[\^</Begin>
       <End>\]</End>
     </Span>
+    <!-- 行内样式 span 标签：整体 marker 灰（样式效果由渲染呈现，源码只留标签痕迹）。 -->
+    <Span color="Marker" multiline="false">
+      <Begin>&lt;span[\s&gt;][^&gt;]*&gt;</Begin>
+      <End>$</End>
+    </Span>
+    <Span color="Marker" multiline="false">
+      <Begin>&lt;/span\s*&gt;</Begin>
+      <End>$</End>
+    </Span>
     <!-- 链接/图片：括号 marker，文本 link；尾部的 (url) 由子规则压到 url 灰。 -->
     <Span color="Link" multiline="false">
       <Begin color="Marker">\!?\[</Begin>

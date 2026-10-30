@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using CodeWF.Avalonia.Markdown.Shared.Rendering;
 using Markdig;
 using Markdig.Extensions.Tables;
 using Markdig.Extensions.TaskLists;
@@ -678,27 +679,40 @@ public sealed class MarkdownPdfRenderer
             return;
         }
 
+        // 行内 <span style>：开/闭标签以兄弟节点出现，用栈把样式带给后续兄弟，段落结束自然清空。
+        var spanStack = new Stack<MarkdownSpanStyle>();
         foreach (var inline in container)
         {
-            AppendInline(inlines, inline, currentStyle, exportStyle);
+            AppendInline(inlines, inline, currentStyle, exportStyle, spanStack);
         }
+    }
+
+    private static PdfTextStyle WithSpan(PdfTextStyle style, MarkdownSpanStyle span, out SKColor? background)
+    {
+        background = MarkdownSpanStyle.TryGetColor(span.Background) is { } bg ? new SKColor(bg.R, bg.G, bg.B) : null;
+        return style with
+        {
+            Color = MarkdownSpanStyle.TryGetColor(span.Foreground) is { } fg ? new SKColor(fg.R, fg.G, fg.B) : style.Color,
+            FontSize = span.FontSize is { } size ? (float)size : style.FontSize,
+        };
     }
 
     private static void AppendInline(
         List<PdfInline> inlines,
         MarkdigInline inline,
         PdfTextStyle currentStyle,
-        MarkdownExportStyle exportStyle)
+        MarkdownExportStyle exportStyle,
+        Stack<MarkdownSpanStyle>? spanStack = null)
     {
         switch (inline)
         {
             case LiteralInline literal:
-                inlines.Add(new PdfInline(literal.Content.ToString(), currentStyle, null));
+                inlines.Add(new PdfInline(literal.Content.ToString(), WithSpanStyle(currentStyle, spanStack, out var literalBackground), literalBackground));
                 break;
             case CodeInline code:
                 inlines.Add(new PdfInline(
                     code.Content,
-                    currentStyle with
+                    WithSpanStyle(currentStyle, spanStack, out _) with
                     {
                         FontFamilies = exportStyle.MonoFontFamily,
                         FontSize = (float)exportStyle.CodeFontSize,
@@ -707,23 +721,23 @@ public sealed class MarkdownPdfRenderer
                     ParseColor(exportStyle.InlineCodeBackgroundColor, SKColors.Transparent)));
                 break;
             case LineBreakInline:
-                inlines.Add(new PdfInline("\n", currentStyle, null));
+                inlines.Add(new PdfInline("\n", WithSpanStyle(currentStyle, spanStack, out _), null));
                 break;
             case EmphasisInline emphasis:
-                AppendInlines(inlines, emphasis, CreateEmphasisStyle(currentStyle, emphasis), exportStyle);
+                AppendInlineChildren(inlines, emphasis, CreateEmphasisStyle(currentStyle, emphasis), exportStyle, spanStack);
                 break;
             case LinkInline { IsImage: true } image:
                 var imageText = GetInlineText(image);
-                inlines.Add(new PdfInline(string.IsNullOrWhiteSpace(imageText) ? image.Url ?? string.Empty : imageText, currentStyle, null));
+                inlines.Add(new PdfInline(string.IsNullOrWhiteSpace(imageText) ? image.Url ?? string.Empty : imageText, WithSpanStyle(currentStyle, spanStack, out _), null));
                 break;
             case LinkInline link:
-                var linkStyle = currentStyle with
+                var linkStyle = WithSpanStyle(currentStyle, spanStack, out _) with
                 {
                     Color = ParseColor(exportStyle.LinkColor, currentStyle.Color),
                     Underline = true
                 };
                 var beforeCount = inlines.Count;
-                AppendInlines(inlines, link, linkStyle, exportStyle);
+                AppendInlineChildren(inlines, link, linkStyle, exportStyle, spanStack);
                 if (inlines.Count == beforeCount && !string.IsNullOrWhiteSpace(link.Url))
                 {
                     inlines.Add(new PdfInline(link.Url, linkStyle, null));
@@ -731,16 +745,72 @@ public sealed class MarkdownPdfRenderer
 
                 break;
             case HtmlInline html:
-                if (!string.IsNullOrWhiteSpace(html.Tag))
-                {
-                    inlines.Add(new PdfInline(html.Tag, currentStyle, null));
-                }
-
+                AppendSpanTag(html.Tag, spanStack);
                 break;
             case ContainerInline container:
-                AppendInlines(inlines, container, currentStyle, exportStyle);
+                AppendInlineChildren(inlines, container, currentStyle, exportStyle, spanStack);
                 break;
         }
+    }
+
+    /// <summary>嵌套容器递归：新建子栈继承当前栈（容器结束不影响兄弟），避免跨层级串样式。</summary>
+    private static void AppendInlineChildren(
+        List<PdfInline> inlines,
+        ContainerInline container,
+        PdfTextStyle currentStyle,
+        MarkdownExportStyle exportStyle,
+        Stack<MarkdownSpanStyle>? spanStack)
+    {
+        if (spanStack is null)
+        {
+            AppendInlines(inlines, container, currentStyle, exportStyle);
+            return;
+        }
+
+        var childStack = new Stack<MarkdownSpanStyle>(spanStack.Reverse());
+        foreach (var child in container)
+        {
+            AppendInline(inlines, child, currentStyle, exportStyle, childStack);
+        }
+    }
+
+    /// <summary>处理 span 开/闭标签：开标签压栈（外层样式叠加），闭标签弹栈；其余标签按原文输出。</summary>
+    private static void AppendSpanTag(string? tag, Stack<MarkdownSpanStyle>? spanStack)
+    {
+        if (spanStack is null || string.IsNullOrWhiteSpace(tag))
+        {
+            return;
+        }
+
+        if (tag.Equals("</span>", StringComparison.OrdinalIgnoreCase))
+        {
+            if (spanStack.Count > 0)
+            {
+                spanStack.Pop();
+            }
+
+            return;
+        }
+
+        var match = System.Text.RegularExpressions.Regex.Match(
+            tag, @"<span\b[^>]*\bstyle\s*=\s*""([^""]*)""", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        if (match.Success)
+        {
+            var outer = spanStack.Count > 0 ? spanStack.Peek() : new MarkdownSpanStyle();
+            var own = MarkdownSpanStyle.FromDeclarations(match.Groups[1].Value);
+            spanStack.Push(own is null ? outer : outer.Over(own));
+        }
+    }
+
+    private static PdfTextStyle WithSpanStyle(PdfTextStyle style, Stack<MarkdownSpanStyle>? spanStack, out SKColor? background)
+    {
+        if (spanStack is not { Count: > 0 })
+        {
+            background = null;
+            return style;
+        }
+
+        return WithSpan(style, spanStack.Peek(), out background);
     }
 
     private static PdfTextStyle CreateEmphasisStyle(PdfTextStyle currentStyle, EmphasisInline emphasis)

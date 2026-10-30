@@ -3,6 +3,7 @@ using global::Avalonia.Controls.Presenters;
 using global::Avalonia.Media;
 using global::Avalonia.Media.TextFormatting;
 using global::Avalonia.Utilities;
+using CodeWF.Avalonia.Markdown.Shared.Rendering;
 
 namespace CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
 
@@ -35,9 +36,13 @@ internal sealed class MarkdownInlinePresenter(MarkdownBlockViewOptions options, 
                 var typeface = new Typeface(run.Code ? options.CodeFontFamily : FontFamily,
                     run.Italic ? FontStyle.Italic : FontStyle, run.Bold ? FontWeight.Bold : FontWeight, FontStretch);
                 var decoration = run.Strike ? TextDecorations.Strikethrough : run.LinkUrl is not null ? TextDecorations.Underline : null;
-                styles.Add(new(start, length, new GenericTextRunProperties(typeface, FontSize, decoration,
-                    run.Code ? options.CodeBrush : run.LinkUrl is not null ? options.LinkBrush : Foreground,
-                    run.Code ? options.CodeBackgroundBrush : null)));
+                // 样式优先级：行内代码 > <span style> > 链接 > 默认前景。
+                var foreground = run.Code ? options.CodeBrush
+                    : MarkdownSpanStyle.GetBrush(run.Foreground)
+                    ?? (run.LinkUrl is not null ? options.LinkBrush : Foreground);
+                var background = run.Code ? options.CodeBackgroundBrush : MarkdownSpanStyle.GetBrush(run.Background);
+                styles.Add(new(start, length, new GenericTextRunProperties(typeface, run.FontSize ?? FontSize, decoration,
+                    foreground, background)));
             }
             cursor = start + length;
         }

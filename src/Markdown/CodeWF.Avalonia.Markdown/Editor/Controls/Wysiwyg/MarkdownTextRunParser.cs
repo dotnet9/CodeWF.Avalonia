@@ -1,4 +1,7 @@
 using System.Text;
+using System.Text.RegularExpressions;
+
+using CodeWF.Avalonia.Markdown.Shared.Rendering;
 
 using Markdig;
 
@@ -12,7 +15,10 @@ public readonly record struct MarkdownTextRun(
     bool Strike = false,
     bool Code = false,
     string? LinkUrl = null,
-    int SourceStart = 0);
+    int SourceStart = 0,
+    string? Foreground = null,
+    string? Background = null,
+    double? FontSize = null);
 
 /// <summary>把行内 Markdown 文本切成带样式的 <see cref="MarkdownTextRun"/> 列表。</summary>
 public static class MarkdownTextRunParser
@@ -22,7 +28,7 @@ public static class MarkdownTextRunParser
         .UsePreciseSourceLocation()
         .Build();
 
-    /// <summary>解析行内 Markdown（支持 **粗**、*斜*、`码`、~~删~~、[链接](url)）。</summary>
+    /// <summary>解析行内 Markdown（支持 **粗**、*斜*、`码`、~~删~~、[链接](url)、&lt;span style&gt; 行内样式）。</summary>
     public static List<MarkdownTextRun> Parse(string? inlineMarkdown, MarkdownSyntaxOptions? syntaxOptions = null)
     {
         var runs = new List<MarkdownTextRun>();
@@ -34,11 +40,12 @@ public static class MarkdownTextRunParser
 
         var container = Markdig.Markdown.Parse(text, syntaxOptions?.CreatePipeline() ?? Pipeline);
         var added = false;
+        var spanStack = new Stack<MarkdownSpanStyle>();
         foreach (var block in container)
         {
             if (block is Markdig.Syntax.LeafBlock leaf)
             {
-                added |= AppendInlines(runs, leaf.Inline, bold: false, italic: false, strike: false);
+                added |= AppendInlines(runs, leaf.Inline, bold: false, italic: false, strike: false, linkUrl: null, style: null, spanStack);
             }
         }
 
@@ -100,7 +107,9 @@ public static class MarkdownTextRunParser
         bool bold,
         bool italic,
         bool strike,
-        string? linkUrl = null)
+        string? linkUrl = null,
+        MarkdownSpanStyle? style = null,
+        Stack<MarkdownSpanStyle>? spanStack = null)
     {
         if (container is null)
         {
@@ -110,11 +119,15 @@ public static class MarkdownTextRunParser
         var added = false;
         foreach (var inline in container)
         {
-            added |= Append(runs, inline, bold, italic, strike, linkUrl);
+            added |= Append(runs, inline, bold, italic, strike, linkUrl, style, spanStack);
         }
 
         return added;
     }
+
+    private static readonly Regex SpanOpenPattern = new(
+        @"^<span\b[^>]*\bstyle\s*=\s*""([^""]*)""[^>]*>$|^<span\b[^>]*\bstyle\s*=\s*'([^']*)'[^>]*>$",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     private static bool Append(
         List<MarkdownTextRun> runs,
@@ -122,22 +135,53 @@ public static class MarkdownTextRunParser
         bool bold,
         bool italic,
         bool strike,
-        string? linkUrl)
+        string? linkUrl,
+        MarkdownSpanStyle? style,
+        Stack<MarkdownSpanStyle>? spanStack)
     {
         switch (inline)
         {
             case Markdig.Syntax.Inlines.LiteralInline literal:
-                runs.Add(new MarkdownTextRun(literal.Content.ToString(), bold, italic, strike, LinkUrl: linkUrl, SourceStart: literal.Span.Start + (literal.IsFirstCharacterEscaped ? 1 : 0)));
+                runs.Add(new MarkdownTextRun(literal.Content.ToString(), bold, italic, strike, LinkUrl: linkUrl, SourceStart: literal.Span.Start + (literal.IsFirstCharacterEscaped ? 1 : 0),
+                    Foreground: style?.Foreground, Background: style?.Background, FontSize: style?.FontSize));
                 return true;
 
             case Markdig.Syntax.Inlines.CodeInline code:
                 var padding = code.Span.Length - code.DelimiterCount * 2 == code.Content.Length + 2 ? 1 : 0;
-                runs.Add(new MarkdownTextRun(code.Content, bold, italic, strike, Code: true, LinkUrl: linkUrl, SourceStart: code.Span.Start + code.DelimiterCount + padding));
+                runs.Add(new MarkdownTextRun(code.Content, bold, italic, strike, Code: true, LinkUrl: linkUrl, SourceStart: code.Span.Start + code.DelimiterCount + padding,
+                    Foreground: style?.Foreground, Background: style?.Background, FontSize: style?.FontSize));
                 return true;
 
             case Markdig.Syntax.Inlines.HtmlEntityInline entity:
-                runs.Add(new MarkdownTextRun(entity.Transcoded.ToString(), bold, italic, strike, LinkUrl: linkUrl, SourceStart: entity.Span.Start));
+                runs.Add(new MarkdownTextRun(entity.Transcoded.ToString(), bold, italic, strike, LinkUrl: linkUrl, SourceStart: entity.Span.Start,
+                    Foreground: style?.Foreground, Background: style?.Background, FontSize: style?.FontSize));
                 return true;
+
+            case Markdig.Syntax.Inlines.HtmlInline html:
+                // <span style> 开/闭标签以兄弟节点形式出现：开标签压栈，后续兄弟取栈顶样式，闭标签弹栈。
+                if (spanStack is null)
+                {
+                    return false;
+                }
+                var tag = html.Tag ?? string.Empty;
+                if (tag.Equals("</span>", StringComparison.OrdinalIgnoreCase) || tag.Equals("</span >", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (spanStack.Count > 0) spanStack.Pop();
+                    return true;
+                }
+                var open = SpanOpenPattern.Match(tag);
+                if (open.Success)
+                {
+                    var parsed = MarkdownSpanStyle.FromDeclarations(open.Groups[1].Success ? open.Groups[1].Value : open.Groups[2].Value);
+                    spanStack.Push(parsed is null ? (style ?? new MarkdownSpanStyle()) : (style ?? new MarkdownSpanStyle()).Over(parsed));
+                    return true;
+                }
+                if (tag.Equals("<br>", StringComparison.OrdinalIgnoreCase) || Regex.IsMatch(tag, @"^<br\s*/?>$", RegexOptions.IgnoreCase))
+                {
+                    runs.Add(new MarkdownTextRun("\n", SourceStart: html.Span.Start, Foreground: style?.Foreground, Background: style?.Background, FontSize: style?.FontSize));
+                    return true;
+                }
+                return false;
 
             case Markdig.Syntax.Inlines.EmphasisInline emphasis:
                 var isStrike = emphasis.DelimiterChar == '~';
@@ -149,10 +193,12 @@ public static class MarkdownTextRunParser
                     bold || isBold,
                     italic || isItalic,
                     strike || isStrike,
-                    linkUrl);
+                    linkUrl,
+                    style,
+                    spanStack);
 
             case Markdig.Syntax.Inlines.LinkInline link:
-                return AppendInlines(runs, link, bold, italic, strike, link.IsImage ? null : link.Url);
+                return AppendInlines(runs, link, bold, italic, strike, link.IsImage ? null : link.Url, style, spanStack);
 
             case Markdig.Syntax.Inlines.LineBreakInline lineBreak:
                 // 预览保留软换行，输入层必须使用相同换行规则，避免点入时整段重排。
@@ -160,7 +206,7 @@ public static class MarkdownTextRunParser
                 return true;
 
             case Markdig.Syntax.Inlines.ContainerInline nested:
-                return AppendInlines(runs, nested, bold, italic, strike, linkUrl);
+                return AppendInlines(runs, nested, bold, italic, strike, linkUrl, style, spanStack);
 
             default:
                 return false;

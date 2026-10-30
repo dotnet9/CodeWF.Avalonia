@@ -648,6 +648,11 @@ public static class MarkdownBlockParser
                 builder.Append('\n');
                 break;
 
+            case Markdig.Syntax.Inlines.HtmlInline html:
+                // 行内 HTML（<span style> 等）原样回写：编辑块重序列化时标签不丢。
+                builder.Append(html.Tag);
+                break;
+
             case ContainerInline container:
                 foreach (var child in container)
                 {

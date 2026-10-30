@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
     <!-- 版本：前三位跟随 Avalonia 版本（当前 12.1.4），第 4 位为我们自己的修订 -->
-    <Version>12.2.31</Version>
+    <Version>12.2.32</Version>
     <Authors>沙漠尽头的狼</Authors>
     <Company>https://codewf.com</Company>
     <Copyright>Copyright © https://codewf.com</Copyright>
@@ -35,10 +35,10 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
 
-    <!-- 产物输出 -->
+    <!-- 产物输出：本地联调期中间文件与临时包独立到 temp 目录，不与发布产物混淆 -->
     <UseArtifactsOutput>true</UseArtifactsOutput>
-    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts\</ArtifactsPath>
-    <PackageOutputPath>$(ArtifactsPath)packages\</PackageOutputPath>
+    <ArtifactsPath>D:\github\temp_files\CodeWF.Avalonia\</ArtifactsPath>
+    <PackageOutputPath>D:\github\temp_nugets\</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(IsPackable)' == 'true'">

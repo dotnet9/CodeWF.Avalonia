@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 using Markdig.Extensions.TaskLists;
 using Markdig.Syntax.Inlines;
 
@@ -15,28 +17,42 @@ public static class MarkdownPlainTextExtractor
 			return string.Empty;
 		}
 
-		var parts = new List<string>();
-		var child = container.FirstChild;
-		while (child is not null)
-		{
-			parts.Add(child switch
+			var parts = new List<string>();
+			var child = container.FirstChild;
+			while (child is not null)
 			{
-				LiteralInline literal => literal.Content.ToString(),
-				CodeInline code => code.Content,
-				LineBreakInline => Environment.NewLine,
-				TaskList => string.Empty,
-				LinkInline { IsImage: true } image => ExtractImageText(image),
-				ContainerInline nested => ExtractPlainText(nested),
-				_ when MarkdownChemistry.TryGetChemInlinePlainText(child, out var chemText) => chemText,
-				_ => IsTypeNameFallback(child.ToString() ?? string.Empty, child.GetType())
-					? string.Empty
-					: MarkdownChemistry.ReplaceChemCommandsWithPlainText(child.ToString() ?? string.Empty)
-			});
-			child = child.NextSibling;
+				parts.Add(child switch
+				{
+					LiteralInline literal => literal.Content.ToString(),
+					CodeInline code => code.Content,
+					LineBreakInline => Environment.NewLine,
+					TaskList => string.Empty,
+					// 行内样式标签（<span style> / </span>）不占正文；<br> 视为换行。
+					HtmlInline html when IsLineBreakTag(html.Tag) => Environment.NewLine,
+					HtmlInline html when IsSpanTag(html.Tag) => string.Empty,
+					LinkInline { IsImage: true } image => ExtractImageText(image),
+					ContainerInline nested => ExtractPlainText(nested),
+					_ when MarkdownChemistry.TryGetChemInlinePlainText(child, out var chemText) => chemText,
+					_ => IsTypeNameFallback(child.ToString() ?? string.Empty, child.GetType())
+						? string.Empty
+						: MarkdownChemistry.ReplaceChemCommandsWithPlainText(child.ToString() ?? string.Empty)
+				});
+				child = child.NextSibling;
+			}
+
+			return string.Concat(parts);
 		}
 
-		return string.Concat(parts);
-	}
+		private static bool IsSpanTag(string? tag)
+		{
+			return tag is not null && (tag.Equals("</span>", StringComparison.OrdinalIgnoreCase)
+				|| (tag.StartsWith("<span", StringComparison.OrdinalIgnoreCase) && tag.EndsWith('>')));
+		}
+
+		private static bool IsLineBreakTag(string? tag)
+		{
+			return tag is not null && Regex.IsMatch(tag, @"^<br\s*/?>$", RegexOptions.IgnoreCase);
+		}
 
 	public static string ExtractImageText(LinkInline image)
 	{

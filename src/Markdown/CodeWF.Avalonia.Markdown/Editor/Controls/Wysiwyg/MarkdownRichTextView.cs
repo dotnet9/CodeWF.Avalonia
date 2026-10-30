@@ -4,6 +4,7 @@ using global::Avalonia.Controls.Documents;
 using global::Avalonia.Layout;
 using global::Avalonia.Media;
 using global::Avalonia.Media.TextFormatting;
+using CodeWF.Avalonia.Markdown.Shared.Rendering;
 
 namespace CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
 
@@ -67,9 +68,27 @@ internal sealed class MarkdownRichTextView : TextBlock
 
             var textRun = new Run(run.Text)
             {
-                FontSize = _fontSize,
-                Foreground = run.LinkUrl is null ? _options.TextBrush : _options.LinkBrush
+                FontSize = run.FontSize ?? _fontSize,
             };
+
+            // 样式优先级：行内代码 > <span style> > 链接 > 默认。
+            if (run.Code)
+            {
+                textRun.Foreground = _options.CodeBrush;
+            }
+            else if (MarkdownSpanStyle.GetBrush(run.Foreground) is { } spanForeground)
+            {
+                textRun.Foreground = spanForeground;
+            }
+            else
+            {
+                textRun.Foreground = run.LinkUrl is null ? _options.TextBrush : _options.LinkBrush;
+            }
+
+            if (MarkdownSpanStyle.GetBrush(run.Background) is { } spanBackground)
+            {
+                textRun.Background = spanBackground;
+            }
 
             if (run.Bold)
             {
@@ -93,7 +112,6 @@ internal sealed class MarkdownRichTextView : TextBlock
             if (run.Code)
             {
                 textRun.FontFamily = _options.CodeFontFamily;
-                textRun.Foreground = _options.CodeBrush;
                 textRun.Background = _options.CodeBackgroundBrush;
             }
 

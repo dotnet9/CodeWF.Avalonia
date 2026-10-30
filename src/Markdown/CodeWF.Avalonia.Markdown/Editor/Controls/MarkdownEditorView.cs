@@ -436,6 +436,10 @@ public class MarkdownEditorView : UserControl
         RunTextMutation(() =>
             new MarkdownEditorMutationService().WrapSelection(_editor, prefix, suffix, placeholder ?? string.Empty));
 
+    /// <summary>给选区包上行内 <c>&lt;span style&gt;</c>（color / background-color / font-size）；同款再执行一次解包。</summary>
+    public void ApplySpanStyle(string property, string value) =>
+        _actions.ExecuteSpan(_editor, property, value, RunTextMutation);
+
     /// <summary>按源码偏移应用一次外部改写（如预览勾选任务回写）；长度一致时只替换目标区间并保持光标。</summary>
     public void ApplyExternalEdit(string markdown, int start, int length)
     {

@@ -1039,6 +1039,72 @@ public partial class MarkdownLiveEditorView : UserControl
         finally { _restoringHistory = false; }
     }
 
+    /// <summary>
+    /// 给当前选区包上行内 <c>&lt;span style&gt;</c>（color / background-color / font-size）；
+    /// 同款样式再执行一次即解包。跨块选区走文档级替换，块内选区就地改写。
+    /// </summary>
+    public void ApplySpanStyle(string property, string value)
+    {
+        if (_documentSelection is { } range && range.Length > 0)
+        {
+            var text = Text;
+            var (updated, newStart, newEnd) = Shared.Rendering.MarkdownSpanOperations.Wrap(text, range.Start, range.Start + range.Length, property, value);
+            if (updated == text)
+            {
+                return;
+            }
+
+            var previous = CaptureSnapshot();
+            _restoringHistory = true;
+            try { SetText(updated); }
+            finally { _restoringHistory = false; }
+            _lastSnapshot = previous;
+            FocusSourceOffset(newEnd);
+            RaiseChanged();
+            return;
+        }
+
+        WrapActiveSpan(property, value);
+    }
+
+    private void WrapActiveSpan(string property, string value)
+    {
+        if (_activeIndex < 0 || _activeIndex >= _blockViews.Count)
+        {
+            return;
+        }
+
+        if (FindActiveEditor(_blockViews[_activeIndex]) is not { } box)
+        {
+            return;
+        }
+
+        var text = box.Text ?? string.Empty;
+        var start = Math.Clamp(Math.Min(box.SelectionStart, box.SelectionEnd), 0, text.Length);
+        var end = Math.Clamp(Math.Max(box.SelectionStart, box.SelectionEnd), start, text.Length);
+        if (start == end)
+        {
+            return;
+        }
+
+        var (updated, newStart, newEnd) = Shared.Rendering.MarkdownSpanOperations.Wrap(text, start, end, property, value);
+        if (updated == text)
+        {
+            return;
+        }
+
+        box.Text = updated;
+        box.CaretIndex = newEnd;
+        box.SelectionStart = newStart;
+        box.SelectionEnd = newEnd;
+        if (_models[_activeIndex].Kind is Wysiwyg.MarkdownBlockKind.Paragraph or Wysiwyg.MarkdownBlockKind.Heading or Wysiwyg.MarkdownBlockKind.ListItem or Wysiwyg.MarkdownBlockKind.Quote)
+        {
+            _models[_activeIndex].Text = box.Text ?? string.Empty;
+        }
+
+        RaiseChanged();
+    }
+
     private void WrapActive(string prefix, string suffix)
     {
         if (_activeIndex < 0 || _activeIndex >= _blockViews.Count)

@@ -24,17 +24,131 @@ internal sealed class MarkdownInlineRenderer(IMarkdownRenderContext context)
 
     public IEnumerable<Inline> ConvertInlines(ContainerInline? container, bool stripTaskPrefix = false)
     {
-        var child = container?.FirstChild;
-        var shouldStripTaskPrefix = stripTaskPrefix;
-        while (child is not null)
+        if (container?.FirstChild is null)
         {
-            foreach (var inline in ConvertInline(child, ref shouldStripTaskPrefix))
+            yield break;
+        }
+
+        // 行内 <span style> 以兄弟节点形式出现在扁平序列里，需要成对配对后包裹子内容。
+        var nodes = new List<Markdig.Syntax.Inlines.Inline>();
+        for (var node = container.FirstChild; node is not null; node = node.NextSibling)
+        {
+            nodes.Add(node);
+        }
+
+        var strip = stripTaskPrefix;
+        foreach (var inline in ConvertRange(nodes, 0, nodes.Count, ref strip))
+        {
+            yield return inline;
+        }
+    }
+
+    private List<Inline> ConvertRange(List<Markdig.Syntax.Inlines.Inline> nodes, int from, int to, ref bool stripTaskPrefix)
+    {
+        var inlines = new List<Inline>();
+        for (var index = from; index < to;)
+        {
+            if (nodes[index] is HtmlInline opening && IsSpanOpenTag(opening.Tag))
             {
-                yield return inline;
+                var close = FindSpanClose(nodes, index + 1, to);
+                var innerEnd = close < 0 ? to : close;
+                var span = CreateStyledSpan(ParseSpanStyle(opening.Tag));
+                span.Inlines.AddRange(ConvertRange(nodes, index + 1, innerEnd, ref stripTaskPrefix));
+                inlines.Add(span);
+                index = close < 0 ? to : close + 1;
+                continue;
             }
 
-            child = child.NextSibling;
+            if (nodes[index] is HtmlInline orphan && orphan.Tag?.Equals("</span>", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                // 无配对开标签的闭标签：丢弃标签本身，内容照常排版。
+                index++;
+                continue;
+            }
+
+            inlines.AddRange(ConvertInline(nodes[index], ref stripTaskPrefix));
+            index++;
         }
+
+        return inlines;
+    }
+
+    private static readonly Regex SpanOpenPattern = new(@"^<span[\s>/]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly Regex SpanStylePattern = new(@"\bstyle\s*=\s*""([^""]*)""|\bstyle\s*=\s*'([^']*)'", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly Regex LineBreakTagPattern = new(@"^<br\s*/?>$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    private static bool IsSpanOpenTag(string? tag)
+    {
+        return tag is not null && SpanOpenPattern.IsMatch(tag);
+    }
+
+    private static int FindSpanClose(List<Markdig.Syntax.Inlines.Inline> nodes, int from, int to)
+    {
+        var depth = 1;
+        for (var index = from; index < to; index++)
+        {
+            if (nodes[index] is not HtmlInline html)
+            {
+                continue;
+            }
+
+            if (IsSpanOpenTag(html.Tag))
+            {
+                depth++;
+            }
+            else if (html.Tag?.Equals("</span>", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                depth--;
+                if (depth == 0)
+                {
+                    return index;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    private static MarkdownSpanStyle? ParseSpanStyle(string? tag)
+    {
+        if (tag is null)
+        {
+            return null;
+        }
+
+        var match = SpanStylePattern.Match(tag);
+        if (!match.Success)
+        {
+            return null;
+        }
+
+        return MarkdownSpanStyle.FromDeclarations(match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value);
+    }
+
+    private Span CreateStyledSpan(MarkdownSpanStyle? style)
+    {
+        var span = new Span();
+        if (style is null)
+        {
+            return span;
+        }
+
+        if (MarkdownSpanStyle.GetBrush(style.Foreground) is { } foreground)
+        {
+            span.Foreground = foreground;
+        }
+
+        if (MarkdownSpanStyle.GetBrush(style.Background) is { } background)
+        {
+            span.Background = background;
+        }
+
+        if (style.FontSize is { } fontSize)
+        {
+            span.FontSize = fontSize;
+        }
+
+        return span;
     }
 
     private IReadOnlyList<Inline> ConvertInline(Markdig.Syntax.Inlines.Inline inline, ref bool stripTaskPrefix)
@@ -203,12 +317,13 @@ internal sealed class MarkdownInlineRenderer(IMarkdownRenderContext context)
 
     private IEnumerable<Inline> CreateHtmlInline(string html)
     {
-        if (Regex.IsMatch(html, @"^<br\s*/?>$", RegexOptions.IgnoreCase))
+        if (LineBreakTagPattern.IsMatch(html))
         {
             yield return new LineBreak();
             yield break;
         }
 
+        // <a>/<span> 标签本身不渲染：链接由 LinkInline 呈现，span 样式由 ConvertRange 配对包裹。
         if (Regex.IsMatch(html, @"^</?(a|span)\b", RegexOptions.IgnoreCase))
         {
             yield break;
