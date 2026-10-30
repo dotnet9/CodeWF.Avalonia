@@ -529,7 +529,7 @@ internal sealed class MarkdownBlockView : UserControl
         _editingText = null;
     }
 
-    private MarkdownViewer CreatePreview() => new() { DocumentBottomPadding = 0, IsTaskEditingEnabled = false, ShowCodeBlockHeader = false, CodeFontFamily = _options.CodeFontFamily };
+    private MarkdownViewer CreatePreview() => new() { DocumentBottomPadding = 0, IsTaskEditingEnabled = false, ShowCodeBlockHeader = true, CodeFontFamily = _options.CodeFontFamily };
 }
 
 /// <summary>所见即所得视图里一个表格块的编辑视图（每个单元格就地编辑）。</summary>
