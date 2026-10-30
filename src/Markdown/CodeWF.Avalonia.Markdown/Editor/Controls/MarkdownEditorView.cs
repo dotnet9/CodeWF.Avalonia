@@ -440,6 +440,15 @@ public class MarkdownEditorView : UserControl
     public void ApplySpanStyle(string property, string value) =>
         _actions.ExecuteSpan(_editor, property, value, RunTextMutation);
 
+    /// <summary>读当前选区所在的行内样式值（紧贴同款 span 时返回，供宿主面板预填），否则 null。</summary>
+    public string? GetSpanStyle(string property)
+    {
+        var text = _editor.Text ?? string.Empty;
+        var start = Math.Clamp(_editor.SelectionStart, 0, text.Length);
+        var end = Math.Clamp(_editor.SelectionStart + _editor.SelectionLength, start, text.Length);
+        return CodeWF.Avalonia.Markdown.Shared.Rendering.MarkdownSpanOperations.CurrentValue(text, start, end, property);
+    }
+
     /// <summary>按源码偏移应用一次外部改写（如预览勾选任务回写）；长度一致时只替换目标区间并保持光标。</summary>
     public void ApplyExternalEdit(string markdown, int start, int length)
     {

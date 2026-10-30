@@ -100,6 +100,33 @@ public static class MarkdownSpanOperations
         return (builder.ToString(), Map(start), Map(end));
     }
 
+    /// <summary>读选区所在 span 的当前属性值：选区紧贴同款 span（开标签结束于 start、闭标签始于 end）时返回样式值，否则 null。</summary>
+    public static string? CurrentValue(string text, int start, int end, string property)
+    {
+        if (start > end || !Properties.Contains(property))
+        {
+            return null;
+        }
+
+        var windowStart = Math.Max(0, start - 200);
+        var window = text[windowStart..start];
+        var at = window.LastIndexOf("<span", StringComparison.OrdinalIgnoreCase);
+        var open = at >= 0 ? OpenPattern.Match(window[at..]) : Match.Empty;
+        if (!open.Success || open.Index != 0 || end + 7 > text.Length || text.Substring(end, 7) != "</span>")
+        {
+            return null;
+        }
+
+        var style = MarkdownSpanStyle.FromDeclarations(open.Groups[1].Value);
+        return property switch
+        {
+            "color" => style?.Foreground,
+            "background-color" => style?.Background,
+            "font-size" => style?.FontSize is { } size ? size.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + "px" : null,
+            _ => null,
+        };
+    }
+
     /// <summary>合并一个属性；返回 null 表示同值需要解包。</summary>
     private static MarkdownSpanStyle? Merge(MarkdownSpanStyle style, string property, string value)
     {

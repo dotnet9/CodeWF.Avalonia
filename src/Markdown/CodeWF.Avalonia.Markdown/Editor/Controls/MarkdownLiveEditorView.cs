@@ -1039,6 +1039,25 @@ public partial class MarkdownLiveEditorView : UserControl
         finally { _restoringHistory = false; }
     }
 
+    /// <summary>读当前选区所在的行内样式值（紧贴同款 span 时返回，供宿主面板预填），否则 null。</summary>
+    public string? GetSpanStyle(string property)
+    {
+        if (_documentSelection is { } range && range.Length > 0)
+        {
+            return Shared.Rendering.MarkdownSpanOperations.CurrentValue(Text, range.Start, range.Start + range.Length, property);
+        }
+
+        if (_activeIndex >= 0 && _activeIndex < _blockViews.Count && FindActiveEditor(_blockViews[_activeIndex]) is { } box)
+        {
+            var text = box.Text ?? string.Empty;
+            var start = Math.Clamp(Math.Min(box.SelectionStart, box.SelectionEnd), 0, text.Length);
+            var end = Math.Clamp(Math.Max(box.SelectionStart, box.SelectionEnd), start, text.Length);
+            return Shared.Rendering.MarkdownSpanOperations.CurrentValue(text, start, end, property);
+        }
+
+        return null;
+    }
+
     /// <summary>
     /// 给当前选区包上行内 <c>&lt;span style&gt;</c>（color / background-color / font-size）；
     /// 同款样式再执行一次即解包。跨块选区走文档级替换，块内选区就地改写。
