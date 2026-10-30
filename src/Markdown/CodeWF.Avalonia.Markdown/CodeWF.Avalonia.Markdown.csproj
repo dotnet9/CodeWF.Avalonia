@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <Description>Markdown 完整包：在 Lite 渲染引擎之上提供图片（GIF/SVG/预览）、数学公式、Mermaid 图表、TextMate 代码高亮、行内样式（<span style> 字号/前景色/背景色，含选区浮动条与可读性回退）、PNG/PDF/Word/公众号 HTML 导出，以及源码编辑器与单栏实时编辑（所见即所得）控件，并内置能力控件主题。Full Markdown package: images, math, mermaid, highlighting, export and editors on top of the Lite engine.</Description>
+    <Description>Markdown 完整包：在 Lite 渲染引擎之上提供图片（GIF/SVG/预览）、数学公式、Mermaid 图表、TextMate 代码高亮、行内样式（span style 字号/前景色/背景色，含选区浮动条与可读性回退）、PNG/PDF/Word/公众号 HTML 导出，以及源码编辑器与单栏实时编辑（所见即所得）控件，并内置能力控件主题。Full Markdown package: images, math, mermaid, highlighting, inline span styles (font size / foreground / background with selection bar and readability fallback), export and editors on top of the Lite engine.</Description>
     <PackageTags>avalonia;markdown;editor;wysiwyg;export;codewf</PackageTags>
   </PropertyGroup>
 
