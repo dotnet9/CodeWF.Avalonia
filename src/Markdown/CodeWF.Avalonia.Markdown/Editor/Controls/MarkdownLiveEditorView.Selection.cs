@@ -26,6 +26,7 @@ public partial class MarkdownLiveEditorView
         AddHandler(PointerReleasedEvent, (_, e) =>
         {
             if (_documentPointer != e.Pointer) return;
+            _selectionBarAnchor = e.GetPosition(this);
             _documentPointer = null; e.Pointer.Capture(null); e.Handled = true;
         }, RoutingStrategies.Tunnel);
         PointerCaptureLost += (_, _) => _documentPointer = null;
@@ -111,6 +112,12 @@ public partial class MarkdownLiveEditorView
                 index < start.Block || index > end.Block ? 0 : index == end.Block ? end.Offset : view.CurrentText.Length);
         }
         RaiseSelectionChanged();
+        // 跨块选区直接弹条；同块选区看编辑输入框的实时选择（拖选/双击取词），空选收条。
+        var sameBlock = start.Block == end.Block;
+        var hasText = !sameBlock || (start.Block >= 0 && start.Block < _blockViews.Count
+            && FindActiveEditor(_blockViews[start.Block]) is { } box && box.SelectionStart != box.SelectionEnd);
+        if (!sameBlock || hasText) ShowSelectionBar();
+        else HideSelectionBar();
     }
 
     private int GetContentStart(int index)
@@ -137,6 +144,7 @@ public partial class MarkdownLiveEditorView
     private void ClearDocumentSelection()
     {
         _documentSelection = null; _hasSelectionAnchor = false;
+        HideSelectionBar();
         foreach (var view in RealizedTextBlocks) view.SetTextSelection(0, 0);
     }
 
