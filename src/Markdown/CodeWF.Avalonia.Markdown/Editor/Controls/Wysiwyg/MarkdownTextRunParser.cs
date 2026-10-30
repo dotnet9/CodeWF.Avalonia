@@ -139,22 +139,26 @@ public static class MarkdownTextRunParser
         MarkdownSpanStyle? style,
         Stack<MarkdownSpanStyle>? spanStack)
     {
+        // <span style> 是兄弟序列：文字节点的有效样式 = 参数样式叠加当前栈顶（开标签压栈后覆盖后续兄弟）。
+        var effective = spanStack is { Count: > 0 }
+            ? (style ?? new MarkdownSpanStyle()).Over(spanStack.Peek())
+            : style;
         switch (inline)
         {
             case Markdig.Syntax.Inlines.LiteralInline literal:
                 runs.Add(new MarkdownTextRun(literal.Content.ToString(), bold, italic, strike, LinkUrl: linkUrl, SourceStart: literal.Span.Start + (literal.IsFirstCharacterEscaped ? 1 : 0),
-                    Foreground: style?.Foreground, Background: style?.Background, FontSize: style?.FontSize));
+                    Foreground: effective?.Foreground, Background: effective?.Background, FontSize: effective?.FontSize));
                 return true;
 
             case Markdig.Syntax.Inlines.CodeInline code:
                 var padding = code.Span.Length - code.DelimiterCount * 2 == code.Content.Length + 2 ? 1 : 0;
                 runs.Add(new MarkdownTextRun(code.Content, bold, italic, strike, Code: true, LinkUrl: linkUrl, SourceStart: code.Span.Start + code.DelimiterCount + padding,
-                    Foreground: style?.Foreground, Background: style?.Background, FontSize: style?.FontSize));
+                    Foreground: effective?.Foreground, Background: effective?.Background, FontSize: effective?.FontSize));
                 return true;
 
             case Markdig.Syntax.Inlines.HtmlEntityInline entity:
                 runs.Add(new MarkdownTextRun(entity.Transcoded.ToString(), bold, italic, strike, LinkUrl: linkUrl, SourceStart: entity.Span.Start,
-                    Foreground: style?.Foreground, Background: style?.Background, FontSize: style?.FontSize));
+                    Foreground: effective?.Foreground, Background: effective?.Background, FontSize: effective?.FontSize));
                 return true;
 
             case Markdig.Syntax.Inlines.HtmlInline html:
@@ -172,8 +176,10 @@ public static class MarkdownTextRunParser
                 var open = SpanOpenPattern.Match(tag);
                 if (open.Success)
                 {
+                    // 叠加基是栈顶（嵌套时继承外层 span），而不是进入时的参数样式。
+                    var outer = spanStack.Count > 0 ? spanStack.Peek() : style ?? new MarkdownSpanStyle();
                     var parsed = MarkdownSpanStyle.FromDeclarations(open.Groups[1].Success ? open.Groups[1].Value : open.Groups[2].Value);
-                    spanStack.Push(parsed is null ? (style ?? new MarkdownSpanStyle()) : (style ?? new MarkdownSpanStyle()).Over(parsed));
+                    spanStack.Push(parsed is null ? outer : outer.Over(parsed));
                     return true;
                 }
                 if (tag.Equals("<br>", StringComparison.OrdinalIgnoreCase) || Regex.IsMatch(tag, @"^<br\s*/?>$", RegexOptions.IgnoreCase))

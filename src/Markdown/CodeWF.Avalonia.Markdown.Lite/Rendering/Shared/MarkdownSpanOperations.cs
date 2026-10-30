@@ -11,8 +11,9 @@ public static class MarkdownSpanOperations
     /// <summary>支持的样式属性（与 <see cref="MarkdownSpanStyle"/> 白名单一致）。</summary>
     public static readonly IReadOnlyCollection<string> Properties = ["color", "background-color", "font-size"];
 
-    /// <summary>把 [start, end) 包上 <c>&lt;span style="property:value"&gt;</c>；返回新文本与新选区。</summary>
-    public static (string Text, int Start, int End) Wrap(string text, int start, int end, string property, string value)
+    /// <summary>把 [start, end) 包上 <c>&lt;span style="property:value"&gt;</c>；返回新文本与新选区。
+    /// toggle=true（默认）时同款同值再套一次即解包；选色器等明确设值路径传 false。</summary>
+    public static (string Text, int Start, int End) Wrap(string text, int start, int end, string property, string value, bool toggle = true)
     {
         if (start >= end || !Properties.Contains(property))
         {
@@ -29,9 +30,21 @@ public static class MarkdownSpanOperations
             var absolute = windowStart + at;
             var inner = text[start..end];
             var style = MarkdownSpanStyle.FromDeclarations(open.Groups[1].Value) ?? new MarkdownSpanStyle();
-            var updated = Merge(style, property, value);
+            var current = property switch
+            {
+                "color" => style.Foreground,
+                "background-color" => style.Background,
+                "font-size" => style.FontSize is { } size ? size.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + "px" : null,
+                _ => null,
+            };
+            var updated = string.Equals(current, value, StringComparison.OrdinalIgnoreCase) ? null : Merge(style, property, value);
             if (updated is null)
             {
+                if (!toggle)
+                {
+                    return (text, start, end);
+                }
+
                 // 同值再点一次：解包。
                 return (text[..absolute] + inner + text[(end + 7)..], absolute, absolute + inner.Length);
             }
