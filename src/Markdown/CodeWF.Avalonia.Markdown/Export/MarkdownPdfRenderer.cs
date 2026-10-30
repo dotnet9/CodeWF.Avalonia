@@ -690,12 +690,25 @@ public sealed class MarkdownPdfRenderer
     private static PdfTextStyle WithSpan(PdfTextStyle style, MarkdownSpanStyle span, out SKColor? background)
     {
         background = MarkdownSpanStyle.TryGetColor(span.Background) is { } bg ? new SKColor(bg.R, bg.G, bg.B) : null;
+        // 作者色可读性回退：与段落底色对比不足（如暗色导出配深色文字）时沿用段落色。
+        var color = EnsureReadableSkia(
+            MarkdownSpanStyle.TryGetColor(span.Foreground),
+            ToAvaloniaColor(background),
+            style.Color);
         return style with
         {
-            Color = MarkdownSpanStyle.TryGetColor(span.Foreground) is { } fg ? new SKColor(fg.R, fg.G, fg.B) : style.Color,
+            Color = color,
             FontSize = span.FontSize is { } size ? (float)size : style.FontSize,
         };
     }
+
+    private static global::Avalonia.Media.Color? ToAvaloniaColor(SKColor? color) =>
+        color is { } value ? new global::Avalonia.Media.Color(value.Alpha, value.Red, value.Green, value.Blue) : null;
+
+    private static SKColor EnsureReadableSkia(global::Avalonia.Media.Color? authored, global::Avalonia.Media.Color? background, SKColor fallback) =>
+        MarkdownSpanStyle.EnsureReadable(authored, background, new global::Avalonia.Media.Color(255, fallback.Red, fallback.Green, fallback.Blue)) is { } readable
+            ? new SKColor(readable.R, readable.G, readable.B)
+            : fallback;
 
     private static void AppendInline(
         List<PdfInline> inlines,

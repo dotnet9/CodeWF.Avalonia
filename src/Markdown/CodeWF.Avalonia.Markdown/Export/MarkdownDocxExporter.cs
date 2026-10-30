@@ -631,7 +631,11 @@ public static class MarkdownDocxExporter
                 run.AddFirst(properties);
             }
 
-            if (MarkdownSpanStyle.TryGetColor(span.Foreground) is { } foreground)
+            // 作者色可读性回退：与背景（或正文底色）对比不足时不覆盖正文色。
+            var spanBackground = MarkdownSpanStyle.TryGetColor(span.Background);
+            var bodyColor = global::Avalonia.Media.Color.TryParse(style.BodyColor, out var parsedBody) ? parsedBody : default(global::Avalonia.Media.Color?);
+            if (MarkdownSpanStyle.EnsureReadable(MarkdownSpanStyle.TryGetColor(span.Foreground), spanBackground, bodyColor ?? default) is { } foreground
+                && !(spanBackground is null && bodyColor is null))
             {
                 properties.Element(W + "color")?.Remove();
                 properties.Add(new XElement(W + "color", new XAttribute(W + "val", $"{foreground.R:X2}{foreground.G:X2}{foreground.B:X2}")));
