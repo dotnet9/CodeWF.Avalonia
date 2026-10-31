@@ -23,6 +23,32 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 public sealed class MarkdownSelectionValueTests(AvaloniaPlatformFixture platform)
 {
 	[Fact]
+	public void ReverseDragAndShiftClickKeepPreciseEndpoints() => platform.Run(() =>
+	{
+		const string source = "Alpha paragraph.\n\nBeta paragraph.\n";
+		var (window, viewer) = CreateStaticViewer(source);
+		try
+		{
+			WaitForSource(viewer, source);
+			DragBetweenParagraphs(window, viewer, 1, 0, 4, 6);
+			Assert.Equal("paragraph." + Environment.NewLine + Environment.NewLine + "Beta", viewer.SelectedText);
+			var texts = FindParagraphs(viewer);
+			Assert.Equal("paragraph.", texts[0].SelectedText);
+			Assert.Equal("Beta", texts[1].SelectedText);
+			var bounds = texts[0].TextLayout.HitTestTextPosition(0);
+			var point = texts[0].TranslatePoint(new Point(bounds.Left, bounds.Center.Y), window)!.Value;
+			var pointer = new TestPointer();
+			texts[0].RaiseEvent(new PointerPressedEventArgs(texts[0], pointer, window, point, 100,
+				new PointerPointProperties(RawInputModifiers.LeftMouseButton, PointerUpdateKind.LeftButtonPressed), KeyModifiers.Shift, 1));
+			texts[0].RaiseEvent(new PointerReleasedEventArgs(texts[0], pointer, window, point, 101,
+				new PointerPointProperties(default, PointerUpdateKind.LeftButtonReleased), KeyModifiers.Shift, MouseButton.Left));
+			Assert.Equal("Alpha paragraph." + Environment.NewLine + Environment.NewLine + "Beta", viewer.SelectedText);
+			Assert.Equal(source, viewer.CurrentModel.Source);
+		}
+		finally { window.Close(); }
+	});
+
+	[Fact]
 	public void CrossBlockSelection_SurvivesIncrementalRebuild() => platform.Run(() =>
 	{
 		using var document = new MarkdownStreamingDocument();
@@ -35,8 +61,7 @@ public sealed class MarkdownSelectionValueTests(AvaloniaPlatformFixture platform
 			DragBetweenParagraphs(window, viewer, 0, 1);
 			var selected = viewer.SelectedText;
 			Assert.True(viewer.HasSelection);
-			Assert.Contains("First paragraph.", selected);
-			Assert.Contains("Second paragraph.", selected);
+			Assert.Equal("First paragraph." + Environment.NewLine + Environment.NewLine + "Second", selected);
 
 			// 追加新块会重建块列表与选中控件的模型，选区坐标不变。
 			document.Append("\nThird paragraph.\n");
@@ -112,14 +137,16 @@ public sealed class MarkdownSelectionValueTests(AvaloniaPlatformFixture platform
 	/// 无头环境下命中测试不会把指针事件路由进查看器子树，这里直接把按下/移动/抬起
 	/// 还原成路由事件发到段落上，走的是与真实输入完全相同的隧道处理器。
 	/// </summary>
-	private static void DragBetweenParagraphs(Window window, MarkdownViewer viewer, int fromIndex, int toIndex)
+	private static void DragBetweenParagraphs(Window window, MarkdownViewer viewer, int fromIndex, int toIndex, int fromOffset = 0, int toOffset = 6)
 	{
 		window.UpdateLayout();
 		Dispatcher.UIThread.RunJobs();
 		var paragraphs = FindParagraphs(viewer);
 		var source = paragraphs[fromIndex];
-		var from = source.TranslatePoint(new Point(4, 6), window)!.Value;
-		var to = paragraphs[toIndex].TranslatePoint(new Point(4, 6), window)!.Value;
+		var firstBounds = source.TextLayout.HitTestTextPosition(fromOffset);
+		var endBounds = paragraphs[toIndex].TextLayout.HitTestTextPosition(toOffset);
+		var from = source.TranslatePoint(new Point(firstBounds.Left, firstBounds.Center.Y), window)!.Value;
+		var to = paragraphs[toIndex].TranslatePoint(new Point(endBounds.Left, endBounds.Center.Y), window)!.Value;
 
 		var pointer = new TestPointer();
 		var pressed = new PointerPointProperties(RawInputModifiers.LeftMouseButton, PointerUpdateKind.LeftButtonPressed);

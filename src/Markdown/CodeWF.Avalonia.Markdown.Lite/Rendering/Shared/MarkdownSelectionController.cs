@@ -25,6 +25,7 @@ internal sealed class MarkdownSelectionController
 	private MarkdownTextPoint? _anchor;
 	private MarkdownTextPoint? _active;
 	private bool _hasVisualSelection;
+	private readonly HashSet<SelectableTextBlock> _selectedTexts = [];
 
 	public bool HasSelection => _hasVisualSelection
 								&& _anchor.HasValue
@@ -102,7 +103,7 @@ internal sealed class MarkdownSelectionController
 		ApplyVisualState();
 	}
 
-	public bool Begin(Point point)
+	public bool Begin(Point point, bool extend = false)
 	{
 		var index = HitTestBlock(point);
 		if (index < 0)
@@ -111,10 +112,11 @@ internal sealed class MarkdownSelectionController
 			return false;
 		}
 
-		ClearVisualState();
 		var block = _blocks[index];
-		_anchor = new MarkdownTextPoint(block.BlockKey, 0);
-		_active = new MarkdownTextPoint(block.BlockKey, block.PlainText.Length);
+		var hit = new MarkdownTextPoint(block.BlockKey, HitTestOffset(block, point));
+		if (!extend || _anchor is null) _anchor = hit;
+		_active = hit;
+		if (extend) ApplyVisualState(); else ClearVisualState();
 		return true;
 	}
 
@@ -132,8 +134,7 @@ internal sealed class MarkdownSelectionController
 		}
 
 		var block = _blocks[index];
-		var movingDown = FindIndex(_anchor.Value.BlockKey) <= index;
-		var next = new MarkdownTextPoint(block.BlockKey, movingDown ? block.PlainText.Length : 0);
+		var next = new MarkdownTextPoint(block.BlockKey, HitTestOffset(block, point));
 		if (_active == next)
 		{
 			return false;
@@ -197,7 +198,43 @@ internal sealed class MarkdownSelectionController
 
 	private int ResolveExtensionIndex(Point documentPoint)
 	{
-		return HitTestBlock(documentPoint);
+		var hit = HitTestBlock(documentPoint);
+		if (hit >= 0) return hit;
+		return _blocks.Count == 0 ? -1 : Enumerable.Range(0, _blocks.Count)
+			.MinBy(i => Math.Abs(GetDocumentBounds(_blocks[i].Control).Center.Y - documentPoint.Y));
+	}
+
+	private int HitTestOffset(MarkdownSelectionBlock block, Point point)
+	{
+		var projected = TextSegments(block).ToArray();
+		var nearest = projected.MinBy(item =>
+		{
+			var bounds = GetDocumentBounds(item.Text);
+			return point.Y < bounds.Top ? bounds.Top - point.Y : point.Y > bounds.Bottom ? point.Y - bounds.Bottom : 0;
+		});
+		if (nearest.Text is null) return point.Y < GetDocumentBounds(block.Control).Center.Y ? 0 : block.PlainText.Length;
+		var local = _coordinateRoot?.TranslatePoint(point, nearest.Text) ?? point - GetDocumentBounds(nearest.Text).Position;
+		if (local.Y < 0) return nearest.Start;
+		if (local.Y > nearest.Text.Bounds.Height) return nearest.Start + nearest.Length;
+		var hit = nearest.Text.TextLayout.HitTestPoint(new Point(local.X - nearest.Text.Padding.Left, local.Y - nearest.Text.Padding.Top));
+		return nearest.Start + Math.Clamp(hit.TextPosition, 0, nearest.Length);
+	}
+
+	private static IEnumerable<(SelectableTextBlock Text, int Start, int Length)> TextSegments(MarkdownSelectionBlock block)
+	{
+		var root = block.Control;
+		var texts = root is SelectableTextBlock text ? new[] { text }.Concat(root.GetVisualDescendants().OfType<SelectableTextBlock>())
+			: root.GetVisualDescendants().OfType<SelectableTextBlock>();
+		var cursor = 0;
+		foreach (var item in texts.Where(item => item.Tag as string != "CodeLineNumbers"))
+		{
+			var buffer = item.Inlines?.Text ?? item.Text ?? string.Empty;
+			if (buffer.Length == 0) continue;
+			var start = block.PlainText.IndexOf(buffer, cursor, StringComparison.Ordinal);
+			if (start < 0) continue;
+			cursor = start + buffer.Length;
+			yield return (item, start, buffer.Length);
+		}
 	}
 
 	private (MarkdownTextPoint Start, MarkdownTextPoint End) GetOrderedPoints()
@@ -223,8 +260,9 @@ internal sealed class MarkdownSelectionController
 			return;
 		}
 
-		var start = FindIndex(_anchor.Value.BlockKey);
-		var end = FindIndex(_active.Value.BlockKey);
+		var (from, to) = GetOrderedPoints();
+		var start = FindIndex(from.BlockKey);
+		var end = FindIndex(to.BlockKey);
 		if (start < 0 || end < 0)
 		{
 			return;
@@ -237,7 +275,15 @@ internal sealed class MarkdownSelectionController
 
 		for (var i = start; i <= end; i++)
 		{
-			_blocks[i].Control.Classes.Add(SelectedBlockClass);
+			var block = _blocks[i];
+			var segments = TextSegments(block).ToArray();
+			if (segments.Length == 0) block.Control.Classes.Add(SelectedBlockClass);
+			foreach (var segment in segments)
+			{
+				_selectedTexts.Add(segment.Text);
+				segment.Text.SelectionStart = Math.Clamp((i == start ? from.Offset : 0) - segment.Start, 0, segment.Length);
+				segment.Text.SelectionEnd = Math.Clamp((i == end ? to.Offset : block.PlainText.Length) - segment.Start, 0, segment.Length);
+			}
 		}
 
 		_hasVisualSelection = true;
@@ -249,6 +295,8 @@ internal sealed class MarkdownSelectionController
 		{
 			block.Control.Classes.Remove(SelectedBlockClass);
 		}
+		foreach (var text in _selectedTexts) text.ClearSelection();
+		_selectedTexts.Clear();
 
 		_hasVisualSelection = false;
 	}
