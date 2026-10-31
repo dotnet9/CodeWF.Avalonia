@@ -1,11 +1,11 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Color x:Key="StudioPaperColor">#111111</Color>
-    <Color x:Key="StudioHoverColor">#2b2a2a</Color>
+    <Color x:Key="StudioHoverColor">#212020</Color>
     <SolidColorBrush x:Key="StudioHover" Color="{StaticResource StudioHoverColor}"/>
     <Color x:Key="StudioPressedColor">#3b2b2d</Color>
     <SolidColorBrush x:Key="StudioPressed" Color="{StaticResource StudioPressedColor}"/>
-    <Color x:Key="StudioSelectedColor">#3b2b2d</Color>
+    <Color x:Key="StudioSelectedColor">#37292a</Color>
     <SolidColorBrush x:Key="StudioSelected" Color="{StaticResource StudioSelectedColor}"/>
     <Color x:Key="StudioControlBorderColor">#4d4949</Color>
     <SolidColorBrush x:Key="StudioControlBorder" Color="{StaticResource StudioControlBorderColor}"/>
@@ -15,8 +15,11 @@
     <SolidColorBrush x:Key="StudioDisabled" Color="{StaticResource StudioDisabledColor}"/>
     <!-- 颜色令牌与画刷遵循 Semi 的主题字典结构。 -->
     <Color x:Key="StudioBackgroundColor">#141414</Color>
+    <Color x:Key="StudioSegmentedTrackColor">#262525</Color>
+    <Color x:Key="StudioSegmentedThumbColor">#1c1c1c</Color>
+    <Color x:Key="StudioElevatedColor">#121212</Color>
     <Color x:Key="StudioSurfaceColor">#1c1c1c</Color>
-    <Color x:Key="StudioRaisedColor">#1f1e1e</Color>
+    <Color x:Key="StudioRaisedColor">#212020</Color>
     <Color x:Key="StudioBorderColor">#363334</Color>
     <Color x:Key="StudioTextColor">#F6E7E9</Color>
     <Color x:Key="StudioMutedColor">#a49a9b</Color>
@@ -50,12 +53,13 @@
     <SolidColorBrush x:Key="SemiColorSuccess">#4ADE80</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorWarning">#FBBF24</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDanger">#F87171</SolidColorBrush>
-    <SolidColorBrush x:Key="SemiColorDangerActive">#442626</SolidColorBrush>
+    <SolidColorBrush x:Key="SemiColorDangerActive">#F87171</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorSuccessLight">#1b3625</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorWarningLight">#3b3014</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDangerLight">#3b2222</SolidColorBrush>
     <SolidColorBrush x:Key="SemiColorDangerLightActive">#442626</SolidColorBrush>
-    <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#000000</SolidColorBrush><!-- 按明暗派生 -->
+    <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#000000</SolidColorBrush><!-- 默认/Debug 胶囊落在强调色上，取强调色的前景键 -->
+    <SolidColorBrush x:Key="StatusBadgeStatusTextForeground">#000000</SolidColorBrush><!-- 状态四枚胶囊落在状态实色上，白/黑取最差对比更高者 -->
     <!-- 白字操作面使用独立渐变，装饰渐变保留明亮副色。 -->
     <LinearGradientBrush x:Key="StudioActionGradient" StartPoint="0%,0%" EndPoint="100%,100%">
         <GradientStop Offset="0" Color="{StaticResource StudioPrimaryColor}" />
@@ -236,7 +240,7 @@
     <StaticResource x:Key="StatusBadgeInfoBorderBrush" ResourceKey="SemiColorSuccess" />
     <StaticResource x:Key="StatusBadgeWarnBorderBrush" ResourceKey="SemiColorWarning" />
     <StaticResource x:Key="StatusBadgeErrorBorderBrush" ResourceKey="SemiColorDanger" />
-    <StaticResource x:Key="StatusBadgeFatalBorderBrush" ResourceKey="SemiColorDanger" />
+    <StaticResource x:Key="StatusBadgeFatalBorderBrush" ResourceKey="SemiColorDangerActive" />
     <StaticResource x:Key="StatusBadgeDebugBackground" ResourceKey="StudioRaised" />
     <StaticResource x:Key="StatusBadgeInfoBackground" ResourceKey="SemiColorSuccessLight" />
     <StaticResource x:Key="StatusBadgeWarnBackground" ResourceKey="SemiColorWarningLight" />
@@ -252,7 +256,7 @@
     <StaticResource x:Key="StatusCardInfoForeground" ResourceKey="SemiColorSuccess" />
     <StaticResource x:Key="StatusCardWarnForeground" ResourceKey="SemiColorWarning" />
     <StaticResource x:Key="StatusCardErrorForeground" ResourceKey="SemiColorDanger" />
-    <StaticResource x:Key="StatusCardFatalForeground" ResourceKey="SemiColorDanger" />
+    <StaticResource x:Key="StatusCardFatalForeground" ResourceKey="SemiColorDangerActive" />
     <StaticResource x:Key="GuideCardBackground" ResourceKey="StudioSurface" />
     <StaticResource x:Key="GuideCardBorderBrush" ResourceKey="StudioBorder" />
     <StaticResource x:Key="GuideTextForeground" ResourceKey="StudioText" />
@@ -346,7 +350,7 @@
     <StaticResource x:Key="CodeWFLogDesktopNotificationTitleBarBorderBrush" ResourceKey="StudioBorder" />
     <StaticResource x:Key="CodeWFLogDesktopNotificationTitleForeground" ResourceKey="StudioText" />
     <StaticResource x:Key="CodeWFLogDesktopNotificationContentForeground" ResourceKey="StudioText" />
-    <SolidColorBrush x:Key="CodeWFLogDesktopNotificationMutedForeground">#d4c7c9</SolidColorBrush>
+    <StaticResource x:Key="CodeWFLogDesktopNotificationMutedForeground" ResourceKey="StudioMuted" />
     <StaticResource x:Key="CodeWFLogDesktopNotificationNewLogBackground" ResourceKey="StudioPrimary" />
     <StaticResource x:Key="CodeWFLogDesktopNotificationNewLogLabelBackground" ResourceKey="StudioRaised" />
     <StaticResource x:Key="CodeWFLogDesktopNotificationNewLogLabelBorderBrush" ResourceKey="StudioBorder" />

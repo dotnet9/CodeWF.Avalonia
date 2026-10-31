@@ -13,6 +13,9 @@
         </StackPanel>
     </Design.PreviewWith>
     <ControlTheme x:Key="{x:Type c:StatusBadge}" TargetType="c:StatusBadge">
+        <!-- 左侧胶囊有两张脸：默认/Debug 落在强调（信息）色上，四种状态落在状态实色上。
+             两套底色对文字色的要求相反（鼠尾草 accent 要黑字、浅底 success 要白字），
+             所以状态四枚各自把前景换成 StatusBadgeStatusTextForeground。 -->
         <Setter Property="CornerRadius" Value="{DynamicResource StatusBadgeDefaultCornerRadius}" />
         <Setter Property="Padding" Value="{DynamicResource StatusBadgeDefaultPadding}" />
         <Setter Property="Template">
@@ -30,6 +33,7 @@
                             CornerRadius="{TemplateBinding CornerRadius, Converter={StaticResource StatusBadgeLeftTextBorderCornerRadiusConverter}}"
                             Padding="{TemplateBinding Padding}">
                             <SelectableTextBlock
+                                Name="PART_LeftText"
                                 Margin="{TemplateBinding Padding}"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
@@ -67,6 +71,9 @@
             <Style Selector="^ /template/ Border#PART_LeftTextBorder">
                 <Setter Property="Background" Value="{DynamicResource StatusBadgeInfoBorderBrush}" />
             </Style>
+            <Style Selector="^ /template/ SelectableTextBlock#PART_LeftText">
+                <Setter Property="Foreground" Value="{DynamicResource StatusBadgeStatusTextForeground}" />
+            </Style>
         </Style>
         <Style Selector="^.Warn">
             <Style Selector="^ /template/ Border#PART_OuterBorder">
@@ -75,6 +82,9 @@
             </Style>
             <Style Selector="^ /template/ Border#PART_LeftTextBorder">
                 <Setter Property="Background" Value="{DynamicResource StatusBadgeWarnBorderBrush}" />
+            </Style>
+            <Style Selector="^ /template/ SelectableTextBlock#PART_LeftText">
+                <Setter Property="Foreground" Value="{DynamicResource StatusBadgeStatusTextForeground}" />
             </Style>
         </Style>
         <Style Selector="^.Error">
@@ -85,6 +95,9 @@
             <Style Selector="^ /template/ Border#PART_LeftTextBorder">
                 <Setter Property="Background" Value="{DynamicResource StatusBadgeErrorBorderBrush}" />
             </Style>
+            <Style Selector="^ /template/ SelectableTextBlock#PART_LeftText">
+                <Setter Property="Foreground" Value="{DynamicResource StatusBadgeStatusTextForeground}" />
+            </Style>
         </Style>
         <Style Selector="^.Fatal">
             <Style Selector="^ /template/ Border#PART_OuterBorder">
@@ -93,6 +106,9 @@
             </Style>
             <Style Selector="^ /template/ Border#PART_LeftTextBorder">
                 <Setter Property="Background" Value="{DynamicResource StatusBadgeFatalBorderBrush}" />
+            </Style>
+            <Style Selector="^ /template/ SelectableTextBlock#PART_LeftText">
+                <Setter Property="Foreground" Value="{DynamicResource StatusBadgeStatusTextForeground}" />
             </Style>
         </Style>
     </ControlTheme>

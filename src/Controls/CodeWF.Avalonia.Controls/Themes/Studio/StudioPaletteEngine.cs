@@ -66,13 +66,11 @@ public static class StudioPaletteEngine
         var black = Colors.Black;
         var white = Colors.White;
 
-        Color StatusSoft(string hex) => SoftFor(paper, Parse(hex), statusSoftAlpha, dark);
-        Color StatusPressedSoft(string hex) => SoftFor(paper, Parse(hex), statusSoftAlpha + 0.04, dark);
-
-        var danger = StatusColorFor(paper, surface, ink, Parse(status.Danger), dark);
-        var success = StatusColorFor(paper, surface, ink, Parse(status.Success), dark);
-        var warning = StatusColorFor(paper, surface, ink, Parse(status.Warning), dark);
-        var info = StatusColorFor(paper, surface, ink, Parse(status.Info), dark);
+        var dangerFamily = StatusFamily(paper, surface, ink, Parse(status.Danger), dark, statusSoftAlpha);
+        var successFamily = StatusFamily(paper, surface, ink, Parse(status.Success), dark, statusSoftAlpha);
+        var warningFamily = StatusFamily(paper, surface, ink, Parse(status.Warning), dark, statusSoftAlpha);
+        var infoFamily = StatusFamily(paper, surface, ink, Parse(status.Info), dark, statusSoftAlpha);
+        var (danger, success, warning, info) = (dangerFamily.Color, successFamily.Color, warningFamily.Color, infoFamily.Color);
 
         // onAccent：白字与黑字取对比度更高者
         var onAccent = Contrast(white, accent) > Contrast(black, accent) ? white : black;
@@ -101,7 +99,7 @@ public static class StudioPaletteEngine
             ["StudioPressedColor"] = Over(paper, accent, selectedAlpha),
             // 选中面用强调软底（原型 --accent-soft，静态令牌同源）：accent 作字落在软底上不足 4.5 时
             // 按 1% 减淡（规则 §3 收敛），写死 10% 会让暖色板的自定义配色选中底比内置深一档。
-            ["StudioSelectedColor"] = SoftFor(paper, accent, accentSoftAlpha, dark),
+            ["StudioSelectedColor"] = SoftFor(paper, accent, accentSoftAlpha),
             ["StudioFocusRingColor"] = accent,
             ["StudioDisabledColor"] = Over(paper, ink, 0.40),
             // 文字
@@ -109,7 +107,11 @@ public static class StudioPaletteEngine
             // muted：ink@64% 起步，对 bg/surface/raised 任一工作面不足 4.5 时按 1% 步进加深（规则 §3 约束）。
             ["StudioMutedColor"] = MutedFor(paper, surface, ink, dark),
             ["StatusCardTopTextForeground"] = ink,
-            ["StatusBadgeLeftTextForeground"] = dark ? Colors.Black : Colors.White,
+            // 徽章左侧胶囊有两张脸：默认/Debug 落在强调色上，四种状态落在状态实色上。
+            // 一个前景键喂不满两套底色——鼠尾草的 accent 要黑字（白字只有 3.56:1），
+            // 而浅色的 success/warning/danger 要白字（黑字 4.17:1）。所以按胶囊各自的底色分派。
+            ["StatusBadgeLeftTextForeground"] = onAccent,
+            ["StatusBadgeStatusTextForeground"] = OnColors(success, warning, danger),
             // 品牌交互
             ["StudioAccentColor"] = accent,
             ["StudioSecondaryColor"] = accent,
@@ -120,13 +122,15 @@ public static class StudioPaletteEngine
             ["SemiColorSuccess"] = success,
             ["SemiColorWarning"] = warning,
             ["SemiColorDanger"] = danger,
-            ["SemiColorDangerActive"] = StatusPressedSoft(status.Danger),
-            ["SemiColorSuccessLight"] = StatusSoft(status.Success),
-            ["SemiColorWarningLight"] = StatusSoft(status.Warning),
-            ["SemiColorDangerLight"] = StatusSoft(status.Danger),
-            ["SemiColorDangerLightActive"] = StatusPressedSoft(status.Danger),
+            // Fatal 卡与徽章的实色胶囊共用 danger：原型 --danger-pressed-fg 与 --status-error 同值
+            //（状态色族解出的那一枚），深一档的只是底色 SemiColorDangerLightActive。
+            ["SemiColorDangerActive"] = danger,
+            ["SemiColorSuccessLight"] = successFamily.Soft,
+            ["SemiColorWarningLight"] = warningFamily.Soft,
+            ["SemiColorDangerLight"] = dangerFamily.Soft,
+            ["SemiColorDangerLightActive"] = dangerFamily.Pressed,
             ["SemiColorInfo"] = info,
-            ["SemiColorInfoLight"] = StatusSoft(status.Info),
+            ["SemiColorInfoLight"] = infoFamily.Soft,
             // 组件专用键（附录 A componentOverrides）：通知 muted 落在固定深色卡上，提高不透明度保证 4.5:1
             ["notificationMuted"] = Over(paper, ink, 0.85),
         };
@@ -153,6 +157,21 @@ public static class StudioPaletteEngine
         return (System.Math.Max(la, lb) + 0.05) / (System.Math.Min(la, lb) + 0.05);
     }
 
+    /// <summary>
+    /// 一组底色共用的文字色：白与黑取「最差那枚对比更高者」。
+    /// 状态徽章的四枚胶囊共享一个前景键，按最浅的那枚定夺才不会让某一颗先失去可读性。
+    /// </summary>
+    private static Color OnColors(params Color[] backgrounds)
+    {
+        var worst = (Color ink) =>
+        {
+            var min = double.MaxValue;
+            foreach (var background in backgrounds) min = System.Math.Min(min, Contrast(ink, background));
+            return min;
+        };
+        return worst(Colors.White) >= worst(Colors.Black) ? Colors.White : Colors.Black;
+    }
+
     /// <summary>状态色可读性（规则 §3）：对 paper 与 surface 任一不足 4.5:1 时，浅色态向 ink、深色态向白按 1% 步进收敛。</summary>
     private static Color StatusColorFor(Color paper, Color surface, Color ink, Color status, bool dark)
     {
@@ -166,17 +185,64 @@ public static class StudioPaletteEngine
         return target;
     }
 
-    /// <summary>状态软底（规则 §3 组件可读性约束）：浅色态向 paper 回退、深色态向状态色加深，保证状态文字 ≥4.5:1。</summary>
-    private static Color SoftFor(Color paper, Color foreground, double alpha, bool dark)
+    /// <summary>
+    /// 软底收敛（规则 §3）：底色越贴近纸面、叠在其上的文字越可读，故两种明暗都向 paper 退（减透明度），
+    /// 下限 3%——再退就看不出这是一层底色。
+    /// 曾按明暗分成 ±0.01 两个方向，且深色态的守卫写成 <c>a &gt; 0.40</c>（起步即假），深色一次都没步进；
+    /// 而底色方向其实只由「退向纸面」决定，与明暗无关（原型 palette-rules.js 的 convergeSoft 同式）。
+    /// </summary>
+    private static Color SoftFor(Color paper, Color foreground, double alpha)
     {
         var a = alpha;
         var bg = Over(paper, foreground, a);
-        while (Contrast(foreground, bg) < 4.5 && a > (dark ? 0.40 : 0.03))
+        while (Contrast(foreground, bg) < 4.5 && a > 0.03)
         {
-            a += dark ? 0.01 : -0.01;
+            a -= 0.01;
             bg = Over(paper, foreground, a);
         }
         return bg;
+    }
+
+    /// <summary>
+    /// 状态色族（规则 §3「保证文字与软底仍达标」）：状态实色决定两档软底，软底又反过来约束状态实色，
+    /// 故取不动点解——每轮按当前色派生 hover/pressed 两档底，再要求色对 [hover 底、pressed 底、纸面] 同时 ≥4.5:1。
+    /// 纸面偏暗的配色（鼠尾草浅底 #f5f5f5）状态字对纸面 4.64:1 达标，深一档按压底只剩 4.44:1，
+    /// 而 3% 的底色下限要保住「这确实是一层底色」，能动的一侧只剩文字。
+    /// 原型 palette-rules.js 的 statusFamily 同式：九套内置令牌由它生成，这里管用户配色的运行时路径。
+    /// </summary>
+    private static (Color Color, Color Soft, Color Pressed) StatusFamily(
+        Color paper, Color surface, Color ink, Color raw, bool dark, double softAlpha)
+    {
+        var color = StatusColorFor(paper, surface, ink, raw, dark);
+        for (var pass = 0; pass < 4; pass++)
+        {
+            var soft = SoftFor(paper, color, softAlpha);
+            var pressed = SoftFor(paper, color, softAlpha + 0.04);
+            var settled = ReadableOn(color, soft, pressed, paper);
+            if (settled == color) return (color, soft, pressed);
+            color = settled;
+        }
+        return (color, SoftFor(paper, color, softAlpha), SoftFor(paper, color, softAlpha + 0.04));
+    }
+
+    /// <summary>
+    /// 文字向可读端点按 1% 插值，直到对全部底色同时 ≥4.5:1（原型 palette-rules.js 的 readable 同式）。
+    /// 端点只看第一枚底色：浅底压向 #111820、深底提向白——方向选错会越插越糊。
+    /// </summary>
+    private static Color ReadableOn(Color color, params Color[] backgrounds)
+    {
+        var readable = true;
+        foreach (var background in backgrounds) readable &= Contrast(color, background) >= 4.5;
+        if (readable) return color;
+        var endpoint = Luminance(backgrounds[0]) > 0.4 ? Color.Parse("#111820") : Colors.White;
+        for (var step = 1; step <= 100; step++)
+        {
+            var candidate = Mix(color, endpoint, step / 100.0);
+            var settled = true;
+            foreach (var background in backgrounds) settled &= Contrast(candidate, background) >= 4.5;
+            if (settled) return candidate;
+        }
+        return endpoint;
     }
 
     /// <summary>primaryHover：规则值 mix(accent→paper/white,8%)，与 OnPrimary 对比不足 4.5 时向 accent 收敛混合比例。</summary>

@@ -27,6 +27,7 @@
     <SolidColorBrush x:Key="ColumnDisplayEditorRowSelectedBackground">#903909</SolidColorBrush>
 
     <SolidColorBrush x:Key="StatusBadgeLeftTextForeground">#FFF5E3</SolidColorBrush>
+    <StaticResource x:Key="StatusBadgeStatusTextForeground" ResourceKey="StatusBadgeLeftTextForeground" />
     <SolidColorBrush x:Key="StatusBadgeRightTextForeground">#3D3D3D</SolidColorBrush>
     <SolidColorBrush x:Key="StatusBadgeDebugBorderBrush">#1C5E75</SolidColorBrush>
     <SolidColorBrush x:Key="StatusBadgeInfoBorderBrush">#0F7A5A</SolidColorBrush>

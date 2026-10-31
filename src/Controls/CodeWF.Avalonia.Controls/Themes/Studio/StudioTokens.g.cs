@@ -31,6 +31,7 @@ public static partial class StudioTokens
     d["StudioPrimaryColor"] = v["StudioPrimaryColor"];
     d["StudioGradientStartColor"] = v["StudioGradientStartColor"];
     d["StudioTextGradientEndColor"] = v["StudioTextGradientEndColor"];
+    d["StudioGradientEndColor"] = v["StudioGradientEndColor"];
     d["StudioGradient"] = new LinearGradientBrush { StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative), EndPoint = new RelativePoint(1, 1, RelativeUnit.Relative), GradientStops = {  } };
     d["StudioTextGradient"] = new LinearGradientBrush { StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative), EndPoint = new RelativePoint(1, 1, RelativeUnit.Relative), GradientStops = {  } };
     // 引擎派生键（Derive/DeriveExtras 输出）：用户配色运行时填充，必须与静态 axaml 字面量同源。
@@ -46,6 +47,7 @@ public static partial class StudioTokens
     d["SemiColorDangerLight"] = new SolidColorBrush(v["SemiColorDangerLight"]);
     d["SemiColorDangerLightActive"] = new SolidColorBrush(v["SemiColorDangerLightActive"]);
     d["StatusBadgeLeftTextForeground"] = new SolidColorBrush(v["StatusBadgeLeftTextForeground"]);
+    d["StatusBadgeStatusTextForeground"] = new SolidColorBrush(v["StatusBadgeStatusTextForeground"]);
     d["StudioActionGradient"] = new LinearGradientBrush { StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative), EndPoint = new RelativePoint(1, 1, RelativeUnit.Relative), GradientStops = {  } };
     d["PgSelectedText"] = new SolidColorBrush(v["PgSelectedText"]);
     d["StatusCardTopTextForeground"] = new SolidColorBrush(v["StatusCardTopTextForeground"]);
