@@ -284,17 +284,20 @@ public sealed class MarkdownViewerVirtualizationTests(AvaloniaPlatformFixture pl
 
     /// <summary>
     /// 像用户那样逐步向下滚动到文档底部：视口内只剩末尾块，最前面的块彻底离开窗口。
-    /// 不用 <c>ScrollViewer.Extent</c> 直接跳跃，因为虚拟化文档的总高度量测后才收敛。
+    /// 不用 <c>ScrollViewer.Extent</c> 直接跳跃，因为虚拟化文档的总高度量测后才收敛；步进按视口高留 20px 交叠，
+    /// 让掠过边界的块也被实现。终止条件是「末尾块出现了」而不是「滚了 N 步」：
+    /// 曾写死 80 步 = 38400px，版式行高或块数一涨就滚不到底，报成查看器滚不动，实为测试自己截断了行程。
     /// </summary>
     private static void ScrollToBottom(WindowedStackPanel panel, ScrollViewer scrollViewer)
     {
-        for (var i = 0; i < 80; i++)
+        var last = panel.ItemCount - 1;
+        for (var i = 0; i < 400 && panel.GetRealizedItem(last) is null; i++)
         {
-            scrollViewer.Offset = new Vector(0, scrollViewer.Offset.Y + 480);
+            scrollViewer.Offset = new Vector(0, scrollViewer.Offset.Y + Math.Max(1d, scrollViewer.Viewport.Height - 20));
             Dispatcher.UIThread.RunJobs();
         }
 
-        if (panel.GetRealizedItem(panel.ItemCount - 1) is null)
+        if (panel.GetRealizedItem(last) is null)
         {
             throw new InvalidOperationException(
                 $"Scroll did not reach the document end: offset={scrollViewer.Offset.Y}, extent={scrollViewer.Extent.Height}, viewport={scrollViewer.Viewport.Height}");
