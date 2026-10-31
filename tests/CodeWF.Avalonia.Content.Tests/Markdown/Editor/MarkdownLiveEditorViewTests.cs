@@ -1,6 +1,7 @@
 using CodeWF.Avalonia.Markdown;
 using CodeWF.Avalonia.Markdown.Editor.Controls;
 using CodeWF.Avalonia.Markdown.Editor.Services;
+using CodeWF.Avalonia.Markdown.Themes;
 using CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
 
 using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
@@ -460,6 +461,47 @@ public sealed class MarkdownLiveEditorViewTests
         Dispatcher.UIThread.RunJobs();
         Assert.Equal(1, view.BlockCount);
         Assert.Equal("first  \nsecond", view.Text);
+    });
+
+    [Fact]
+    public void TableCellsShareRegisteredTypographyInDisplayAndEditing() => _platform.Run(() =>
+    {
+        const string theme = "TestLiveTableTypography";
+        MarkdownTypographyThemeRegistry.Register(theme, () => new ResourceDictionary
+        {
+            ["CodeWFMarkdownTableCellPadding"] = new Thickness(13, 10),
+            ["CodeWFMarkdownTableCellMinHeight"] = 25d,
+            ["CodeWFMarkdownTableCellFontSize"] = 12d,
+            ["CodeWFMarkdownTableCellLineHeight"] = 22.8d,
+            ["CodeWFMarkdownTableCornerRadius"] = new CornerRadius(10)
+        });
+        var view = new MarkdownLiveEditorView { TypographyTheme = theme, TypographySize = "Normal" };
+        const string source = "| A | B |\n| --- | --- |\n| one | two |";
+        view.SetText(source);
+        var window = new Window { Width = 800, Height = 600, Content = view };
+        window.Show();
+        try
+        {
+            view.FocusBlock(0);
+            var table = view.GetLogicalDescendants().OfType<MarkdownTableView>().Single();
+            var container = Assert.IsType<Border>(table.Content);
+            Assert.Equal(new CornerRadius(10), container.CornerRadius);
+            var cells = table.GetLogicalDescendants().OfType<MarkdownBlockView>().ToArray();
+            Assert.Equal(4, cells.Length);
+            foreach (var cell in cells)
+            {
+                Assert.Equal(new Thickness(13, 10), Assert.IsType<Border>(cell.Parent).Padding);
+                Assert.Equal(12, cell.RunFontSize);
+                Assert.Equal(22.8, cell.RunLineHeight);
+                cell.BeginEditAtEnd();
+                window.UpdateLayout();
+                Assert.Equal(12, cell.ActiveEditor!.FontSize);
+                Assert.Equal(22.8, cell.ActiveEditor.LineHeight);
+                cell.CommitAndRender();
+            }
+            Assert.Equal(source, view.Text);
+        }
+        finally { window.Close(); }
     });
 
     [Fact]

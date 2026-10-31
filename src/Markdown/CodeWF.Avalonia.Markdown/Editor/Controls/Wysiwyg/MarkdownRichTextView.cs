@@ -33,6 +33,7 @@ internal sealed class MarkdownRichTextView : TextBlock
         set
         {
             _fontSize = value;
+            FontSize = value;
             ApplyRuns();
         }
     }
