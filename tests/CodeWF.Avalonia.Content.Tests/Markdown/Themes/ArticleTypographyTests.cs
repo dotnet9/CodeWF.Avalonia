@@ -23,14 +23,14 @@ public sealed class ArticleTypographyTests(AvaloniaPlatformFixture platform)
         Assert.Equal("Center", ArticleTypographyCatalog.Find("WeChatFormat")!.Quote.Alignment);
     }
     [Fact]
-    public void CatalogContains12IndependentNativeAndExportStyles()
+    public void CatalogContains13IndependentNativeAndExportStyles()
     {
         platform.Run(() =>
         {
-        Assert.Equal(12, ArticleTypographyCatalog.All.Count);
-        Assert.Equal(12, ArticleTypographyCatalog.All.Select(t => t.Key).Distinct().Count());
-        Assert.Equal(12, ArticleTypographyCatalog.All.Select(t => t.ExportCss).Distinct().Count());
-        Assert.Equal(6, ArticleTypographyCatalog.All.Count(t => t.Recommended));
+        Assert.Equal(13, ArticleTypographyCatalog.All.Count);
+        Assert.Equal(13, ArticleTypographyCatalog.All.Select(t => t.Key).Distinct().Count());
+        Assert.Equal(13, ArticleTypographyCatalog.All.Select(t => t.ExportCss).Distinct().Count());
+        Assert.Equal(7, ArticleTypographyCatalog.All.Count(t => t.Recommended));
         foreach (var type in ArticleTypographyCatalog.All)
         {
             Assert.True(MarkdownTypographyThemeRegistry.Contains(type.Key), type.Key);
