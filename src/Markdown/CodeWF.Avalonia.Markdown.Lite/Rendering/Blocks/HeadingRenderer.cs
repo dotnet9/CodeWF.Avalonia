@@ -48,7 +48,7 @@ internal sealed class HeadingRenderer : IMarkdownBlockRenderer
         if (context is MarkdownViewer viewer && ArticleTypographyResolver.Find(viewer.TypographyTheme) is { } article)
         {
         var prefix = "CodeWFMarkdownHeading" + heading.Level;
-        border.Bind(Layoutable.MarginProperty, border.GetResourceObservable(prefix + "Margin"));
+        border.Bind(Layoutable.MarginProperty, border.GetResourceObservable(prefix + "Margin"), BindingPriority.Style);
         border.Bind(Border.BorderThicknessProperty, border.GetResourceObservable(prefix + "BorderThickness"));
         border.Bind(Border.PaddingProperty, border.GetResourceObservable(prefix + "Padding"));
         border.Bind(Border.CornerRadiusProperty, border.GetResourceObservable(prefix + "CornerRadius"));
