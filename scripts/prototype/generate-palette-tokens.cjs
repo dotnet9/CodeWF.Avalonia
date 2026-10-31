@@ -69,6 +69,8 @@ const SHORT_VAR_MAP = [
   ['--hov', 'hover', '悬浮 = hover（ink@5%→surface）'],
   ['--sel', 'selected', '选中项背景 = selected（accent@12%→paper）'],
   ['--workbg', 'raised', '工作区/代码底 = raised（ink@4%→paper，规则 §3 当前行与浅浮层底）'],
+  ['--seg-track', 'segmented-track', '分段控件轨道 = segmented-track（亮 ink@4%→paper / 暗 ink@4.5%→panel，原型 prototype.css :root 同式）'],
+  ['--seg-thumb', 'segmented-thumb', '分段指示块 = segmented-thumb（亮 白@55%→paper / 暗 = panel）'],
   // 品牌交互：accent 即唯一强调（§4），hover/pressed 用规则派生键。
   ['--pri', 'primary', '主交互色 = primary（= accent）'],
   ['--pri-h', 'primary-hover', '主色悬浮 = primary-hover（浅色 mix(accent→paper,8%)）'],

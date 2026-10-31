@@ -115,68 +115,18 @@ $($factories -join "`n")
 "@ + "`n"
 Write-GeneratedFile (Join-Path $repoRoot 'demo/CodeWF.Avalonia.Demo/ViewModels/DemoCatalog.g.cs') $code
 
-# 浏览器直接复用控件主题令牌，避免深浅模式、语义色和按钮状态维护两份色值。
-function Read-PrototypeColor([hashtable] $Resources, [string] $Key) {
-    $visited = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
-    while ($visited.Add($Key)) {
-        $resource = $Resources[$Key]
-        if ($null -eq $resource) { throw "原型颜色资源不存在：$Key" }
-        if ($resource.LocalName -eq 'StaticResource') {
-            $Key = $resource.GetAttribute('ResourceKey')
-            continue
-        }
-        $value = $resource.GetAttribute('Color')
-        if (-not $value) { $value = $resource.InnerText.Trim() }
-        if ($value -match '^\{StaticResource (.+)\}$') { $Key = $Matches[1]; continue }
-        if ($value -notmatch '^(#[0-9A-Fa-f]{6}|White|Black)$') { throw "原型颜色值不受支持：$Key = $value" }
-        return $value.ToLowerInvariant()
-    }
-    throw "原型颜色资源循环引用：$Key"
+# 配色令牌快照交给规则生成器：palette-tokens.css 的唯一作者是
+# scripts/prototype/generate-palette-tokens.cjs（附录 A + 共享 palette-rules.js），
+# 它自带 §5 对比度校验与版本戳。本脚本曾自己从 Themes/Studio/Tokens 反推一份同路径文件，
+# 两套词汇表各写一遍同一文件，谁最后跑谁赢，且反推那份不会随规则升版重算（--card-top 就这样
+# 停在旧的 muted 取值上，直到 --Check 判红才暴露）。
+$nodeGen = Join-Path $PSScriptRoot 'prototype/generate-palette-tokens.cjs'
+if ($Check) {
+    & node $nodeGen --check
+    if ($LASTEXITCODE -ne 0) { throw "配色令牌快照校验未通过（exit $LASTEXITCODE）。" }
+} else {
+    & node $nodeGen
+    if ($LASTEXITCODE -ne 0) { throw "配色令牌快照生成失败（exit $LASTEXITCODE）。" }
 }
-$paletteCss = [Collections.Generic.List[string]]::new()
-$paletteCss.Add('/* 生成来源：Themes/Studio/Tokens；执行 scripts/sync_design_catalog.ps1 更新。 */')
-$paletteNames = [ordered]@{ Graphite = 'graphite'; Indigo = 'indigo'; Teal = 'teal'; Pine = 'pine'; Sky = 'sky'; Amber = 'amber'; Crimson = 'crimson'; Violet = 'violet'; Terracotta = 'terracotta' }
-$roles = [ordered]@{
-    'bg' = 'StudioBackgroundColor'; 'bg2' = 'StudioSurfaceColor'; 'bg3' = 'StudioRaisedColor'
-    'tx' = 'StudioTextColor'; 'tx2' = 'StudioMutedColor'; 'tx3' = 'StudioMutedColor'
-    'bd' = 'StudioBorderColor'; 'bd2' = 'StudioBorderColor'; 'line' = 'StudioBorderColor'
-    'hov' = 'StudioRaisedColor'; 'sel' = 'StudioRaisedColor'; 'workbg' = 'StudioRaisedColor'
-    'pri' = 'StudioAccentColor'; 'pri-h' = 'StudioAccentColor'; 'brand' = 'StudioPrimaryColor'
-    'glow' = 'StudioAccentColor'; 'secondary' = 'StudioSecondaryColor'; 'text-gradient-end' = 'StudioTextGradientEndColor'
-    'button-bg' = 'StudioPrimaryColor'; 'button-hover' = 'StudioPrimaryHover'; 'button-pressed' = 'StudioPrimaryPressed'; 'on-primary' = 'StudioOnPrimary'
-    'ok' = 'SemiColorSuccess'; 'warn' = 'SemiColorWarning'; 'err' = 'SemiColorDanger'
-    'seg-track' = 'StudioSegmentedTrackColor'; 'seg-thumb' = 'StudioSegmentedThumbColor'
-    'badge-text' = 'StatusBadgeLeftTextForeground'; 'card-top' = 'StatusCardTopTextForeground'
-}
-foreach ($palette in $paletteNames.Keys) {
-    foreach ($mode in @('Light', 'Dark')) {
-        $file = "$palette$mode.axaml"
-        [xml] $tokens = Get-Content -LiteralPath (Join-Path $repoRoot "src/Controls/CodeWF.Avalonia.Controls/Themes/Studio/Tokens/$file") -Raw -Encoding utf8
-        $resources = @{}
-        foreach ($node in $tokens.DocumentElement.ChildNodes) {
-            if ($node -isnot [Xml.XmlElement]) { continue }
-            $key = $node.GetAttribute('Key', 'http://schemas.microsoft.com/winfx/2006/xaml')
-            if ($key) {
-                if ($resources.ContainsKey($key)) { throw "主题资源键重复：$file/$key" }
-                $resources[$key] = $node
-            }
-        }
-        $paletteCss.Add(':root[data-theme=' + $mode.ToLowerInvariant() + '][data-palette=' + $paletteNames[$palette] + '] {')
-        foreach ($role in $roles.Keys) { $paletteCss.Add('  --' + $role + ':' + (Read-PrototypeColor $resources $roles[$role]) + ';') }
-        foreach ($kind in @('Debug', 'Info', 'Warn', 'Error', 'Fatal')) {
-            foreach ($entry in @(
-                @(('badge-' + $kind.ToLowerInvariant()), "StatusBadge${kind}BorderBrush"),
-                @(('badge-' + $kind.ToLowerInvariant() + '-bg'), "StatusBadge${kind}Background"),
-                @(('card-' + $kind.ToLowerInvariant()), "StatusCard${kind}Foreground"),
-                @(('card-' + $kind.ToLowerInvariant() + '-bg'), "StatusCard${kind}Background")
-            )) { $paletteCss.Add('  --' + $entry[0] + ':' + (Read-PrototypeColor $resources $entry[1]) + ';') }
-        }
-        $end = $resources['StudioActionGradient'].SelectSingleNode('*[local-name()="GradientStop"][@Offset="1"]').GetAttribute('Color')
-        $paletteCss.Add('  --action-gradient:linear-gradient(135deg,var(--button-bg),' + $end.ToLowerInvariant() + ');')
-        $paletteCss.Add('  --pri-lt:var(--bg3);')
-        $paletteCss.Add('}')
-    }
-}
-Write-GeneratedFile (Join-Path $repoRoot 'scripts/prototype/assets/palette-tokens.css') (($paletteCss -join "`n") + "`n")
 Write-Host "Catalog synchronized: $($catalog.Count) groups, $($items.Count) pages."
 & (Join-Path $PSScriptRoot 'build_standalone_prototype.ps1') -Check:$Check
