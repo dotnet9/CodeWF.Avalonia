@@ -25,6 +25,60 @@ public sealed class MarkdownViewerSearchTests(AvaloniaPlatformFixture platform)
 		"# 搜索标题\n\n正文包含 Alpha 与 alpha 混排。\n\n第二段提到 AlphaDot 边界。\n\n结尾段落。\n";
 
 	[Fact]
+	public void SearchAcrossNestedFormattingNeverDuplicatesTextOrLosesStyles() => platform.Run(() =>
+	{
+		const string source = "prefix Al**ph**a and *Alpha* plus [Alpha](https://example.com).";
+		var (window, viewer, _) = CreateViewer(source);
+		try
+		{
+			var block = viewer.GetVisualDescendants().OfType<SelectableTextBlock>().Single();
+			var originalText = block.Inlines!.Text;
+			static IEnumerable<global::Avalonia.Controls.Documents.Run> Runs(global::Avalonia.Controls.Documents.InlineCollection inlines) =>
+				inlines.SelectMany(inline => inline is global::Avalonia.Controls.Documents.Run run ? new[] { run }
+					: inline is global::Avalonia.Controls.Documents.Span span ? Runs(span.Inlines) : []);
+			var originals = Runs(block.Inlines).ToArray();
+			static string[] Format(global::Avalonia.Controls.Documents.InlineCollection inlines) => Runs(inlines)
+				.SelectMany(run => Enumerable.Repeat($"{run.FontWeight}/{run.FontStyle}/{run.Foreground}/{run.TextDecorations}", run.Text?.Length ?? 0)).ToArray();
+			var formatting = Format(block.Inlines);
+			for (var i = 0; i < 3; i++)
+			{
+				Assert.Equal(3, viewer.Find("alpha"));
+				Assert.Equal(originalText, block.Inlines.Text);
+				Assert.Equal(formatting, Format(block.Inlines));
+				Assert.True(viewer.FindPrevious()); Assert.Equal(2, viewer.CurrentMatchIndex);
+				viewer.ClearSearch();
+				Assert.Equal(originalText, block.Inlines.Text);
+				Assert.Equal(originals, Runs(block.Inlines).ToArray());
+			}
+			Assert.Equal(source, viewer.CurrentModel.Source);
+		}
+		finally { window.Close(); }
+	});
+
+	[Fact]
+	public void SearchCountsAndRevealsOffscreenMatchesWithoutRealizingTheWholeDocument() => platform.Run(() =>
+	{
+		var source = string.Join("\n\n", Enumerable.Range(0, 600).Select(i => $"Paragraph {i} needle."));
+		var (window, viewer, scroll) = CreateViewer(source);
+		try
+		{
+			Assert.InRange(viewer.RealizedBlockCount, 1, 99);
+			var realized = viewer.RealizedBlockCount;
+			Assert.Equal(600, viewer.Find("needle"));
+			Assert.Equal(realized, viewer.RealizedBlockCount);
+			Assert.True(viewer.FindPrevious());
+			Dispatcher.UIThread.RunJobs(); window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
+			Assert.Equal(599, viewer.CurrentMatchIndex); Assert.True(scroll.Offset.Y > 0);
+			Assert.True(viewer.IsBlockRealized(599));
+			Assert.InRange(viewer.RealizedBlockCount, 1, 99);
+			Assert.True(CountHighlightedRuns(viewer) > 0);
+			Assert.Equal(600, viewer.MatchCount);
+			viewer.ClearSearch(); Assert.Equal(source, viewer.CurrentModel.Source);
+		}
+		finally { window.Close(); }
+	});
+
+	[Fact]
 	public void Find_CountsMatches_AppliesHighlight_AndClearRestores() => platform.Run(() =>
 	{
 		var (window, viewer, _) = CreateViewer();
@@ -130,7 +184,7 @@ public sealed class MarkdownViewerSearchTests(AvaloniaPlatformFixture platform)
 		}
 	}
 
-	private static (Window Window, MarkdownViewer Viewer, ScrollViewer ScrollViewer) CreateViewer()
+	private static (Window Window, MarkdownViewer Viewer, ScrollViewer ScrollViewer) CreateViewer(string source = Document)
 	{
 		var panel = new WindowedStackPanel { EstimatedItemHeight = 42, Spacing = 8 };
 		var presenter = new ScrollContentPresenter { Content = panel };
@@ -146,7 +200,7 @@ public sealed class MarkdownViewerSearchTests(AvaloniaPlatformFixture platform)
 
 		var viewer = new MarkdownViewer
 		{
-			Markdown = Document,
+			Markdown = source,
 			ScrollHost = scrollViewer,
 			Template = new FuncControlTemplate<MarkdownViewer>((_, scope) =>
 			{
