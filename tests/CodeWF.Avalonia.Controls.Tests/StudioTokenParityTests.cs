@@ -1,4 +1,5 @@
 using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -134,14 +135,25 @@ public sealed class StudioTokenParityTests
     private static string LocateTokens()
     {
         const string relative = "src/Controls/CodeWF.Avalonia.Controls/Themes/Studio/Tokens";
-        for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
+        // 产物被重定向到仓库外，BaseDirectory 与测试工作目录都够不到源码树：
+        // 仓库根由编译期写进程序集元数据（见本 csproj 的 AssemblyMetadata RepositoryRoot）。
+        var roots = new[] { RepositoryRoot(), AppContext.BaseDirectory, Directory.GetCurrentDirectory() };
+        foreach (var root in roots)
         {
-            var candidate = Path.Combine(directory.FullName, relative.Replace('/', Path.DirectorySeparatorChar));
-            if (Directory.Exists(candidate)) return candidate;
+            if (string.IsNullOrWhiteSpace(root)) continue;
+            for (var directory = new DirectoryInfo(root); directory is not null; directory = directory.Parent)
+            {
+                var candidate = Path.Combine(directory.FullName, relative.Replace('/', Path.DirectorySeparatorChar));
+                if (Directory.Exists(candidate)) return candidate;
+            }
         }
 
-        throw new DirectoryNotFoundException("找不到静态令牌目录（" + relative + "）：本测试依赖仓库源码树。");
+        throw new DirectoryNotFoundException("找不到静态令牌目录（" + relative + "）：本测试依赖仓库源码树，试过的根 = " + string.Join(" | ", roots));
     }
+
+    private static string? RepositoryRoot()
+        => typeof(StudioTokenParityTests).Assembly
+            .GetCustomAttributes<AssemblyMetadataAttribute>().FirstOrDefault(item => item.Key == "RepositoryRoot")?.Value;
 
     private sealed class RecordingDictionary(Dictionary<string, Color> inner, HashSet<string> accessed) : IReadOnlyDictionary<string, Color>
     {

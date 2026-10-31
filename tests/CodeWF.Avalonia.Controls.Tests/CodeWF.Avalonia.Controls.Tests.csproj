@@ -13,6 +13,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- 静态令牌在源码树里，而本仓把产物整体重定向到仓库外（Directory.Build.props 的 ArtifactsPath），
+         于是运行时 BaseDirectory 与工作目录都在产物侧，往上爬也爬不到源码树。
+         编译期把仓库根钉进程序集元数据，源码树侧的断言才有稳定定位方式（CI 与本地同式）。 -->
+    <AssemblyMetadata Include="RepositoryRoot"
+                      Value="$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)', 'CodeWF.Avalonia.slnx'))" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Desktop" />
     <PackageReference Include="Dock.Avalonia" />
