@@ -1,5 +1,13 @@
 ﻿# 更新日志
 
+## 12.2.40 ~ 12.2.45 (2026-10-31)
+
+- 代码块头部：即时编辑的内嵌预览一度开启头部（12.2.40），因宿主仍按「底部语言输入框」约定使用而回退（12.2.41）；`CodeBlockFrame` 补外边距 `8px 0 12px` 对齐原型（12.2.42）。
+- 配色：teal 青碧升级为「鼠尾草 Sage」并设为桌面默认（12.2.43）；`SoftSage` 排版预设入 `ArticleTypographyCatalog`（13 套 / 7 推荐，12.2.44）。
+- 令牌生成链归属：`Themes/Studio/Tokens/*.axaml` 与 `_index.axaml` 的产出权收归 Vex 的 `scripts/sync_native_design.cjs`（直接消费原型 `palette-rules.js` 的派生表），库内 `generate-studio-cs.cjs` 只产 `StudioThemeVariants.g.cs` 与 `StudioPalettes.g.cs`，`tokens-template.axaml` / `tokens-layout.json` 删除。此前两个生成器同写一份文件、各有一套 §3 公式，谁最后跑谁赢（决策记录 D23）。
+- 派生公式三处更正（规则 §3/§5，同版重生成静态令牌）：软底明暗两态一律向 paper 退、下限 3%（旧写法深色分支 `a > 0.40` 从 0.18 起步即恒假，一次都没步进）；状态色 ↔ 软底 ↔ 按压底以不动点同时求解，字色对自家两档底纹同时 ≥4.5:1；`accent` 作为文字改按非文本角色 3:1 判定（WCAG 1.4.11，实测浅底最差 3.26、深底最差 8.34）。八套配色令牌逐字节不变，仅鼠尾草的状态色与软底按通道移动 ≤1%。
+- 状态徽章：左侧胶囊拆出 `StatusBadgeStatusTextForeground`——默认/Debug 落在强调色上、四种状态落在状态实色上，两套底色对文字色的要求相反（鼠尾草 accent 要黑字、浅底 success 要白字），一枚前景键喂不满；Light/Dark/HighContrast 与 `StudioTokens` 同步补键。
+- 门禁与测试：静态令牌目录改由编译期 `AssemblyMetadata RepositoryRoot` 定位（产物整体重定向到仓库外，BaseDirectory 爬不到源码树）；虚拟化滚动到底的终止条件改为末尾块实现；排版目录计数跟上 13 套。`Controls.Tests` 198 例、`Content.Tests` 672 例全绿。
 ## 12.2.32 ~ 12.2.39 (2026-10-31)
 
 - 行内样式 `<span style>` 全链路（字号/前景色/背景色，对齐原型 selection-menu）：
