@@ -155,9 +155,41 @@ public class MindViewControlTests(AvaloniaPlatformFixture platform)
             var root = view.GetVisualDescendants().OfType<Border>().Single(b => ToolTip.GetTip(b)?.ToString() == view.Root!.FullText);
             var point = root.TranslatePoint(default, view)!.Value;
             Assert.True(point.X >= 0 && point.Y >= 0);
-            Assert.Equal(60, root.Bounds.Height);
+            Assert.InRange(root.Bounds.Height, 46.1, 46.2);
         }
         finally { window.Close(); }
+    });
+
+    [Theory]
+    [InlineData(MindMapLayoutKind.Right)]
+    [InlineData(MindMapLayoutKind.Balanced)]
+    public void VariableHeightTreesKeepColumnsSeparatedAndParentCentered(MindMapLayoutKind layout) => platform.Run(() =>
+    {
+        var root = MarkdownMindMapDocument.Parse("# Root\n\nOpening paragraph\n\n## Tasks\n\n- One\n- Two\n- Three\n\n> A quotation\n\n## Schedule\n\n### Place\n\nA paragraph with enough words to wrap over more than one line.");
+        var view = new MarkdownMindMapView { Root = root, LayoutKind = layout, EnableMotion = false };
+        var window = new Window { Width = 1440, Height = 900, Content = view };
+        window.Show(); window.UpdateLayout();
+        try
+        {
+            var nodes = Walk(root).ToArray();
+            Assert.Equal(nodes.Length, view.VisibleNodeCount);
+            var rectangles = nodes.Select(node => view.GetNodeBounds(node.Id)!.Value).ToArray();
+            foreach (var column in rectangles.GroupBy(rect => Math.Round(rect.X, 4)))
+            {
+                var ordered = column.OrderBy(rect => rect.Y).ToArray();
+                for (var i = 1; i < ordered.Length; i++)
+                    Assert.True(ordered[i].Top - ordered[i - 1].Bottom >= 17 * view.Zoom);
+            }
+            var before = view.GetNodeBounds(root.Children[1].Id)!.Value;
+            view.RevealNode(root.Children[1].Id); window.UpdateLayout();
+            var after = view.GetNodeBounds(root.Children[1].Id)!.Value;
+            Assert.Equal(before.Size, after.Size);
+            Assert.InRange(after.Center.Y, view.Bounds.Height / 2 - .1, view.Bounds.Height / 2 + .1);
+        }
+        finally { window.Close(); }
+
+        static IEnumerable<MarkdownMindMapNode> Walk(MarkdownMindMapNode node) =>
+            new[] { node }.Concat(node.Children.SelectMany(Walk));
     });
 
     [Theory]

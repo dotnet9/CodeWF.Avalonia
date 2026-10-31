@@ -6,6 +6,15 @@ namespace CodeWF.Avalonia.Content.Tests.MindView;
 public class MarkdownMindMapTests
 {
     [Fact]
+    public void TaskMarkersRemainSourceSyntaxAndDoNotLeakIntoSummaries()
+    {
+        const string source = "# Tasks\n\n- [ ] **Pending**\n- [x] Done\n- [X] Uppercase\n- [label] literal\n";
+        var root = MarkdownMindMapDocument.Parse(source);
+        Assert.Equal(new[] { "Pending", "Done", "Uppercase", "[label] literal" }, root.Children.Select(node => node.FullText));
+        Assert.StartsWith("- [ ]", source[root.Children[0].SourceStart..root.Children[0].SourceEnd]);
+    }
+
+    [Fact]
     public void InsertingEarlierContentKeepsExistingNodeIdentity()
     {
         var before = MarkdownMindMapDocument.Parse("# 标题\n\n## 章节\n\n正文");

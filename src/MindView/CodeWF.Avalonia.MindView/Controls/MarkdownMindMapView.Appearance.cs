@@ -27,7 +27,7 @@ public sealed partial class MarkdownMindMapView
         body.Children.Add(new TextBlock
         {
             Text = node.Title, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, MaxLines = root ? 1 : 4,
-            FontSize = root || heading ? 13 : 12, LineHeight = 20,
+            FontSize = root || heading ? 14 : 12, LineHeight = root || heading ? 22.12 : 20,
             FontWeight = root || heading ? FontWeight.SemiBold : FontWeight.Normal,
             Foreground = ink, VerticalAlignment = VerticalAlignment.Center
         });
@@ -48,12 +48,17 @@ public sealed partial class MarkdownMindMapView
         content.Children.Add(body);
         var card = new Border
         {
-            Width = rect.Width, Height = rect.Height, Padding = new Thickness(12, 10), Child = content,
+            Width = rect.Width, Height = RenderedHeight(node, rect), Padding = new Thickness(13, 11), Child = content,
             Cursor = new Cursor(StandardCursorType.Hand), Focusable = true
         };
         ApplyCardAppearance(node, card, dark, line, background);
         return card;
     }
+
+    // 布局的最小行盒与卡片的文字/描边盒不同；公开定位和居中必须包含实际绘制高度。
+    private static double RenderedHeight(MarkdownMindMapNode node, Rect rect) =>
+        Math.Max(rect.Height, (node.Kind is MarkdownMindMapNodeKind.Document or MarkdownMindMapNodeKind.Heading ? 22.12 : 20)
+            * Math.Clamp((rect.Height - 22) / 20, 1, 4) + 24);
 
     private void ApplyCardAppearance(MarkdownMindMapNode node, Border card, bool dark, IBrush line, IBrush background)
     {

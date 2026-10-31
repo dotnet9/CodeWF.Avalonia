@@ -97,7 +97,10 @@ public static class MarkdownMindMapDocument
                     foreach (var item in list.OfType<ListItemBlock>())
                     {
                         var content = item.FirstOrDefault(b => b is ParagraphBlock);
-                        var full = content is null ? string.Empty : Markdig.Markdown.ToPlainText(Source(content), Pipeline).Trim();
+                        var raw = content is null ? string.Empty : Source(content);
+                        // 单独重解析段落会丢失任务列表上下文，把 [x] 当成普通文字。
+                        if (content is ParagraphBlock { Inline.FirstChild: Markdig.Extensions.TaskLists.TaskList }) raw = raw[3..].TrimStart();
+                        var full = Markdig.Markdown.ToPlainText(raw, Pipeline).Trim();
                         var node = Create(item, MarkdownMindMapNodeKind.ListItem, text: full);
                         parent.Children.Add(node);
                         foreach (var child in item.Where(b => !ReferenceEquals(b, content))) AddBlock(child, node);
