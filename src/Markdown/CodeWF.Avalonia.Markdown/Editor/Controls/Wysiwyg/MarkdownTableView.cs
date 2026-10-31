@@ -29,9 +29,9 @@ internal sealed class MarkdownTableView : UserControl
         Rebuild();
         var container = new Border
         {
-            BorderThickness = new Thickness(1),
             Child = _grid
         };
+        container.SetValue(Border.BorderThicknessProperty, new Thickness(1), global::Avalonia.Data.BindingPriority.Style);
         container.Bind(Border.CornerRadiusProperty, this.GetResourceObservable("CodeWFMarkdownTableCornerRadius"), global::Avalonia.Data.BindingPriority.Style);
         container.Classes.Add("MdTableContainer");
         container.SetValue(Border.BorderBrushProperty, _options.SeparatorBrush, global::Avalonia.Data.BindingPriority.Style);

@@ -8,13 +8,20 @@ namespace CodeWF.Avalonia.Markdown.Rendering;
 /// </summary>
 internal sealed class MarkdownTableGrid : Grid
 {
+    private bool _collapsedBorders;
     protected override Type StyleKeyOverride => typeof(Grid);
 
     protected override Size MeasureOverride(Size availableSize)
     {
         var widths = new double[ColumnDefinitions.Count];
+        var collapseBorders = MarkdownTableLayout.GetCollapseBorders(this);
         foreach (var child in Children)
         {
+            // 合并的是实际描边宽度，与字号、内容和行列数量无关。
+            if ((collapseBorders || _collapsedBorders) && child is Border cell)
+                cell.Margin = collapseBorders ? new Thickness(
+                    GetColumn(cell) > 0 ? -cell.BorderThickness.Left : 0,
+                    GetRow(cell) > 0 ? -cell.BorderThickness.Top : 0, 0, 0) : default;
             child.Measure(Size.Infinity);
             var column = GetColumn(child);
             var span = Math.Min(GetColumnSpan(child), widths.Length - column);
@@ -23,6 +30,7 @@ internal sealed class MarkdownTableGrid : Grid
             for (var index = column; index < column + span; index++)
                 widths[index] = Math.Max(widths[index], width);
         }
+        _collapsedBorders = collapseBorders;
 
         var naturalWidth = widths.Sum();
         // 原型语义：表格恒铺满渲染区（table-layout:auto; width:100%），列宽按内容自然宽度比例分配。

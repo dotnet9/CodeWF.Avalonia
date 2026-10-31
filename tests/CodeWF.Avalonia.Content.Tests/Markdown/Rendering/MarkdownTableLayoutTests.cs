@@ -12,6 +12,34 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 public sealed class MarkdownTableLayoutTests(AvaloniaPlatformFixture platform)
 {
     [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void CollapsedBordersShareOneEdgeAndRestoreAfterToggle(double thickness) => platform.Run(() =>
+    {
+        var grid = new MarkdownTableGrid();
+        grid.ColumnDefinitions.Add(new ColumnDefinition()); grid.ColumnDefinitions.Add(new ColumnDefinition());
+        grid.RowDefinitions.Add(new RowDefinition()); grid.RowDefinitions.Add(new RowDefinition());
+        for (var row = 0; row < 2; row++)
+        for (var column = 0; column < 2; column++)
+        {
+            var cell = new Border { BorderThickness = new Thickness(thickness), Padding = new Thickness(10), Child = new TextBlock { Text = "Cell" } };
+            Grid.SetRow(cell, row); Grid.SetColumn(cell, column); grid.Children.Add(cell);
+        }
+        void Layout() { grid.Measure(new Size(800, 600)); grid.Arrange(new Rect(grid.DesiredSize)); }
+        Layout();
+        var separate = grid.DesiredSize;
+        MarkdownTableLayout.SetCollapseBorders(grid, true); Layout();
+        Assert.Equal(separate.Width - thickness, grid.DesiredSize.Width, 4);
+        Assert.Equal(separate.Height - thickness, grid.DesiredSize.Height, 4);
+        var first = grid.Children[0]; var right = grid.Children[1]; var below = grid.Children[2];
+        Assert.Equal(first.Bounds.Right - thickness, right.Bounds.Left, 4);
+        Assert.Equal(first.Bounds.Bottom - thickness, below.Bounds.Top, 4);
+        MarkdownTableLayout.SetCollapseBorders(grid, false); Layout();
+        Assert.Equal(separate, grid.DesiredSize);
+        Assert.All(grid.Children, cell => Assert.Equal(default, cell.Margin));
+    });
+
+    [Theory]
     [InlineData("ID", "Description", "A long description that must receive more room than the identifier column.")]
     [InlineData("编号", "说明", "内容较多的一列应当获得更多空间，短标签列保持紧凑，窄窗口中自动换行。")]
     [InlineData("Key", "URL", "https://example.test/" + "averylongunbrokentokenaverylongunbrokentokenaverylongunbrokentoken")]
