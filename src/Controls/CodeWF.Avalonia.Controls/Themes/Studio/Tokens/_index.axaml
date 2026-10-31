@@ -24,7 +24,7 @@
 </ResourceDictionary.ThemeDictionaries>
 <SolidColorBrush x:Key="StudioSwatchGraphite">#3F3F46</SolidColorBrush>
 <SolidColorBrush x:Key="StudioSwatchIndigo">#4338CA</SolidColorBrush>
-<SolidColorBrush x:Key="StudioSwatchTeal">#0F766E</SolidColorBrush>
+<SolidColorBrush x:Key="StudioSwatchTeal">#6F8F7D</SolidColorBrush>
 <SolidColorBrush x:Key="StudioSwatchPine">#166534</SolidColorBrush>
 <SolidColorBrush x:Key="StudioSwatchSky">#0369A1</SolidColorBrush>
 <SolidColorBrush x:Key="StudioSwatchAmber">#B45309</SolidColorBrush>

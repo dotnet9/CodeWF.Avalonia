@@ -5,7 +5,7 @@ public sealed record StudioPaletteDefinition(string Key, string Name, string Eng
 public sealed record StudioBaseColors(string Paper, string Surface, string Ink, string Accent);
 public static partial class StudioPalettes
 {
-  public static string DefaultKey { get; } = "indigo";
+  public static string DefaultKey { get; } = "teal";
   public static System.Collections.Generic.IReadOnlyList<StudioPaletteDefinition> All { get; } = new StudioPaletteDefinition[]
   {
     new StudioPaletteDefinition("graphite", "石墨", "Graphite", "无彩色 · 明度对比", true,
@@ -14,9 +14,9 @@ public static partial class StudioPalettes
     new StudioPaletteDefinition("indigo", "靛蓝", "Indigo", "经典蓝 · 日常默认", true,
       new StudioBaseColors("#FDFDFE", "#F2F2F5", "#1B1D2E", "#4338CA"),
       new StudioBaseColors("#12131F", "#1B1C24", "#E6E7F2", "#A5B4FC")),
-    new StudioPaletteDefinition("teal", "青碧", "Teal", "冷青 · 清爽记录", true,
-      new StudioBaseColors("#FBFEFD", "#EDF7F5", "#102722", "#0F766E"),
-      new StudioBaseColors("#0E1614", "#16211E", "#DFF2EE", "#5EEAD4")),
+    new StudioPaletteDefinition("teal", "鼠尾草", "Sage", "暖白鼠尾草 · 温润写作", true,
+      new StudioBaseColors("#F5F5F1", "#F1F4EF", "#303B35", "#6F8F7D"),
+      new StudioBaseColors("#1A1F1D", "#1E2422", "#D4DDD7", "#A2BEAD")),
     new StudioPaletteDefinition("pine", "松绿", "Pine", "松绿 · 沉稳专注", true,
       new StudioBaseColors("#FBFDF9", "#F0F6EF", "#16241A", "#166534"),
       new StudioBaseColors("#0F1511", "#17211B", "#E2EFE6", "#86EFAC")),
