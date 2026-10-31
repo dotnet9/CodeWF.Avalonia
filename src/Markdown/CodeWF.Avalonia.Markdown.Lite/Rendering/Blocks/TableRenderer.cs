@@ -44,7 +44,7 @@ internal sealed class TableRenderer : IMarkdownBlockRenderer
                     continue;
                 }
 
-                var cellBorder = CreateTableCell(cell, row.IsHeader, rowIndex, columnIndex, context);
+                var cellBorder = CreateTableCell(cell, row.IsHeader, context);
                 if (alternate) cellBorder.Classes.Add("MdTableAlternateCell");
                 Grid.SetRow(cellBorder, rowIndex);
                 Grid.SetColumn(cellBorder, columnIndex);
@@ -66,12 +66,10 @@ internal sealed class TableRenderer : IMarkdownBlockRenderer
         return context.DecorateTable(container, data);
     }
 
-    private static Border CreateTableCell(TableCell cell, bool isHeader, int rowIndex, int columnIndex, IMarkdownRenderContext context)
+    private static Border CreateTableCell(TableCell cell, bool isHeader, IMarkdownRenderContext context)
     {
-        var border = new Border
-        {
-            BorderThickness = new Thickness(columnIndex == 0 ? 0 : 1, rowIndex == 0 ? 0 : 1, 0, 0)
-        };
+        var border = new Border();
+        border.Bind(Border.BorderThicknessProperty, border.GetResourceObservable("CodeWFMarkdownTableCellBorderThickness"), global::Avalonia.Data.BindingPriority.Style);
         context.AddMarkdownClass(border, isHeader ? MarkdownStyleKeys.TableHeaderCell : MarkdownStyleKeys.TableCell);
         context.BindTheme(border, Border.BorderBrushProperty, MarkdownViewer.BorderLineBrushProperty, global::Avalonia.Data.BindingPriority.Style);
         if (isHeader)

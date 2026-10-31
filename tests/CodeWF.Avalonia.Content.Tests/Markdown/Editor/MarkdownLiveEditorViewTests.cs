@@ -470,6 +470,7 @@ public sealed class MarkdownLiveEditorViewTests
         MarkdownTypographyThemeRegistry.Register(theme, () => new ResourceDictionary
         {
             ["CodeWFMarkdownTableCellPadding"] = new Thickness(13, 10),
+            ["CodeWFMarkdownTableCellBorderThickness"] = new Thickness(2),
             ["CodeWFMarkdownTableCellMinHeight"] = 25d,
             ["CodeWFMarkdownTableCellFontSize"] = 12d,
             ["CodeWFMarkdownTableCellLineHeight"] = 22.8d,
@@ -491,6 +492,7 @@ public sealed class MarkdownLiveEditorViewTests
             foreach (var cell in cells)
             {
                 Assert.Equal(new Thickness(13, 10), Assert.IsType<Border>(cell.Parent).Padding);
+                Assert.Equal(new Thickness(2), ((Border)cell.Parent!).BorderThickness);
                 Assert.Equal(12, cell.RunFontSize);
                 Assert.Equal(22.8, cell.RunLineHeight);
                 cell.BeginEditAtEnd();

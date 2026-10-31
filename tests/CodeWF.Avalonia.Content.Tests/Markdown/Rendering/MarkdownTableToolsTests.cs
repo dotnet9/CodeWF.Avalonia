@@ -27,6 +27,7 @@ public sealed class MarkdownTableToolsTests(AvaloniaPlatformFixture platform)
             })
         };
         var window = new Window { Width = 400, Height = 300, Content = viewer };
+        viewer.Resources["CodeWFMarkdownTableCellBorderThickness"] = new global::Avalonia.Thickness(2);
         window.Styles.Add(new global::Avalonia.Styling.Style(selector => selector.OfType<Grid>().Class(MarkdownStyleKeys.TableBlock))
         {
             Setters = { new global::Avalonia.Styling.Setter(Control.MarginProperty, new global::Avalonia.Thickness(0, 12)) }
@@ -45,7 +46,9 @@ public sealed class MarkdownTableToolsTests(AvaloniaPlatformFixture platform)
                 Assert.Equal("label", table.Data.Rows[1][1]);
                 Assert.True(table.Data.HasHeader);
                 Assert.Equal($"row {i}", Assert.IsType<Button>(table.Children[0]).Content);
-                Assert.IsType<Border>(table.Children[1]);
+                var tableFrame = Assert.IsType<Border>(table.Children[1]);
+                Assert.All(Assert.IsAssignableFrom<Grid>(tableFrame.Child).Children.OfType<Border>(),
+                    cell => Assert.Equal(new global::Avalonia.Thickness(2), cell.BorderThickness));
                 Assert.DoesNotContain(panel.Children, child => child is Button);
             }
             viewer.Markdown = "Only text.";

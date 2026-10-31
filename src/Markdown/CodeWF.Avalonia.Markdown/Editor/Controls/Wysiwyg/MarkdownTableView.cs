@@ -32,7 +32,7 @@ internal sealed class MarkdownTableView : UserControl
             BorderThickness = new Thickness(1),
             Child = _grid
         };
-        container.Bind(Border.CornerRadiusProperty, this.GetResourceObservable("CodeWFMarkdownTableCornerRadius"));
+        container.Bind(Border.CornerRadiusProperty, this.GetResourceObservable("CodeWFMarkdownTableCornerRadius"), global::Avalonia.Data.BindingPriority.Style);
         container.Classes.Add("MdTableContainer");
         container.SetValue(Border.BorderBrushProperty, _options.SeparatorBrush, global::Avalonia.Data.BindingPriority.Style);
         container.SetValue(Control.HorizontalAlignmentProperty, HorizontalAlignment.Left, global::Avalonia.Data.BindingPriority.Style);
@@ -141,10 +141,10 @@ internal sealed class MarkdownTableView : UserControl
                     var next = capturedRow * columnCount + capturedColumn + direction;
                     MoveFocus(next / columnCount, next % columnCount);
                 };
-                var cell = new Border { Child = box,
-                    BorderThickness = new Thickness(0, 0, 1, 1) };
-                cell.Bind(Border.PaddingProperty, this.GetResourceObservable("CodeWFMarkdownTableCellPadding"));
-                cell.Bind(Control.MinHeightProperty, this.GetResourceObservable("CodeWFMarkdownTableCellMinHeight"));
+                var cell = new Border { Child = box };
+                cell.Bind(Border.BorderThicknessProperty, this.GetResourceObservable("CodeWFMarkdownTableCellBorderThickness"), global::Avalonia.Data.BindingPriority.Style);
+                cell.Bind(Border.PaddingProperty, this.GetResourceObservable("CodeWFMarkdownTableCellPadding"), global::Avalonia.Data.BindingPriority.Style);
+                cell.Bind(Control.MinHeightProperty, this.GetResourceObservable("CodeWFMarkdownTableCellMinHeight"), global::Avalonia.Data.BindingPriority.Style);
                 cell.Classes.Add(isHeader ? "MdTableHeaderCell" : "MdTableCell");
                 if (!isHeader && (row - (_model.HasHeader ? 1 : 0)) % 2 == 1) cell.Classes.Add("MdTableAlternateCell");
                 if (isHeader) cell.Background = _options.TableHeaderBackgroundBrush ?? _options.CodeBackgroundBrush;
