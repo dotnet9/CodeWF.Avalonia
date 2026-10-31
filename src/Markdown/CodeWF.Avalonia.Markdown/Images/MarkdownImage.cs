@@ -16,6 +16,13 @@ using CodeWF.Avalonia.Markdown.Rendering;
 
 namespace CodeWF.Avalonia.Markdown.Controls;
 
+/// <summary>正文图片的尺寸策略；默认保留原有自然尺寸与最大尺寸约束。</summary>
+public enum MarkdownImageSizing
+{
+    Natural,
+    FillAvailableWidth
+}
+
 [TemplatePart(ContentHostPartName, typeof(ContentControl), IsRequired = true)]
 public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Rendering.IMarkdownInteractiveVisual
 {
@@ -48,6 +55,16 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
     private CancellationTokenSource? _loadCts;
     private Point? _pressedPoint;
     private bool _isPointerDragging;
+    private Size _imagePixelSize;
+
+    public static readonly StyledProperty<MarkdownImageSizing> SizingProperty =
+        AvaloniaProperty.Register<MarkdownImage, MarkdownImageSizing>(nameof(Sizing));
+
+    public MarkdownImageSizing Sizing
+    {
+        get => GetValue(SizingProperty);
+        set => SetValue(SizingProperty, value);
+    }
 
     public static readonly StyledProperty<string?> SourceProperty =
         AvaloniaProperty.Register<MarkdownImage, string?>(nameof(Source));
@@ -92,6 +109,7 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
 
     static MarkdownImage()
     {
+        AffectsMeasure<MarkdownImage>(SizingProperty);
         SourceProperty.Changed.AddClassHandler<MarkdownImage>((image, _) => image.QueueLoad());
         ImageBasePathProperty.Changed.AddClassHandler<MarkdownImage>((image, _) => image.QueueLoad());
         ImageSourceResolverProperty.Changed.AddClassHandler<MarkdownImage>((image, _) => image.QueueLoad());
@@ -516,6 +534,7 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
 
     private void ApplyImageChrome(Control control, Bitmap bitmap)
     {
+        _imagePixelSize = new Size(bitmap.PixelSize.Width, bitmap.PixelSize.Height);
         control.Classes.Add(MarkdownStyleKeys.ImageContent);
         control.MaxWidth = DefaultMaxImageWidth;
         control.MaxHeight = DefaultMaxImageHeight;
@@ -524,6 +543,21 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
         var (width, height) = CalculateDisplaySize(bitmap.PixelSize.Width, bitmap.PixelSize.Height);
         control.Width = width;
         control.Height = height;
+    }
+
+    protected override Size MeasureOverride(Size availableSize)
+    {
+        if (_contentHost?.Content is Image image && _imagePixelSize.Width > 0)
+        {
+            var fill = Sizing == MarkdownImageSizing.FillAvailableWidth && double.IsFinite(availableSize.Width);
+            var natural = CalculateDisplaySize(_imagePixelSize.Width, _imagePixelSize.Height);
+            var width = fill ? Math.Max(1, availableSize.Width - image.Margin.Left - image.Margin.Right) : natural.Width;
+            image.MaxWidth = fill ? double.PositiveInfinity : DefaultMaxImageWidth;
+            image.MaxHeight = fill ? double.PositiveInfinity : DefaultMaxImageHeight;
+            image.Width = width;
+            image.Height = fill ? width * _imagePixelSize.Height / _imagePixelSize.Width : natural.Height;
+        }
+        return base.MeasureOverride(availableSize);
     }
 
     private (double Width, double Height) CalculateDisplaySize(double imageWidth, double imageHeight)

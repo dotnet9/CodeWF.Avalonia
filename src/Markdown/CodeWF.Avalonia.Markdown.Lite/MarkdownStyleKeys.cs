@@ -44,6 +44,7 @@ public static class MarkdownStyleKeys
     public const string QuoteContent = "MdQuoteContent";
     public const string ThematicBreak = "MdThematicBreak";
     public const string TableContainer = "MdTableContainer";
+    public const string TableBlock = "MdTableBlock";
     public const string Table = "MdTable";
     public const string TableHeaderCell = "MdTableHeaderCell";
     public const string TableCell = "MdTableCell";

@@ -212,6 +212,13 @@
         <Setter Property="Margin" Value="0" />
     </Style>
 
+    <Style Selector="Grid.MdTableBlock">
+        <Setter Property="Margin" Value="{DynamicResource CodeWFMarkdownTableMargin}" />
+    </Style>
+    <Style Selector="Grid.MdTableBlock > Border.MdTableContainer">
+        <Setter Property="Margin" Value="0" />
+    </Style>
+
     <Style Selector="Border.MdTableHeaderCell, Border.MdTableCell">
         <Setter Property="BorderThickness" Value="{DynamicResource CodeWFMarkdownTableCellBorderThickness}" />
         <Setter Property="Padding" Value="{DynamicResource CodeWFMarkdownTableCellPadding}" />

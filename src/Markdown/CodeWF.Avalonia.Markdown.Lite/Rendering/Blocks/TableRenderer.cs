@@ -3,6 +3,7 @@ using global::Avalonia.Controls;
 using global::Avalonia.Layout;
 using global::Avalonia.Media;
 using CodeWF.Avalonia.Markdown.Controls;
+using CodeWF.Avalonia.Markdown.Shared.Rendering;
 using Markdig.Extensions.Tables;
 using Markdig.Syntax;
 
@@ -59,7 +60,10 @@ internal sealed class TableRenderer : IMarkdownBlockRenderer
         container.SetValue(Control.HorizontalAlignmentProperty, HorizontalAlignment.Left, global::Avalonia.Data.BindingPriority.Style);
         context.AddMarkdownClass(container, MarkdownStyleKeys.TableContainer);
         context.BindTheme(container, Border.BorderBrushProperty, MarkdownViewer.BorderLineBrushProperty, global::Avalonia.Data.BindingPriority.Style);
-        return container;
+        var data = new MarkdownTableData(rows.Select(row => row.OfType<TableCell>()
+            .Select(cell => string.Join("\n", cell.Select(child => MarkdownParser.ExtractPlainText(child).TrimEnd())))),
+            rows.FirstOrDefault()?.IsHeader == true);
+        return context.DecorateTable(container, data);
     }
 
     private static Border CreateTableCell(TableCell cell, bool isHeader, int rowIndex, int columnIndex, IMarkdownRenderContext context)

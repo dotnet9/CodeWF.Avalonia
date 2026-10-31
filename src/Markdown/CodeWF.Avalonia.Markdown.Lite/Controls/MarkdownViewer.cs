@@ -647,6 +647,15 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     public static void RegisterImageControlFactory(Rendering.MarkdownImageControlFactory? factory) =>
         s_imageControlFactory = factory;
 
+    private static Rendering.MarkdownTableToolsFactory? s_tableToolsFactory;
+
+    /// <summary>注册应用级表格工具；在创建 Viewer 前设置，返回 null 使用默认表格。</summary>
+    public static void RegisterTableToolsFactory(Rendering.MarkdownTableToolsFactory? factory) =>
+        s_tableToolsFactory = factory;
+
+    /// <summary>覆盖此 Viewer 的表格工具工厂；在设置文档前赋值。</summary>
+    public Rendering.MarkdownTableToolsFactory? TableToolsFactory { get; set; }
+
     /// <summary>
     /// 注册全局数学视图工厂（CodeWF.Avalonia.Markdown.Math 包注册）；
     /// 未注册时数学公式由 Core 降级为原文渲染。
@@ -1794,6 +1803,10 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
     Control? Rendering.IMarkdownRenderContext.CreateImageControl(string source, string altText) =>
         s_imageControlFactory?.Invoke(this, source, altText);
+
+    Control Rendering.IMarkdownRenderContext.DecorateTable(Border table, Rendering.MarkdownTableData data) =>
+        (TableToolsFactory ?? s_tableToolsFactory)?.Invoke(this, data) is { } tools
+            ? new MarkdownTableBlock(table, tools, data) : table;
 
     Control? Rendering.IMarkdownRenderContext.CreateMathView(string latex, double fontSize, Rendering.MarkdownMathLineStyle lineStyle) =>
         s_mathViewFactory?.Invoke(this, latex, fontSize, lineStyle);

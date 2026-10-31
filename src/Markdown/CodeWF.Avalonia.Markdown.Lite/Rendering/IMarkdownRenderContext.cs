@@ -128,6 +128,9 @@ public interface IMarkdownRenderContext
 
     Control? CreateImageControl(string source, string altText);
 
+    /// <summary>为表格创建同块工具；默认保持原表格，不向文档面板插入额外条目。</summary>
+    Control DecorateTable(Border table, MarkdownTableData data) => table;
+
     Control CreateFallbackText(string text, string className);
 
     /// <summary>
