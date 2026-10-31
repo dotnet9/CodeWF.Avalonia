@@ -115,7 +115,7 @@ public sealed class MarkdownViewerStreamingTests(AvaloniaPlatformFixture platfor
 			// 渐显结束（含掉帧）后所有块都应回到完全不透明。
 			var deadline = DateTime.UtcNow.AddSeconds(5);
 			while (DateTime.UtcNow < deadline
-				&& panel.Children.OfType<Control>().Any(control => control.Opacity < 0.999))
+				&& panel.Children.OfType<Control>().Any(control => control.Opacity != 1))
 			{
 				global::Avalonia.Headless.AvaloniaHeadlessPlatform.ForceRenderTimerTick();
 				Dispatcher.UIThread.RunJobs();
