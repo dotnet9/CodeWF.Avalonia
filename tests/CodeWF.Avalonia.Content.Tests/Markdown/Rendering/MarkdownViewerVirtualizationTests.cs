@@ -94,14 +94,19 @@ public sealed class MarkdownViewerVirtualizationTests(AvaloniaPlatformFixture pl
         var (window, viewer, _, scroll) = CreateViewer(source, scale: scale);
         try
         {
-            scroll.Offset = new Vector(0, 1200); Dispatcher.UIThread.RunJobs();
-            var before = scroll.Offset.Y;
-            var position = viewer.SaveReadingPosition();
-            Assert.NotNull(position);
-            scroll.Offset = default; Dispatcher.UIThread.RunJobs();
-            Assert.True(viewer.RestoreReadingPosition(position)); Dispatcher.UIThread.RunJobs();
-            // 视口中心若位于块间留白，定位到下一块顶端，误差不超过一个块间距。
-            Assert.InRange(Math.Abs(scroll.Offset.Y - before), 0, 8);
+            var sampledGap = false;
+            for (var offset = 1200; offset < 1300; offset += 2)
+            {
+                scroll.Offset = new Vector(0, offset); Dispatcher.UIThread.RunJobs();
+                var before = scroll.Offset.Y;
+                var position = viewer.SaveReadingPosition();
+                Assert.NotNull(position);
+                sampledGap |= position.Value.BlockRatio < 0;
+                scroll.Offset = default; Dispatcher.UIThread.RunJobs();
+                Assert.True(viewer.RestoreReadingPosition(position)); Dispatcher.UIThread.RunJobs();
+                Assert.InRange(Math.Abs(scroll.Offset.Y - before), 0, .75);
+            }
+            Assert.True(sampledGap, "Round trips must include a viewport center in inter-block whitespace.");
         }
         finally { window.Close(); }
     });

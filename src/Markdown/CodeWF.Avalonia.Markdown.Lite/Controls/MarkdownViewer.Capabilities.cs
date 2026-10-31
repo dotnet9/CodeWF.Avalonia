@@ -38,7 +38,7 @@ public partial class MarkdownViewer
     public int RealizedBlockCount => _virtualizingHost?.RealizedItemCount ?? _renderedBlocks.Count;
 
     /// <summary>
-    /// 阅读位置快照：已渲染块序号与本块内的相对进度（0-1）。
+    /// 阅读位置快照：已渲染块序号与相对进度（正文内 0-1，块前留白允许负值）。
     /// 块序号在文档重排后仍可定位，避免用像素值导致跳位。
     /// </summary>
     public readonly record struct MarkdownReadingPosition(int BlockIndex, double BlockRatio, double DocumentRatio);
@@ -115,7 +115,8 @@ public partial class MarkdownViewer
                 continue;
             }
 
-            var ratioInBlock = Math.Clamp((probeOffset - top) / height, 0d, 1d);
+            // 段间留白归到下一块；保留负比例，否则往返恢复会吸附到段首并丢失像素位置。
+            var ratioInBlock = (probeOffset - top) / height;
             var documentRatio = Math.Clamp((offset + viewportHeight / 2) / documentHeight, 0d, 1d);
             return new MarkdownReadingPosition(i, ratioInBlock, documentRatio);
         }
