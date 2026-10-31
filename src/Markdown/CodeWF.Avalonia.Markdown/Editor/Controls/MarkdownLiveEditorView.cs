@@ -678,9 +678,9 @@ public partial class MarkdownLiveEditorView : UserControl
                     var box = new CheckBox
                     {
                         IsChecked = model.IsChecked,
-                        VerticalAlignment = VerticalAlignment.Top,
-                        Margin = new Thickness(0, 7, 6, 0)
+                        VerticalAlignment = VerticalAlignment.Top
                     };
+                    box.SetValue(Control.MarginProperty, new Thickness(0, 7, 6, 0), global::Avalonia.Data.BindingPriority.Style);
                     box.Classes.Add("MdTaskMarkerBox");
                     box.IsCheckedChanged += (_, _) =>
                     {
@@ -702,7 +702,7 @@ public partial class MarkdownLiveEditorView : UserControl
 
                 Grid.SetColumn(view, 1);
                 row.Children.Add(view);
-                return row;
+                return new Border { Classes = { "MdLiveListItem" }, Child = row };
 
             case MarkdownBlockKind.Quote:
             case MarkdownBlockKind.Heading:

@@ -11,6 +11,7 @@ using global::Avalonia.Input;
 using global::Avalonia.LogicalTree;
 using global::Avalonia.Threading;
 using global::Avalonia.VisualTree;
+using global::Avalonia.Styling;
 
 using Xunit;
 
@@ -461,6 +462,37 @@ public sealed class MarkdownLiveEditorViewTests
         Dispatcher.UIThread.RunJobs();
         Assert.Equal(1, view.BlockCount);
         Assert.Equal("first  \nsecond", view.Text);
+    });
+
+    [Fact]
+    public void ListSpacingCanBeStyledWithoutMovingTaskMarkersAwayFromTheirText() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView { TypographyTheme = "Simple", TypographySize = "Normal" };
+        view.Styles.Add(new global::Avalonia.Styling.Style(selector => selector.OfType<Border>().Class("MdLiveListItem"))
+        {
+            Setters = { new global::Avalonia.Styling.Setter(Control.MarginProperty, new Thickness(0, 8, 0, 8)) }
+        });
+        view.SetText("- [ ] first\n- [x] second");
+        var window = new Window { Width = 800, Height = 600, Content = view };
+        window.Show();
+        try
+        {
+            window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
+            var rows = view.GetVisualDescendants().OfType<Border>().Where(c => c.Classes.Contains("MdLiveListItem")).ToArray();
+            Assert.Equal(2, rows.Length);
+            Assert.All(rows, row =>
+            {
+                Assert.Equal(new Thickness(0, 8, 0, 8), row.Margin);
+                var marker = row.GetVisualDescendants().OfType<CheckBox>().Single();
+                var preview = row.GetVisualDescendants().OfType<global::CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single();
+                Assert.Contains("MdLiveListContent", preview.Classes);
+                Assert.Equal(7, marker.TranslatePoint(default, view)!.Value.Y - row.TranslatePoint(default, view)!.Value.Y, 3);
+            });
+            var checkbox = rows[0].GetVisualDescendants().OfType<CheckBox>().Single();
+            checkbox.IsChecked = true;
+            Assert.StartsWith("- [x] first", view.Text);
+        }
+        finally { window.Close(); }
     });
 
     [Fact]
