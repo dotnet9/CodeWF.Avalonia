@@ -464,6 +464,7 @@ public partial class MarkdownLiveEditorView : UserControl
 
         var scroll = new ScrollViewer
         {
+            Classes = { "MdEditorScroll" },
             HorizontalScrollBarVisibility = global::Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
             VerticalScrollBarVisibility = global::Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
             Content = _container
@@ -673,24 +674,12 @@ public partial class MarkdownLiveEditorView : UserControl
 
                 if (model.IsTask)
                 {
-                    // 对齐原型任务项：复选框左侧保留列表圆点（• □ 文案），与阅读视图一致。
-                    var marker = new StackPanel { Orientation = Orientation.Horizontal };
-                    marker.Children.Add(new TextBlock
-                    {
-                        Text = "•",
-                        MinWidth = 14,
-                        TextAlignment = TextAlignment.Right,
-                        // 对齐首行文字：段行高 28.5，圆点字面约 19，顶部偏移 ≈ 5。
-                        VerticalAlignment = VerticalAlignment.Top,
-                        Margin = new Thickness(0, 5, 0, 0),
-                        Foreground = _blockOptions.MutedBrush
-                    });
+                    // 任务复选框本身就是列表标记，与阅读视图保持一致。
                     var box = new CheckBox
                     {
                         IsChecked = model.IsChecked,
-                        // 复选框 14px，行高 28.5：顶部偏移 (28.5-14)/2 ≈ 7，与阅读视图同一对齐。
                         VerticalAlignment = VerticalAlignment.Top,
-                        Margin = new Thickness(10, 7, 6, 0)
+                        Margin = new Thickness(0, 7, 6, 0)
                     };
                     box.Classes.Add("MdTaskMarkerBox");
                     box.IsCheckedChanged += (_, _) =>
@@ -698,8 +687,7 @@ public partial class MarkdownLiveEditorView : UserControl
                         model.IsChecked = box.IsChecked == true;
                         view.NotifyModelChanged();
                     };
-                    marker.Children.Add(box);
-                    row.Children.Add(marker);
+                    row.Children.Add(box);
                 }
                 else
                 {

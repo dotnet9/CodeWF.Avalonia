@@ -440,6 +440,7 @@ public sealed class MarkdownLiveEditorViewTests
         Dispatcher.UIThread.RunJobs();
         Assert.Contains("edited", payloads[^1]);
         block.CommitAndRender();
+        Assert.DoesNotContain(view.GetLogicalDescendants().OfType<TextBlock>(), block => block.Text?.Trim() == "•");
         view.GetLogicalDescendants().OfType<CheckBox>().First().IsChecked = true;
         var models = MarkdownBlockParser.Parse(view.Text);
         Assert.True(models[0].IsChecked);
