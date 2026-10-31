@@ -4,6 +4,7 @@ using CodeWF.Avalonia.Markdown.Rendering;
 using global::Avalonia.Controls;
 using global::Avalonia.Controls.Templates;
 using global::Avalonia.Threading;
+using global::Avalonia.Styling;
 using Markdig;
 using Xunit;
 
@@ -26,6 +27,10 @@ public sealed class MarkdownTableToolsTests(AvaloniaPlatformFixture platform)
             })
         };
         var window = new Window { Width = 400, Height = 300, Content = viewer };
+        window.Styles.Add(new global::Avalonia.Styling.Style(selector => selector.OfType<Grid>().Class(MarkdownStyleKeys.TableBlock))
+        {
+            Setters = { new global::Avalonia.Styling.Setter(Control.MarginProperty, new global::Avalonia.Thickness(0, 12)) }
+        });
         try
         {
             window.Show();
@@ -35,6 +40,7 @@ public sealed class MarkdownTableToolsTests(AvaloniaPlatformFixture platform)
                 WaitForSource(viewer);
                 Dispatcher.UIThread.RunJobs(); window.UpdateLayout();
                 var table = Assert.Single(panel.Children.OfType<MarkdownTableBlock>());
+                Assert.Equal(new global::Avalonia.Thickness(0, 12), table.Margin);
                 Assert.Equal("Header", table.Data.Rows[0][0]);
                 Assert.Equal("label", table.Data.Rows[1][1]);
                 Assert.True(table.Data.HasHeader);
