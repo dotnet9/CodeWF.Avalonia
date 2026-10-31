@@ -166,6 +166,8 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
         root.Children.Add(_content);
         root.Children.Add(_footer);
         Child = root;
+        // 对齐原型 .md-code-block 的 margin: 8px 0 12px——相邻代码块/段落间保持呼吸间距。
+        Margin = new Thickness(0, 8, 0, 12);
 
         ApplyWrapState();
         context.RaiseCodeBlockToolRender(_header, _content, codeBlock);
