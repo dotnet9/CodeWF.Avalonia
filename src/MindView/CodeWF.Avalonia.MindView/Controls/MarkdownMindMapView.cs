@@ -1,4 +1,4 @@
-﻿using global::Avalonia;
+using global::Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Input;
 using global::Avalonia.Layout;
@@ -11,7 +11,7 @@ using CodeWF.Avalonia.MindView.I18n;
 namespace CodeWF.Avalonia.MindView.Controls;
 
 /// <summary>只读文档导图。节点选择、折叠、平移与缩放不会修改 Markdown。</summary>
-public sealed class MarkdownMindMapView : UserControl
+public sealed partial class MarkdownMindMapView : UserControl
 {
     /// <summary>宿主处理章节编辑意图；控件本身不写入 Markdown。</summary>
     public bool IsChapterEditingEnabled { get; set; }
@@ -223,7 +223,7 @@ public sealed class MarkdownMindMapView : UserControl
         {
             Rebuild();
         }
-        else if (change.Property == AccentColorProperty || change.Property == EnableMotionProperty || change.Property == CanvasBrushProperty || change.Property == CardBrushProperty || change.Property == TextBrushProperty || change.Property == LineBrushProperty || change.Property == DotBrushProperty || change.Property == SuccessColorProperty || change.Property == WarningColorProperty) Rebuild();
+        else if (change.Property == AccentColorProperty || change.Property == EnableMotionProperty || change.Property == CanvasBrushProperty || change.Property == CardBrushProperty || change.Property == PanelBrushProperty || change.Property == MutedTextBrushProperty || change.Property == TextBrushProperty || change.Property == LineBrushProperty || change.Property == DotBrushProperty || change.Property == SuccessColorProperty || change.Property == WarningColorProperty) Rebuild();
     }
 
     public void ToggleCollapse(MarkdownMindMapNode node) { node.IsCollapsed = !node.IsCollapsed; Rebuild(); }
@@ -282,7 +282,7 @@ public sealed class MarkdownMindMapView : UserControl
         var background = CardBrush ?? Brush.Parse(dark ? "#242633" : "#FFFFFF");
         var foreground = TextBrush ?? Brush.Parse(dark ? "#E8E9F2" : "#323445");
         _viewport.Background = CanvasBrush ?? Brush.Parse(dark ? "#171821" : "#F7F8FC");
-        _dots.Brush = DotBrush ?? line; _dots.InvalidateVisual();
+        _dots.Brush = DotBrush ?? new SolidColorBrush(AccentColor, .18); _dots.InvalidateVisual();
         if (Root is null) { VisibleNodesChanged?.Invoke(this, EventArgs.Empty); return; }
         double row = 54; _width = 0;
         if (geometry)
@@ -310,20 +310,17 @@ public sealed class MarkdownMindMapView : UserControl
             var data = LayoutKind is MindMapLayoutKind.Down or MindMapLayoutKind.Outline or MindMapLayoutKind.Radial or MindMapLayoutKind.Fishbone
                 ? FormattableString.Invariant($"M {a.X},{a.Y} L {b.X},{b.Y}")
                 : FormattableString.Invariant($"M {a.X},{a.Y} C {a.X + 40},{a.Y} {b.X - 40},{b.Y} {b.X},{b.Y}");
-            // 原型连线配色：缤纷=分支色、黑白=前景、其余样式统一强调色系（polish.css .map-links）。
-            // 参考软件样式：缤纷=Mermaid cScale 实色粗线（4px 实色，非半透明细线）。
             var linkColor = StyleKind switch
             {
-                MindMapStyleKind.Colorful => BranchSolid(_branches[child], dark),
-                MindMapStyleKind.Mono => dark ? Color.Parse("#E4E5E7") : Color.Parse("#30343B"),
-                _ => AccentColor
+                MindMapStyleKind.Colorful => _branches[child],
+                MindMapStyleKind.Mono => (MutedTextBrush as ISolidColorBrush)?.Color ?? (dark ? Color.Parse("#A4ABAE") : Color.Parse("#65716B")),
+                _ => (Mix(AccentColor, line, .58, dark) as ISolidColorBrush)!.Color
             };
-            var isColorfulLink = StyleKind == MindMapStyleKind.Colorful;
             _canvas.Children.Add(new global::Avalonia.Controls.Shapes.Path
             {
                 Data = Geometry.Parse(data),
-                Stroke = new SolidColorBrush(linkColor, isColorfulLink ? 1.0 : .42),
-                StrokeThickness = isColorfulLink ? 3.5 : 1.5,
+                Stroke = new SolidColorBrush(linkColor, StyleKind == MindMapStyleKind.Colorful ? .85 : StyleKind == MindMapStyleKind.Mono ? .72 : .5),
+                StrokeThickness = StyleKind == MindMapStyleKind.Colorful ? 2 : 1.7,
                 IsHitTestVisible = false
             });
         }
@@ -332,82 +329,7 @@ public sealed class MarkdownMindMapView : UserControl
             if (_bounds.Count >= 200 && !rect.Intersects(_realizedRegion)) continue;
             var root = ReferenceEquals(node, Root);
             var heading = node.Kind == MarkdownMindMapNodeKind.Heading;
-            var color = _branches[node];
-            // 原型 Quiet 卡片：标题左对齐垂直居中，级别/文档徽标在右缘（标题节点靠上、根节点居中）。
-            var body = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), VerticalAlignment = VerticalAlignment.Center };
-            IBrush? nodeForeground = StyleKind == MindMapStyleKind.Colorful && !root ? new SolidColorBrush(ContrastText(_branches[node])) : null;
-            var badge = root ? MindViewLocalization.GetResource(MindViewL.MarkdownDocument) : heading ? $"H{node.HeadingLevel}" : null;
-            body.Children.Add(new TextBlock
-            {
-                Text = node.Title, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, MaxLines = root ? 1 : 4,
-                FontSize = root || heading ? 13 : 12, LineHeight = 20,
-                FontWeight = root || heading ? FontWeight.SemiBold : FontWeight.Normal,
-                Foreground = root ? MindViewThemeResources.AccentForeground(AccentColor)
-                    : nodeForeground ?? foreground,
-                VerticalAlignment = VerticalAlignment.Center
-            });
-            if (badge is not null)
-            {
-                var badgeText = new TextBlock
-                {
-                    Text = badge, FontSize = 9, LineHeight = 14,
-                    Foreground = root ? MindViewThemeResources.AccentForeground(AccentColor) : foreground,
-                    Opacity = .75, HorizontalAlignment = HorizontalAlignment.Right,
-                    VerticalAlignment = root ? VerticalAlignment.Center : VerticalAlignment.Top,
-                    Margin = new Thickness(6, 0, 0, 0)
-                };
-                Grid.SetColumn(badgeText, 1);
-                body.Children.Add(badgeText);
-            }
-            var content = new Grid();
-            content.Children.Add(new CardDecoration { IsSummary = !root && !heading, Stripe = !root && heading && StyleKind != MindMapStyleKind.Quiet ? new SolidColorBrush(color) : null, Line = line, Margin = new Thickness(-12, -10), IsHitTestVisible = false });
-            content.Children.Add(body);
-            var card = new Border
-            {
-                Width = rect.Width, Height = rect.Height, Padding = new Thickness(12, 10), CornerRadius = new CornerRadius(8),
-                Background = root ? new SolidColorBrush(AccentColor) : background,
-                BorderBrush = node == _selected ? new SolidColorBrush(AccentColor) : !root && !heading ? Brushes.Transparent : line,
-                BorderThickness = new Thickness(node == _selected ? 2 : 1), Child = content,
-                BoxShadow = BoxShadows.Parse(dark ? "0 3 12 0 #16000000" : "0 3 12 0 #07000000"),
-                Cursor = new Cursor(StandardCursorType.Hand), Focusable = true
-            };
-            // 原型根节点：实底外描一圈留白再套强调色细环（双环），不用投影。
-            if (root) card.BoxShadow = BoxShadows.Parse(FormattableString.Invariant(
-                $"0 0 0 2 {(dark ? "#202124" : "#FFFFFF")}, 0 0 0 3.5 {AccentColor}"));
-            // 样式层：清雅为默认；缤纷/线框/胶囊/脉络/黑白只调整卡片视觉（对应原型 map-appearance）。
-            if (!root && StyleKind != MindMapStyleKind.Quiet)
-            {
-                switch (StyleKind)
-                {
-                    case MindMapStyleKind.Colorful:
-                        // 参考软件：节点实色填充（深色态亮一档），文字按底色亮度取黑/白。
-                        var solid = dark ? Brighten(color, 0.18) : color;
-                        card.Background = new SolidColorBrush(solid);
-                        card.BorderBrush = new SolidColorBrush(color);
-                        break;
-                    case MindMapStyleKind.Outline:
-                        card.Background = Brushes.Transparent;
-                        card.BorderBrush = new SolidColorBrush(color);
-                        card.BoxShadow = BoxShadows.Parse("0 0 0 0 #00000000");
-                        card.CornerRadius = new CornerRadius(6);
-                        break;
-                    case MindMapStyleKind.Capsule:
-                        card.CornerRadius = new CornerRadius(rect.Height / 2);
-                        card.Padding = new Thickness(16, 8);
-                        break;
-                    case MindMapStyleKind.Underline:
-                        card.Background = Brushes.Transparent;
-                        card.BorderBrush = new SolidColorBrush(color);
-                        card.BorderThickness = new Thickness(0, 0, 0, 2.2);
-                        card.CornerRadius = new CornerRadius(0);
-                        card.BoxShadow = BoxShadows.Parse("0 0 0 0 #00000000");
-                        break;
-                    case MindMapStyleKind.Mono:
-                        card.Background = Brush.Parse(dark ? "#2E3038" : "#EDEEF2");
-                        card.BorderBrush = node == _selected ? Brush.Parse(dark ? "#C8CAD4" : "#5A5C66") : line;
-                        break;
-                }
-            }
+            var card = CreateNodeCard(node, rect, dark, line, background, foreground);
             if (EnableMotion) card.Transitions = new Transitions { new BrushTransition { Property = Border.BorderBrushProperty, Duration = TimeSpan.FromMilliseconds(160) } };
             ToolTip.SetTip(card, node.FullText);
             Canvas.SetLeft(card, rect.X); Canvas.SetTop(card, rect.Y);
@@ -419,8 +341,8 @@ public sealed class MarkdownMindMapView : UserControl
             {
                 if (!e.GetCurrentPoint(card).Properties.IsLeftButtonPressed) return;
                 if (_selected is { } previous && _cards.TryGetValue(previous, out var previousCard))
-                { previousCard.BorderBrush = previous.Kind is MarkdownMindMapNodeKind.Heading or MarkdownMindMapNodeKind.Document ? line : Brushes.Transparent; previousCard.BorderThickness = new Thickness(1); }
-                _selected = node; card.BorderBrush = new SolidColorBrush(AccentColor); card.BorderThickness = new Thickness(2);
+                { _selected = null; ApplyCardAppearance(previous, previousCard, dark, line, background); }
+                _selected = node; ApplyCardAppearance(node, card, dark, line, background);
                 Focus(); NodeSelected?.Invoke(this, node);
                 if (e.ClickCount >= 2)
                 {
@@ -450,21 +372,28 @@ public sealed class MarkdownMindMapView : UserControl
                 }
                 foreach (var (candidate, targetCard) in _cards)
                 {
-                    targetCard.BorderBrush = candidate == dropTarget ? new SolidColorBrush(AccentColor) : line;
-                    targetCard.BorderThickness = candidate == dropTarget
-                        ? dropPosition == "before" ? new Thickness(0, 3, 0, 0) : dropPosition == "after" ? new Thickness(0, 0, 0, 3) : new Thickness(3)
-                        : new Thickness(1);
+                    ApplyCardAppearance(candidate, targetCard, dark, line, background);
+                    if (candidate == dropTarget)
+                    {
+                        targetCard.BorderBrush = new SolidColorBrush(AccentColor);
+                        targetCard.BorderThickness = dropPosition == "before" ? new Thickness(0, 3, 0, 0) : dropPosition == "after" ? new Thickness(0, 0, 0, 3) : new Thickness(3);
+                    }
                 }
                 e.Handled = true;
             };
             card.PointerReleased += (_, e) =>
             {
                 var target = dropTarget; var moved = dragging;
-                dragStart = null; dragging = false; dropTarget = null; e.Pointer.Capture(null);
                 _draggingChapter = false;
+                dragStart = null; dragging = false; dropTarget = null; e.Pointer.Capture(null);
                 if (moved) { Rebuild(); if (target is not null) ChapterMoveRequested?.Invoke(this, new(node, target, dropPosition)); e.Handled = true; }
             };
-            card.PointerCaptureLost += (_, _) => { dragStart = null; dragging = false; dropTarget = null; _draggingChapter = false; };
+            card.PointerCaptureLost += (_, _) =>
+            {
+                var cancelled = dragging;
+                dragStart = null; dragging = false; dropTarget = null; _draggingChapter = false;
+                if (cancelled) Rebuild();
+            };
             _cards[node] = card; _canvas.Children.Add(card);
             if (node.Children.Count > 0)
             {
@@ -503,7 +432,7 @@ public sealed class MarkdownMindMapView : UserControl
                     // 图表 series 同源，解决缤纷偏素）；其余档与未覆写宿主维持强调色家族五档不变。
                     var childColor = root
                         ? StyleKind == MindMapStyleKind.Colorful ? BranchPalette()[i % BranchPalette().Length] : LegacyRootChildColor(i, dark)
-                        : dark ? Brighten(branch, 0.18) : branch;
+                        : branch;
                     centers.Add(Place(node.Children[i], depth + 1, childColor));
                 }
                 var subtreeHeight = row - start - 14;
@@ -748,55 +677,23 @@ public sealed class MarkdownMindMapView : UserControl
         cursor = local;
     }
 
-    private static IBrush Tint(Color accent, double targetRatio)
-    {
-        const int target = 255;
-        return new SolidColorBrush(Color.FromRgb(
-            (byte)(accent.R + (target - accent.R) * targetRatio),
-            (byte)(accent.G + (target - accent.G) * targetRatio),
-            (byte)(accent.B + (target - accent.B) * targetRatio)));
-    }
-
     private sealed class DotGrid : Control
     {
         public IBrush Brush { get; set; } = Brushes.LightGray;
         public override void Render(DrawingContext context)
         {
-            using var opacity = context.PushOpacity(.55);
-            for (var y = 9d; y < Bounds.Height; y += 18)
-            for (var x = 9d; x < Bounds.Width; x += 18) context.DrawEllipse(Brush, null, new Point(x, y), .8, .8);
+            for (var y = 11d; y < Bounds.Height; y += 22)
+            for (var x = 11d; x < Bounds.Width; x += 22) context.DrawEllipse(Brush, null, new Point(x, y), .65, .65);
         }
     }
     private sealed class CardDecoration : Control
     {
         public bool IsSummary { get; init; }
-        public IBrush? Stripe { get; init; }
         public IBrush? Line { get; init; }
         public override void Render(DrawingContext context)
         {
             if (IsSummary) context.DrawRectangle(null, new Pen { Brush = Line, Thickness = 1, DashStyle = new DashStyle(new double[] { 4, 3 }, 0) }, new Rect(Bounds.Size).Deflate(.5), 8, 8);
-            if (Stripe is not null) context.DrawRectangle(Stripe, null, new Rect(0, 8, 3, Math.Max(0, Bounds.Height - 16)), 1, 1);
         }
     }
 
-    /// <summary>cScale 系列实色化：深色态向白提亮 18%（与参考软件 mindmap/timeline 观感一致）。</summary>
-    private static Color BranchSolid(Color branch, bool dark) => dark ? Brighten(branch, 0.18) : branch;
-
-    private static Color Brighten(Color color, double amount) => new(
-        (byte)(color.R + (255 - color.R) * amount),
-        (byte)(color.G + (255 - color.G) * amount),
-        (byte)(color.B + (255 - color.B) * amount),
-        color.A);
-
-    /// <summary>按底色亮度取黑/白前景（WCAG 对比度）。</summary>
-    private static Color ContrastText(Color background)
-    {
-        static double Luminance(Color c)
-        {
-            static double Channel(byte v) { var d = v / 255.0; return d <= 0.04045 ? d / 12.92 : System.Math.Pow((d + 0.055) / 1.055, 2.4); }
-            return 0.2126 * Channel(c.R) + 0.7152 * Channel(c.G) + 0.0722 * Channel(c.B);
-        }
-        var l = Luminance(background);
-        return (l + 0.05) / 0.05 > 0.05 / (l + 0.05) && l > 0.18 ? Colors.Black : Colors.White;
-    }
 }
