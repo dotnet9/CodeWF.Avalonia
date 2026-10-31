@@ -98,21 +98,11 @@ internal sealed class ListRenderer : IMarkdownBlockRenderer
             context.AttachTaskMarkerInteraction(checkBox, item.Span.Start);
         }
 
-        // 对齐原型任务项：复选框左侧保留列表圆点（• □ 文案）。
-        var bullet = context.CreateSelectableText(MarkdownStyleKeys.ListMarker);
-        bullet.Text = "•";
-        bullet.MinWidth = 14;
-        bullet.TextAlignment = TextAlignment.Right;
-        bullet.VerticalAlignment = VerticalAlignment.Top;
-        context.BindTheme(bullet, SelectableTextBlock.ForegroundProperty, MarkdownViewer.AccentBrushProperty);
-        context.BindTheme(bullet, SelectableTextBlock.FontFamilyProperty, MarkdownViewer.ContentFontFamilyProperty);
-        var pair = new StackPanel { Orientation = Orientation.Horizontal, MinWidth = markerWidth };
-        pair.Children.Add(bullet);
-        pair.Children.Add(checkBox);
+        // A task checkbox replaces the list bullet, as in GFM task lists.
         var marker = new Border
         {
-            Child = pair,
-            MinWidth = markerWidth,
+            Child = checkBox,
+            MinWidth = 15,
             VerticalAlignment = VerticalAlignment.Top
         };
         context.AddMarkdownClass(marker, MarkdownStyleKeys.ListMarker);

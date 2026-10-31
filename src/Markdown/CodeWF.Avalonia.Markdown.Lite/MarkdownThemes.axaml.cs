@@ -451,18 +451,24 @@ public class MarkdownThemes : Styles
             }
         }
 
-        // 规则 §11：尺寸档只提供正文基准（13/15/17），目录值是排版默认字号下的 CSS 实测值，
-        // 字号/行高/边距整套按 baseSize/BodySize 等比缩放，保持 CSS em 语义一致。
+        // Apply the registered factory once, then scale its layout values. Recreating the
+        // catalog entry here discarded host overrides and replaced each article's body size.
         if (ArticleTypographyResolver.Find(typographyTheme) is { } article)
         {
-            var baseSize = normalizedSize switch
+            var scale = normalizedSize switch
             {
-                MarkdownTypographySizes.Compact => 13d,
-                MarkdownTypographySizes.Relaxed => 17d,
-                _ => 15d
+                MarkdownTypographySizes.Compact => .87d,
+                MarkdownTypographySizes.Relaxed => 1.13d,
+                _ => 1d
             };
-            var scale = baseSize / article.BodySize;
-            foreach (var entry in article.CreateResources())
+            sizedResources["CodeWFMarkdownListSpacing"] = 0d;
+            sizedResources["CodeWFMarkdownListMargin"] = new Thickness(0, 0, 0, 8 * scale);
+            sizedResources["CodeWFMarkdownListItemMargin"] = new Thickness(0, 1.5 * scale, 0, 1.5 * scale);
+            sizedResources["CodeWFMarkdownListFirstParagraphMargin"] = new Thickness(0);
+            sizedResources["CodeWFMarkdownTableCellMinHeight"] = 24.75 * scale;
+            sizedResources["CodeWFMarkdownTableCellFontSize"] = 12.5 * scale;
+            sizedResources["CodeWFMarkdownTableCellLineHeight"] = 23.75 * scale;
+            foreach (var entry in typographyResources)
             {
                 sizedResources[entry.Key] = entry.Value switch
                 {
@@ -475,18 +481,6 @@ public class MarkdownThemes : Styles
                     _ => entry.Value,
                 };
             }
-
-            // design 原型共享节奏（15px 基准实测值，主题无关）：列表/表格随尺寸档等比缩放。
-            var shared = baseSize / 15d;
-            sizedResources["CodeWFMarkdownListSpacing"] = 0d;
-            sizedResources["CodeWFMarkdownListMargin"] = new Thickness(0, 0, 0, 8 * shared);
-            sizedResources["CodeWFMarkdownListItemMargin"] = new Thickness(0, 1.5 * shared, 0, 1.5 * shared);
-            sizedResources["CodeWFMarkdownListFirstParagraphMargin"] = new Thickness(0);
-            sizedResources["CodeWFMarkdownTableMargin"] = new Thickness(0, 15 * shared, 0, 15 * shared);
-            sizedResources["CodeWFMarkdownTableCellPadding"] = new Thickness(10 * shared, 5 * shared);
-            sizedResources["CodeWFMarkdownTableCellMinHeight"] = 24.75 * shared;
-            sizedResources["CodeWFMarkdownTableCellFontSize"] = 12.5 * shared;
-            sizedResources["CodeWFMarkdownTableCellLineHeight"] = 23.75 * shared;
         }
 
         sizedResources[MarkdownStyleKeys.TypographyThemeResource] = typographyTheme ?? string.Empty;

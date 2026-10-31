@@ -36,6 +36,26 @@ public sealed class MarkdownSyntaxOptionsTests
 public sealed class MarkdownSyntaxControlTests(AvaloniaPlatformFixture platform)
 {
     [Fact]
+    public void TaskCheckboxReplacesBulletAndRetainsTaskText() => platform.Run(() =>
+    {
+        var viewer = new MarkdownViewer { Markdown = "- [ ] Todo\n- [x] Done" };
+        viewer.Template = new FuncControlTemplate<MarkdownViewer>((_, scope) =>
+        {
+            var panel = new StackPanel(); scope.Register("PART_DocumentHost", panel); return panel;
+        });
+        var window = new Window { Content = viewer, Width = 300, Height = 240 };
+        try
+        {
+            window.Show(); viewer.Rerender(); Dispatcher.UIThread.RunJobs();
+            Assert.Equal(2, viewer.GetVisualDescendants().OfType<CheckBox>().Count());
+            Assert.DoesNotContain(viewer.GetVisualDescendants().OfType<SelectableTextBlock>(), text => text.Text == "•");
+            Assert.Contains("Todo", viewer.GetRenderedText());
+            Assert.Contains("Done", viewer.GetRenderedText());
+        }
+        finally { window.Close(); }
+    });
+
+    [Fact]
     public void CodeWrappingAndFontChangesUpdateExistingViewer() => platform.Run(() =>
     {
         var viewer = new MarkdownViewer { Markdown = "```text\nlong code line\n```" };

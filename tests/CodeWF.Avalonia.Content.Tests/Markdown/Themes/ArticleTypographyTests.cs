@@ -89,9 +89,9 @@ public sealed class ArticleTypographyTests(AvaloniaPlatformFixture platform)
     }
 
     [Theory]
-    [InlineData(MarkdownTypographySizes.Compact, 13d)]
-    [InlineData(MarkdownTypographySizes.Normal, 15d)]
-    [InlineData(MarkdownTypographySizes.Relaxed, 17d)]
+    [InlineData(MarkdownTypographySizes.Compact, 16d * .87)]
+    [InlineData(MarkdownTypographySizes.Normal, 16d)]
+    [InlineData(MarkdownTypographySizes.Relaxed, 16d * 1.13)]
     public void SizeTierInjectsBodyBaselineAndScalesHeadings(string size, double expectedBodySize)
     {
         platform.Run(() =>
@@ -106,4 +106,30 @@ public sealed class ArticleTypographyTests(AvaloniaPlatformFixture platform)
             Assert.Equal(typography.Headings[0].Size * expectedBodySize / typography.BodySize, h1, 4);
         });
     }
+    [Fact]
+    public void RegisteredFactoryOverridesSurviveSizeScaling()
+    {
+        platform.Run(() =>
+        {
+            var article = ArticleTypographyCatalog.Find("Simple")!;
+            try
+            {
+                MarkdownTypographyThemeRegistry.Register(article.Key, () =>
+                {
+                    var resources = article.CreateResources();
+                    resources["CodeWFMarkdownHeading1Padding"] = new Thickness(0, 0, 0, 14);
+                    resources["CodeWFMarkdownTableCellPadding"] = new Thickness(13, 10);
+                    return resources;
+                });
+                var normal = MarkdownThemes.CreateTypographyResources(article.Key, MarkdownTypographySizes.Normal);
+                Assert.Equal(new Thickness(0, 0, 0, 14), normal["CodeWFMarkdownHeading1Padding"]);
+                Assert.Equal(new Thickness(13, 10), normal["CodeWFMarkdownTableCellPadding"]);
+                var compact = MarkdownThemes.CreateTypographyResources(article.Key, MarkdownTypographySizes.Compact);
+                Assert.Equal(new Thickness(0, 0, 0, 14 * .87), compact["CodeWFMarkdownHeading1Padding"]);
+                Assert.Equal(16 * .87, compact[MarkdownStyleKeys.ParagraphFontSizeResource]);
+            }
+            finally { MarkdownTypographyThemeRegistry.Register(article.Key, article.CreateResources); }
+        });
+    }
+
 }
