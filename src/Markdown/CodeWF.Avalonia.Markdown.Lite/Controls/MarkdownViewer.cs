@@ -1330,12 +1330,13 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             return;
         }
 
-        control.Opacity = 0;
+        // 以完全不透明作为稳定值，结束后移除动画；Forward 填充在掉帧时可能保留末次插值。
+        control.Opacity = 1;
         var animation = new Animation
         {
             Duration = duration,
             Easing = new CubicEaseOut(),
-            FillMode = FillMode.Forward,
+            FillMode = FillMode.Backward,
             Children =
             {
                 new KeyFrame

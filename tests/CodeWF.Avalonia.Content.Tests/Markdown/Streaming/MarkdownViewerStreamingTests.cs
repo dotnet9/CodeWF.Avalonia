@@ -1,7 +1,6 @@
 using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 using CodeWF.Avalonia.Markdown.Controls;
 using CodeWF.Avalonia.Markdown;
-using CodeWF.Avalonia.Markdown.Controls;
 using CodeWF.Avalonia.Markdown.Streaming;
 
 using global::Avalonia;
@@ -92,22 +91,26 @@ public sealed class MarkdownViewerStreamingTests(AvaloniaPlatformFixture platfor
 		}
 	});
 
-	[Fact]
-	public void StreamingReveal_FadesInOnlyNewBlocks() => platform.Run(() =>
+	[Theory]
+	[InlineData(16)]
+	[InlineData(80)]
+	public void StreamingReveal_FadesInOnlyNewBlocks(int durationMilliseconds) => platform.Run(() =>
 	{
 		using var document = new MarkdownStreamingDocument();
 		var (window, viewer, panel, _) = CreateViewer(document);
 		try
 		{
 			viewer.StreamingReveal = true;
-			viewer.StreamingRevealDuration = TimeSpan.FromMilliseconds(80);
+			viewer.StreamingRevealDuration = TimeSpan.FromMilliseconds(durationMilliseconds);
 			document.Append("# 标题\n\n第一段。\n\n");
 			WaitForSource(viewer, "# 标题\n\n第一段。\n\n");
 			Assert.Equal(0, viewer.RevealedBlockCount); // 首屏整篇渲染不做渐显
+			var original = panel.Children.OfType<Control>().ToArray();
 
 			document.Append("第二段。\n\n");
 			WaitForSource(viewer, "# 标题\n\n第一段。\n\n第二段。\n\n");
 			Assert.True(viewer.RevealedBlockCount >= 1, "追加的新块应触发渐显");
+			Assert.All(original, control => Assert.Equal(1, control.Opacity));
 
 			// 渐显结束（含掉帧）后所有块都应回到完全不透明。
 			var deadline = DateTime.UtcNow.AddSeconds(5);
@@ -119,8 +122,7 @@ public sealed class MarkdownViewerStreamingTests(AvaloniaPlatformFixture platfor
 				Thread.Sleep(16);
 			}
 
-			Assert.All(panel.Children.OfType<Control>(), control => Assert.True(control.Opacity >= 0.999,
-				$"块透明度未回到 1（当前 {control.Opacity:F3}）"));
+			Assert.All(panel.Children.OfType<Control>(), control => Assert.Equal(1, control.Opacity));
 		}
 		finally
 		{
