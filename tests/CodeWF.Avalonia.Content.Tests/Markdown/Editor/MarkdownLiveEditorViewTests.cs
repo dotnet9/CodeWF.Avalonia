@@ -465,6 +465,33 @@ public sealed class MarkdownLiveEditorViewTests
     });
 
     [Fact]
+    public void BeforeHeadingContextFollowsStructuralRebuilds() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView();
+        view.SetText("paragraph\n\n## heading\n\nend");
+        var window = new Window { Width = 800, Height = 600, Content = view };
+        window.Show();
+        try
+        {
+            window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
+            var previews = view.GetVisualDescendants().OfType<global::CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().ToArray();
+            Assert.Contains(previews, preview => preview.Classes.Contains("MdBeforeHeading") && preview.Markdown.TrimEnd() == "paragraph");
+            Assert.DoesNotContain(previews, preview => preview.Classes.Contains("MdBeforeHeading") && preview.Markdown.Contains("end"));
+            view.SetText("paragraph\n\nend"); window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
+            Assert.DoesNotContain(view.GetVisualDescendants().OfType<global::CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>(),
+                preview => preview.Classes.Contains("MdBeforeHeading"));
+            view.SetText("- item\n\n#### heading"); window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
+            var list = Assert.Single(view.GetVisualDescendants().OfType<Border>(), border => border.Classes.Contains("MdLiveListItem"));
+            Assert.Contains("MdBeforeHeading", list.Classes);
+            Assert.Contains("MdBeforeHeading", Assert.Single(list.GetVisualDescendants().OfType<global::CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>()).Classes);
+            view.SetText("paragraph\n\n##### heading"); window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
+            Assert.DoesNotContain(view.GetVisualDescendants().OfType<global::CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>(),
+                preview => preview.Classes.Contains("MdBeforeHeading"));
+        }
+        finally { window.Close(); }
+    });
+
+    [Fact]
     public void ListSpacingCanBeStyledWithoutMovingTaskMarkersAwayFromTheirText() => _platform.Run(() =>
     {
         var view = new MarkdownLiveEditorView { TypographyTheme = "Simple", TypographySize = "Normal" };

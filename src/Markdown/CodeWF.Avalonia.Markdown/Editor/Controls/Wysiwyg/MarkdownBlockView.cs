@@ -455,6 +455,7 @@ internal sealed class MarkdownBlockView : UserControl
         {
             var preview = _preview ??= CreatePreview();
             preview.Classes.Set("MdLiveListContent", Model.Kind == MarkdownBlockKind.ListItem);
+            preview.Classes.Set("MdBeforeHeading", Classes.Contains("MdBeforeHeading"));
 
             preview.SyntaxOptions = _options.SyntaxOptions;
             preview.ImageBasePath = _options.ImageBasePath;

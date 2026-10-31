@@ -601,6 +601,8 @@ public partial class MarkdownLiveEditorView : UserControl
         _blockOptions.CodeWrap = CodeWrap;
         _blockOptions.ContentFontFamily = FontFamily;
         var model = _models[index];
+        var beforeHeading = index + 1 < _models.Count
+            && _models[index + 1] is { Kind: MarkdownBlockKind.Heading, HeadingLevel: <= 4 };
 
         if (model.Kind == MarkdownBlockKind.Table)
         {
@@ -618,6 +620,7 @@ public partial class MarkdownLiveEditorView : UserControl
                     }
                 }
             };
+            table.Classes.Set("MdBeforeHeading", beforeHeading);
             return table;
         }
 
@@ -642,6 +645,7 @@ public partial class MarkdownLiveEditorView : UserControl
             SplitRequested = SplitBlock
         };
         AttachAutoPair(view);
+        view.Classes.Set("MdBeforeHeading", beforeHeading);
         view.EditorSelectionChanged = RaiseSelectionChanged;
         view.RunFontSize = model.Kind switch
         {
@@ -658,6 +662,7 @@ public partial class MarkdownLiveEditorView : UserControl
         };
 
         var root = DecorateBlock(model, view);
+        root.Classes.Set("MdBeforeHeading", beforeHeading);
         return root;
     }
 
