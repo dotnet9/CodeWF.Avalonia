@@ -10,6 +10,7 @@ using global::Avalonia.Controls.Templates;
 using global::Avalonia.Headless;
 using global::Avalonia.Input;
 using global::Avalonia.Media;
+using global::Avalonia.Styling;
 using global::Avalonia.Threading;
 using global::Avalonia.VisualTree;
 
@@ -24,6 +25,47 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 [Collection("AvaloniaPlatform")]
 public sealed class MarkdownCodeBlockFrameTests(AvaloniaPlatformFixture platform)
 {
+	[Fact]
+	public void HostBorderStyle_AppliesAfterEveryDocumentRebuild() => platform.Run(() =>
+	{
+		var (window, viewer) = CreateViewer(BuildCodeDocument(10), configure: viewer =>
+		{
+			viewer.Styles.Add(new Style(selector => selector.OfType<Border>().Class(MarkdownStyleKeys.CodeBlock))
+			{
+				Setters =
+				{
+					new Setter(Border.MarginProperty, new Thickness(2, 3)),
+					new Setter(Border.PaddingProperty, new Thickness(4, 5)),
+					new Setter(Border.BorderThicknessProperty, new Thickness(1)),
+					new Setter(Border.CornerRadiusProperty, new CornerRadius(6))
+				}
+			});
+		});
+		try
+		{
+			Border? previous = null;
+			for (var revision = 0; revision < 3; revision++)
+			{
+				var source = BuildCodeDocument(11 + revision);
+				viewer.Markdown = source;
+				WaitForRender(viewer, source);
+				window.UpdateLayout();
+				var frame = viewer.GetVisualDescendants().OfType<Border>()
+					.Single(border => border.Classes.Contains(MarkdownStyleKeys.CodeBlock));
+				Assert.NotSame(previous, frame);
+				Assert.Equal(new Thickness(2, 3), frame.Margin);
+				Assert.Equal(new Thickness(4, 5), frame.Padding);
+				Assert.Equal(new Thickness(1), frame.BorderThickness);
+				Assert.Equal(new CornerRadius(6), frame.CornerRadius);
+				previous = frame;
+			}
+		}
+		finally
+		{
+			window.Close();
+		}
+	});
+
 	[Fact]
 	public void Header_ShowsLanguagePathAndLineRange() => platform.Run(() =>
 	{
