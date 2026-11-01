@@ -85,12 +85,14 @@ public partial class MarkdownLiveEditorView : UserControl
 
     /// <summary>最近一次上下文请求命中块的源码行；可绑定到宿主菜单 ViewModel。</summary>
     public static readonly DirectProperty<MarkdownLiveEditorView, int> ContextSourceLineProperty =
-        AvaloniaProperty.RegisterDirect<MarkdownLiveEditorView, int>(nameof(ContextSourceLine), editor => editor.ContextSourceLine);
+        AvaloniaProperty.RegisterDirect<MarkdownLiveEditorView, int>(nameof(ContextSourceLine),
+            editor => editor.ContextSourceLine, (editor, value) => editor.ContextSourceLine = value,
+            defaultBindingMode: global::Avalonia.Data.BindingMode.OneWayToSource);
     private int _contextSourceLine = 1;
     public int ContextSourceLine
     {
         get => _contextSourceLine;
-        private set => SetAndRaise(ContextSourceLineProperty, ref _contextSourceLine, value);
+        set => SetAndRaise(ContextSourceLineProperty, ref _contextSourceLine, Math.Max(1, value));
     }
 
     private void UpdateContextSourceLine(Point position)
@@ -449,6 +451,11 @@ public partial class MarkdownLiveEditorView : UserControl
     {
         base.OnPropertyChanged(change);
         if (_paneHead is null) return;
+        if (change.Property == ContextMenuProperty)
+        {
+            _blockOptions.IsDefaultContextMenuEnabled = ContextMenu is null;
+            RebuildPreservingEdit();
+        }
         if (change.Property == SyntaxOptionsProperty)
         {
             _blockOptions.SyntaxOptions = SyntaxOptions;

@@ -45,7 +45,7 @@ internal sealed class MarkdownTableView : UserControl
             item.Click += (_, _) => StructureChangeRequested?.Invoke(this, capturedAction);
             menu.Items.Add(item);
         }
-        ContextMenu = menu;
+        if (options.IsDefaultContextMenuEnabled) ContextMenu = menu;
         AttachedToVisualTree += (_, _) =>
         {
             I18nManager.Instance.CultureChanged += OnLocalizationChanged;

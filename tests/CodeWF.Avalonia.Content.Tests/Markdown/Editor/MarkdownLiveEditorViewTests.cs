@@ -37,7 +37,7 @@ public sealed class MarkdownLiveEditorViewTests
         var target = new ContextTarget();
         using var binding = view.Bind(MarkdownLiveEditorView.ContextSourceLineProperty,
             new global::Avalonia.Data.Binding(nameof(ContextTarget.Line))
-            { Source = target, Mode = global::Avalonia.Data.BindingMode.OneWayToSource });
+            { Source = target });
         view.SetText(markdown);
         var window = new Window { Width = 640, Height = 420 };
         window.Styles.Add(new global::Semi.Avalonia.SemiTheme());
@@ -49,7 +49,6 @@ public sealed class MarkdownLiveEditorViewTests
             Dispatcher.UIThread.RunJobs(); window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
             var block = view.GetVisualDescendants().OfType<MarkdownBlockView>().Single(item => item.Model.SourceLine == 5);
             var point = block.TranslatePoint(new Point(10, block.Bounds.Height / 2), window)!.Value;
-            Console.WriteLine($"CONTEXT POINT {point} block={block.Bounds} view={view.Bounds} hit={window.InputHitTest(point)}");
             window.MouseMove(point); window.MouseDown(point, MouseButton.Right); window.MouseUp(point, MouseButton.Right);
             Dispatcher.UIThread.RunJobs();
             Assert.Equal(5, view.ContextSourceLine);
@@ -69,6 +68,63 @@ public sealed class MarkdownLiveEditorViewTests
     });
 
     private sealed class ContextTarget { public int Line { get; set; } }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public void HostContextMenuOwnsPreviewTextRequestsIncludingLateAssignment(bool assignBeforeAttach, bool table) => _platform.Run(() =>
+    {
+        var markdown = table ? "# Heading\n\n| Target paragraph | Other |\n| --- | --- |\n| Value | Cell |" : "# Heading\n\nTarget paragraph";
+        var menu = new ContextMenu { ItemsSource = new[] { new MenuItem { Header = "Host action" } } };
+        var view = new MarkdownLiveEditorView { HeaderText = null, ChipText = null };
+        if (assignBeforeAttach) view.ContextMenu = menu;
+        view.SetText(markdown);
+        var window = new Window { Width = 640, Height = 420, Content = view };
+        window.Styles.Add(new global::Semi.Avalonia.SemiTheme());
+        window.Styles.Add(new MarkdownFullThemes());
+        var manager = global::CodeWF.Toolkit.Lang.I18nManager.Instance;
+        var originalCulture = manager.Culture;
+        void Render() { Dispatcher.UIThread.RunJobs(); window.UpdateLayout(); AvaloniaHeadlessPlatform.ForceRenderTimerTick(); Dispatcher.UIThread.RunJobs(); }
+        void RightClickParagraph()
+        {
+            var text = view.GetVisualDescendants().OfType<TextBlock>()
+                .Single(block => (block.Inlines?.Text ?? block.Text) == "Target paragraph");
+            var point = text.TranslatePoint(new Point(12, text.Bounds.Height / 2), window)!.Value;
+            window.MouseMove(point); window.MouseDown(point, MouseButton.Right); window.MouseUp(point, MouseButton.Right); Render();
+        }
+        window.Show();
+        try
+        {
+            Render();
+            if (!assignBeforeAttach) { view.ContextMenu = menu; Render(); }
+            foreach (var culture in new[] { "zh-CN", "en-US" })
+            {
+                manager.Culture = new System.Globalization.CultureInfo(culture); Render();
+                window.Content = null; window.Content = view; Render();
+                Assert.All(view.GetVisualDescendants().OfType<global::CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>(),
+                    preview => { Assert.False(preview.IsDefaultContextMenuEnabled); Assert.Null(preview.ContextMenu); });
+                Assert.All(view.GetVisualDescendants().OfType<SelectableTextBlock>(), text =>
+                { Assert.Null(text.ContextMenu); Assert.Null(text.ContextFlyout); });
+                RightClickParagraph();
+                Assert.True(menu.IsOpen);
+                Assert.Equal(3, view.ContextSourceLine);
+                Assert.Equal(markdown, view.Text);
+                Assert.Equal(-1, view.ActiveBlockIndex);
+                menu.Close(); Render();
+            }
+            view.ContextMenu = null; Render();
+            RightClickParagraph();
+            var restoredMenu = table
+                ? view.GetVisualDescendants().OfType<MarkdownTableView>().Single().ContextMenu
+                : view.GetVisualDescendants().OfType<SelectableTextBlock>()
+                    .Single(block => (block.Inlines?.Text ?? block.Text) == "Target paragraph").ContextMenu;
+            Assert.True(restoredMenu?.IsOpen);
+            restoredMenu!.Close();
+        }
+        finally { menu.Close(); window.Close(); manager.Culture = originalCulture; }
+    });
 
     [Theory]
     [InlineData(MarkdownEditorAction.Strikethrough, "~~")]

@@ -570,5 +570,12 @@ internal sealed class MarkdownBlockView : UserControl
 
     // 即时编辑保持「底部语言输入框」的既有约定（测试 CodeLanguageAppearsBelow... 守住）；
     // 头部与输入框并存属冗余，整合进头部可编辑留后续版本。
-    private MarkdownViewer CreatePreview() => new() { DocumentBottomPadding = 0, IsTaskEditingEnabled = false, ShowCodeBlockHeader = false, CodeFontFamily = _options.CodeFontFamily };
+    private MarkdownViewer CreatePreview() => new()
+    {
+        DocumentBottomPadding = 0,
+        IsTaskEditingEnabled = false,
+        ShowCodeBlockHeader = false,
+        CodeFontFamily = _options.CodeFontFamily,
+        IsDefaultContextMenuEnabled = _options.IsDefaultContextMenuEnabled
+    };
 }

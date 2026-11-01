@@ -66,6 +66,16 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         AvaloniaProperty.Register<MarkdownViewer, MarkdownSyntaxOptions?>(nameof(SyntaxOptions));
     public MarkdownSyntaxOptions? SyntaxOptions { get => GetValue(SyntaxOptionsProperty); set => SetValue(SyntaxOptionsProperty, value); }
 
+    /// <summary>是否提供内置复制菜单；嵌入编辑器时可关闭，让上下文请求交给宿主菜单。</summary>
+    public static readonly StyledProperty<bool> IsDefaultContextMenuEnabledProperty =
+        AvaloniaProperty.Register<MarkdownViewer, bool>(nameof(IsDefaultContextMenuEnabled), true);
+    public bool IsDefaultContextMenuEnabled
+    {
+        get => GetValue(IsDefaultContextMenuEnabledProperty);
+        set => SetValue(IsDefaultContextMenuEnabledProperty, value);
+    }
+    private ContextMenu? _defaultContextMenu;
+
     private readonly List<RenderedBlock> _renderedBlocks = [];
     private readonly List<IDisposable> _currentBlockDisposables = [];
     private readonly MarkdownSelectionController _selectionController = new();
@@ -599,6 +609,11 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
     static MarkdownViewer()
     {
+        IsDefaultContextMenuEnabledProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) =>
+        {
+            viewer.UpdateDefaultContextMenu();
+            viewer.QueueRenderDocument(MarkdownRenderMode.Full);
+        });
         SyntaxOptionsProperty.Changed.AddClassHandler<MarkdownViewer>((viewer, _) =>
         {
             viewer._documentPipeline = viewer.SyntaxOptions?.CreatePipeline() ?? Pipeline;
@@ -728,7 +743,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         _scheduler.Completed += OnSchedulerParseCompleted;
         _scheduler.Failed += OnSchedulerParseFailed;
         Focusable = true;
-        ContextMenu = CreateViewerContextMenu();
+        UpdateDefaultContextMenu();
         TextOptions.SetBaselinePixelAlignment(this, BaselinePixelAlignment.Aligned);
         AddHandler(PointerPressedEvent, OnViewerPointerPressed, RoutingStrategies.Tunnel);
         AddHandler(PointerMovedEvent, OnViewerPointerMoved, RoutingStrategies.Tunnel);
@@ -830,7 +845,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         I18nManager.Instance.CultureChanged += OnCultureChanged;
         I18nManager.Instance.ResourcesChanged += OnCultureChanged;
         // 控件离开界面期间语言可能已改变，重新挂载时同步菜单文案。
-        ContextMenu = CreateViewerContextMenu();
+        UpdateDefaultContextMenu();
         QueueRenderDocument(MarkdownRenderMode.Full);
     }
 
@@ -883,7 +898,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             Dispatcher.UIThread.Post(() => OnCultureChanged(sender, e));
             return;
         }
-        ContextMenu = CreateViewerContextMenu();
+        UpdateDefaultContextMenu();
         QueueRenderDocument(MarkdownRenderMode.Full);
     }
 
@@ -1724,12 +1739,24 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         var textBlock = new MarkdownSelectableTextBlock
         {
             Inlines = new InlineCollection(),
-            TextWrapping = TextWrapping.Wrap
+            TextWrapping = TextWrapping.Wrap,
+            // 复制菜单由 Viewer 或宿主提供，避免主题附带的菜单先处理上下文请求。
+            ContextFlyout = null
         };
         TextOptions.SetBaselinePixelAlignment(textBlock, BaselinePixelAlignment.Aligned);
         AddMarkdownClass(textBlock, classes);
-        textBlock.ContextMenu = CreateSelectableTextContextMenu(textBlock);
+        if (IsDefaultContextMenuEnabled)
+            textBlock.ContextMenu = CreateSelectableTextContextMenu(textBlock);
         return textBlock;
+    }
+
+    private void UpdateDefaultContextMenu()
+    {
+        // 宿主声明的菜单不能被语言切换或重新挂载覆盖。
+        if (ContextMenu is not null && !ReferenceEquals(ContextMenu, _defaultContextMenu)) return;
+        _defaultContextMenu?.Close();
+        _defaultContextMenu = IsDefaultContextMenuEnabled ? CreateViewerContextMenu() : null;
+        ContextMenu = _defaultContextMenu;
     }
 
     private ContextMenu CreateViewerContextMenu()
