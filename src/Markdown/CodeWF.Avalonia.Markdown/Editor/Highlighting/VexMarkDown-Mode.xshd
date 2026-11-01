@@ -53,13 +53,15 @@
     <!-- 行内样式 span 标签：整体 marker 灰（样式效果由渲染呈现，源码只留标签痕迹）。
          用 Rule 一次性匹配整段标签（Span 的 End=$ 语义在行内标签场景不可靠）。 -->
     <Rule color="Marker">&lt;/?span[^&gt;\n]*&gt;</Rule>
-    <!-- 链接/图片：括号 marker，文本 link；尾部的 (url) 由子规则压到 url 灰。 -->
+    <!-- 任务框由下方 marker 规则处理；链接在右方括号结束，不能给同行后续正文染色。 -->
     <Span color="Link" multiline="false">
-      <Begin color="Marker">\!?\[</Begin>
+      <Begin color="Marker">\!?\[(?![ xX]\])</Begin>
+      <End color="Marker">\]</End>
+    </Span>
+    <!-- 紧邻链接后的 URL：括号为 marker，地址为 Url，与原型一致。 -->
+    <Span color="Url" multiline="false">
+      <Begin color="Marker">(?&lt;=\])\(</Begin>
       <End color="Marker">\)</End>
-      <RuleSet>
-        <Rule color="Url">\([^\)\n]*\)</Rule>
-      </RuleSet>
     </Span>
     <!-- 标题：井号 marker，正文 heading。 -->
     <Span color="Heading" multiline="true">

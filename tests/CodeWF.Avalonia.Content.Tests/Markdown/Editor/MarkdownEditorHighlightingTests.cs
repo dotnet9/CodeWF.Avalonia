@@ -35,4 +35,32 @@ public sealed class MarkdownEditorHighlightingTests
                 $"Marker foreground should use the palette fallback: {marker.Foreground?.GetColor(null)}");
         });
     }
+
+    [Theory]
+    [InlineData("- [ ] 带上相机")]
+    [InlineData("- [x] 收拾行李")]
+    [InlineData("1. [X] 收拾行李")]
+    public void TaskMarkersDoNotColorTheFollowingTextAsALink(string text) => _platform.Run(() =>
+    {
+        var view = new MarkdownEditorView { Text = text };
+        using var highlighter = new DocumentHighlighter(view.Editor.Document, view.Editor.SyntaxHighlighting);
+        var sections = highlighter.HighlightLine(1).Sections;
+        Assert.DoesNotContain(sections, section => section.Color.Name == "Link");
+        Assert.Contains(sections, section => section.Color.Name == "Marker"
+            && section.Offset <= text.IndexOf('[') && section.Offset + section.Length >= text.IndexOf(']') + 1);
+    });
+
+    [Theory]
+    [InlineData("[链接](https://codewf.com) 后续正文")]
+    [InlineData("[链接] 后续正文")]
+    [InlineData("![图片](image.png) 后续正文")]
+    public void LinksAndImagesDoNotColorTrailingText(string text) => _platform.Run(() =>
+    {
+        var view = new MarkdownEditorView { Text = text };
+        using var highlighter = new DocumentHighlighter(view.Editor.Document, view.Editor.SyntaxHighlighting);
+        var sections = highlighter.HighlightLine(1).Sections;
+        Assert.Contains(sections, section => section.Color.Name == "Link");
+        Assert.DoesNotContain(sections, section => section.Offset + section.Length > text.IndexOf(" 后续正文", StringComparison.Ordinal));
+        if (text.Contains('(')) Assert.Contains(sections, section => section.Color.Name == "Url");
+    });
 }
