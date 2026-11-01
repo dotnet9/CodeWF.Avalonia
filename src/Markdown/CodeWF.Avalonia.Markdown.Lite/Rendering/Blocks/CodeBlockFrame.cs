@@ -35,6 +35,8 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
     /// <summary>行数达到该阈值的代码块才显示折叠按钮（短代码折叠无收益）。</summary>
     internal const int FoldableLineThreshold = 8;
 
+    protected override Type StyleKeyOverride => typeof(Border);
+
     private readonly int _blockKey;
     private readonly IMarkdownRenderContext _context;
     private readonly StackPanel _header;
@@ -166,9 +168,6 @@ internal sealed class CodeBlockFrame : Border, IStreamingCodeBlock
         root.Children.Add(_content);
         root.Children.Add(_footer);
         Child = root;
-        // 对齐原型 .md-code-block 的 margin: 8px 0 12px——相邻代码块/段落间保持呼吸间距。
-        Margin = new Thickness(0, 8, 0, 12);
-
         ApplyWrapState();
         context.RaiseCodeBlockToolRender(_header, _content, codeBlock);
     }
