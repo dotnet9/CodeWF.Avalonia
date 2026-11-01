@@ -52,6 +52,34 @@ public sealed class ArticleTypographyTests(AvaloniaPlatformFixture platform)
         });
     }
 
+    [Fact]
+    public void CatalogRetainsBorderPaintCornersAndParagraphIndent()
+    {
+        platform.Run(() =>
+        {
+            var basic = ArticleTypographyCatalog.Find("Basic")!;
+            var sage = ArticleTypographyCatalog.Find("SoftSage")!;
+            var technology = ArticleTypographyCatalog.Find("TechnologyBlue")!;
+            Assert.Equal("var(--border)", basic.Headings[1].BorderColor);
+            Assert.True(ArticleTypographyCatalog.Find("GeekBlack")!.Headings[1].DashedBorder);
+            Assert.Equal(new CornerRadius(0, 4, 4, 0), technology.Headings[1].Corners);
+            Assert.Equal(.09, technology.Headings[1].Tint);
+            Assert.Equal(new CornerRadius(0, 8, 8, 0), sage.Quote.Corners);
+            Assert.Equal("var(--typography-accent)", sage.Quote.BorderColor);
+            Assert.Equal(34, ArticleTypographyCatalog.Find("InkBlack")!.ParagraphIndent);
+            foreach (var mode in new[] { ThemeVariant.Light, ThemeVariant.Dark })
+            {
+                var basicColors = Assert.IsType<ResourceDictionary>(basic.CreateResources().ThemeDictionaries[mode]);
+                var sageColors = Assert.IsType<ResourceDictionary>(sage.CreateResources().ThemeDictionaries[mode]);
+                Assert.Equal(((ISolidColorBrush)basicColors[MarkdownStyleKeys.BorderBrushResource]!).Color,
+                    ((ISolidColorBrush)basicColors["CodeWFMarkdownHeading2BorderBrush"]!).Color);
+                Assert.Equal(((ISolidColorBrush)sageColors[MarkdownStyleKeys.AccentBrushResource]!).Color,
+                    ((ISolidColorBrush)sageColors["CodeWFMarkdownQuoteBorderBrush"]!).Color);
+                Assert.Equal(new CornerRadius(0, 8, 8, 0), sage.CreateResources()["CodeWFMarkdownQuoteCornerRadius"]);
+            }
+        });
+    }
+
     [Theory]
     [InlineData("leftBar", "4,0,0,0", "15.68,6.72,15.68,6.72", 0d, 0d)]
     [InlineData("underline", "0,0,0,2", "0,0,0,7.84", 0d, 0d)]

@@ -83,6 +83,11 @@ public static class ArticleTypographyResolver
     /// <summary>把编写层的四档 H2 装饰换成渲染层资源能表达的边框/内距/色块/圆角；em 按该级字号折算成像素。</summary>
     private static ArticleHeadingStyle WithHeadingStyle(ArticleHeadingStyle heading, string decoration)
     {
+        heading = heading with
+        {
+            BorderColor = "var(--type-decoration)", BackgroundColor = "var(--type-decoration)",
+            DashedBorder = false, Corners = null
+        };
         static string Em(double size, double top, double right, double bottom, double left) => string.Create(
             System.Globalization.CultureInfo.InvariantCulture,
             $"{Math.Round(size * left, 2)},{Math.Round(size * top, 2)},{Math.Round(size * right, 2)},{Math.Round(size * bottom, 2)}");

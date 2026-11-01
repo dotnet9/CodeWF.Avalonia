@@ -6,10 +6,20 @@ using global::Avalonia.Styling;
 namespace CodeWF.Avalonia.Markdown.Themes;
 
 public sealed record ArticleHeadingStyle(double Size, int Weight, string Alignment, string Border, string Padding,
-    double Tint, string Foreground, double Radius, string Font, double LineHeight, string Margin);
+    double Tint, string Foreground, double Radius, string Font, double LineHeight, string Margin)
+{
+    public string BorderColor { get; init; } = "var(--type-decoration)";
+    public string BackgroundColor { get; init; } = "var(--type-decoration)";
+    public bool DashedBorder { get; init; }
+    public CornerRadius? Corners { get; init; }
+}
 
 public sealed record ArticleQuoteStyle(string Border, string Padding, string Margin, double Radius,
-    double Tint, string Alignment, string Foreground, double FontScale, bool Italic);
+    double Tint, string Alignment, string Foreground, double FontScale, bool Italic)
+{
+    public string BorderColor { get; init; } = "var(--type-decoration)";
+    public CornerRadius? Corners { get; init; }
+}
 
 /// <summary>正文、卡片和导出共用的文章排版定义；标题装饰与文字强调分别取色。</summary>
 public sealed record ArticleTypography(string Key, string Name, string EnglishName, string Purpose, bool Recommended,
@@ -17,6 +27,8 @@ public sealed record ArticleTypography(string Key, string Name, string EnglishNa
     string Font, ArticleHeadingStyle[] Headings, string ExportCss, string CompactExportCss,
     ArticleQuoteStyle Quote, string ParagraphAlignment)
 {
+    public double ParagraphIndent { get; init; }
+
     public static FontFamily ResolveFont(string font) => new(font switch
     {
         "serif" => "Noto Serif SC, Songti SC, SimSun, serif",
@@ -37,7 +49,7 @@ public sealed record ArticleTypography(string Key, string Name, string EnglishNa
             ["CodeWFMarkdownQuotePadding"] = Thickness.Parse(Quote.Padding),
             ["CodeWFMarkdownQuoteMargin"] = WithReducedTop(Thickness.Parse(Quote.Margin), 8),
             ["CodeWFMarkdownQuoteBorderThickness"] = Thickness.Parse(Quote.Border),
-            ["CodeWFMarkdownQuoteCornerRadius"] = new CornerRadius(Quote.Radius),
+            ["CodeWFMarkdownQuoteCornerRadius"] = Quote.Corners ?? new CornerRadius(Quote.Radius),
             ["CodeWFMarkdownTableMargin"] = new Thickness(0, 0, 0, BodySize * .85),
         };
         for (var i = 0; i < Headings.Length; i++)
@@ -50,7 +62,8 @@ public sealed record ArticleTypography(string Key, string Name, string EnglishNa
             resources[prefix + "TextAlignment"] = Enum.Parse<TextAlignment>(h.Alignment);
             resources[prefix + "BorderThickness"] = Thickness.Parse(h.Border);
             resources[prefix + "Padding"] = Thickness.Parse(h.Padding);
-            resources[prefix + "CornerRadius"] = new CornerRadius(h.Radius);
+            resources[prefix + "CornerRadius"] = h.Corners ?? new CornerRadius(h.Radius);
+            resources[prefix + "DashedBorder"] = h.DashedBorder;
         }
         resources.ThemeDictionaries[ThemeVariant.Light] = Colors(false);
         resources.ThemeDictionaries[ThemeVariant.Dark] = Colors(true);
@@ -67,6 +80,11 @@ public sealed record ArticleTypography(string Key, string Name, string EnglishNa
         var accent = Brush.Parse(dark ? DarkText : LightText);
         var decoration = Color.Parse(dark ? DarkDecoration : LightDecoration);
         var paper = Color.Parse(dark ? "#202124" : "#FFFFFF");
+        var border = Brush.Parse(dark ? "#484C53" : "#DDE1E5");
+        IBrush ColorBrush(string expression) => expression.Contains("--border)", StringComparison.Ordinal) ? border
+            : expression.Contains("--typography-accent)", StringComparison.Ordinal) ? accent
+            : expression.Contains("--fg)", StringComparison.Ordinal) ? foreground
+            : new SolidColorBrush(decoration);
         var resources = new ResourceDictionary
         {
             [MarkdownStyleKeys.TextBrushResource] = foreground,
@@ -74,7 +92,7 @@ public sealed record ArticleTypography(string Key, string Name, string EnglishNa
             [MarkdownStyleKeys.MutedTextBrushResource] = Brush.Parse(dark ? "#AFB4BB" : "#606770"),
             [MarkdownStyleKeys.BorderBrushResource] = Brush.Parse(dark ? "#484C53" : "#DDE1E5"),
             [MarkdownStyleKeys.QuoteBackgroundBrushResource] = Quote.Tint == 0 ? Brushes.Transparent : new SolidColorBrush(Mix(paper, decoration, Quote.Tint)),
-            ["CodeWFMarkdownQuoteBorderBrush"] = new SolidColorBrush(decoration),
+            ["CodeWFMarkdownQuoteBorderBrush"] = ColorBrush(Quote.BorderColor),
             ["CodeWFMarkdownQuoteForeground"] = Quote.Foreground.Contains("--muted)", StringComparison.Ordinal) ? Brush.Parse(dark ? "#AFB4BB" : "#606770") : accent,
             [MarkdownStyleKeys.CodeBackgroundBrushResource] = Brush.Parse(dark ? "#292B2F" : "#F6F7F8"),
             [MarkdownStyleKeys.InlineCodeBackgroundBrushResource] = Brush.Parse(dark ? "#292B2F" : "#F6F7F8"),
@@ -85,8 +103,9 @@ public sealed record ArticleTypography(string Key, string Name, string EnglishNa
             var h = Headings[i]; var prefix = "CodeWFMarkdownHeading" + (i + 1);
             resources[prefix + "Foreground"] = h.Tint == 1 ? Brush.Parse(OnSolid(decoration))
                 : h.Foreground.Contains("--fg)", StringComparison.Ordinal) ? foreground : accent;
-            resources[prefix + "Background"] = h.Tint == 0 ? Brushes.Transparent : new SolidColorBrush(Mix(paper, decoration, h.Tint));
-            resources[prefix + "BorderBrush"] = new SolidColorBrush(decoration);
+            resources[prefix + "Background"] = h.Tint == 0 ? Brushes.Transparent
+                : new SolidColorBrush(Mix(paper, ((ISolidColorBrush)ColorBrush(h.BackgroundColor)).Color, h.Tint));
+            resources[prefix + "BorderBrush"] = ColorBrush(h.BorderColor);
         }
         return resources;
     }
