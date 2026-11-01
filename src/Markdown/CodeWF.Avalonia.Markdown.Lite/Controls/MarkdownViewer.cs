@@ -1646,7 +1646,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         }
         // 尚未附加到可视树时仍依据主题基座选择画布，不以透明色 RGB 判断明暗。
         var variant = ActualThemeVariant;
-        while (variant.InheritVariant is { } inherited) variant = inherited;
+        while (variant?.InheritVariant is { } inherited) variant = inherited;
         var canvas = variant == ThemeVariant.Dark ? Colors.Black : Colors.White;
         background = Over(background, canvas);
         return Over(codeBrush.Color, background, codeBrush.Opacity);

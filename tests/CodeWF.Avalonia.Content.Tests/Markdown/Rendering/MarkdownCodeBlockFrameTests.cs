@@ -1,6 +1,7 @@
 using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 using CodeWF.Avalonia.Markdown;
 using CodeWF.Avalonia.Markdown.Controls;
+using CodeWF.Avalonia.Markdown.Rendering;
 
 using global::Avalonia;
 using global::Avalonia.Automation;
@@ -25,6 +26,25 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 [Collection("AvaloniaPlatform")]
 public sealed class MarkdownCodeBlockFrameTests(AvaloniaPlatformFixture platform)
 {
+	[Theory]
+	[InlineData("#FFFFFF", false)]
+	[InlineData("#202020", true)]
+	[InlineData("#20000000", false)]
+	public void DetachedViewer_ResolvesCodeBackgroundWithoutATheme(string background, bool dark) => platform.Run(() =>
+	{
+		var (window, viewer) = CreateViewer(BuildCodeDocument(3));
+		try
+		{
+			window.Content = null;
+			viewer.CodeBackgroundBrush = Brush.Parse(background);
+			Assert.Equal(dark, ((IMarkdownRenderContext)viewer).CodeBlockIsDark);
+		}
+		finally
+		{
+			window.Close();
+		}
+	});
+
 	[Fact]
 	public void HostBorderStyle_AppliesAfterEveryDocumentRebuild() => platform.Run(() =>
 	{
