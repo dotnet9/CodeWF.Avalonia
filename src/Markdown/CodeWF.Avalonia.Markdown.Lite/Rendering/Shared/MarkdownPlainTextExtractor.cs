@@ -18,10 +18,11 @@ public static class MarkdownPlainTextExtractor
 		}
 
 			var parts = new List<string>();
+			var stripTaskSeparator = false;
 			var child = container.FirstChild;
 			while (child is not null)
 			{
-				parts.Add(child switch
+				var text = child switch
 				{
 					LiteralInline literal => literal.Content.ToString(),
 					CodeInline code => code.Content,
@@ -36,7 +37,10 @@ public static class MarkdownPlainTextExtractor
 					_ => IsTypeNameFallback(child.ToString() ?? string.Empty, child.GetType())
 						? string.Empty
 						: MarkdownChemistry.ReplaceChemCommandsWithPlainText(child.ToString() ?? string.Empty)
-				});
+				};
+				if (stripTaskSeparator && child is LiteralInline) text = text.TrimStart();
+				stripTaskSeparator = child is TaskList;
+				parts.Add(text);
 				child = child.NextSibling;
 			}
 

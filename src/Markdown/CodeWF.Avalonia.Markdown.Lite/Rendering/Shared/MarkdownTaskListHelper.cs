@@ -47,6 +47,12 @@ public static class MarkdownTaskListHelper
 			stripped = text[3..];
 			return true;
 		}
+		// Markdig emits TaskList separately, leaving its separator in the next literal.
+		if (text.Length > 0 && char.IsWhiteSpace(text[0]))
+		{
+			stripped = text.TrimStart();
+			return true;
+		}
 
 		return false;
 	}

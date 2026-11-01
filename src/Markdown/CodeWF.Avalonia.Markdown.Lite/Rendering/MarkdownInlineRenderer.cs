@@ -196,7 +196,7 @@ internal sealed class MarkdownInlineRenderer(IMarkdownRenderContext context)
                 return result;
 
             case TaskList:
-                stripTaskPrefix = false;
+                stripTaskPrefix = true;
                 return result;
 
             case FootnoteLink footnoteLink:

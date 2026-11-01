@@ -9,6 +9,7 @@ using global::Avalonia.Controls.Templates;
 using global::Avalonia.Threading;
 using global::Avalonia.VisualTree;
 using global::Avalonia.LogicalTree;
+using Markdig;
 using Xunit;
 
 namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
@@ -35,10 +36,13 @@ public sealed class MarkdownSyntaxOptionsTests
 [Collection("AvaloniaPlatform")]
 public sealed class MarkdownSyntaxControlTests(AvaloniaPlatformFixture platform)
 {
-    [Fact]
-    public void TaskCheckboxReplacesBulletAndRetainsTaskText() => platform.Run(() =>
+    [Theory]
+    [InlineData("- [ ] Todo\n- [x] Done")]
+    [InlineData("- [ ]   Todo\n- [x]\tDone")]
+    [InlineData("- [ ] [Todo](https://example.com)\n- [x] **Done**")]
+    public void TaskCheckboxReplacesBulletAndRetainsTaskText(string markdown) => platform.Run(() =>
     {
-        var viewer = new MarkdownViewer { Markdown = "- [ ] Todo\n- [x] Done" };
+        var viewer = new MarkdownViewer { Markdown = markdown };
         viewer.Template = new FuncControlTemplate<MarkdownViewer>((_, scope) =>
         {
             var panel = new StackPanel(); scope.Register("PART_DocumentHost", panel); return panel;
@@ -51,6 +55,26 @@ public sealed class MarkdownSyntaxControlTests(AvaloniaPlatformFixture platform)
             Assert.DoesNotContain(viewer.GetVisualDescendants().OfType<SelectableTextBlock>(), text => text.Text == "•");
             Assert.Contains("Todo", viewer.GetRenderedText());
             Assert.Contains("Done", viewer.GetRenderedText());
+            var paragraphs = viewer.GetVisualDescendants().OfType<SelectableTextBlock>()
+                .Where(text => text.Classes.Contains("MdParagraph")).ToArray();
+            static string Text(Inline inline) => inline switch
+            {
+                Run run => run.Text ?? string.Empty,
+                Span span => string.Concat(span.Inlines.Select(Text)),
+                _ => string.Empty
+            };
+            Assert.Equal(new[] { "Todo", "Done" }, paragraphs.Select(text =>
+                string.Concat(text.Inlines!.Select(Text))));
+            Assert.Equal("- Todo" + Environment.NewLine + "- Done", viewer.GetRenderedText());
+            var document = Markdig.Markdown.Parse(markdown, new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
+            var paragraph = ((Markdig.Syntax.ListItemBlock)document.OfType<Markdig.Syntax.ListBlock>().Single().First()).OfType<Markdig.Syntax.ParagraphBlock>().Single();
+            Assert.Equal("Todo", CodeWF.Avalonia.Markdown.Shared.Rendering.MarkdownPlainTextExtractor.ExtractPlainText(paragraph.Inline));
+            if (markdown.Contains("https://", StringComparison.Ordinal))
+            {
+                var link = Assert.Single(CodeWF.Avalonia.Markdown.Rendering.MarkdownLinkInteraction.ExtractLinkSpans(paragraph.Inline, true));
+                Assert.Equal(0, link.Start);
+                Assert.Equal(4, link.End);
+            }
         }
         finally { window.Close(); }
     });

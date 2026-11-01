@@ -69,7 +69,7 @@ internal static class MarkdownLinkInteraction
                     plain.Append(Environment.NewLine);
                     break;
                 case TaskList:
-                    stripTaskPrefix = false;
+                    stripTaskPrefix = true;
                     break;
                 case LinkInline { IsImage: true } image:
                     stripTaskPrefix = false;

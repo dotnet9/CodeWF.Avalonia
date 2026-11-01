@@ -1,10 +1,8 @@
 using System.Text;
-using System.Text.RegularExpressions;
 
 using Markdig;
 using Markdig.Extensions.Footnotes;
 using Markdig.Extensions.Mathematics;
-using Markdig.Extensions.TaskLists;
 using Markdig.Extensions.Tables;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
@@ -227,49 +225,7 @@ public static class MarkdownParser
 	}
 
 	private static string ExtractPlainText(ContainerInline? container)
-	{
-		if (container is null)
-		{
-			return string.Empty;
-		}
-
-		var parts = new List<string>();
-		var child = container.FirstChild;
-		while (child is not null)
-		{
-			parts.Add(child switch
-			{
-				LiteralInline literal => literal.Content.ToString(),
-				CodeInline code => code.Content,
-				LineBreakInline => Environment.NewLine,
-				TaskList => string.Empty,
-				// 行内样式标签不占正文；<br> 视为换行（与 MarkdownPlainTextExtractor 保持一致）。
-				HtmlInline html when html.Tag is not null && Regex.IsMatch(html.Tag, @"^<br\s*/?>$", RegexOptions.IgnoreCase) => Environment.NewLine,
-				HtmlInline html when html.Tag is not null && (html.Tag.Equals("</span>", StringComparison.OrdinalIgnoreCase)
-					|| (html.Tag.StartsWith("<span", StringComparison.OrdinalIgnoreCase) && html.Tag.EndsWith('>'))) => string.Empty,
-				LinkInline { IsImage: true } image => ExtractImageText(image),
-				ContainerInline nested => ExtractPlainText(nested),
-				_ when MarkdownChemistry.TryGetChemInlinePlainText(child, out var chemText) => chemText,
-				_ => IsTypeNameFallback(child.ToString() ?? string.Empty, child.GetType())
-					? string.Empty
-					: MarkdownChemistry.ReplaceChemCommandsWithPlainText(child.ToString() ?? string.Empty)
-			});
-			child = child.NextSibling;
-		}
-
-		return string.Concat(parts);
-	}
-
-	private static string ExtractImageText(LinkInline image)
-	{
-		var altText = ExtractPlainText((ContainerInline)image);
-		if (!string.IsNullOrWhiteSpace(altText))
-		{
-			return altText;
-		}
-
-		return string.IsNullOrWhiteSpace(image.Url) ? "[image]" : image.Url!;
-	}
+		=> MarkdownPlainTextExtractor.ExtractPlainText(container);
 
 	private static bool TryStripTaskPrefix(string text, out string stripped)
 	{
