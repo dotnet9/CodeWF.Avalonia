@@ -27,13 +27,23 @@ internal class MarkdownSelectableTextBlock : global::Avalonia.Controls.Selectabl
         var length = Math.Max(selectionStart, selectionEnd) - start;
         var textRuns = _textRuns;
 
+        // Inline spans may carry a larger font size than the paragraph control.
+        // Avalonia's default SelectableTextBlock layout keeps the control's
+        // LineHeight for every run, which clips the larger run and can overlap
+        // the next line.  Derive a safe line box from the actual run metrics;
+        // the paragraph's configured line height remains the minimum so normal
+        // text keeps the approved typography rhythm.
+        var maxRunFontSize = textRuns is null
+            ? FontSize
+            : textRuns.Select(run => run.Properties?.FontRenderingEmSize ?? FontSize).DefaultIfEmpty(FontSize).Max();
+        var effectiveLineHeight = Math.Max(LineHeight, maxRunFontSize * 1.2);
+
         // LineSpacing 的段落属性设置器是 Avalonia 内部 API，子类无法复制；
         // 未设置时（默认 0）两种构造完全等价，设置了则回退基类行为。
         var lineSpacing = GetValue(LineSpacingProperty);
-        if (length <= 0
-            || SelectionForegroundBrush is null
-            || textRuns is null
-            || Math.Abs(lineSpacing) > 0.0001)
+        if (textRuns is null
+            || Math.Abs(lineSpacing) > 0.0001
+            || (length <= 0 && maxRunFontSize <= FontSize + 0.01))
         {
             return base.CreateTextLayout(text);
         }
@@ -47,13 +57,15 @@ internal class MarkdownSelectableTextBlock : global::Avalonia.Controls.Selectabl
             fontFeatures: FontFeatures);
         var paragraphProperties = new GenericTextParagraphProperties(
             FlowDirection, TextAlignment, true, false,
-            defaultProperties, TextWrapping, LineHeight, 0, LetterSpacing);
+            defaultProperties, TextWrapping, effectiveLineHeight, 0, LetterSpacing);
 
-        var textStyleOverrides = BuildSelectionOverrides(
-            textRuns, start, length, SelectionForegroundBrush,
-            typeface, FontSize, FontFeatures);
+        var textStyleOverrides = length > 0 && SelectionForegroundBrush is not null
+            ? BuildSelectionOverrides(
+                textRuns, start, length, SelectionForegroundBrush,
+                typeface, FontSize, FontFeatures)
+            : null;
 
-        if (textStyleOverrides is null)
+        if (length > 0 && textStyleOverrides is null)
         {
             return base.CreateTextLayout(text);
         }
