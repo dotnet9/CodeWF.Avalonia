@@ -378,6 +378,37 @@ internal sealed class MarkdownBlockView : UserControl
         text.SelectionEnd = _isCode || Model.Kind == MarkdownBlockKind.Raw ? end : MarkdownTextRunParser.GetTextOffset(ModelText, end);
     }
 
+    internal Point? GetTextPosition(int offset)
+    {
+        Visual? text;
+        global::Avalonia.Media.TextFormatting.TextLayout? layout;
+        int textLength;
+        int visibleOffset;
+        if (_editing)
+        {
+            if (_editor.GetVisualDescendants().OfType<TextPresenter>().FirstOrDefault() is not { } presenter) return null;
+            text = presenter;
+            layout = presenter.TextLayout;
+            textLength = _editor.Text?.Length ?? 0;
+            visibleOffset = offset;
+        }
+        else
+        {
+            var previewText = _preview?.GetVisualDescendants().OfType<SelectableTextBlock>()
+                .FirstOrDefault(block => !_isCode || block.Classes.Contains("MdCodeBlockText"));
+            if (previewText is null) return null;
+            text = previewText;
+            layout = previewText.TextLayout;
+            textLength = previewText.Text?.Length ?? 0;
+            visibleOffset = _isCode || Model.Kind == MarkdownBlockKind.Raw
+                ? offset
+                : MarkdownTextRunParser.GetTextOffset(ModelText, offset);
+        }
+
+        var position = layout.HitTestTextPosition(Math.Clamp(visibleOffset, 0, textLength));
+        return text.TranslatePoint(new Point(position.X, position.Bottom), this);
+    }
+
     private void OnPointerMoved(object? sender, PointerEventArgs e)
     {
         if (_selectionPointer != e.Pointer || !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) return;

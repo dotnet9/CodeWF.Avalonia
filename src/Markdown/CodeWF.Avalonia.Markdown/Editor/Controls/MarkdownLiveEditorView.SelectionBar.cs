@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Primitives.PopupPositioning;
 using Avalonia.Layout;
 using Avalonia.Media;
 
@@ -30,14 +31,25 @@ public partial class MarkdownLiveEditorView
             _selectionBarPopup = new Popup
             {
                 PlacementTarget = this,
-                Placement = PlacementMode.BottomEdgeAlignedLeft,
+                // The anchor is inside the editor, so use the popup's explicit anchor
+                // rectangle instead of offsetting from the editor's bottom edge.  The
+                // old BottomEdgeAlignedLeft placement added the editor height twice and
+                // could put the selection bar outside the window near the bottom.
+                Placement = PlacementMode.AnchorAndGravity,
+                PlacementAnchor = PopupAnchor.BottomLeft,
+                PlacementGravity = PopupGravity.TopLeft,
+                PlacementConstraintAdjustment = PopupPositionerConstraintAdjustment.SlideX
+                    | PopupPositionerConstraintAdjustment.SlideY
+                    | PopupPositionerConstraintAdjustment.FlipY,
 
             };
             _selectionBarPopup.Child = BuildSelectionBar();
         }
 
-        _selectionBarPopup.HorizontalOffset = Math.Clamp(_selectionBarAnchor.X - 40, 4, Math.Max(4, Bounds.Width - 460));
-        _selectionBarPopup.VerticalOffset = Math.Max(4, _selectionBarAnchor.Y - 96);
+        var anchor = new Rect(_selectionBarAnchor.X, _selectionBarAnchor.Y, 1, 1);
+        _selectionBarPopup.PlacementRect = anchor;
+        _selectionBarPopup.HorizontalOffset = -40;
+        _selectionBarPopup.VerticalOffset = -8;
         CloseSelectionBarRows();
         _selectionBarPopup.IsOpen = true;
     }

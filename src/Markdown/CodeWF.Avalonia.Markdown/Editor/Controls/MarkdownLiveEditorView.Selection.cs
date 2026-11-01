@@ -26,8 +26,8 @@ public partial class MarkdownLiveEditorView
         AddHandler(PointerReleasedEvent, (_, e) =>
         {
             if (_documentPointer != e.Pointer) return;
-            _selectionBarAnchor = e.GetPosition(this);
             _documentPointer = null; e.Pointer.Capture(null); e.Handled = true;
+            UpdateDocumentSelection();
         }, RoutingStrategies.Tunnel);
         PointerCaptureLost += (_, _) => _documentPointer = null;
         AddHandler(TextInputEvent, (_, e) =>
@@ -116,7 +116,15 @@ public partial class MarkdownLiveEditorView
         var sameBlock = start.Block == end.Block;
         var hasText = !sameBlock || (start.Block >= 0 && start.Block < _blockViews.Count
             && FindActiveEditor(_blockViews[start.Block]) is { } box && box.SelectionStart != box.SelectionEnd);
-        if (!sameBlock || hasText) ShowSelectionBar();
+        if (!sameBlock || hasText)
+        {
+            if (RealizedTextBlocks.FirstOrDefault(view => _models.IndexOf(view.Model) == _selectionEnd.Block) is { } endpoint
+                && endpoint.GetTextPosition(_selectionEnd.Offset) is { } anchor
+                && endpoint.TranslatePoint(anchor, this) is { } editorAnchor)
+                _selectionBarAnchor = editorAnchor;
+            if (_documentPointer is null) ShowSelectionBar();
+            else HideSelectionBar();
+        }
         else HideSelectionBar();
     }
 
