@@ -47,23 +47,62 @@ internal sealed class HeadingRenderer : IMarkdownBlockRenderer
 
         if (context is MarkdownViewer viewer && ArticleTypographyResolver.Find(viewer.TypographyTheme) is { } article)
         {
-        var prefix = "CodeWFMarkdownHeading" + heading.Level;
-        border.Bind(Layoutable.MarginProperty, border.GetResourceObservable(prefix + "Margin"), BindingPriority.Style);
-        border.Bind(Border.BorderThicknessProperty, border.GetResourceObservable(prefix + "BorderThickness"));
-        border.Bind(Border.PaddingProperty, border.GetResourceObservable(prefix + "Padding"));
-        border.Bind(Border.CornerRadiusProperty, border.GetResourceObservable(prefix + "CornerRadius"));
-        border.Bind(Border.BackgroundProperty, border.GetResourceObservable(prefix + "Background"));
-        border.Bind(Border.BorderBrushProperty, border.GetResourceObservable(prefix + "BorderBrush"));
-        textBlock.Bind(SelectableTextBlock.ForegroundProperty, textBlock.GetResourceObservable(prefix + "Foreground"));
-        textBlock.Bind(SelectableTextBlock.FontWeightProperty, textBlock.GetResourceObservable(prefix + "FontWeight"));
-        textBlock.Bind(SelectableTextBlock.TextAlignmentProperty, textBlock.GetResourceObservable(prefix + "TextAlignment"));
-        textBlock.Bind(SelectableTextBlock.LineHeightProperty, textBlock.GetResourceObservable(prefix + "LineHeight"));
-        var font = article.Headings[heading.Level - 1].Font == "system" ? article.Font : article.Headings[heading.Level - 1].Font;
-        if (font != "system") textBlock.FontFamily = ArticleTypography.ResolveFont(font);
+            var prefix = "CodeWFMarkdownHeading" + heading.Level;
+            border.Bind(Layoutable.MarginProperty, border.GetResourceObservable(prefix + "Margin"), BindingPriority.Style);
+            border.Bind(Border.BorderThicknessProperty, border.GetResourceObservable(prefix + "BorderThickness"));
+            border.Bind(Border.PaddingProperty, border.GetResourceObservable(prefix + "Padding"));
+            border.Bind(Border.CornerRadiusProperty, border.GetResourceObservable(prefix + "CornerRadius"));
+            border.Bind(Border.BackgroundProperty, border.GetResourceObservable(prefix + "Background"));
+            if (!article.Headings[heading.Level - 1].DashedBorder)
+                border.Bind(Border.BorderBrushProperty, border.GetResourceObservable(prefix + "BorderBrush"));
+            textBlock.Bind(SelectableTextBlock.ForegroundProperty, textBlock.GetResourceObservable(prefix + "Foreground"));
+            textBlock.Bind(SelectableTextBlock.FontWeightProperty, textBlock.GetResourceObservable(prefix + "FontWeight"));
+            textBlock.Bind(SelectableTextBlock.TextAlignmentProperty, textBlock.GetResourceObservable(prefix + "TextAlignment"));
+            textBlock.Bind(SelectableTextBlock.LineHeightProperty, textBlock.GetResourceObservable(prefix + "LineHeight"));
+            var font = article.Headings[heading.Level - 1].Font == "system" ? article.Font : article.Headings[heading.Level - 1].Font;
+            if (font != "system") textBlock.FontFamily = ArticleTypography.ResolveFont(font);
+            if (article.Headings[heading.Level - 1].DashedBorder)
+            {
+                var decoration = new DashedHeadingDecoration { IsHitTestVisible = false };
+                decoration.Bind(Layoutable.MarginProperty, border.GetObservable(Layoutable.MarginProperty));
+                decoration.Bind(DashedHeadingDecoration.StrokeProperty, border.GetResourceObservable(prefix + "BorderBrush"));
+                decoration.Bind(DashedHeadingDecoration.ThicknessProperty, border.GetResourceObservable(prefix + "BorderThickness"));
+                border.BorderBrush = Brushes.Transparent;
+                border.Child = textBlock;
+                return new Panel { Children = { border, decoration } };
+            }
         }
 
         border.Child = textBlock;
         return border;
+    }
+
+    private sealed class DashedHeadingDecoration : Control
+    {
+        public static readonly StyledProperty<IBrush?> StrokeProperty =
+            AvaloniaProperty.Register<DashedHeadingDecoration, IBrush?>("Stroke");
+        public static readonly StyledProperty<Thickness> ThicknessProperty =
+            AvaloniaProperty.Register<DashedHeadingDecoration, Thickness>("Thickness");
+
+        private static readonly IDashStyle HeadingDash = new DashStyle(new double[] { 3, 2 }, 0);
+
+        static DashedHeadingDecoration() => AffectsRender<DashedHeadingDecoration>(StrokeProperty, ThicknessProperty);
+
+        public override void Render(DrawingContext context)
+        {
+            var border = GetValue(ThicknessProperty);
+            var size = Bounds.Size;
+            DrawSide(border.Left, new Point(border.Left / 2, 0), new Point(border.Left / 2, size.Height));
+            DrawSide(border.Top, new Point(0, border.Top / 2), new Point(size.Width, border.Top / 2));
+            DrawSide(border.Right, new Point(size.Width - border.Right / 2, 0), new Point(size.Width - border.Right / 2, size.Height));
+            DrawSide(border.Bottom, new Point(0, size.Height - border.Bottom / 2), new Point(size.Width, size.Height - border.Bottom / 2));
+
+            void DrawSide(double thickness, Point start, Point end)
+            {
+                if (thickness > 0 && GetValue(StrokeProperty) is { } brush)
+                    context.DrawLine(new Pen(brush, thickness, HeadingDash), start, end);
+            }
+        }
     }
 
     private static StyledProperty<double> GetHeadingFontSizeProperty(int level)

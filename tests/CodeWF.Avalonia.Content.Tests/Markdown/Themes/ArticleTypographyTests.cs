@@ -6,12 +6,73 @@ using CodeWF.Avalonia.Markdown;
 using CodeWF.Avalonia.Markdown.Themes;
 using Xunit;
 using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
+using CodeWF.Avalonia.Markdown.Controls;
+using Avalonia.Media.Imaging;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
+using System.Runtime.InteropServices;
 
 namespace CodeWF.Avalonia.Content.Tests.Markdown.Themes;
 
 [Collection("AvaloniaPlatform")]
 public sealed class ArticleTypographyTests(AvaloniaPlatformFixture platform)
 {
+    [Theory]
+    [InlineData(false, MarkdownTypographySizes.Normal)]
+    [InlineData(true, MarkdownTypographySizes.Normal)]
+    [InlineData(false, MarkdownTypographySizes.Compact)]
+    [InlineData(true, MarkdownTypographySizes.Compact)]
+    public void RenderedHeadingKeepsDashedBorderAndCanReturnToSolid(bool dark, string size) => platform.Run(() =>
+    {
+        var viewer = new MarkdownViewer { Markdown = "## Heading", TypographySize = size };
+        viewer.Template = new global::Avalonia.Controls.Templates.FuncControlTemplate<MarkdownViewer>((_, scope) =>
+        {
+            var panel = new StackPanel();
+            scope.Register("PART_DocumentHost", panel);
+            return panel;
+        });
+        var window = new Window
+        {
+            Content = viewer, Width = 300, Height = 200,
+            RequestedThemeVariant = dark ? ThemeVariant.Dark : ThemeVariant.Light
+        };
+        window.Styles.Add(new MarkdownThemes());
+        window.Show();
+        try
+        {
+            foreach (var theme in new[] { "GeekBlack", "Basic", "GeekBlack" })
+            {
+                viewer.TypographyTheme = theme;
+                viewer.Rerender();
+                Dispatcher.UIThread.RunJobs();
+                window.UpdateLayout();
+                var heading = viewer.GetVisualDescendants().OfType<Border>()
+                    .Single(border => border.Classes.Contains(MarkdownStyleKeys.Heading2Border));
+                Assert.IsAssignableFrom<SelectableTextBlock>(heading.Child);
+                var expectedStroke = Thickness.Parse(ArticleTypographyCatalog.Find(theme)!.Headings[1].Border).Bottom
+                    * (size == MarkdownTypographySizes.Compact ? .87 : 1);
+                Assert.Equal(expectedStroke, heading.BorderThickness.Bottom, 4);
+                // 检查真实绘制的下边框：虚线有透明间隙，切回普通主题必须恢复实线。
+                var paintedHeading = theme == "GeekBlack" ? (Control)heading.Parent! : heading;
+                paintedHeading.Margin = default;
+                heading.Margin = default;
+                paintedHeading.Measure(new Size(240, 80));
+                paintedHeading.Arrange(new Rect(0, 0, 240, 80));
+                using var bitmap = new RenderTargetBitmap(new PixelSize(240, 80), new Vector(96, 96));
+                bitmap.Render(paintedHeading);
+                var pixels = new byte[240 * 80 * 4];
+                var handle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
+                try { bitmap.CopyPixels(new PixelRect(0, 0, 240, 80), handle.AddrOfPinnedObject(), pixels.Length, 240 * 4); }
+                finally { handle.Free(); }
+                var painted = Enumerable.Range(0, 240).Count(x => pixels[(79 * 240 + x) * 4 + 3] > 128);
+                if (theme == "GeekBlack") Assert.InRange(painted, 80, 200);
+                else Assert.Equal(240, painted);
+                Assert.Contains("Heading", viewer.GetRenderedText());
+            }
+        }
+        finally { window.Close(); }
+    });
+
     [Fact]
     public void NativeSpacingPreservesTheDocumentRules()
     {
