@@ -83,6 +83,32 @@ public partial class MarkdownLiveEditorView : UserControl
         AvaloniaProperty.Register<MarkdownLiveEditorView, Thickness>(nameof(DocumentPadding), new Thickness(32, 20, 32, 48));
     public Thickness DocumentPadding { get => GetValue(DocumentPaddingProperty); set => SetValue(DocumentPaddingProperty, value); }
 
+    /// <summary>最近一次上下文请求命中块的源码行；可绑定到宿主菜单 ViewModel。</summary>
+    public static readonly DirectProperty<MarkdownLiveEditorView, int> ContextSourceLineProperty =
+        AvaloniaProperty.RegisterDirect<MarkdownLiveEditorView, int>(nameof(ContextSourceLine), editor => editor.ContextSourceLine);
+    private int _contextSourceLine = 1;
+    public int ContextSourceLine
+    {
+        get => _contextSourceLine;
+        private set => SetAndRaise(ContextSourceLineProperty, ref _contextSourceLine, value);
+    }
+
+    private void UpdateContextSourceLine(Point position)
+    {
+        ContextSourceLine = 1;
+        for (var i = 0; i < _blockViews.Count; i++)
+        {
+            var block = _blockViews[i];
+            if (!block.IsEffectivelyVisible || block.Bounds.Width <= 0 || block.Bounds.Height <= 0
+                || block.TranslatePoint(default, this) is not { } origin) continue;
+            if (new Rect(origin, block.Bounds.Size).Contains(position))
+            {
+                ContextSourceLine = Math.Max(1, _models[i].SourceLine);
+                return;
+            }
+        }
+    }
+
     /// <summary>按当前文档源码行定位块，不改写内容；可选择仅滚动或进入编辑。</summary>
     public void NavigateToSourceLine(int line, bool beginEdit = false)
     {
@@ -316,6 +342,7 @@ public partial class MarkdownLiveEditorView : UserControl
     /// <summary>同时载入正文和图片基址，只重建一次文档；不触发 <see cref="MarkdownChanged"/>。</summary>
     public void SetText(string? markdown, string? imageBasePath)
     {
+        ContextSourceLine = 1;
         _suppressChanged = true;
         try
         {

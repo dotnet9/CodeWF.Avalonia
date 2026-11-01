@@ -1,4 +1,6 @@
 using CodeWF.Avalonia.Markdown;
+using global::Avalonia.Headless;
+using global::Avalonia.Input.Raw;
 using CodeWF.Avalonia.Markdown.Editor.Controls;
 using CodeWF.Avalonia.Markdown.Editor.Services;
 using CodeWF.Avalonia.Markdown.Themes;
@@ -26,6 +28,47 @@ public sealed class MarkdownLiveEditorViewTests
     private readonly AvaloniaPlatformFixture _platform;
 
     public MarkdownLiveEditorViewTests(AvaloniaPlatformFixture platform) => _platform = platform;
+
+    [Fact]
+    public void ContextSourceLineBindsActualPointerAndKeyboardTargetsWithoutChangingText() => _platform.Run(() =>
+    {
+        const string markdown = "# Heading\n\nFirst paragraph\n\n## Second\n\nSecond paragraph";
+        var view = new MarkdownLiveEditorView { HeaderText = null, ChipText = null, DocumentPadding = new Thickness(20) };
+        var target = new ContextTarget();
+        using var binding = view.Bind(MarkdownLiveEditorView.ContextSourceLineProperty,
+            new global::Avalonia.Data.Binding(nameof(ContextTarget.Line))
+            { Source = target, Mode = global::Avalonia.Data.BindingMode.OneWayToSource });
+        view.SetText(markdown);
+        var window = new Window { Width = 640, Height = 420 };
+        window.Styles.Add(new global::Semi.Avalonia.SemiTheme());
+        window.Styles.Add(new global::CodeWF.Avalonia.Markdown.Themes.MarkdownFullThemes());
+        window.Content = view;
+        window.Show();
+        try
+        {
+            Dispatcher.UIThread.RunJobs(); window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
+            var block = view.GetVisualDescendants().OfType<MarkdownBlockView>().Single(item => item.Model.SourceLine == 5);
+            var point = block.TranslatePoint(new Point(10, block.Bounds.Height / 2), window)!.Value;
+            Console.WriteLine($"CONTEXT POINT {point} block={block.Bounds} view={view.Bounds} hit={window.InputHitTest(point)}");
+            window.MouseMove(point); window.MouseDown(point, MouseButton.Right); window.MouseUp(point, MouseButton.Right);
+            Dispatcher.UIThread.RunJobs();
+            Assert.Equal(5, view.ContextSourceLine);
+            Assert.Equal(5, target.Line);
+            Assert.Equal(markdown, view.Text);
+            Assert.Equal(-1, view.ActiveBlockIndex);
+            var paddingPoint = view.TranslatePoint(new Point(2, 2), window)!.Value;
+            window.MouseMove(paddingPoint); window.MouseDown(paddingPoint, MouseButton.Right); window.MouseUp(paddingPoint, MouseButton.Right);
+            Assert.Equal(1, target.Line);
+            view.FocusBlock(3);
+            window.KeyPress(Key.F10, RawInputModifiers.Shift, PhysicalKey.F10, null);
+            Assert.Equal(7, target.Line);
+            view.SetText("# Other document");
+            Assert.Equal(1, target.Line);
+        }
+        finally { window.Close(); }
+    });
+
+    private sealed class ContextTarget { public int Line { get; set; } }
 
     [Theory]
     [InlineData(MarkdownEditorAction.Strikethrough, "~~")]
