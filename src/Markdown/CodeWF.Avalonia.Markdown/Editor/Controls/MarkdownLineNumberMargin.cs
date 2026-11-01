@@ -62,10 +62,18 @@ public sealed class MarkdownLineNumberMargin : AbstractMargin
                 isCurrent ? CurrentTypeface : NormalTypeface, FontSize,
                 isCurrent ? CurrentLineBrush ?? LineNumbersBrush ?? Brushes.Gray
                           : LineNumbersBrush ?? Brushes.Gray);
-            context.DrawText(formatted, new Point(
-                Bounds.Width - RightPadding - formatted.Width,
-                visualLine.VisualTop - textView.VerticalOffset));
+            context.DrawText(formatted, GetTextOrigin(visualLine, formatted));
         }
+    }
+
+    internal Point GetTextOrigin(VisualLine visualLine, FormattedText formatted)
+    {
+        var firstLine = visualLine.TextLines[0];
+        // 行号与正文可以不同字号；按首个折行的基线对齐，不能直接共用行顶。
+        var baseline = visualLine.GetTextLineVisualYPosition(firstLine, VisualYPosition.Baseline);
+        return new Point(
+            Bounds.Width - RightPadding - formatted.Width,
+            baseline - TextView.VerticalOffset - formatted.Baseline);
     }
 
     protected override void OnTextViewChanged(TextView oldTextView, TextView newTextView)
