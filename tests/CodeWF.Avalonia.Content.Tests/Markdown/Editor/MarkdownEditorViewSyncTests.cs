@@ -2,6 +2,7 @@ using CodeWF.Avalonia.Markdown;
 using CodeWF.Avalonia.Markdown.Editor.Controls;
 using CodeWF.Avalonia.Markdown.Editor.Services;
 
+using Avalonia;
 using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 using global::Avalonia.Controls;
 using global::Avalonia.Controls.Primitives;
@@ -51,6 +52,28 @@ public sealed class MarkdownEditorViewSyncTests
             }
         }
         finally { window.Close(); }
+    });
+
+    [Fact]
+    public void EditorTextViewMarginIsConfigurableAndSurvivesThemeChanges() => _platform.Run(() =>
+    {
+        var window = new Window { Width = 480, Height = 320 };
+        var editor = new MarkdownEditorView { EditorTextViewMargin = new Thickness(1, 0, 0, 0) };
+        window.Content = editor;
+        window.Show();
+        try
+        {
+            foreach (var theme in new[] { ThemeVariant.Light, new ThemeVariant("StudioDark", ThemeVariant.Dark) })
+            {
+                window.RequestedThemeVariant = theme;
+                Dispatcher.UIThread.RunJobs();
+                Assert.Equal(new Thickness(1, 0, 0, 0), editor.Editor.TextArea.TextView.Margin);
+            }
+        }
+        finally { window.Close(); }
+
+        var defaultEditor = new MarkdownEditorView();
+        Assert.Equal(new Thickness(6, 0, 0, 0), defaultEditor.Editor.TextArea.TextView.Margin);
     });
 
     [Fact]

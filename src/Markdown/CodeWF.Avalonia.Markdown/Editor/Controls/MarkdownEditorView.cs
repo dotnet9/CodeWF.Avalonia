@@ -68,6 +68,8 @@ public class MarkdownEditorView : UserControl
         {
             if (view._container is not null) view._container.Padding = view.EditorPadding;
         });
+        EditorTextViewMarginProperty.Changed.AddClassHandler<MarkdownEditorView>((view, _) =>
+            view._editor.TextArea.TextView.Margin = view.EditorTextViewMargin);
         EditorLineHeightProperty.Changed.AddClassHandler<MarkdownEditorView>((view, _) => view.UpdateEditorLineHeight());
         HighlightCurrentLineProperty.Changed.AddClassHandler<MarkdownEditorView>((view, _) => view.ApplyThemedVisuals());
         LineNumberBrushKeyProperty.Changed.AddClassHandler<MarkdownEditorView>((view, _) => view.ApplyThemedVisuals());
@@ -166,6 +168,16 @@ public class MarkdownEditorView : UserControl
     {
         get => GetValue(EditorPaddingProperty);
         set => SetValue(EditorPaddingProperty, value);
+    }
+
+    /// <summary>源码正文相对行号槽的边距。</summary>
+    public static readonly StyledProperty<Thickness> EditorTextViewMarginProperty =
+        AvaloniaProperty.Register<MarkdownEditorView, Thickness>(nameof(EditorTextViewMargin), new Thickness(6, 0, 0, 0));
+
+    public Thickness EditorTextViewMargin
+    {
+        get => GetValue(EditorTextViewMarginProperty);
+        set => SetValue(EditorTextViewMarginProperty, value);
     }
 
     /// <summary>源码行高（设备无关像素）；NaN 使用 AvaloniaEdit 默认行距，不改变字号。</summary>
@@ -664,7 +676,7 @@ public class MarkdownEditorView : UserControl
     private void ApplyThemedVisuals()
     {
         _editor.Options.HighlightCurrentLine = HighlightCurrentLine;
-        _editor.TextArea.TextView.Margin = new Thickness(6, 0, 0, 0);
+        _editor.TextArea.TextView.Margin = EditorTextViewMargin;
 
         var background = ResolveBrush(EditorBackgroundKey);
         _container.Background = background;
