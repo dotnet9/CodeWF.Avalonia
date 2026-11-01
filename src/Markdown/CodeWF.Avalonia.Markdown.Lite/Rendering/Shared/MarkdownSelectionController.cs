@@ -207,12 +207,14 @@ internal sealed class MarkdownSelectionController
 	private int HitTestOffset(MarkdownSelectionBlock block, Point point)
 	{
 		var projected = TextSegments(block).ToArray();
+		// 图表、图片等非文字块没有可投影的字形，端点沿用块模型的首尾。
+		if (projected.Length == 0)
+			return point.Y < GetDocumentBounds(block.Control).Center.Y ? 0 : block.PlainText.Length;
 		var nearest = projected.MinBy(item =>
 		{
 			var bounds = GetDocumentBounds(item.Text);
 			return point.Y < bounds.Top ? bounds.Top - point.Y : point.Y > bounds.Bottom ? point.Y - bounds.Bottom : 0;
 		});
-		if (nearest.Text is null) return point.Y < GetDocumentBounds(block.Control).Center.Y ? 0 : block.PlainText.Length;
 		var local = _coordinateRoot?.TranslatePoint(point, nearest.Text) ?? point - GetDocumentBounds(nearest.Text).Position;
 		if (local.Y < 0) return nearest.Start;
 		if (local.Y > nearest.Text.Bounds.Height) return nearest.Start + nearest.Length;
