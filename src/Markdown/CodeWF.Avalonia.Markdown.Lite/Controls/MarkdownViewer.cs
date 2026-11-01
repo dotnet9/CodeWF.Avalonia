@@ -1049,6 +1049,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         {
             AddBlockControl(renderedBlock.Control);
             _renderedBlocks.Add(renderedBlock);
+            ApplyBlockStyleContext(renderedBlock.Control, _renderedBlocks.Count - 1, _renderedModel);
         }
 
         RefreshSelectionBlocks(preserveSelection: sameDocument);
@@ -1173,6 +1174,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         for (var i = 0; i < _renderedBlocks.Count && i < newModel.Blocks.Count; i++)
         {
             _renderedBlocks[i] = _renderedBlocks[i].WithModel(newModel.Blocks[i]);
+            ApplyBlockStyleContext(_renderedBlocks[i].Control, i, newModel);
         }
 
         // 控件实例未变：保留块级选中的块集合与块内的文本选区。
@@ -1180,6 +1182,21 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         InvalidateDocumentLayout();
         ReapplySearchIfActive();
         return true;
+    }
+
+    /// <summary>结构上下文属于模型相邻关系；增量复用的旧控件也必须同步。</summary>
+    private static void ApplyBlockStyleContext(Control control, int index, MarkdownDocumentModel model)
+    {
+        var beforeHeading = index + 1 < model.Blocks.Count
+            && model.Blocks[index + 1].SyntaxBlock is HeadingBlock { Level: <= 4 };
+        var afterQuote = index > 0 && model.Blocks[index - 1].SyntaxBlock is QuoteBlock;
+        control.Classes.Set("MdBeforeHeading", beforeHeading);
+        control.Classes.Set("MdAfterQuote", afterQuote);
+        if (control is DeferredMarkdownBlock { Child: { } child })
+        {
+            child.Classes.Set("MdBeforeHeading", beforeHeading);
+            child.Classes.Set("MdAfterQuote", afterQuote);
+        }
     }
 
     private IReadOnlyList<RenderedBlock> CreateRenderedBlocks(IEnumerable<MarkdownDocumentBlock> modelBlocks, string markdown, int? documentBlockCount = null)
@@ -1234,6 +1251,8 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
             if (Child is null && !_disposed)
             {
                 var content = create(); _bindings = content.Bindings; Child = content.Control;
+                Child.Classes.Set("MdBeforeHeading", Classes.Contains("MdBeforeHeading"));
+                Child.Classes.Set("MdAfterQuote", Classes.Contains("MdAfterQuote"));
             }
             return base.MeasureOverride(availableSize);
         }
@@ -1309,6 +1328,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         for (var i = 0; i < _renderedBlocks.Count && i < newModel.Blocks.Count; i++)
         {
             _renderedBlocks[i] = _renderedBlocks[i].WithModel(newModel.Blocks[i]);
+            ApplyBlockStyleContext(_renderedBlocks[i].Control, i, newModel);
         }
 
         // 选区按块键重新定位：只有被选中的块本身消失时才落空。

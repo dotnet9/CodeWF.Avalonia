@@ -64,6 +64,37 @@ public sealed class MarkdownViewerVirtualizationTests(AvaloniaPlatformFixture pl
     });
 
     [Fact]
+    public void BeforeHeadingContextReachesDeferredContentAfterReuseAndRecycling() => platform.Run(() =>
+    {
+        var source = "> Quote\n\n## Heading\n\n" + string.Join("\n\n", Enumerable.Range(0, 220).Select(i => $"Paragraph {i}"));
+        var (window, viewer, panel, scroll) = CreateViewer(source);
+        try
+        {
+            void CheckContext(bool expected)
+            {
+                var deferred = Assert.IsAssignableFrom<Decorator>(panel.GetRealizedItem(0));
+                Assert.Equal(expected, deferred.Classes.Contains("MdBeforeHeading"));
+                Assert.NotNull(deferred.Child);
+                Assert.Equal(expected, deferred.Child.Classes.Contains("MdBeforeHeading"));
+                var heading = Assert.IsAssignableFrom<Decorator>(panel.GetRealizedItem(1));
+                Assert.Contains("MdAfterQuote", heading.Classes);
+                Assert.NotNull(heading.Child);
+                Assert.Contains("MdAfterQuote", heading.Child.Classes);
+            }
+            CheckContext(true);
+            var changed = source.Replace("## Heading", "##### Heading");
+            viewer.Markdown = changed; WaitForRender(viewer, changed);
+            CheckContext(false);
+            viewer.Markdown = source; WaitForRender(viewer, source);
+            CheckContext(true);
+            ScrollToBottom(panel, scroll);
+            scroll.Offset = default; Dispatcher.UIThread.RunJobs();
+            CheckContext(true);
+        }
+        finally { window.Close(); }
+    });
+
+    [Fact]
     public void SwitchingFromShortSectionToLargeDocumentDefersOffscreenContent() => platform.Run(() =>
     {
         var created = 0;

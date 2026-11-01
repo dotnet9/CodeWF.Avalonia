@@ -63,6 +63,63 @@ public sealed class MarkdownViewerDocumentSwitchTests(AvaloniaPlatformFixture pl
         }
     });
 
+    [Fact]
+    public void BeforeHeadingContextUpdatesOnReusedBlocksAndFullRerenders() => platform.Run(() =>
+    {
+        const string source = "> Quote\n\n## Heading\n\nFollowing paragraph";
+        var (window, viewer, host) = CreateViewer(source);
+        try
+        {
+            SwitchDocument(viewer, source);
+            var quote = host.Children[0];
+            Assert.Contains("MdBeforeHeading", quote.Classes);
+            foreach (var prefix in new[] { "#####", "####", "######", "#" })
+            {
+                var changed = source.Replace("## Heading", prefix + " Heading");
+                SwitchDocument(viewer, changed);
+                Assert.Equal(MarkdownRenderMode.Incremental, viewer.LastRenderMode);
+                Assert.Same(quote, host.Children[0]);
+                Assert.Equal(prefix.Length <= 4, quote.Classes.Contains("MdBeforeHeading"));
+            }
+            viewer.CodeBlockWrap = !viewer.CodeBlockWrap;
+            Dispatcher.UIThread.RunJobs();
+            Assert.Contains("MdBeforeHeading", host.Children[0].Classes);
+            SwitchDocument(viewer, "> Quote\n\nOrdinary paragraph");
+            Assert.DoesNotContain("MdBeforeHeading", host.Children[0].Classes);
+        }
+        finally { window.Close(); }
+    });
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    public void AfterQuoteContextUpdatesWhenThePreviousBlockChanges(int level) => platform.Run(() =>
+    {
+        var source = $"> Quote\n\n{new string('#', level)} Heading\n\nFollowing paragraph";
+        var (window, viewer, host) = CreateViewer(source);
+        try
+        {
+            SwitchDocument(viewer, source);
+            var heading = host.Children[1];
+            Assert.Contains("MdAfterQuote", heading.Classes);
+            foreach (var preceding in new[] { "Paragraph", "> Quote", "Paragraph" })
+            {
+                SwitchDocument(viewer, source.Replace("> Quote", preceding));
+                Assert.Equal(MarkdownRenderMode.Incremental, viewer.LastRenderMode);
+                Assert.Same(heading, host.Children[1]);
+                Assert.Equal(preceding.StartsWith('>'), heading.Classes.Contains("MdAfterQuote"));
+            }
+            viewer.CodeBlockWrap = !viewer.CodeBlockWrap;
+            Dispatcher.UIThread.RunJobs();
+            Assert.DoesNotContain("MdAfterQuote", host.Children[1].Classes);
+        }
+        finally { window.Close(); }
+    });
+
     private static (Window Window, MarkdownViewer Viewer, StackPanel Host) CreateViewer(string source)
     {
         var host = new StackPanel();
