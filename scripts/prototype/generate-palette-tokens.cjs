@@ -157,6 +157,10 @@ function varsOf(palette, mode) {
     if (!(derivedKey in derived)) throw new Error('短名映射指向不存在的派生键: ' + shortName + ' -> ' + derivedKey);
     vars[shortName.replace(/^--/, '')] = derived[derivedKey];
   }
+  // 各级徽标的实色底不同，不能共用品牌色的 on-accent。
+  for (const level of ['debug', 'info', 'warn', 'error', 'fatal']) {
+    vars['badge-' + level + '-text'] = Rules.onAccent(vars['badge-' + level]);
+  }
   return vars;
 }
 
@@ -208,7 +212,7 @@ const outputs = [
 ];
 function isFresh(file, value) {
   const target = path.join(prototypeRoot, file);
-  try { return fs.readFileSync(target, 'utf8') === value; } catch (_) { return false; }
+  try { return fs.readFileSync(target, 'utf8').replace(/\r\n/g, '\n') === value; } catch (_) { return false; }
 }
 function writeAll() {
   for (const [file, value] of outputs) {

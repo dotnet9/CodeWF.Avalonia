@@ -17,12 +17,12 @@
 
 .cmds{flex-wrap:nowrap}.catalog-header .catalog-description{color:var(--tx2);font-size:12.5px;margin-top:6px;line-height:1.7}
 
-.catalog-status[data-level="Debug"]{--status-color:var(--badge-debug);--status-bg:var(--badge-debug-bg);--card-color:var(--card-debug);--card-bg:var(--card-debug-bg)}
-.catalog-status[data-level="Info"]{--status-color:var(--badge-info);--status-bg:var(--badge-info-bg);--card-color:var(--card-info);--card-bg:var(--card-info-bg)}
-.catalog-status[data-level="Warn"]{--status-color:var(--badge-warn);--status-bg:var(--badge-warn-bg);--card-color:var(--card-warn);--card-bg:var(--card-warn-bg)}
-.catalog-status[data-level="Error"]{--status-color:var(--badge-error);--status-bg:var(--badge-error-bg);--card-color:var(--card-error);--card-bg:var(--card-error-bg)}
-.catalog-status[data-level="Fatal"]{--status-color:var(--badge-fatal);--status-bg:var(--badge-fatal-bg);--card-color:var(--card-fatal);--card-bg:var(--card-fatal-bg)}
-.catalog-status{border-color:var(--status-color);background:var(--status-bg)}.catalog-status strong{background:var(--status-color);color:var(--badge-text)}
+.catalog-status[data-level="Debug"]{--status-color:var(--badge-debug);--status-bg:var(--badge-debug-bg);--status-text:var(--badge-debug-text);--card-color:var(--card-debug);--card-bg:var(--card-debug-bg)}
+.catalog-status[data-level="Info"]{--status-color:var(--badge-info);--status-bg:var(--badge-info-bg);--status-text:var(--badge-info-text);--card-color:var(--card-info);--card-bg:var(--card-info-bg)}
+.catalog-status[data-level="Warn"]{--status-color:var(--badge-warn);--status-bg:var(--badge-warn-bg);--status-text:var(--badge-warn-text);--card-color:var(--card-warn);--card-bg:var(--card-warn-bg)}
+.catalog-status[data-level="Error"]{--status-color:var(--badge-error);--status-bg:var(--badge-error-bg);--status-text:var(--badge-error-text);--card-color:var(--card-error);--card-bg:var(--card-error-bg)}
+.catalog-status[data-level="Fatal"]{--status-color:var(--badge-fatal);--status-bg:var(--badge-fatal-bg);--status-text:var(--badge-fatal-text);--card-color:var(--card-fatal);--card-bg:var(--card-fatal-bg)}
+.catalog-status{border-color:var(--status-color);background:var(--status-bg)}.catalog-status strong{background:var(--status-color);color:var(--status-text)}
 .catalog-status.card{background:var(--card-bg);border-color:var(--card-bg);color:var(--card-color);border-radius:var(--r2,10px)}.catalog-status.card strong{background:transparent;color:var(--card-top)}.catalog-status.card .catalog-status-icon{color:var(--card-color)}
 
 /* 主色实底与强调文字使用不同令牌，深色主题也保持可读的前景。 */

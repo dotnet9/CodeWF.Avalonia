@@ -29,6 +29,29 @@ try {
         if ($html.Contains('src="./logo.svg"') -or -not $html.Contains('data:image/svg+xml;base64,')) { throw 'SVG 没有内嵌。' }
     }
     Write-Host 'PASS：LF/CRLF 的 CSS、JS、SVG 和 HTML 生成完全相同的单文件原型。'
+
+    $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+    $paletteRoot = Join-Path $fixtureRoot 'palette'
+    New-Item -ItemType Directory -Path (Join-Path $paletteRoot 'scripts'), (Join-Path $paletteRoot 'docs') -Force | Out-Null
+    Copy-Item -LiteralPath (Join-Path $repoRoot 'scripts/prototype') -Destination (Join-Path $paletteRoot 'scripts/prototype') -Recurse
+    Copy-Item -LiteralPath (Join-Path $repoRoot 'docs/配色与排版令牌规则.md') -Destination (Join-Path $paletteRoot 'docs')
+    Copy-Item -LiteralPath (Join-Path $repoRoot 'Directory.Build.props') -Destination $paletteRoot
+    $generator = Join-Path $paletteRoot 'scripts/prototype/generate-palette-tokens.cjs'
+    & node $generator
+    if ($LASTEXITCODE -ne 0) { throw '配色夹具生成失败。' }
+    foreach ($ending in @("`n", "`r`n")) {
+        foreach ($name in 'palette-tokens.css', 'palette-meta.js') {
+            $file = Join-Path $paletteRoot "scripts/prototype/assets/$name"
+            [IO.File]::WriteAllText($file, [IO.File]::ReadAllText($file).ReplaceLineEndings($ending))
+        }
+        & node $generator --check
+        if ($LASTEXITCODE -ne 0) { throw '配色新鲜度检查误报了换行差异。' }
+    }
+    [IO.File]::AppendAllText((Join-Path $paletteRoot 'scripts/prototype/assets/palette-tokens.css'), '/* stale */')
+    & node $generator --check
+    if ($LASTEXITCODE -eq 0) { throw '配色新鲜度检查漏报了内容变更。' }
+    $global:LASTEXITCODE = 0
+    Write-Host 'PASS：配色产物接受 LF/CRLF，仍拒绝过期内容。'
 } finally {
     $resolvedFixture = [IO.Path]::GetFullPath($fixtureRoot)
     $resolvedTemp = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
