@@ -95,14 +95,18 @@ internal sealed class MarkdownInlinePresenter(MarkdownBlockViewOptions options, 
                 if ((selected && SelectionForegroundBrush is not null || composing) && properties.FontRenderingEmSize > .01)
                     properties = new GenericTextRunProperties(properties.Typeface, properties.FontRenderingEmSize,
                         composing ? TextDecorations.Underline : properties.TextDecorations,
-                        selected ? SelectionForegroundBrush : properties.ForegroundBrush, properties.BackgroundBrush,
+                        selected ? SelectionForegroundBrush : properties.ForegroundBrush,
+                        selected && SelectionForegroundBrush is not null ? null : properties.BackgroundBrush,
                         properties.BaselineAlignment, properties.CultureInfo, properties.FontFeatures);
                 overrides.Add(new(start, finish - start, properties));
             }
         }
-        return new TextLayout(text, face, FontSize, Foreground, TextAlignment, TextWrapping,
+        var mixedSizes = styles.Any(span => span.Value.FontRenderingEmSize > FontSize + .01);
+        var layoutFontSize = mixedSizes ? MarkdownLineMetrics.StrutFontSize(face, FontSize, LineHeight) : FontSize;
+        return new TextLayout(text, face, layoutFontSize, Foreground, TextAlignment, TextWrapping,
             maxWidth: _availableWidth > 0 ? _availableWidth : double.PositiveInfinity,
-            lineHeight: LineHeight, letterSpacing: LetterSpacing, textStyleOverrides: overrides);
+            flowDirection: FlowDirection, fontFeatures: FontFeatures,
+            lineHeight: mixedSizes ? double.NaN : LineHeight, letterSpacing: LetterSpacing, textStyleOverrides: overrides);
         void Hide(int start, int length) => styles.Add(new(start, length,
             new GenericTextRunProperties(face, .001, foregroundBrush: Brushes.Transparent)));
     }

@@ -48,7 +48,9 @@ public sealed class MarkdownSelectableTextBlockTests(AvaloniaPlatformFixture pla
         Assert.Equal(4, codeOverride.Length);
         Assert.Equal(16, codeOverride.Value.FontRenderingEmSize);
         Assert.Equal(BaselineAlignment.Center, codeOverride.Value.BaselineAlignment);
-        Assert.Same(codeBackground, codeOverride.Value.BackgroundBrush);
+        // Selection foreground/background form a pair; the old inline background
+        // must not paint over the selection brush and turn white text unreadable.
+        Assert.Null(codeOverride.Value.BackgroundBrush);
         Assert.Same(selectionForeground, codeOverride.Value.ForegroundBrush);
 
         var textOverride = overrides[1];

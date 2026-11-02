@@ -27,16 +27,10 @@ internal class MarkdownSelectableTextBlock : global::Avalonia.Controls.Selectabl
         var length = Math.Max(selectionStart, selectionEnd) - start;
         var textRuns = _textRuns;
 
-        // Inline spans may carry a larger font size than the paragraph control.
-        // Avalonia's default SelectableTextBlock layout keeps the control's
-        // LineHeight for every run, which clips the larger run and can overlap
-        // the next line.  Derive a safe line box from the actual run metrics;
-        // the paragraph's configured line height remains the minimum so normal
-        // text keeps the approved typography rhythm.
         var maxRunFontSize = textRuns is null
             ? FontSize
             : textRuns.Select(run => run.Properties?.FontRenderingEmSize ?? FontSize).DefaultIfEmpty(FontSize).Max();
-        var effectiveLineHeight = Math.Max(LineHeight, maxRunFontSize * 1.2);
+        var mixedSizes = maxRunFontSize > FontSize + .01;
 
         // LineSpacing 的段落属性设置器是 Avalonia 内部 API，子类无法复制；
         // 未设置时（默认 0）两种构造完全等价，设置了则回退基类行为。
@@ -51,13 +45,13 @@ internal class MarkdownSelectableTextBlock : global::Avalonia.Controls.Selectabl
         var typeface = new Typeface(FontFamily, FontStyle, FontWeight, FontStretch);
         var defaultProperties = new GenericTextRunProperties(
             typeface,
-            FontSize,
+            mixedSizes ? MarkdownLineMetrics.StrutFontSize(typeface, FontSize, LineHeight) : FontSize,
             TextDecorations,
             Foreground,
             fontFeatures: FontFeatures);
         var paragraphProperties = new GenericTextParagraphProperties(
             FlowDirection, TextAlignment, true, false,
-            defaultProperties, TextWrapping, effectiveLineHeight, 0, LetterSpacing);
+            defaultProperties, TextWrapping, mixedSizes ? double.NaN : LineHeight, 0, LetterSpacing);
 
         var textStyleOverrides = length > 0 && SelectionForegroundBrush is not null
             ? BuildSelectionOverrides(
@@ -126,7 +120,7 @@ internal class MarkdownSelectableTextBlock : global::Avalonia.Controls.Selectabl
                         properties?.FontRenderingEmSize ?? fallbackFontSize,
                         properties?.TextDecorations,
                         selectionForegroundBrush,
-                        properties?.BackgroundBrush,
+                        null,
                         properties?.BaselineAlignment ?? BaselineAlignment.Baseline,
                         properties?.CultureInfo,
                         properties?.FontFeatures ?? fallbackFontFeatures)));
