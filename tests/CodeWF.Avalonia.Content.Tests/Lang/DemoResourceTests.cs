@@ -61,8 +61,16 @@ public sealed class DemoResourceTests
     {
         get
         {
-            // 允许将构建输出放到仓外临时目录，仍从测试启动目录定位源码。
-            foreach (var origin in new[] { AppContext.BaseDirectory, Directory.GetCurrentDirectory(), Path.GetDirectoryName(SourceFile())! })
+            // 允许将构建输出放到仓外临时目录，仍从测试启动目录定位源码；CI 确定性编译把
+            // CallerFilePath 重写为 /_/ 前缀且产物在仓外，故优先用编译期钉进元数据的仓库根
+            // （与 StudioTokenParityTests 同式，CI 与本地同源）。
+            var pinned = typeof(DemoResourceTests).Assembly
+                .GetCustomAttributes<System.Reflection.AssemblyMetadataAttribute>()
+                .FirstOrDefault(item => item.Key == "RepositoryRoot")?.Value;
+            var origins = string.IsNullOrEmpty(pinned)
+                ? new[] { AppContext.BaseDirectory, Directory.GetCurrentDirectory(), Path.GetDirectoryName(SourceFile())! }
+                : [pinned, AppContext.BaseDirectory, Directory.GetCurrentDirectory(), Path.GetDirectoryName(SourceFile())!];
+            foreach (var origin in origins)
                 for (var directory = new DirectoryInfo(origin); directory is not null; directory = directory.Parent)
                     if (File.Exists(Path.Combine(directory.FullName, "CodeWF.Avalonia.slnx")))
                         return Path.Combine(directory.FullName, "demo", "CodeWF.Avalonia.Demo");

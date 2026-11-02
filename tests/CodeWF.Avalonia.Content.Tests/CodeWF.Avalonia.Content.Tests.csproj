@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- 源码树侧断言需要稳定定位仓库根：本仓产物整体重定向到仓库外，CI 确定性编译还会把
+         CallerFilePath 重写为 /_/ 前缀，运行时两路都爬不到源码树。编译期钉进程序集元数据
+         （与 StudioTokenParityTests 同式，CI 与本地同源）。 -->
+    <AssemblyMetadata Include="RepositoryRoot"
+                      Value="$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)', 'CodeWF.Avalonia.slnx'))" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Headless" />
     <PackageReference Include="TreeDataGrid.Avalonia" />
