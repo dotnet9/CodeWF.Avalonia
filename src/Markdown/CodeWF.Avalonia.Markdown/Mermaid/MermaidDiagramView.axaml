@@ -2,15 +2,9 @@
              xmlns:local="using:CodeWF.Avalonia.Markdown.Mermaid"
              x:Class="CodeWF.Avalonia.Markdown.Mermaid.MermaidDiagramView"
              x:DataType="local:MermaidDiagramViewModel">
-  <StackPanel Spacing="8">
-    <Border Classes="diagram-source" IsVisible="{Binding IsEditing}" CornerRadius="8"
-            BorderThickness="1" Padding="3">
-      <TextBox Name="SourceInput" Text="{Binding Source, Mode=TwoWay}" AcceptsReturn="True"
-               FontFamily="Consolas,Menlo,monospace" FontSize="13" MinHeight="128" MaxHeight="360"
-               TextWrapping="NoWrap" Padding="10,8" BorderThickness="0" Background="Transparent"
-               VerticalContentAlignment="Top"
-               ScrollViewer.HorizontalScrollBarVisibility="Auto"
-               ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+  <StackPanel Spacing="10">
+    <Border Classes="diagram-source" IsVisible="{Binding IsEditing}">
+      <local:MermaidSourceInput Name="SourceInput" Text="{Binding Source, Mode=TwoWay}" />
     </Border>
     <Panel>
       <Button Name="PreviewButton" Padding="0" BorderThickness="0" Background="Transparent"

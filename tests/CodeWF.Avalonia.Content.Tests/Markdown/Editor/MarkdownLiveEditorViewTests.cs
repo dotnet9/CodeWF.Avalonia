@@ -70,6 +70,55 @@ public sealed class MarkdownLiveEditorViewTests
     private sealed class ContextTarget { public int Line { get; set; } }
 
     [Theory]
+    [InlineData("flowchart LR\n A[Start] --> B[End]", false)]
+    [InlineData("journey\n title First Avalonia app\n section Prepare\n  Install SDK: 4: Developer\n  Create project: 5: Developer", true)]
+    public void MermaidSourceOccupiesItsOwnCardAboveTheLivePreview(string source, bool dark) => _platform.Run(() =>
+    {
+        CodeWF.Avalonia.Markdown.Mermaid.CodeWFMarkdownMermaidExtensions.EnsureRegistered();
+        var view = new MarkdownLiveEditorView { HeaderText = null, ChipText = null };
+        view.SetText("```mermaid\n" + source + "\n```\n\nAfter diagram.");
+        var outside = new Button { Content = "Outside" };
+        var window = new Window { Width = 900, Height = 820, RequestedThemeVariant = dark ? ThemeVariant.Dark : ThemeVariant.Light,
+            Content = new StackPanel { Children = { view, outside } } };
+        window.Styles.Add(new global::Semi.Avalonia.SemiTheme());
+        window.Styles.Add(new MarkdownFullThemes());
+        void Render() { Dispatcher.UIThread.RunJobs(); window.UpdateLayout(); Dispatcher.UIThread.RunJobs(); }
+        window.Show();
+        try
+        {
+            Image? image = null;
+            var deadline = DateTime.UtcNow.AddSeconds(15);
+            do
+            {
+                Render();
+                image = view.GetVisualDescendants().OfType<Image>().FirstOrDefault(item => item.Source is not null);
+                if (image is not null) break;
+                Thread.Sleep(10);
+            } while (DateTime.UtcNow < deadline);
+            Assert.NotNull(image);
+            var point = image.TranslatePoint(new Point(image.Bounds.Width / 2, image.Bounds.Height / 2), window)!.Value;
+            window.MouseDown(point, MouseButton.Left); window.MouseUp(point, MouseButton.Left); Render();
+            var block = view.GetVisualDescendants().OfType<MarkdownBlockView>().Single(item => item.IsEditing);
+            var editor = block.ActiveEditor!;
+            Assert.True(editor.IsKeyboardFocusWithin);
+            Assert.Equal(source, editor.Text);
+            var preview = block.GetVisualDescendants().OfType<Border>().Single(item => item.Classes.Contains("MdMermaidPreview"));
+            var editorOrigin = editor.TranslatePoint(default, block)!.Value;
+            var previewOrigin = preview.TranslatePoint(default, block)!.Value;
+            Assert.True(previewOrigin.Y >= editorOrigin.Y + editor.Bounds.Height + 9,
+                $"Source overlaps diagram: editor={editor.Bounds}, sourceY={editorOrigin.Y}, diagramY={previewOrigin.Y}");
+            Assert.Equal(new Thickness(14, 12), editor.Padding);
+            Assert.Equal(new CornerRadius(8), editor.CornerRadius);
+            Assert.DoesNotContain(block.GetVisualDescendants().OfType<TextBox>(), item => item.Classes.Contains("MdCodeLanguageInput") && item.IsEffectivelyVisible);
+            editor.SelectAll(); window.KeyTextInput(source.Replace("Developer", "Engineer").Replace("End", "Updated")); Render();
+            outside.Focus(); Render();
+            Assert.False(block.IsEditing);
+            Assert.Contains(source.Replace("Developer", "Engineer").Replace("End", "Updated"), view.Text);
+        }
+        finally { window.Close(); }
+    });
+
+    [Theory]
     [InlineData(false, false)]
     [InlineData(true, false)]
     [InlineData(false, true)]
@@ -769,6 +818,26 @@ public sealed class MarkdownLiveEditorViewTests
 
     private static TextBox ActiveBox(MarkdownLiveEditorView view) =>
         view.GetLogicalDescendants().OfType<MarkdownBlockView>().Single(block => block.IsEditing).ActiveEditor!;
+
+    [Fact]
+    public void ChangingCodeLanguageToMermaidSwitchesSourceLayoutAndEscapeRestoresIt() => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView();
+        view.SetText("```text\nflowchart LR\n A --> B\n```"); view.FocusBlock(0);
+        var block = view.GetLogicalDescendants().OfType<MarkdownBlockView>().Single();
+        var language = block.GetLogicalDescendants().OfType<TextBox>().Single(input => input.Classes.Contains("MdCodeLanguageInput"));
+        language.Text = "mermaid"; Dispatcher.UIThread.RunJobs();
+        Assert.Contains("```mermaid", view.Text);
+        Assert.IsType<CodeWF.Avalonia.Markdown.Mermaid.MermaidSourceInput>(block.ActiveEditor);
+        Assert.Equal(new Thickness(14, 12), block.ActiveEditor!.Padding);
+        block.ActiveEditor.RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = Key.Escape });
+        Dispatcher.UIThread.RunJobs();
+        Assert.StartsWith("```text", view.Text);
+        Assert.False(block.IsEditing);
+        Assert.IsNotType<CodeWF.Avalonia.Markdown.Mermaid.MermaidSourceInput>(block.ActiveEditor);
+        var preview = block.GetLogicalDescendants().OfType<CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().Single();
+        Assert.Equal(0, Grid.GetRow(preview));
+    });
 
     [Fact]
     public void CodeLanguageAppearsBelowOnlyDuringEditingAndEscapeRestoresIt() => _platform.Run(() =>

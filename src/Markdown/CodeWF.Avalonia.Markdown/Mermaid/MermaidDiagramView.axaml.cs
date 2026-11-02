@@ -29,9 +29,9 @@ internal partial class MermaidDiagramView : UserControl
         DataContext = state;
         PreviewContent.Content = preview;
         context.BindTheme(SourceInput, TextBox.ForegroundProperty, MarkdownViewer.ForegroundProperty);
-        var card = (Border)SourceInput.Parent!;
-        context.BindTheme(card, Border.BackgroundProperty, MarkdownViewer.CodeBackgroundBrushProperty);
-        context.BindTheme(card, Border.BorderBrushProperty, MarkdownViewer.BorderLineBrushProperty);
+        context.BindTheme(SourceInput, TextBox.BackgroundProperty, MarkdownViewer.CodeBackgroundBrushProperty);
+        context.BindTheme(SourceInput, TextBox.BorderBrushProperty, MarkdownViewer.BorderLineBrushProperty);
+        context.BindTheme(SourceInput, TextBox.FontFamilyProperty, MarkdownViewer.CodeFontFamilyProperty);
         context.BindTheme(SourceBadge, Button.BackgroundProperty, MarkdownViewer.BackgroundProperty);
         context.BindTheme(SourceBadge, Button.BorderBrushProperty, MarkdownViewer.BorderLineBrushProperty);
         context.BindTheme(SourceBadge, Button.ForegroundProperty, MarkdownViewer.ForegroundProperty);

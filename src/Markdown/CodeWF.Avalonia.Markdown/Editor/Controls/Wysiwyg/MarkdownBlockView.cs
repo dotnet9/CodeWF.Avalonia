@@ -11,11 +11,12 @@ using global::Avalonia.Threading;
 using global::Avalonia.Controls.Templates;
 using global::Avalonia.Controls.Presenters;
 using global::Avalonia.Data;
+using CodeWF.Avalonia.Markdown.Mermaid;
 
 namespace CodeWF.Avalonia.Markdown.Editor.Controls.Wysiwyg;
 
 /// <summary>在 TextBox 默认插入之前处理已提交文本，保留输入法预编辑流程。</summary>
-internal sealed class MarkdownInputTextBox : TextBox
+internal class MarkdownInputTextBox : TextBox
 {
     protected override Type StyleKeyOverride => typeof(TextBox);
     public Action<TextInputEventArgs>? BeforeTextInput { get; set; }
@@ -34,7 +35,7 @@ internal sealed class MarkdownInputTextBox : TextBox
 internal sealed class MarkdownBlockView : UserControl
 {
     private readonly MarkdownRichTextView _richText = new();
-    private readonly MarkdownInputTextBox _editor = new();
+    private MarkdownInputTextBox _editor;
     private readonly TextBox? _codeLanguage;
     private readonly Border _root;
     private readonly Grid _layer = new();
@@ -45,6 +46,8 @@ internal sealed class MarkdownBlockView : UserControl
     private readonly bool _isCode;
     private readonly bool _isTableCell;
     private readonly MarkdownBlockViewOptions _options;
+    private TopLevel? _diagramOwner;
+    private bool IsDiagram => _isCode && string.Equals(Model.Language, "mermaid", StringComparison.OrdinalIgnoreCase);
 
     private double _runFontSize = 15;
 
@@ -61,8 +64,9 @@ internal sealed class MarkdownBlockView : UserControl
         _isCode = isCode;
         _isTableCell = isTableCell;
         _options = options;
+        _editor = IsDiagram ? new MermaidSourceInput() : new MarkdownInputTextBox();
 
-        if (isCode)
+        if (isCode && !IsDiagram)
         {
             // 语言选择占用代码块原有的下方留白，出现光标时不推动正文。
             _layer.RowDefinitions = new RowDefinitions("Auto,20");
@@ -91,51 +95,81 @@ internal sealed class MarkdownBlockView : UserControl
             _editingLayer.Children.Add(_codeLanguage);
         }
 
+        ConfigureSourceInput();
+
+        _editingLayer.Children.Add(_editor);
+        _layer.Children.Add(_richText); _layer.Children.Add(_editingLayer);
+        _root = new Border { Child = _layer };
+        Content = _root;
+
+        // 先接管渲染块的点击，避免 SelectableTextBlock 在冒泡前后抢回焦点，
+        // 导致刚打开的编辑框立即触发 LostFocus 并消失。
+        AddHandler(PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
+        AddHandler(PointerMovedEvent, OnPointerMoved, RoutingStrategies.Tunnel);
+        AddHandler(PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel);
+        PointerCaptureLost += (_, _) => _selectionPointer = null;
+        UpdateRichText();
+        LayoutUpdated += (_, _) => { if (_inlineEditing) PositionInlineEditor(); };
+        DetachedFromVisualTree += (_, _) => StopWatchingDiagramPointer();
+    }
+
+    private void ConfigureSourceInput()
+    {
         _editor.AcceptsReturn = true;
         _editor.ClearSelectionOnLostFocus = false;
         _editor.TextWrapping = TextWrapping.Wrap;
-        _editor.FontFamily = isCode ? options.CodeFontFamily : options.ContentFontFamily;
-        if (isCode) _editor.TextWrapping = options.CodeWrap ? TextWrapping.Wrap : TextWrapping.NoWrap;
+        _editor.FontFamily = _isCode ? _options.CodeFontFamily : _options.ContentFontFamily;
+        if (_isCode) _editor.TextWrapping = _options.CodeWrap ? TextWrapping.Wrap : TextWrapping.NoWrap;
         _editor.FontSize = _runFontSize;
-        _editor.Foreground = options.TextBrush;
-        _editor.CaretBrush = options.AccentBrush;
+        _editor.Foreground = _options.TextBrush;
+        _editor.CaretBrush = _options.AccentBrush;
         _editor.HorizontalAlignment = HorizontalAlignment.Stretch;
         _editor.Text = ModelText;
-        _editor.Padding = new Thickness(0);
-        _editor.BorderThickness = new Thickness(0);
-        _editor.MinHeight = 0;
-        _editor.MinWidth = 0;
-        _editor.Background = Brushes.Transparent;
-        _editor.Template = new FuncControlTemplate<TextBox>((box, scope) =>
+        if (IsDiagram)
         {
-            var presenter = new MarkdownInlinePresenter(options, isCode || model.Kind == MarkdownBlockKind.Raw) { Name = "PART_TextPresenter" };
-            scope.Register("PART_TextPresenter", presenter);
-            // 与标准 TextBox 模板一致，由输入框单向驱动 presenter；反向光标绑定会在 Shift 选择时清空选区。
-            foreach (var (boxProperty, presenterProperty) in new (AvaloniaProperty, AvaloniaProperty)[]
-                     {
-                         (TextBox.TextProperty, TextPresenter.TextProperty),
-                         (TextBox.CaretIndexProperty, TextPresenter.CaretIndexProperty),
-                         (TextBox.SelectionStartProperty, TextPresenter.SelectionStartProperty),
-                         (TextBox.SelectionEndProperty, TextPresenter.SelectionEndProperty),
-                         (TextBox.FontFamilyProperty, global::Avalonia.Controls.Documents.TextElement.FontFamilyProperty),
-                         (TextBox.FontSizeProperty, global::Avalonia.Controls.Documents.TextElement.FontSizeProperty),
-                         (TextBox.FontWeightProperty, global::Avalonia.Controls.Documents.TextElement.FontWeightProperty),
-                         (TextBox.FontStyleProperty, global::Avalonia.Controls.Documents.TextElement.FontStyleProperty),
-                         (TextBox.ForegroundProperty, global::Avalonia.Controls.Documents.TextElement.ForegroundProperty),
-                         (TextBox.CaretBrushProperty, TextPresenter.CaretBrushProperty),
-                         (TextBox.SelectionBrushProperty, TextPresenter.SelectionBrushProperty),
-                         (TextBox.SelectionForegroundBrushProperty, TextPresenter.SelectionForegroundBrushProperty),
-                         (TextBox.TextWrappingProperty, TextPresenter.TextWrappingProperty),
-                         (TextBox.LineHeightProperty, TextPresenter.LineHeightProperty),
-                     })
+            _layer.RowDefinitions = new RowDefinitions("Auto,Auto");
+            _editor.Margin = new Thickness(0, 0, 0, 10);
+            _editor.Background = _options.CodeBackgroundBrush;
+            _editor.BorderBrush = _options.SeparatorBrush;
+        }
+        else
+        {
+            _editor.Padding = new Thickness(0);
+            _editor.BorderThickness = new Thickness(0);
+            _editor.MinHeight = 0;
+            _editor.MinWidth = 0;
+            _editor.Background = Brushes.Transparent;
+            _editor.Template = new FuncControlTemplate<TextBox>((box, scope) =>
             {
-                presenter.Bind(presenterProperty, box.GetObservable(boxProperty));
-            }
-            var scroll = new ScrollViewer { Name = "PART_ScrollViewer", Content = presenter,
-                HorizontalScrollBarVisibility = global::Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
-                VerticalScrollBarVisibility = global::Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
-            scope.Register("PART_ScrollViewer", scroll); return scroll;
-        });
+                var presenter = new MarkdownInlinePresenter(_options, _isCode || Model.Kind == MarkdownBlockKind.Raw) { Name = "PART_TextPresenter" };
+                scope.Register("PART_TextPresenter", presenter);
+                // 与标准 TextBox 模板一致，由输入框单向驱动 presenter；反向光标绑定会在 Shift 选择时清空选区。
+                foreach (var (boxProperty, presenterProperty) in new (AvaloniaProperty, AvaloniaProperty)[]
+                         {
+                             (TextBox.TextProperty, TextPresenter.TextProperty),
+                             (TextBox.CaretIndexProperty, TextPresenter.CaretIndexProperty),
+                             (TextBox.SelectionStartProperty, TextPresenter.SelectionStartProperty),
+                             (TextBox.SelectionEndProperty, TextPresenter.SelectionEndProperty),
+                             (TextBox.FontFamilyProperty, global::Avalonia.Controls.Documents.TextElement.FontFamilyProperty),
+                             (TextBox.FontSizeProperty, global::Avalonia.Controls.Documents.TextElement.FontSizeProperty),
+                             (TextBox.FontWeightProperty, global::Avalonia.Controls.Documents.TextElement.FontWeightProperty),
+                             (TextBox.FontStyleProperty, global::Avalonia.Controls.Documents.TextElement.FontStyleProperty),
+                             (TextBox.ForegroundProperty, global::Avalonia.Controls.Documents.TextElement.ForegroundProperty),
+                             (TextBox.CaretBrushProperty, TextPresenter.CaretBrushProperty),
+                             (TextBox.SelectionBrushProperty, TextPresenter.SelectionBrushProperty),
+                             (TextBox.SelectionForegroundBrushProperty, TextPresenter.SelectionForegroundBrushProperty),
+                             (TextBox.TextWrappingProperty, TextPresenter.TextWrappingProperty),
+                             (TextBox.LineHeightProperty, TextPresenter.LineHeightProperty),
+                         })
+                {
+                    presenter.Bind(presenterProperty, box.GetObservable(boxProperty));
+                }
+                var scroll = new ScrollViewer { Name = "PART_ScrollViewer", Content = presenter,
+                    HorizontalScrollBarVisibility = global::Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+                    VerticalScrollBarVisibility = global::Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
+                scope.Register("PART_ScrollViewer", scroll); return scroll;
+            });
+        }
         _editor.TextChanged += (_, _) =>
         {
             if (!_editing || _syncingText) return;
@@ -151,20 +185,30 @@ internal sealed class MarkdownBlockView : UserControl
         {
             if (_editing && e.Property.Name is "CaretIndex" or "SelectionStart" or "SelectionEnd") EditorSelectionChanged?.Invoke();
         };
+    }
 
+    private void EnsureSourceInput()
+    {
+        if (IsDiagram == (_editor is MermaidSourceInput)) return;
+        var wasEditing = _editing;
+        var caret = _editor.CaretIndex;
+        var originalText = _editOriginalText;
+        var originalLanguage = _editOriginalLanguage;
+        var textEntering = _editor.BeforeTextInput;
+        _editing = false;
+        EndInlineEditor();
+        _editingLayer.Children.Remove(_editor);
+        _editor = IsDiagram ? new MermaidSourceInput() : new MarkdownInputTextBox();
+        ConfigureSourceInput();
+        _editor.BeforeTextInput = textEntering;
         _editingLayer.Children.Add(_editor);
-        _layer.Children.Add(_richText); _layer.Children.Add(_editingLayer);
-        _root = new Border { Child = _layer };
-        Content = _root;
-
-        // 先接管渲染块的点击，避免 SelectableTextBlock 在冒泡前后抢回焦点，
-        // 导致刚打开的编辑框立即触发 LostFocus 并消失。
-        AddHandler(PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
-        AddHandler(PointerMovedEvent, OnPointerMoved, RoutingStrategies.Tunnel);
-        AddHandler(PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel);
-        PointerCaptureLost += (_, _) => _selectionPointer = null;
-        UpdateRichText();
-        LayoutUpdated += (_, _) => { if (_inlineEditing) PositionInlineEditor(); };
+        _layer.RowDefinitions = new RowDefinitions(IsDiagram ? "Auto,Auto" : "Auto,20");
+        if (wasEditing)
+        {
+            BeginEdit(caret);
+            _editOriginalText = originalText;
+            _editOriginalLanguage = originalLanguage;
+        }
     }
 
     /// <summary>块内容变化的回调（参数为新文本）。</summary>
@@ -260,8 +304,15 @@ internal sealed class MarkdownBlockView : UserControl
         _syncingText = false;
         _editing = true;
         UpdateRichText();
-        _inlineEditing = _isCode || Model.Kind != MarkdownBlockKind.Raw && !ModelText.Contains("![", StringComparison.Ordinal) && !ModelText.Contains('$');
-        if (_inlineEditing)
+        _inlineEditing = !IsDiagram && (_isCode || Model.Kind != MarkdownBlockKind.Raw && !ModelText.Contains("![", StringComparison.Ordinal) && !ModelText.Contains('$'));
+        if (IsDiagram)
+        {
+            _editingLayer.Children.Remove(_editor);
+            SetDisplay(_preview!);
+            _diagramOwner = TopLevel.GetTopLevel(this);
+            _diagramOwner?.AddHandler(PointerPressedEvent, OnDiagramOutsidePointer, RoutingStrategies.Tunnel, handledEventsToo: true);
+        }
+        else if (_inlineEditing)
         {
             _editingLayer.IsVisible = true;
             PositionInlineEditor();
@@ -299,6 +350,18 @@ internal sealed class MarkdownBlockView : UserControl
     {
         if (!_editor.IsKeyboardFocusWithin && _codeLanguage?.IsKeyboardFocusWithin != true) CommitAndRender();
     }, DispatcherPriority.Input);
+
+    private void OnDiagramOutsidePointer(object? sender, PointerPressedEventArgs args)
+    {
+        if (args.Source is Visual source && (source == this || source.GetVisualAncestors().Contains(this))) return;
+        CommitAndRender();
+    }
+
+    private void StopWatchingDiagramPointer()
+    {
+        _diagramOwner?.RemoveHandler(PointerPressedEvent, OnDiagramOutsidePointer);
+        _diagramOwner = null;
+    }
 
     private void CancelEdit()
     {
@@ -478,7 +541,14 @@ internal sealed class MarkdownBlockView : UserControl
 
     private void UpdateRichText()
     {
-        if (_editing && !_inlineEditing) return;
+        if (_isCode) EnsureSourceInput();
+        if (_editing && !_inlineEditing && !IsDiagram) return;
+        if (IsDiagram)
+        {
+            _editor.Foreground = _options.TextBrush;
+            _editor.Background = _options.CodeBackgroundBrush;
+            _editor.BorderBrush = _options.SeparatorBrush;
+        }
         var useViewer = !_isTableCell || ModelText.Contains("![", StringComparison.Ordinal) || ModelText.Contains('$');
         if (useViewer)
         {
@@ -512,6 +582,15 @@ internal sealed class MarkdownBlockView : UserControl
     private void SetDisplay(Control display)
     {
         if (!_layer.Children.Contains(display)) { _layer.Children.Clear(); _layer.Children.Add(display); _layer.Children.Add(_editingLayer); }
+        Grid.SetRow(display, IsDiagram ? 1 : 0);
+        if (IsDiagram)
+        {
+            if (_editing && !_layer.Children.Contains(_editor))
+            {
+                _editingLayer.Children.Remove(_editor);
+                _layer.Children.Add(_editor);
+            }
+        }
         if (!ReferenceEquals(_root.Child, _layer)) _root.Child = _layer;
     }
     private void PositionInlineEditor()
@@ -558,6 +637,8 @@ internal sealed class MarkdownBlockView : UserControl
     }
     private void EndInlineEditor()
     {
+        StopWatchingDiagramPointer();
+        _layer.Children.Remove(_editor);
         _editor.Clip = null;
         _inlineEditing = false; _editingLayer.IsVisible = false; _richText.Opacity = 1;
         if (ReferenceEquals(_root.Child, _editor)) _root.Child = null;
