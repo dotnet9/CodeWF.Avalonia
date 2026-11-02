@@ -52,7 +52,20 @@
           "EditorTableRemoveLastColumn": "Remove last column",
           "StreamAlreadyCompleted": "The stream has completed; call Reset before appending new content.",
           "HighlightNullTokens": "The code highlight line tokenizer returned null tokens (expected an empty token collection).",
-          "LocalImageOutsideRoots": "Local image is outside the allowed roots: {0}"
+          "LocalImageOutsideRoots": "Local image is outside the allowed roots: {0}",
+          "SelectionApply": "Apply",
+          "SelectionBackground": "Background color",
+          "SelectionBold": "Bold",
+          "SelectionClear": "Clear all styles",
+          "SelectionCode": "Inline code",
+          "SelectionFontSize": "Font size",
+          "SelectionForeground": "Text color",
+          "SelectionHeading1": "Heading 1",
+          "SelectionHeading2": "Heading 2",
+          "SelectionItalic": "Italic",
+          "SelectionLink": "Link",
+          "SelectionList": "List",
+          "SelectionStrike": "Strikethrough"
         }
       }
     }

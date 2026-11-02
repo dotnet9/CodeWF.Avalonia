@@ -52,7 +52,20 @@
           "EditorTableRemoveLastColumn": "最後の列を削除",
           "StreamAlreadyCompleted": "ストリームは完了しました。新しい内容を追加する前に Reset を呼び出してください。",
           "HighlightNullTokens": "コードハイライトの行トークナイザーが null トークンを返しました（空コレクションを返す必要があります）。",
-          "LocalImageOutsideRoots": "ローカル画像が許可されたルート外です: {0}"
+          "LocalImageOutsideRoots": "ローカル画像が許可されたルート外です: {0}",
+          "SelectionApply": "適用",
+          "SelectionBackground": "背景色",
+          "SelectionBold": "太字",
+          "SelectionClear": "すべての書式をクリア",
+          "SelectionCode": "インラインコード",
+          "SelectionFontSize": "文字サイズ",
+          "SelectionForeground": "文字色",
+          "SelectionHeading1": "見出し 1",
+          "SelectionHeading2": "見出し 2",
+          "SelectionItalic": "斜体",
+          "SelectionLink": "リンク",
+          "SelectionList": "リスト",
+          "SelectionStrike": "取り消し線"
         }
       }
     }

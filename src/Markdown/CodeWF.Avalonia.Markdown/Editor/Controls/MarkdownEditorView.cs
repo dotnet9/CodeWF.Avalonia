@@ -27,7 +27,7 @@ namespace CodeWF.Avalonia.Markdown.Editor.Controls;
 /// 例如 Vex 指向 <c>VexEditorBackgroundBrush</c>；不指向时控件自己就能看，不依赖任何宿主资源。
 /// </para>
 /// </summary>
-public class MarkdownEditorView : UserControl
+public partial class MarkdownEditorView : UserControl
 {
     private const string DefaultEditorBackgroundKey = "CodeWFMarkdownEditorBackgroundBrush";
     private const string DefaultEditorForegroundKey = "CodeWFMarkdownEditorForegroundBrush";
@@ -115,6 +115,7 @@ public class MarkdownEditorView : UserControl
         _editor.TextChanged += (_, _) => RaiseMarkdownChanged();
         _editor.TextArea.Caret.PositionChanged += (_, _) => RaiseSelectionChanged();
         _editor.AddHandler(KeyDownEvent, OnEditorKeyDown, RoutingStrategies.Tunnel);
+        InitializeSelectionToolbar();
 
         _container = new Border
         {

@@ -15,7 +15,7 @@ public sealed class MarkdownEditorMutationService : IMarkdownEditorMutationServi
         var length = Math.Clamp(editor.SelectionLength, 0, text.Length - start);
         var selected = length > 0 ? text.Substring(start, length) : placeholder;
         var replacement = $"{prefix}{selected}{suffix}";
-        editor.Text = text[..start] + replacement + text[(start + length)..];
+        editor.Document.Replace(start, length, replacement);
         // 先把选区收窄到 0 再定位：AvaloniaEdit.Select 会用当前 SelectionLength 校验区间，
         // 直接先设 SelectionStart 会拿旧长度越界抛异常。
         editor.SelectionLength = 0;
@@ -35,7 +35,7 @@ public sealed class MarkdownEditorMutationService : IMarkdownEditorMutationServi
         }
 
         var (updated, newStart, newEnd) = MarkdownSpanOperations.Wrap(text, start, end, property, value);
-        editor.Text = updated;
+        editor.Document.Replace(0, text.Length, updated);
         editor.SelectionLength = 0;
         editor.SelectionStart = newStart;
         editor.SelectionLength = newEnd - newStart;
@@ -53,7 +53,7 @@ public sealed class MarkdownEditorMutationService : IMarkdownEditorMutationServi
         }
 
         var (updated, newStart, newEnd) = MarkdownSpanOperations.Clear(text, start, end);
-        editor.Text = updated;
+        editor.Document.Replace(0, text.Length, updated);
         editor.SelectionLength = 0;
         editor.SelectionStart = newStart;
         editor.SelectionLength = newEnd - newStart;
@@ -65,7 +65,7 @@ public sealed class MarkdownEditorMutationService : IMarkdownEditorMutationServi
         var text = editor.Text ?? string.Empty;
         var start = Math.Clamp(editor.SelectionStart, 0, text.Length);
         var length = Math.Clamp(editor.SelectionLength, 0, text.Length - start);
-        editor.Text = text[..start] + insertion + text[(start + length)..];
+        editor.Document.Replace(start, length, insertion);
         editor.CaretOffset = start + insertion.Length;
     }
 
@@ -158,7 +158,7 @@ public sealed class MarkdownEditorMutationService : IMarkdownEditorMutationServi
         var range = GetSelectedLineRange(text, editor.SelectionStart, editor.SelectionLength);
         var selectedLines = text[range.Start..range.End];
         var replacement = IndentText + selectedLines.Replace("\n", "\n" + IndentText, StringComparison.Ordinal);
-        editor.Text = text[..range.Start] + replacement + text[range.End..];
+        editor.Document.Replace(range.Start, range.End - range.Start, replacement);
         editor.SelectionStart = range.Start;
         editor.SelectionLength = replacement.Length;
         editor.CaretOffset = range.Start + replacement.Length;
@@ -170,7 +170,7 @@ public sealed class MarkdownEditorMutationService : IMarkdownEditorMutationServi
         var range = GetSelectedLineRange(text, editor.SelectionStart, editor.SelectionLength);
         var selectedLines = text[range.Start..range.End];
         var replacement = OutdentLines(selectedLines);
-        editor.Text = text[..range.Start] + replacement + text[range.End..];
+        editor.Document.Replace(range.Start, range.End - range.Start, replacement);
         editor.SelectionStart = range.Start;
         editor.SelectionLength = replacement.Length;
         editor.CaretOffset = range.Start + replacement.Length;
@@ -198,7 +198,7 @@ public sealed class MarkdownEditorMutationService : IMarkdownEditorMutationServi
 
         var selected = text.Substring(start, length);
         var cleaned = ClearMarkdownFormatting(selected);
-        editor.Text = text[..start] + cleaned + text[(start + length)..];
+        editor.Document.Replace(start, length, cleaned);
         editor.SelectionStart = start;
         editor.SelectionLength = cleaned.Length;
         editor.CaretOffset = start + cleaned.Length;
@@ -219,7 +219,7 @@ public sealed class MarkdownEditorMutationService : IMarkdownEditorMutationServi
         var line = text[lineStart..lineEnd];
         var normalized = RemoveMarkdownLinePrefix(line);
         var replacement = string.IsNullOrEmpty(prefix) ? normalized : prefix + normalized;
-        editor.Text = text[..lineStart] + replacement + text[lineEnd..];
+        editor.Document.Replace(lineStart, lineEnd - lineStart, replacement);
         editor.CaretOffset = lineStart + replacement.Length;
     }
 
@@ -240,7 +240,7 @@ public sealed class MarkdownEditorMutationService : IMarkdownEditorMutationServi
         int selectionLength)
     {
         var text = editor.Text ?? string.Empty;
-        editor.Text = text[..start] + replacement + text[(start + length)..];
+        editor.Document.Replace(start, length, replacement);
         editor.CaretOffset = start + replacement.Length;
         editor.SelectionStart = Math.Clamp(selectionStart, 0, editor.Text.Length);
         editor.SelectionLength = Math.Clamp(selectionLength, 0, editor.Text.Length - editor.SelectionStart);

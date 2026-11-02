@@ -8,8 +8,14 @@
             <x:Double x:Key="SearchPanelFontSize">14</x:Double>
             <FontFamily x:Key="SearchPanelFontFamily">Default</FontFamily>
             <Thickness x:Key="CompletionToolTipBorderThickness">1</Thickness>
+            <BoxShadows x:Key="CodeWFMarkdownSelectionShadow">0 6 18 0 #33000000</BoxShadows>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="CodeWFMarkdownSelectionBackgroundBrush">#FFFFFF</SolidColorBrush>
+                    <SolidColorBrush x:Key="CodeWFMarkdownSelectionForegroundBrush">#242629</SolidColorBrush>
+                    <SolidColorBrush x:Key="CodeWFMarkdownSelectionMutedBrush">#6B7075</SolidColorBrush>
+                    <SolidColorBrush x:Key="CodeWFMarkdownSelectionBorderBrush">#E6E8EA</SolidColorBrush>
+                    <SolidColorBrush x:Key="CodeWFMarkdownSelectionHoverBrush">#EDF3FF</SolidColorBrush>
                     <SolidColorBrush x:Key="CompletionToolTipBackground">#FFFFFF</SolidColorBrush>
                     <SolidColorBrush x:Key="CompletionToolTipForeground">#101828</SolidColorBrush>
                     <SolidColorBrush x:Key="CompletionToolTipBorderBrush">#E4E9F2</SolidColorBrush>
@@ -21,6 +27,11 @@
                     <SolidColorBrush x:Key="TextAreaSelectionBrush">#66512BD4</SolidColorBrush>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="CodeWFMarkdownSelectionBackgroundBrush">#292B30</SolidColorBrush>
+                    <SolidColorBrush x:Key="CodeWFMarkdownSelectionForegroundBrush">#E6E8EA</SolidColorBrush>
+                    <SolidColorBrush x:Key="CodeWFMarkdownSelectionMutedBrush">#A7ABB0</SolidColorBrush>
+                    <SolidColorBrush x:Key="CodeWFMarkdownSelectionBorderBrush">#41464C</SolidColorBrush>
+                    <SolidColorBrush x:Key="CodeWFMarkdownSelectionHoverBrush">#35445A</SolidColorBrush>
                     <SolidColorBrush x:Key="CompletionToolTipBackground">#111827</SolidColorBrush>
                     <SolidColorBrush x:Key="CompletionToolTipForeground">#E5E7EB</SolidColorBrush>
                     <SolidColorBrush x:Key="CompletionToolTipBorderBrush">#334155</SolidColorBrush>
@@ -38,4 +49,17 @@
         </ResourceDictionary>
     </Styles.Resources>
     <StyleInclude Source="Themes/MarkdownImage.axaml" />
+    <Style Selector="FlyoutPresenter.MdSpanStyleFlyout">
+        <Setter Property="Padding" Value="10"/><Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Background" Value="{DynamicResource CodeWFMarkdownSelectionBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CodeWFMarkdownSelectionBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Template"><ControlTemplate>
+            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}"
+                    Padding="{TemplateBinding Padding}" BoxShadow="{DynamicResource CodeWFMarkdownSelectionShadow}">
+                <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"/>
+            </Border>
+        </ControlTemplate></Setter>
+    </Style>
 </Styles>

@@ -57,6 +57,19 @@ namespace CodeWF.Avalonia.Markdown
         public static readonly string StreamAlreadyCompleted = "CodeWF.Avalonia.Markdown.MarkdownL.StreamAlreadyCompleted";
         public static readonly string HighlightNullTokens = "CodeWF.Avalonia.Markdown.MarkdownL.HighlightNullTokens";
         public static readonly string LocalImageOutsideRoots = "CodeWF.Avalonia.Markdown.MarkdownL.LocalImageOutsideRoots";
+        public static readonly string SelectionApply = "CodeWF.Avalonia.Markdown.MarkdownL.SelectionApply";
+        public static readonly string SelectionBackground = "CodeWF.Avalonia.Markdown.MarkdownL.SelectionBackground";
+        public static readonly string SelectionBold = "CodeWF.Avalonia.Markdown.MarkdownL.SelectionBold";
+        public static readonly string SelectionClear = "CodeWF.Avalonia.Markdown.MarkdownL.SelectionClear";
+        public static readonly string SelectionCode = "CodeWF.Avalonia.Markdown.MarkdownL.SelectionCode";
+        public static readonly string SelectionFontSize = "CodeWF.Avalonia.Markdown.MarkdownL.SelectionFontSize";
+        public static readonly string SelectionForeground = "CodeWF.Avalonia.Markdown.MarkdownL.SelectionForeground";
+        public static readonly string SelectionHeading1 = "CodeWF.Avalonia.Markdown.MarkdownL.SelectionHeading1";
+        public static readonly string SelectionHeading2 = "CodeWF.Avalonia.Markdown.MarkdownL.SelectionHeading2";
+        public static readonly string SelectionItalic = "CodeWF.Avalonia.Markdown.MarkdownL.SelectionItalic";
+        public static readonly string SelectionLink = "CodeWF.Avalonia.Markdown.MarkdownL.SelectionLink";
+        public static readonly string SelectionList = "CodeWF.Avalonia.Markdown.MarkdownL.SelectionList";
+        public static readonly string SelectionStrike = "CodeWF.Avalonia.Markdown.MarkdownL.SelectionStrike";
     }
 
 }

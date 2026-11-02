@@ -52,7 +52,20 @@
           "EditorTableRemoveLastColumn": "刪除最後一欄",
           "StreamAlreadyCompleted": "串流已完成，請先 Reset 再附加新內容。",
           "HighlightNullTokens": "程式碼高亮的行詞法分析回傳了空 token（應回傳空 token 集合）。",
-          "LocalImageOutsideRoots": "本機圖片不在允許的根目錄內：{0}"
+          "LocalImageOutsideRoots": "本機圖片不在允許的根目錄內：{0}",
+          "SelectionApply": "套用",
+          "SelectionBackground": "背景顏色",
+          "SelectionBold": "粗體",
+          "SelectionClear": "清除所有樣式",
+          "SelectionCode": "行內程式碼",
+          "SelectionFontSize": "字級",
+          "SelectionForeground": "文字顏色",
+          "SelectionHeading1": "一級標題",
+          "SelectionHeading2": "二級標題",
+          "SelectionItalic": "斜體",
+          "SelectionLink": "連結",
+          "SelectionList": "清單",
+          "SelectionStrike": "刪除線"
         }
       }
     }

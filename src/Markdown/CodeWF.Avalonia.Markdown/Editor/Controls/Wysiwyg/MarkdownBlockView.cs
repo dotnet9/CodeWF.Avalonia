@@ -92,6 +92,7 @@ internal sealed class MarkdownBlockView : UserControl
         }
 
         _editor.AcceptsReturn = true;
+        _editor.ClearSelectionOnLostFocus = false;
         _editor.TextWrapping = TextWrapping.Wrap;
         _editor.FontFamily = isCode ? options.CodeFontFamily : options.ContentFontFamily;
         if (isCode) _editor.TextWrapping = options.CodeWrap ? TextWrapping.Wrap : TextWrapping.NoWrap;
@@ -109,9 +110,7 @@ internal sealed class MarkdownBlockView : UserControl
         {
             var presenter = new MarkdownInlinePresenter(options, isCode || model.Kind == MarkdownBlockKind.Raw) { Name = "PART_TextPresenter" };
             scope.Register("PART_TextPresenter", presenter);
-            // TextBox 模板部件与自绘 presenter 的双向同步：成对可观察绑定等价替换字符串反射 Binding
-            // （AOT 门禁 IL2026/IL3050 欠账偿还）。反向（presenter→box）承载光标/选区/文本回写，
-            // 正向（box→presenter）承载排版与文本下发；等值写回被属性系统短路，无回环。
+            // 与标准 TextBox 模板一致，由输入框单向驱动 presenter；反向光标绑定会在 Shift 选择时清空选区。
             foreach (var (boxProperty, presenterProperty) in new (AvaloniaProperty, AvaloniaProperty)[]
                      {
                          (TextBox.TextProperty, TextPresenter.TextProperty),
@@ -131,7 +130,6 @@ internal sealed class MarkdownBlockView : UserControl
                      })
             {
                 presenter.Bind(presenterProperty, box.GetObservable(boxProperty));
-                box.Bind(boxProperty, presenter.GetObservable(presenterProperty));
             }
             var scroll = new ScrollViewer { Name = "PART_ScrollViewer", Content = presenter,
                 HorizontalScrollBarVisibility = global::Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,

@@ -16,9 +16,7 @@ using Xunit;
 namespace CodeWF.Avalonia.Content.Tests.Markdown.Editor;
 
 /// <summary>
-/// Wysiwyg 块编辑器模板内 TextPresenter 双向绑定回归：
-/// box→presenter（文本/排版正向）与 presenter→box（光标/选区回写）两个方向都必须保持同步。
-/// 该绑定此前是字符串反射 Binding（AOT 门禁 IL2026/IL3050），替换绑定机制后由本测试兜底。
+/// Wysiwyg 使用标准 TextBox 模板语义：输入框驱动呈现部件，呈现部件移动光标不抢写选区。
 /// </summary>
 [Collection("AvaloniaPlatform")]
 public sealed class MarkdownBlockViewPresenterBindingTests
@@ -28,7 +26,7 @@ public sealed class MarkdownBlockViewPresenterBindingTests
     public MarkdownBlockViewPresenterBindingTests(AvaloniaPlatformFixture platform) => _platform = platform;
 
     [Fact]
-    public void PresenterStaysTwoWaySyncedWithEditorBox() => _platform.Run(() =>
+    public void EditorDrivesPresenterWithoutReverseCaretSelectionReset() => _platform.Run(() =>
     {
         var view = new MarkdownLiveEditorView();
         view.SetText("第一段文字\n\n第二段文字");
@@ -55,11 +53,12 @@ public sealed class MarkdownBlockViewPresenterBindingTests
             box.LineHeight = 31;
             Assert.Equal(31, presenter.LineHeight);
 
-            // presenter → box：光标与选区反向回写（反射 Binding 的 TwoWay 语义）。
-            presenter.CaretIndex = 3;
-            Assert.Equal(3, box.CaretIndex);
-            presenter.SelectionStart = 1;
-            presenter.SelectionEnd = 4;
+            box.CaretIndex = 4;
+            box.SelectionStart = 1;
+            box.SelectionEnd = 4;
+            Assert.Equal(1, presenter.SelectionStart);
+            Assert.Equal(4, presenter.SelectionEnd);
+            presenter.MoveCaretToTextPosition(3);
             Assert.Equal(1, box.SelectionStart);
             Assert.Equal(4, box.SelectionEnd);
         }

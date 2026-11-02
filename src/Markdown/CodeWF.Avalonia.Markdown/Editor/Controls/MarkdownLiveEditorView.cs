@@ -927,14 +927,7 @@ public partial class MarkdownLiveEditorView : UserControl
         if (ApplyDocumentSelectionAction(action)) return;
         if (action is not MarkdownEditorAction.Undo and not MarkdownEditorAction.Redo and not MarkdownEditorAction.FocusEditor)
         {
-            if (_activeIndex < 0) FocusEditor();
-            else if (_activeIndex < _blockViews.Count && FindBlockView(_blockViews[_activeIndex]) is { IsEditing: false } block)
-            {
-                var input = block.EditingInput;
-                var start = input.SelectionStart; var end = input.SelectionEnd;
-                block.BeginEdit(input.CaretIndex);
-                input.SelectionStart = start; input.SelectionEnd = end;
-            }
+            EnsureActiveBlockEditing();
         }
         var activeEditor = (_activeIndex >= 0 && _activeIndex < _blockViews.Count)
             ? FindActiveEditor(_blockViews[_activeIndex])
@@ -1072,6 +1065,7 @@ public partial class MarkdownLiveEditorView : UserControl
     /// <summary>剥掉当前选区（跨块或块内）的所有行内样式 span 标签。</summary>
     public void ClearSpanStyles()
     {
+        if (_documentSelection is null) EnsureActiveBlockEditing();
         if (_documentSelection is { } range && range.Length > 0)
         {
             var (updated, newStart, newEnd) = Shared.Rendering.MarkdownSpanOperations.Clear(Text, range.Start, range.Start + range.Length);
@@ -1127,7 +1121,7 @@ public partial class MarkdownLiveEditorView : UserControl
             return Shared.Rendering.MarkdownSpanOperations.CurrentValue(Text, range.Start, range.Start + range.Length, property);
         }
 
-        if (_activeIndex >= 0 && _activeIndex < _blockViews.Count && FindActiveEditor(_blockViews[_activeIndex]) is { } box)
+        if (SelectionTextBox is { } box)
         {
             var text = box.Text ?? string.Empty;
             var start = Math.Clamp(Math.Min(box.SelectionStart, box.SelectionEnd), 0, text.Length);
@@ -1144,6 +1138,7 @@ public partial class MarkdownLiveEditorView : UserControl
     /// </summary>
     public void ApplySpanStyle(string property, string value)
     {
+        if (_documentSelection is null) EnsureActiveBlockEditing();
         if (_documentSelection is { } range && range.Length > 0)
         {
             var text = Text;
@@ -1202,6 +1197,18 @@ public partial class MarkdownLiveEditorView : UserControl
         }
 
         RaiseChanged();
+    }
+
+    private void EnsureActiveBlockEditing()
+    {
+        if (_activeIndex < 0) FocusEditor();
+        else if (_activeIndex < _blockViews.Count && FindBlockView(_blockViews[_activeIndex]) is { IsEditing: false } block)
+        {
+            var input = block.EditingInput;
+            var start = input.SelectionStart; var end = input.SelectionEnd;
+            block.BeginEdit(input.CaretIndex);
+            input.SelectionStart = start; input.SelectionEnd = end;
+        }
     }
 
     private void WrapActive(string prefix, string suffix)

@@ -36,6 +36,17 @@ public partial class MarkdownLiveEditorView
             ReplaceDocumentSelection(e.Text); e.Handled = true;
         }, RoutingStrategies.Tunnel);
         AddHandler(KeyDownEvent, OnDocumentSelectionKeyDown, RoutingStrategies.Tunnel);
+        AddHandler(KeyUpEvent, (_, e) =>
+        {
+            if (e.Key == Key.Escape) { HideSelectionBar(); return; }
+            if (SelectionTextBox is not { IsKeyboardFocusWithin: true } box) return;
+            if (box.SelectionStart == box.SelectionEnd) { HideSelectionBar(); return; }
+            if (FindBlockView(_blockViews[_activeIndex]) is { } block
+                && block.GetTextPosition(box.SelectionEnd) is { } anchor
+                && block.TranslatePoint(anchor, this) is { } point)
+                _selectionBarAnchor = point;
+            ShowSelectionBar();
+        }, RoutingStrategies.Bubble, true);
     }
 
     private IEnumerable<MarkdownBlockView> RealizedTextBlocks => _blockHost.GetVisualDescendants()
