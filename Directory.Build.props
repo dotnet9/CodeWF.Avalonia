@@ -35,10 +35,12 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
 
-    <!-- 产物输出：本地联调期中间文件与临时包独立到 temp 目录，不与发布产物混淆 -->
+    <!-- 产物输出：本地联调期中间文件与临时包独立到 temp 目录，不与发布产物混淆；非 Windows 没有该盘符，回落仓库内目录 -->
     <UseArtifactsOutput>true</UseArtifactsOutput>
-    <ArtifactsPath>D:\github\temp_files\CodeWF.Avalonia\</ArtifactsPath>
-    <PackageOutputPath>D:\github\temp_nugets\</PackageOutputPath>
+    <ArtifactsPath Condition="'$(OS)' == 'Windows_NT'">D:\github\temp_files\CodeWF.Avalonia\</ArtifactsPath>
+    <ArtifactsPath Condition="'$(OS)' != 'Windows_NT'">$(MSBuildThisFileDirectory)artifacts\</ArtifactsPath>
+    <PackageOutputPath Condition="'$(OS)' == 'Windows_NT'">D:\github\temp_nugets\</PackageOutputPath>
+    <PackageOutputPath Condition="'$(OS)' != 'Windows_NT'">$(ArtifactsPath)packages\</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(IsPackable)' == 'true'">
