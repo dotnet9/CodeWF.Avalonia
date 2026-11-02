@@ -3,6 +3,10 @@
              x:Class="CodeWF.Avalonia.Markdown.Editor.Controls.MarkdownSpanStylePicker"
              x:DataType="vm:MarkdownSpanStylePickerViewModel" x:Name="Picker"
              Foreground="{DynamicResource CodeWFMarkdownSelectionForegroundBrush}">
+  <UserControl.Resources>
+    <!-- Avalonia 12.1.5 的选色原语引用 Fluent 前景键；使用控件自己的主题资源兼容 Semi 宿主及浮层脱树。 -->
+    <StaticResource x:Key="SystemControlForegroundBaseHighBrush" ResourceKey="CodeWFMarkdownSelectionForegroundBrush" />
+  </UserControl.Resources>
   <UserControl.Styles>
     <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
     <Style Selector="Button.choice">
