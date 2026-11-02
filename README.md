@@ -9,7 +9,7 @@
 
 A suite of UI control and capability libraries for Avalonia 12, published with the `CodeWF.Avalonia.*` prefix and a unified XAML namespace `https://codewf.com`.
 
-> 版本号前三位跟随 Avalonia（当前 12.1.4），第四位为本仓修订号。
+> 当前发布线为 `12.2.x`，包版本统一维护于 `Directory.Build.props`；Avalonia 依赖版本独立维护于 `Directory.Packages.props`。
 
 ## 这个仓库解决什么 / What it solves
 
@@ -180,7 +180,7 @@ Each Dock document contains its demonstration and property panel; both move toge
 
 Windows x64 NativeAOT Demo：标题栏仅保留平铺八色点，模式复用 Ursa 三态按钮，语言图标弹出列表，默认 .NET 紫，共八套配色；浅色、深色与跟随系统分别选择。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
 
-当前版本 `12.1.4.29`，新增阅读与即时编辑表格的自适应铺满选项和统一样式类；`12.1.4.28`，新增长文档虚拟化、HTML 表格、原位编辑及导航定位修复；`12.1.4.27`，修复原生安装器动态刷新闪烁并统一 CodeWF 品牌；安装器和平台边界见[安装器说明](scripts/installer/README.md)。`12.1.4.25` 修复真实控件在浅深色及八套配色下的前景/背景组合、交互状态、Markdown/脑图/通知的动态主题资源，并优化实时编辑器重复构建。本机正式 Windows NativeAOT、1024 组原生页面渲染、848 次原生对比测量和原样式安装器构建已通过，具体范围见[原生演示台文档](docs/NativeDemo.md)。
+当前版本 `12.2.47`，修复混排字号与选区颜色，统一源码与即时编辑的选区浮条及样式面板，Mermaid 单击直接编辑上方独立源码卡片，支持块外提交、连续图表切换与阅读位置保持。详细变更见[更新日志](UpdateLog.md)，安装器和平台边界见[安装器说明](scripts/installer/README.md)，历史原生演示验证见[原生演示台文档](docs/NativeDemo.md)。
 
 以下为 `12.1.4.25` 的 Dock 文档分屏、浮动与重新停靠效果（真实 Windows NativeAOT + Skia 离屏渲染），来源见[截图记录](docs/recheck25-native-media.md)：
 
