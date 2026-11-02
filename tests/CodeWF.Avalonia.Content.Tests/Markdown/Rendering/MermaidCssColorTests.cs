@@ -33,12 +33,13 @@ public sealed class MermaidCssColorTests
     [InlineData("#18181B", "#FAFAFA")]
     public void QuadrantCellsResolveToFourDistinctNonBlackFills(string background, string foreground)
     {
-        var options = new RenderOptions { Bg = background, Fg = foreground, Accent = "#8B7CF6" };
+        var options = new RenderOptions { Bg = background, Fg = foreground, Accent = "#8B7CF6", Style = DiagramStyle.Tonal, Transparent = true };
         var svg = MermaidBlockRenderer.InlineCssVariables(MermaidRenderer.RenderSvg(Quadrant, options), options);
         var document = XDocument.Parse(svg);
 
-        // 四格是带字面量 fill 的方块，外框走 fill="none"，因此按 fill 的形态把它们挑出来即可。
+        // 四格是等边矩形；标题背景等装饰不能混进数据格。
         var cells = document.Descendants(Svg + "rect")
+            .Where(rect => rect.Attribute("width")?.Value == rect.Attribute("height")?.Value)
             .Select(rect => rect.Attribute("fill")?.Value)
             .Where(fill => fill is { Length: 7 } && fill![0] == '#')
             .Select(fill => fill!.ToUpperInvariant())
@@ -60,7 +61,7 @@ public sealed class MermaidCssColorTests
         var svg = MermaidBlockRenderer.InlineCssVariables(MermaidRenderer.RenderSvg(source, options), options);
 
         Assert.All(XDocument.Parse(svg).Descendants().Attributes()
-            .Where(attribute => attribute.Name.LocalName is "fill" or "stroke" or "font-size"),
+            .Where(attribute => attribute.Name.LocalName is "fill" or "stroke" or "font-size" or "stop-color"),
             attribute =>
             {
                 Assert.DoesNotContain("var(", attribute.Value);

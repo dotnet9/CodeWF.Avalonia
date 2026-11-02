@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
+using Avalonia.Threading;
 using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 using CodeWF.Avalonia.Controls.Animations;
 using CodeWF.Avalonia.Controls.Controls;
@@ -50,10 +51,14 @@ public sealed class ReusablePresentationTests(AvaloniaPlatformFixture platform)
         try
         {
             window.Show(); window.UpdateLayout();
+            Dispatcher.UIThread.RunJobs();
             var bounds = card.Bounds;
-            for (var frame = 0; frame < 4; frame++)
+            // 观察首个动画中间态，避免慢机器等满四帧后动画已经结束。
+            var deadline = DateTime.UtcNow.AddSeconds(5);
+            while ((card.Opacity <= .001 || card.Opacity >= .649) && DateTime.UtcNow < deadline)
             {
                 AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+                Dispatcher.UIThread.RunJobs();
                 await Task.Delay(16);
             }
             Assert.InRange(card.Opacity, .001, .649);

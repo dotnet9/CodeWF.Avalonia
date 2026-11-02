@@ -1,4 +1,4 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
     [ValidateSet("win-x64", "linux-x64", "linux-arm64", "osx-x64", "osx-arm64")]
@@ -21,7 +21,7 @@ if ([string]::IsNullOrWhiteSpace($Version)) {
 }
 
 # 与 publish.bat / release 工作流使用同一套 PublishProfile（TFM 由 Profile 声明：
-# win-* 为 net10.0-windows，其余为 net10.0；不传 -f，避免全局 TFM 传播到单 TFM 引用库触发 NETSDK1005）。
+# win-* 为 net11.0-windows，其余为 net11.0；不传 -f，避免全局 TFM 传播到单 TFM 引用库触发 NETSDK1005）。
 # 输出目录显式用 -o 固定为 artifacts/publish/<rid>/CodeWF.Avalonia.Demo（-o 覆盖 Profile 的 PublishDir，
 # 保证 CI 各处路径一致）；Profile 仍负责 TFM、SelfContained 与 AOT 设定。
 # 全平台 NativeAOT：完整反射元数据保全 Prism/DryIoc，单线程 ILC 更稳。

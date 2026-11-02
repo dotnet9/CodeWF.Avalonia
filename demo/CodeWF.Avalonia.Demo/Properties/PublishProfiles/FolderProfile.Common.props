@@ -16,8 +16,8 @@
     <_TargetId>Folder</_TargetId>
   </PropertyGroup>
 
-  <!-- net10.0（非 Windows RID）：单文件 + 裁剪（tag 工作流会在命令行追加 NativeAOT 参数） -->
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+  <!-- $(RepositoryTargetFramework)（非 Windows RID）：单文件 + 裁剪（tag 工作流会在命令行追加 NativeAOT 参数） -->
+  <PropertyGroup Condition="'$(TargetFramework)' == '$(RepositoryTargetFramework)'">
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
@@ -25,7 +25,7 @@
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows'">
+  <PropertyGroup Condition="'$(TargetFramework)' == '$(RepositoryWindowsTargetFramework)'">
     <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 </Project>

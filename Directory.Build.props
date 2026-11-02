@@ -1,4 +1,5 @@
-﻿<Project>
+<Project>
+  <Import Project="build/ProjectDefaults.props" />
   <PropertyGroup>
     <!-- 包版本统一维护；Avalonia 依赖版本在 Directory.Packages.props 中独立维护。 -->
     <Version>12.2.48</Version>
@@ -6,10 +7,8 @@
     <Company>https://codewf.com</Company>
     <Copyright>Copyright © https://codewf.com</Copyright>
 
-    <!-- 目标框架：全线 net10.0（源生成器等工具类项目自行覆写） -->
-    <TargetFramework>net10.0</TargetFramework>
-    <LangVersion>latestMajor</LangVersion>
-    <Nullable>enable</Nullable>
+    <!-- 源生成器等工具类项目可覆写集中维护的目标框架。 -->
+    <TargetFramework>$(RepositoryTargetFramework)</TargetFramework>
     <Deterministic>true</Deterministic>
 
     <!-- 打包元数据（包项目共享；各 csproj 仅维护 Description 与依赖） -->

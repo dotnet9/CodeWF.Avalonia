@@ -11,19 +11,27 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 public sealed class MermaidSvgCompatibilityTests
 {
     [Theory]
-    [InlineData("sankey-beta\nIdeas,Draft,40\nDraft,Published,30\nDraft,Revision,10")]
-    [InlineData("sankey-beta\n非常长的文档来源名称,需要完整展示的最终目标名称,40")]
+    [MemberData(nameof(SankeySources))]
     public void SankeyExternalLabelsRemainInsideTheCanvas(string source)
     {
         var raw = MermaidBlockRenderer.InlineCssVariables(MermaidRenderer.RenderSvg(source, new RenderOptions()), new RenderOptions());
         var original = XDocument.Parse(raw);
         var fitted = XDocument.Parse(MermaidBlockRenderer.FitSankeyLabels(raw));
         var viewBox = fitted.Root!.Attribute("viewBox")!.Value.Split(' ').Select(value => double.Parse(value, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
-        Assert.True(viewBox[2] > 800, "外置标签必须计入画布宽度");
+        var originalWidth = double.Parse(original.Root!.Attribute("viewBox")!.Value.Split(' ')[2], System.Globalization.CultureInfo.InvariantCulture);
+        Assert.True(viewBox[2] >= originalWidth, "标签适配不能缩小上游已分配的画布");
+        if (source.Length > 100) Assert.True(viewBox[2] > originalWidth, "超长外置标签必须计入画布宽度");
         Assert.Equal(original.Descendants().Where(element => element.Name.LocalName == "text").Select(element => element.Value),
             fitted.Descendants().Where(element => element.Name.LocalName == "text").Select(element => element.Value));
         Assert.Contains("40", fitted.ToString());
     }
+
+    public static IEnumerable<object[]> SankeySources =>
+    [
+        ["sankey-beta\nIdeas,Draft,40\nDraft,Published,30\nDraft,Revision,10"],
+        ["sankey-beta\n非常长的文档来源名称,需要完整展示的最终目标名称,40"],
+        [$"sankey-beta\n{new string('长', 100)},需要完整展示的最终目标名称,40"]
+    ];
 
     [Fact]
     public async Task ConcurrentViewsReuseOneLoadedSvgAndPaletteChangesRemainIndependent()
@@ -60,9 +68,9 @@ public sealed class MermaidSvgCompatibilityTests
     }
 
     [Theory]
-    [InlineData("#FFFFFF", "#27272A", "#E2E9F0")]
-    [InlineData("#18181B", "#FAFAFA", "#202731")]
-    public void RectangularNodes_ResolveMixColorsForSkia(string background, string foreground, string expectedFill)
+    [InlineData("#FFFFFF", "#27272A", "#E7EAED")]
+    [InlineData("#18181B", "#FAFAFA", "#23252B")]
+    public void RectangularNodes_ResolveGradientColorsForSkia(string background, string foreground, string expectedFill)
     {
         var options = new RenderOptions { Bg = background, Fg = foreground, Accent = "#1677FF" };
         var raw = MermaidRenderer.RenderSvg("graph LR\nA[开始] --> B[结束]", options);
@@ -70,8 +78,11 @@ public sealed class MermaidSvgCompatibilityTests
         var document = XDocument.Parse(svg);
         XNamespace ns = "http://www.w3.org/2000/svg";
         var node = document.Descendants(ns + "g").First(element => element.Attribute("class")?.Value == "node");
-        Assert.Equal(expectedFill, node.Element(ns + "rect")!.Attribute("fill")!.Value);
-        Assert.All(document.Descendants().Attributes().Where(attribute => attribute.Name.LocalName is "fill" or "stroke" or "font-size"),
+        var fill = node.Element(ns + "rect")!.Attribute("fill")!.Value;
+        Assert.StartsWith("url(#", fill);
+        var gradient = document.Descendants(ns + "linearGradient").Single(element => element.Attribute("id")?.Value == fill[5..^1]);
+        Assert.Equal(expectedFill, gradient.Elements(ns + "stop").First().Attribute("stop-color")!.Value);
+        Assert.All(document.Descendants().Attributes().Where(attribute => attribute.Name.LocalName is "fill" or "stroke" or "font-size" or "stop-color"),
             attribute =>
             {
                 Assert.DoesNotContain("color-mix(", attribute.Value);

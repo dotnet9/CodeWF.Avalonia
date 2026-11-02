@@ -1,15 +1,10 @@
-﻿<Project>
+<Project>
+  <Import Project="build/Versions.props" />
+
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-    <AvaloniaVersion>12.1.5</AvaloniaVersion>
-    <!-- Win7 AOT 兼容基线：托管绘图库与各平台原生包必须保持同一版本。 -->
-    <SkiaSharpVersion>3.119.4</SkiaSharpVersion>
-    <HarfBuzzSharpVersion>8.3.1.3</HarfBuzzSharpVersion>
-    <SvgSkiaVersion>5.1.1</SvgSkiaVersion>
-    <SemiAvaloniaVersion>12.1.0.1</SemiAvaloniaVersion>
-    <DockVersion>12.1.0.13</DockVersion>
-    <ReactiveUIAvaloniaVersion>12.1.2</ReactiveUIAvaloniaVersion>
+
   </PropertyGroup>
   <ItemGroup>
     <!-- Avalonia 全家桶 -->
@@ -19,31 +14,31 @@
     <PackageVersion Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Headless" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Headless.XUnit" Version="$(AvaloniaVersion)" />
-    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="12.1.2" />
+    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="$(AvaloniaControlsDataGridVersion)" />
     <PackageVersion Include="Avalonia.Controls.ColorPicker" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Skia" Version="$(AvaloniaVersion)" />
-    <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.14" />
-    <PackageVersion Include="Avalonia.AvaloniaEdit" Version="12.0.0" />
-    <PackageVersion Include="AvaloniaEdit.TextMate" Version="12.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="$(DotNetLibrariesVersion)" />
+    <PackageVersion Include="Avalonia.AvaloniaEdit" Version="$(AvaloniaEditVersion)" />
+    <PackageVersion Include="AvaloniaEdit.TextMate" Version="$(AvaloniaEditTextMateVersion)" />
 
     <!-- 主题生态 -->
     <PackageVersion Include="Semi.Avalonia" Version="$(SemiAvaloniaVersion)" />
-    
+
     <PackageVersion Include="Dock.Avalonia.Themes.Simple" Version="$(DockVersion)" />
     <PackageVersion Include="CodeWF.Avalonia.Lang" Version="$(Version)" />
-    <PackageVersion Include="TreeDataGrid.Avalonia" Version="12.0.0" />
-    <PackageVersion Include="Irihi.Ursa" Version="2.3.0" />
-    <PackageVersion Include="Irihi.Ursa.Themes.Semi" Version="2.3.0" />
+    <PackageVersion Include="TreeDataGrid.Avalonia" Version="$(TreeDataGridAvaloniaVersion)" />
+    <PackageVersion Include="Irihi.Ursa" Version="$(UrsaAvaloniaVersion)" />
+    <PackageVersion Include="Irihi.Ursa.Themes.Semi" Version="$(UrsaAvaloniaVersion)" />
 
     <!-- Dock -->
     <PackageVersion Include="Dock.Avalonia" Version="$(DockVersion)" />
     <PackageVersion Include="Dock.Model.ReactiveUI" Version="$(DockVersion)" />
 
     <!-- Markdown 能力栈 -->
-    <PackageVersion Include="AnimatedImage.Avalonia" Version="2.1.4" />
-    <PackageVersion Include="Markdig" Version="1.4.0" />
-    <PackageVersion Include="Mermaider" Version="0.14.1" />
-    <PackageVersion Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.13" />
+    <PackageVersion Include="AnimatedImage.Avalonia" Version="$(AnimatedImageAvaloniaVersion)" />
+    <PackageVersion Include="Markdig" Version="$(MarkdigVersion)" />
+    <PackageVersion Include="Mermaider" Version="$(MermaiderVersion)" />
+    <PackageVersion Include="Svg.Controls.Skia.Avalonia" Version="$(SvgControlsSkiaAvaloniaVersion)" />
     <PackageVersion Include="Svg.Skia" Version="$(SvgSkiaVersion)" />
     <PackageVersion Include="SkiaSharp" Version="$(SkiaSharpVersion)" />
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="$(SkiaSharpVersion)" />
@@ -55,44 +50,44 @@
     <PackageVersion Include="HarfBuzzSharp.NativeAssets.macOS" Version="$(HarfBuzzSharpVersion)" />
     <PackageVersion Include="HarfBuzzSharp.NativeAssets.WebAssembly" Version="$(HarfBuzzSharpVersion)" />
     <PackageVersion Include="HarfBuzzSharp.NativeAssets.Win32" Version="$(HarfBuzzSharpVersion)" />
-    <PackageVersion Include="Sylinko.CSharpMath.Avalonia" Version="12.0.0" />
-    <PackageVersion Include="TextMateSharp" Version="2.0.4" />
-    <PackageVersion Include="TextMateSharp.Grammars" Version="2.0.4" />
+    <PackageVersion Include="Sylinko.CSharpMath.Avalonia" Version="$(SylinkoCSharpMathAvaloniaVersion)" />
+    <PackageVersion Include="TextMateSharp" Version="$(TextMateSharpVersion)" />
+    <PackageVersion Include="TextMateSharp.Grammars" Version="$(TextMateSharpGrammarsVersion)" />
 
     <!-- MVVM / 行为 / DI -->
-    <PackageVersion Include="CodeWF.Toolkit.Logging" Version="1.1.2" />
-    <PackageVersion Include="CodeWF.Toolkit.Lang" Version="1.1.2" />
-    <PackageVersion Include="CodeWF.Toolkit.Core" Version="1.1.2" />
+    <PackageVersion Include="CodeWF.Toolkit.Logging" Version="$(CodeWFToolkitVersion)" />
+    <PackageVersion Include="CodeWF.Toolkit.Lang" Version="$(CodeWFToolkitVersion)" />
+    <PackageVersion Include="CodeWF.Toolkit.Core" Version="$(CodeWFToolkitVersion)" />
     <!-- Dock.Model.ReactiveUI 12.1.0.13 要求 ReactiveUI 26；保持还原图一致。 -->
-    <PackageVersion Include="ReactiveUI" Version="26.0.1" />
+    <PackageVersion Include="ReactiveUI" Version="$(ReactiveUIVersion)" />
     <PackageVersion Include="ReactiveUI.Avalonia" Version="$(ReactiveUIAvaloniaVersion)" />
-    <PackageVersion Include="Prism.Core" Version="8.1.97" />
-    <PackageVersion Include="Prism.Avalonia" Version="8.1.97.11073" />
-    <PackageVersion Include="Prism.DryIoc.Avalonia" Version="8.1.97.11073" />
-    <PackageVersion Include="DryIoc" Version="5.4.3" />
-    <PackageVersion Include="Xaml.Behaviors" Version="12.0.7" />
-    <PackageVersion Include="StaticViewLocator" Version="0.7.0" />
+    <PackageVersion Include="Prism.Core" Version="$(PrismCoreVersion)" />
+    <PackageVersion Include="Prism.Avalonia" Version="$(PrismAvaloniaVersion)" />
+    <PackageVersion Include="Prism.DryIoc.Avalonia" Version="$(PrismAvaloniaVersion)" />
+    <PackageVersion Include="DryIoc" Version="$(DryIocVersion)" />
+    <PackageVersion Include="Xaml.Behaviors" Version="$(XamlBehaviorsVersion)" />
+    <PackageVersion Include="StaticViewLocator" Version="$(StaticViewLocatorVersion)" />
 
     <!-- 源生成器 -->
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0" />
-    <!-- Source generators must load in the compiler shipped with the minimum .NET 10 SDK. -->
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
-    <PackageVersion Include="System.Text.Json" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="$(MicrosoftCodeAnalysisAnalyzersVersion)" />
+    <!-- 源生成器与 global.json 固定的 .NET 11 编译器一起验证。 -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="$(MicrosoftCodeAnalysisCSharpVersion)" />
+    <PackageVersion Include="System.Text.Json" Version="$(DotNetLibrariesVersion)" />
 
     <!-- 平台补充 -->
-    <PackageVersion Include="System.Drawing.Common" Version="10.0.12" />
-    <PackageVersion Include="System.Security.Permissions" Version="10.0.12" />
-    <PackageVersion Include="System.Windows.Extensions" Version="10.0.12" />
+    <PackageVersion Include="System.Drawing.Common" Version="$(DotNetLibrariesVersion)" />
+    <PackageVersion Include="System.Security.Permissions" Version="$(DotNetLibrariesVersion)" />
+    <PackageVersion Include="System.Windows.Extensions" Version="$(DotNetLibrariesVersion)" />
 
     <!-- 打包基础设施 -->
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.403" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="$(MicrosoftSourceLinkGitHubVersion)" />
 
     <!-- 测试 -->
-    <PackageVersion Include="coverlet.collector" Version="10.1.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
-    <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.v3" Version="4.0.2" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
-    <PackageVersion Include="Bogus" Version="35.6.5" />
+    <PackageVersion Include="coverlet.collector" Version="$(CoverletCollectorVersion)" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)" />
+    <PackageVersion Include="xunit" Version="$(XunitVersion)" />
+    <PackageVersion Include="xunit.v3" Version="$(XunitV3Version)" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="$(XunitRunnerVisualStudioVersion)" />
+    <PackageVersion Include="Bogus" Version="$(BogusVersion)" />
   </ItemGroup>
 </Project>

@@ -1,15 +1,17 @@
-﻿# CodeWF.Avalonia
+# CodeWF.Avalonia
 
 [![CI](https://github.com/dotnet9/CodeWF.Avalonia/actions/workflows/ci.yml/badge.svg)](https://github.com/dotnet9/CodeWF.Avalonia/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/CodeWF.Avalonia.Controls?label=nuget)](https://www.nuget.org/packages/CodeWF.Avalonia.Controls)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-[![Target](https://img.shields.io/badge/target-net10.0-512bd4)](https://learn.microsoft.com/dotnet/core/whats-new/dotnet-10)
+[![Target](https://img.shields.io/badge/target-net11.0-512bd4)](https://learn.microsoft.com/dotnet/core/whats-new/dotnet-11)
 
 面向 Avalonia 12 的 UI 控件与能力库合集：基础自定义控件、表格增强、Dock 布局、Markdown 渲染与编辑、思维导图、国际化、日志查看，均以 `CodeWF.Avalonia.*` 前缀发布，XAML 命名空间统一挂 `https://codewf.com`。
 
 A suite of UI control and capability libraries for Avalonia 12, published with the `CodeWF.Avalonia.*` prefix and a unified XAML namespace `https://codewf.com`.
 
-> 当前发布线为 `12.2.x`，包版本统一维护于 `Directory.Build.props`；Avalonia 依赖版本独立维护于 `Directory.Packages.props`。
+> 当前发布线为 `12.2.x`，包版本统一维护于 `Directory.Build.props`；依赖版本变量集中维护于 `build/Versions.props`，中央包声明在 `Directory.Packages.props`，框架默认值在 `build/ProjectDefaults.props`。
+
+主分支跟随 .NET 11 和最新稳定／预览依赖；Win7 历史兼容基线冻结在 `win7-archive`，不再维护。
 
 ## 这个仓库解决什么 / What it solves
 
@@ -23,7 +25,7 @@ A suite of UI control and capability libraries for Avalonia 12, published with t
 
 ## 包一览 / Packages
 
-「依赖」列只列第三方与本仓包依赖；所有包均面向 `net10.0`（`Lang.Generator` 为 `netstandard2.0`）。**只有 4 个包直接依赖 Semi.Avalonia**。
+「依赖」列只列第三方与本仓包依赖；主分支所有包均面向 `net11.0`（`Lang.Generator` 为 `netstandard2.0`）。**只有 4 个包直接依赖 Semi.Avalonia**。
 
 从 `12.1.4.19` 起，国际化只有 `CodeWF.Toolkit.Lang.I18nManager.Instance` 一个公开管理器和实例。`CodeWF.Avalonia.Lang` 仅提供 XAML 绑定与转换器，直接订阅该实例；旧命名空间中的管理器、插件及语言元数据类型已移除。应用与库统一引用 `CodeWF.Toolkit.Lang` 及其 `Json` / `Xml` / `Resx` 子命名空间，无需同步桥接或获取另一仓库源码。
 
@@ -172,7 +174,7 @@ public class MyMarkdownThemes : MarkdownThemes
 
 Demo 保留 Ribbon + Dock，按输入与选择、反馈与引导、数据展示、布局与导航、Markdown、开发工具分类；每个主菜单对应一个具体控件或 API。首页先展示目录，组合工作流集中到“综合示例”。新增展开动画独立页，块编辑、平面表格增强与状态卡片提供具体用例。共享主题接口、MVVM 约定与截图检查见 [原生演示台文档](docs/NativeDemo.md)。
 
-文档内使用 Grid + GridSplitter 放置演示与独立属性面板，浮动时整体移动。命令区进一步按状态、引导、表格、窗口、布局动效、Markdown 阅读 / 编辑 / 导出等用途分组。参数与演示优先展示，源码按需打开；长 API 名保持完整，窄窗口可横向滚动。仓库通过 `global.json` 选择稳定版 .NET 10 SDK。
+文档内使用 Grid + GridSplitter 放置演示与独立属性面板，浮动时整体移动。命令区进一步按状态、引导、表格、窗口、布局动效、Markdown 阅读 / 编辑 / 导出等用途分组。参数与演示优先展示，源码按需打开；长 API 名保持完整，窄窗口可横向滚动。仓库通过 `global.json` 选择.NET 11 RC SDK（版本固定在 `global.json`）。
 
 ![Ribbon 功能子组与原生 Dock 工作区](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-ribbon.png)
 
@@ -206,10 +208,10 @@ Windows x64 NativeAOT Demo：标题栏仅保留平铺八色点，模式复用 Ur
 
 ```bash
 # 桌面演示台：Ribbon 页签 + Dock 工作区（左导航 / 文档内效果与属性 / 下日志），含 .NET 紫、AI 极光、AI 赤陶、默认蓝、水生、沙漠、黄昏、夜空八套配色，支持深浅与双语切换
-dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0
+dotnet run --project demo/CodeWF.Avalonia.Demo -f net11.0
 
 # 冒烟模式：逐页构建后逐色板渲染一遍再退出，退出码 0 表示全部页面构建 + 渲染通过（CI 使用）
-dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0 -- --smoke
+dotnet run --project demo/CodeWF.Avalonia.Demo -f net11.0 -- --smoke
 ```
 
 安装包由 [GitHub Releases](https://github.com/dotnet9/CodeWF.Avalonia/releases) 提供（随 `v*` tag 构建）：Windows x64 `setup.exe`、Linux x64 / ARM64 `deb`、macOS x64 / ARM64 `dmg`，均附 `.sha256`，不分发便携压缩包。
@@ -219,7 +221,7 @@ dotnet run --project demo/CodeWF.Avalonia.Demo -f net10.0 -- --smoke
 - `ci.yml`：`dotnet build -c Release` + `dotnet test`，外加 NativeAOT 发布并在 Windows 上运行 `--smoke`。
 - `publish-nuget.yml`：推送 `v*` tag 时打包并发布 NuGet（Trusted Publishing）。
 - `release.yml`：同一 tag 触发五平台演示应用发布（win-x64、linux-x64、linux-arm64、osx-x64、osx-arm64）。
-- 版本号前三跟随 Avalonia，第四位为本仓修订，例如 `v12.1.4.4`。
+- 包版本沿用 `12.2.x` 发布线，Avalonia 依赖版本在 `build/Versions.props` 独立维护；发布标签与包版本一致。
 - 变更记录见 [UpdateLog.md](UpdateLog.md)。
 
 ## 许可与贡献 / License and contributing

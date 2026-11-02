@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          global-json-file: global.json
 
       - name: 还原
         run: dotnet restore CodeWF.Avalonia.slnx
@@ -39,7 +39,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          global-json-file: global.json
 
       - name: AOT 发布 Demo
         shell: pwsh

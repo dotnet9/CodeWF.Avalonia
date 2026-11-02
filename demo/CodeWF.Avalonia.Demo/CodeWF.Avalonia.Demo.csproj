@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <!-- 双 TFM：win-* RID 走 net10.0-windows（NativeAOT 完整元数据），其余 RID 走 net10.0（单文件裁剪） -->
-    <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
+    <!-- 双 TFM：win-* RID 走 $(RepositoryWindowsTargetFramework)（NativeAOT 完整元数据），其余 RID 走 $(RepositoryTargetFramework)（单文件裁剪） -->
+    <TargetFrameworks>$(RepositoryTargetFramework);$(RepositoryWindowsTargetFramework)</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
@@ -14,8 +14,7 @@
     <SelfContained>true</SelfContained>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0-windows'))">
-    <WindowsSupportedOSPlatformVersion>6.1</WindowsSupportedOSPlatformVersion>
+  <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', '$(RepositoryWindowsTargetFramework)'))">
     <IsTrimmable>true</IsTrimmable>
     <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>

@@ -22,6 +22,7 @@ using CodeWF.Avalonia.Markdown.Rendering;
 using Markdig.Syntax;
 
 using Mermaider;
+using Mermaider.Models;
 
 using MermaidRenderOptions = Mermaider.Models.RenderOptions;
 
@@ -298,7 +299,7 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
 
     /// <summary>缓存 Key 含主题配色：同一份图表在明暗主题下是两张不同的图。</summary>
     internal static string CreateCacheKey(string source, MermaidRenderOptions options) =>
-        $"{options.Bg}|{options.Fg}|{options.Accent}|{options.Line}|{options.Border}|{options.Surface}|{options.Muted}|{options.Default}|{string.Join(',', options.DataPalette ?? [])}|{options.FontSize}|{options.NodeSpacing}|{options.LayerSpacing}|{options.RoundedEdges}|{source}";
+        $"{options.Bg}|{options.Fg}|{options.Accent}|{options.Line}|{options.Border}|{options.Surface}|{options.Muted}|{options.Default}|{string.Join(',', options.DataPalette ?? [])}|{options.FontSize}|{options.NodeSpacing}|{options.LayerSpacing}|{options.RoundedEdges}|{options.Style}|{options.Gradient}|{options.Tint}|{source}";
 
     /// <summary>
     /// 按当前主题变体构造渲染选项；颜色来自 CodeWFMarkdownMermaid* 画刷资源
@@ -328,7 +329,10 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
             NodeSpacing = ResolveOptionalDouble(app, theme, "CodeWFMarkdownMermaidNodeSpacing"),
             LayerSpacing = ResolveOptionalDouble(app, theme, "CodeWFMarkdownMermaidLayerSpacing"),
             RoundedEdges = ResolveOptionalBool(app, theme, "CodeWFMarkdownMermaidRoundedEdges") ?? true,
-            Transparent = true
+            Transparent = true,
+            // 新版 Quiet 只强调一个象限；保留四格独立配色以便阅读数据。
+            Style = source is not null && Regex.IsMatch(source, @"^\s*quadrantChart\b", RegexOptions.Multiline | RegexOptions.CultureInvariant)
+                ? DiagramStyle.Tonal : DiagramStyle.Quiet
         };
     }
 
@@ -410,6 +414,8 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
             ["--_text-muted"] = Hex(Mix(fg, 35, bg)),
             ["--_text-faint"] = Hex(Mix(fg, 20, bg)),
             ["--_line"] = Hex(Mix(fg, 32, bg)),
+            ["--_line-soft"] = Hex(Mix(fg, 14, bg)),
+            ["--_line-strong"] = Hex(Mix(fg, 68, bg)),
             ["--_arrow"] = Hex(acc),
             ["--_node-fill"] = Hex(Mix(fg, 4, bg)),
             ["--_node-stroke"] = Hex(Mix(fg, 22, bg)),

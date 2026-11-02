@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <RepositoryTargetFramework>net11.0</RepositoryTargetFramework>
+    <RepositoryWindowsTargetFramework>net11.0-windows</RepositoryWindowsTargetFramework>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+</Project>
