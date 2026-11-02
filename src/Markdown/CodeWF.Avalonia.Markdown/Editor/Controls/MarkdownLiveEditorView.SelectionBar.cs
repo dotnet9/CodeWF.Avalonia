@@ -7,7 +7,7 @@ namespace CodeWF.Avalonia.Markdown.Editor.Controls;
 public partial class MarkdownLiveEditorView
 {
     private Popup? _selectionBarPopup;
-    private Point _selectionBarAnchor;
+    private Rect _selectionBarAnchor;
 
     private void ShowSelectionBar()
     {
@@ -16,7 +16,8 @@ public partial class MarkdownLiveEditorView
             _selectionBarPopup = new Popup
             {
                 PlacementTarget = this, Placement = PlacementMode.Top,
-                IsLightDismissEnabled = true, ShouldUseOverlayLayer = true, VerticalOffset = -8,
+                IsLightDismissEnabled = true, OverlayDismissEventPassThrough = true, OverlayInputPassThroughElement = this,
+                ShouldUseOverlayLayer = true,
                 Child = new MarkdownSelectionToolbar
                 {
                     DataContext = new MarkdownSelectionToolbarViewModel(action => _ = ExecuteAsync(action),
@@ -25,7 +26,7 @@ public partial class MarkdownLiveEditorView
             };
             LogicalChildren.Add(_selectionBarPopup);
         }
-        _selectionBarPopup.PlacementRect = new Rect(_selectionBarAnchor, new Size(1, 1));
+        _selectionBarPopup.PlacementRect = _selectionBarAnchor.Inflate(new Thickness(0, 8));
         _selectionBarPopup.IsOpen = true;
     }
 

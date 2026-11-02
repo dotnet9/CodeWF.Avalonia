@@ -14,7 +14,11 @@ public partial class MarkdownEditorView
 
     private void InitializeSelectionToolbar()
     {
-        _editor.AddHandler(PointerReleasedEvent, (_, _) => Dispatcher.UIThread.Post(ShowSelectionToolbar), RoutingStrategies.Bubble, true);
+        _editor.AddHandler(PointerPressedEvent, (_, _) => HideSelectionToolbar(), RoutingStrategies.Tunnel, true);
+        _editor.AddHandler(PointerReleasedEvent, (_, e) =>
+        {
+            if (e.InitialPressMouseButton == MouseButton.Left) Dispatcher.UIThread.Post(ShowSelectionToolbar);
+        }, RoutingStrategies.Bubble, true);
         _editor.AddHandler(KeyUpEvent, (_, e) =>
         {
             if (e.Key == Key.Escape) HideSelectionToolbar();
@@ -32,8 +36,8 @@ public partial class MarkdownEditorView
         {
             _selectionBarPopup = new Popup
             {
-                PlacementTarget = this, Placement = PlacementMode.Top, VerticalOffset = -8,
-                IsLightDismissEnabled = true, ShouldUseOverlayLayer = true,
+                PlacementTarget = this, Placement = PlacementMode.Top,
+                IsLightDismissEnabled = true, OverlayDismissEventPassThrough = true, OverlayInputPassThroughElement = this, ShouldUseOverlayLayer = true,
                 Child = new MarkdownSelectionToolbar
                 {
                     DataContext = new MarkdownSelectionToolbarViewModel(action => _ = ExecuteAsync(action),
@@ -44,7 +48,7 @@ public partial class MarkdownEditorView
         }
         var position = _editor.TextArea.Caret.CalculateCaretRectangle();
         var point = _editor.TextArea.TextView.TranslatePoint(position.TopLeft, this) ?? default;
-        _selectionBarPopup.PlacementRect = new Rect(point, new Size(1, Math.Max(1, position.Height)));
+        _selectionBarPopup.PlacementRect = new Rect(point, new Size(1, Math.Max(1, position.Height))).Inflate(new Thickness(0, 8));
         _selectionBarPopup.IsOpen = true;
     }
 

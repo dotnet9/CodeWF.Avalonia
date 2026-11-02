@@ -10,7 +10,8 @@ public sealed class MarkdownSpanStyleFlyout : Flyout
     private MarkdownSpanStylePickerViewModel? _model;
     public MarkdownSpanStyleFlyout()
     {
-        Opening += (_, _) =>
+        // Inherited/compiled DataContext bindings attach when the flyout content enters the tree.
+        Opened += (_, _) =>
         {
             _model = (Content as Control)?.DataContext as MarkdownSpanStylePickerViewModel;
             if (_model is null) return;

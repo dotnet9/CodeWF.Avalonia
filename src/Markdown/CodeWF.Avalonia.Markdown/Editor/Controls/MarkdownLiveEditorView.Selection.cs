@@ -42,9 +42,9 @@ public partial class MarkdownLiveEditorView
             if (SelectionTextBox is not { IsKeyboardFocusWithin: true } box) return;
             if (box.SelectionStart == box.SelectionEnd) { HideSelectionBar(); return; }
             if (FindBlockView(_blockViews[_activeIndex]) is { } block
-                && block.GetTextPosition(box.SelectionEnd) is { } anchor
-                && block.TranslatePoint(anchor, this) is { } point)
-                _selectionBarAnchor = point;
+                && block.GetTextBounds(box.SelectionEnd) is { } anchor
+                && block.TranslatePoint(anchor.TopLeft, this) is { } point)
+                _selectionBarAnchor = new Rect(point, anchor.Size);
             ShowSelectionBar();
         }, RoutingStrategies.Bubble, true);
     }
@@ -55,7 +55,10 @@ public partial class MarkdownLiveEditorView
     private void OnDocumentPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (e.GetCurrentPoint(this).Properties.IsRightButtonPressed)
+        {
+            HideSelectionBar();
             UpdateContextSourceLine(e.GetPosition(this));
+        }
         if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed || e.Source is not Visual visual) return;
         if (MarkdownBlockView.IsInteractiveChild(visual)) return;
         var view = (visual as MarkdownBlockView) ?? visual.GetVisualAncestors().OfType<MarkdownBlockView>().FirstOrDefault();
@@ -132,9 +135,9 @@ public partial class MarkdownLiveEditorView
         if (!sameBlock || hasText)
         {
             if (RealizedTextBlocks.FirstOrDefault(view => _models.IndexOf(view.Model) == _selectionEnd.Block) is { } endpoint
-                && endpoint.GetTextPosition(_selectionEnd.Offset) is { } anchor
-                && endpoint.TranslatePoint(anchor, this) is { } editorAnchor)
-                _selectionBarAnchor = editorAnchor;
+                && endpoint.GetTextBounds(_selectionEnd.Offset) is { } anchor
+                && endpoint.TranslatePoint(anchor.TopLeft, this) is { } editorAnchor)
+                _selectionBarAnchor = new Rect(editorAnchor, anchor.Size);
             if (_documentPointer is null) ShowSelectionBar();
             else HideSelectionBar();
         }

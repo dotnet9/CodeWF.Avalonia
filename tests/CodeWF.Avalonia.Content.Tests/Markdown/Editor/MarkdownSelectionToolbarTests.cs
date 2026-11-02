@@ -6,6 +6,7 @@ using global::Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Controls.Primitives;
 using global::Avalonia.Controls.Presenters;
+using global::Avalonia.Data;
 using global::Avalonia.Headless;
 using global::Avalonia.Input;
 using global::Avalonia.Input.Raw;
@@ -135,6 +136,79 @@ public sealed class MarkdownSelectionToolbarTests(AvaloniaPlatformFixture platfo
         }
         finally { window.Close(); styles.Remove(full); styles.Remove(edit); styles.Remove(semi); }
     });
+
+    [Fact]
+    public void HostFlyoutBindsOnFirstOpenRefreshesAndClosesOnCommit() => platform.Run(() =>
+    {
+        var styles = global::Avalonia.Application.Current!.Styles;
+        var semi = new global::Semi.Avalonia.SemiTheme();
+        var full = new CodeWF.Avalonia.Markdown.Themes.MarkdownFullThemes();
+        styles.Add(semi); styles.Add(full);
+        var current = "#C92A2A";
+        var changes = new List<string>();
+        var model = new MarkdownSpanStylePickerViewModel("color", (_, value) => changes.Add(value), () => { }, _ => current);
+        var picker = new MarkdownSpanStylePicker();
+        picker.Bind(StyledElement.DataContextProperty, new Binding("Picker"));
+        var flyout = new MarkdownSpanStyleFlyout { Content = picker };
+        var button = new Button { Flyout = flyout };
+        var window = new Window { Width = 640, Height = 500, Content = button, DataContext = new PickerHost(model) };
+        window.Show(); Dispatcher.UIThread.RunJobs(); window.UpdateLayout();
+        try
+        {
+            Assert.Null(picker.DataContext);
+            current = "#30953B";
+            flyout.ShowAt(button); Dispatcher.UIThread.RunJobs(); window.UpdateLayout();
+            Assert.Same(model, picker.DataContext);
+            Assert.Equal("#30953B", model.HexValue);
+            model.HexValue = "#1971C2"; model.ApplyCommand.Execute(null); Dispatcher.UIThread.RunJobs();
+            Assert.Equal(new[] { "#1971C2" }, changes);
+            Assert.False(flyout.IsOpen);
+            current = "#C92A2A";
+            flyout.ShowAt(button); Dispatcher.UIThread.RunJobs();
+            Assert.Equal("#C92A2A", model.HexValue);
+            model.HexValue = "#FFFFFF"; flyout.Hide();
+            Assert.Single(changes);
+        }
+        finally { window.Close(); styles.Remove(full); styles.Remove(semi); }
+    });
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void SelectionToolbarAllowsTheNextRightClickToOpenAStandardMenu(bool source) => platform.Run(() =>
+    {
+        var styles = global::Avalonia.Application.Current!.Styles;
+        var semi = new global::Semi.Avalonia.SemiTheme();
+        var full = new CodeWF.Avalonia.Markdown.Themes.MarkdownFullThemes();
+        var edit = new StyleInclude(new Uri("avares://AvaloniaEdit/")) { Source = new Uri("avares://AvaloniaEdit/Themes/Simple/AvaloniaEdit.xaml") };
+        styles.Add(semi); styles.Add(edit); styles.Add(full);
+        var live = source ? null : new MarkdownLiveEditorView();
+        var code = source ? new MarkdownEditorView() : null;
+        live?.SetText("Target sample"); code?.SetText("Target sample");
+        var window = new Window { Width = 640, Height = 500, Content = (Control?)live ?? code };
+        void Layout() { Dispatcher.UIThread.RunJobs(); window.UpdateLayout(); AvaloniaHeadlessPlatform.ForceRenderTimerTick(); Dispatcher.UIThread.RunJobs(); }
+        window.Show(); window.Activate(); Layout();
+        try
+        {
+            Control input;
+            if (source) { input = code!.Editor.TextArea; code.Editor.TextArea.Focus(); code.Editor.CaretOffset = 0; }
+            else { live!.FocusBlock(0); Layout(); var box = live.GetVisualDescendants().OfType<TextBox>().Single(box => box.IsEffectivelyVisible); input = box; box.Focus(); box.CaretIndex = 0; }
+            var menu = new ContextMenu { Items = { new MenuItem { Header = "Copy" } } };
+            input.ContextFlyout = null; input.ContextMenu = menu;
+            var point = input.TranslatePoint(new Point(36, 12), window)!.Value;
+            for (var i = 0; i < 6; i++) window.KeyPress(Key.Right, RawInputModifiers.Shift, PhysicalKey.ArrowRight, null);
+            window.KeyRelease(Key.Right, RawInputModifiers.Shift, PhysicalKey.ArrowRight, null); Layout();
+            var bar = Assert.Single(window.GetVisualDescendants().OfType<MarkdownSelectionToolbar>());
+            var detail = $"source={source},point={point},bar={bar.TranslatePoint(default, window)}/{bar.Bounds.Size},hit={window.InputHitTest(point)?.GetType().Name}";
+            window.MouseMove(point); window.MouseDown(point, MouseButton.Right); window.MouseUp(point, MouseButton.Right); Layout();
+            Assert.True(menu.IsOpen, detail);
+            Assert.Empty(window.GetVisualDescendants().OfType<MarkdownSelectionToolbar>());
+            menu.Close();
+        }
+        finally { window.Close(); styles.Remove(full); styles.Remove(edit); styles.Remove(semi); }
+    });
+
+    public sealed record PickerHost(MarkdownSpanStylePickerViewModel Picker);
 
     [Fact]
     public void PickerValidationCancelAndSameColorNeverMutateDocument() => platform.Run(() =>

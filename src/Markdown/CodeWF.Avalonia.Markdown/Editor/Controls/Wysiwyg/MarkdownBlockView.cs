@@ -376,7 +376,7 @@ internal sealed class MarkdownBlockView : UserControl
         text.SelectionEnd = _isCode || Model.Kind == MarkdownBlockKind.Raw ? end : MarkdownTextRunParser.GetTextOffset(ModelText, end);
     }
 
-    internal Point? GetTextPosition(int offset)
+    internal Rect? GetTextBounds(int offset)
     {
         Visual? text;
         global::Avalonia.Media.TextFormatting.TextLayout? layout;
@@ -404,7 +404,7 @@ internal sealed class MarkdownBlockView : UserControl
         }
 
         var position = layout.HitTestTextPosition(Math.Clamp(visibleOffset, 0, textLength));
-        return text.TranslatePoint(new Point(position.X, position.Bottom), this);
+        return text.TranslatePoint(position.TopLeft, this) is { } origin ? new Rect(origin, position.Size) : null;
     }
 
     private void OnPointerMoved(object? sender, PointerEventArgs e)
