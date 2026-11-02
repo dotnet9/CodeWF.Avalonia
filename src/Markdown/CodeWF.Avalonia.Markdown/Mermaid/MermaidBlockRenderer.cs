@@ -53,7 +53,14 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
             return null;
         }
 
-        return CreateMermaidBlock(ExtractSource(fenced), context);
+        var diagram = (Border)CreateMermaidBlock(ExtractSource(fenced), context);
+        if (context is MarkdownViewer viewer && MermaidEditing.GetIsEnabled(viewer) && sourceMarkdown is not null)
+        {
+            var preview = diagram.Child!;
+            diagram.Child = null;
+            diagram.Child = new MermaidDiagramView(viewer, new(sourceMarkdown, fenced, context.CurrentBlockOrigin), preview, context);
+        }
+        return diagram;
     }
 
     internal static Control CreateMermaidBlock(string source, IMarkdownRenderContext? context = null)
