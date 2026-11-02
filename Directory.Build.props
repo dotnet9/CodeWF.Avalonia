@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
     <!-- 包版本统一维护；Avalonia 依赖版本在 Directory.Packages.props 中独立维护。 -->
-    <Version>12.2.47</Version>
+    <Version>12.2.48</Version>
     <Authors>沙漠尽头的狼</Authors>
     <Company>https://codewf.com</Company>
     <Copyright>Copyright © https://codewf.com</Copyright>

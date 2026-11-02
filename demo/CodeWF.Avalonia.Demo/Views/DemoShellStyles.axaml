@@ -165,7 +165,7 @@
   <Style Selector="Button.rbn-cmd.selected /template/ ContentPresenter#PART_ContentPresenter, Button.nav-leaf.selected /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource SemiColorPrimaryLight}" />
     <Setter Property="BorderBrush" Value="{DynamicResource StudioAccent}" />
-    <Setter Property="Foreground" Value="{DynamicResource StudioAccent}" />
+    <Setter Property="Foreground" Value="{DynamicResource StudioText}" />
   </Style>
   <Style Selector="Button.rbn-cmd:pressed /template/ ContentPresenter#PART_ContentPresenter, Button.nav-leaf:pressed /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource SemiColorPrimaryLightActive}" />

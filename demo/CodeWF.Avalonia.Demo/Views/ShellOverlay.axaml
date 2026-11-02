@@ -66,6 +66,7 @@
                 <TextBlock Text="{Binding TimeText}" FontSize="10" Foreground="{DynamicResource StudioMuted}" Margin="0,2,0,0" />
               </StackPanel>
               <Button Grid.Column="3" Content="✕" FontSize="11" Padding="4,0"
+                      Foreground="{DynamicResource StudioMuted}"
                       VerticalAlignment="Top" Background="Transparent"
                       Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).DismissNotificationCommand}"
                       CommandParameter="{Binding}"
@@ -126,7 +127,7 @@
       <Setter Property="Background" Value="{DynamicResource SemiColorInformation}" />
     </Style>
     <Style Selector="Border.notification-card TextBlock.notification-glyph">
-      <Setter Property="Foreground" Value="{DynamicResource SemiColorInformation}" />
+      <Setter Property="Foreground" Value="{DynamicResource StudioText}" />
     </Style>
     <Style Selector="Border.notification-card.success Border.notification-accent">
       <Setter Property="Background" Value="{DynamicResource SemiColorSuccess}" />

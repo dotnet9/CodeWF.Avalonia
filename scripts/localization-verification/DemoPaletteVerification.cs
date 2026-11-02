@@ -86,7 +86,9 @@ internal static class DemoPaletteVerification
                 Pump(shell);
                 CheckText(selected, canvas, mode.Name, "Ribbon/selected");
                 CheckText(ordinary, canvas, mode.Name, "Ribbon/normal");
-                Require(ColorOf(Presenter(selected).Foreground!, canvas) == accent, mode.Name + "/Ribbon selected accent");
+                Require(ColorOf(Presenter(selected).Foreground!, canvas) == Resource(shell, "StudioText"), mode.Name + "/Ribbon selected readable caption");
+                var selectedIcon = selected.GetVisualDescendants().OfType<PathIcon>().Single(icon => icon.Classes.Contains("ribbon-icon"));
+                Require(ColorOf(selectedIcon.Foreground!, canvas) == accent, mode.Name + "/Ribbon selected accent icon");
                 var center = ordinary.TranslatePoint(new Point(ordinary.Bounds.Width / 2, ordinary.Bounds.Height / 2), shell)!.Value;
                 shell.MouseMove(center);
                 Pump(shell);
@@ -157,7 +159,10 @@ internal static class DemoPaletteVerification
                     };
                     var glyph = card.GetVisualDescendants().OfType<TextBlock>().Single(text => text.Classes.Contains("notification-glyph"));
                     var background = ColorOf(card.Background!, canvas);
-                    Require(ColorOf(glyph.Foreground!, background) == Resource(shell, key), mode.Name + "/Notification/" + notification.Kind + "/dynamic semantic color");
+                    var stripe = card.GetVisualDescendants().OfType<Border>().Single(border => border.Classes.Contains("notification-accent"));
+                    Require(ColorOf(stripe.Background!, background) == Resource(shell, key), mode.Name + "/Notification/" + notification.Kind + "/dynamic semantic color");
+                    Require(ColorOf(glyph.Foreground!, background) == Resource(shell, notification.Kind == DemoNotificationKind.Info ? "StudioText" : key),
+                        mode.Name + "/Notification/" + notification.Kind + "/readable glyph");
                     Check(glyph.Foreground!, background, mode.Name, "Notification/" + notification.Kind);
                     foreach (var label in card.GetVisualDescendants().OfType<TextBlock>().Where(label => !label.Classes.Contains("notification-glyph")))
                         Check(label.Foreground!, background, mode.Name, "Notification/" + notification.Kind + "/text-" + label.FontSize, label.Opacity);
