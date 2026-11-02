@@ -18,6 +18,7 @@ internal partial class MermaidDiagramView : UserControl
     private readonly DispatcherTimer _previewTimer = new() { Interval = TimeSpan.FromMilliseconds(300) };
     private TopLevel? _topLevel;
     private readonly string? _imageBasePath;
+    private bool _waitingForModel;
 
     public MermaidDiagramView(MarkdownViewer viewer, MermaidDiagramViewModel state, Control preview, IMarkdownRenderContext context)
     {
@@ -36,6 +37,8 @@ internal partial class MermaidDiagramView : UserControl
         context.BindTheme(SourceBadge, Button.ForegroundProperty, MarkdownViewer.ForegroundProperty);
         PreviewButton.Click += (_, args) => { BeginEdit(); args.Handled = true; };
         SourceBadge.Click += (_, args) => { BeginEdit(); args.Handled = true; };
+        PreviewButton.AddHandler(PointerPressedEvent, OnPreviewPointerPressed, RoutingStrategies.Tunnel);
+        SourceBadge.AddHandler(PointerPressedEvent, OnPreviewPointerPressed, RoutingStrategies.Tunnel);
         SourceInput.KeyDown += (_, args) =>
         {
             if (args.Key != Key.Escape && !(args.Key == Key.Enter && args.KeyModifiers.HasFlag(KeyModifiers.Control))) return;
@@ -59,18 +62,55 @@ internal partial class MermaidDiagramView : UserControl
         DetachedFromVisualTree += (_, _) => Commit();
     }
 
+    private void OnPreviewPointerPressed(object? sender, PointerPressedEventArgs args)
+    {
+        if (!args.GetCurrentPoint(this).Properties.IsLeftButtonPressed) return;
+        // 上一张源码收起后按钮会移位，不能等原坐标上的 MouseUp 再激活。
+        args.Handled = true;
+        BeginEdit();
+    }
+
     private void BeginEdit()
     {
         if (_state.IsEditing) { SourceInput.Focus(); return; }
+        // 点另一张图会先提交上一张；等异步正文模型落地后继续这次点击。
+        if (_viewer.CurrentModel.Source != _viewer.Markdown)
+        {
+            if (_waitingForModel) return;
+            _waitingForModel = true;
+            _viewer.LayoutUpdated += OnModelLayoutUpdated;
+            WatchOutsidePointer();
+            return;
+        }
+        StopWaitingForModel();
         if (ResolveState() is not { } state) return;
         _state.PropertyChanged -= OnStateChanged;
         DataContext = _state = state;
         _state.PropertyChanged += OnStateChanged;
         _state.IsEditing = true;
         _viewer.PropertyChanged += OnViewerChanged;
-        _topLevel = TopLevel.GetTopLevel(this);
-        _topLevel?.AddHandler(PointerPressedEvent, OnOutsidePointerPressed, RoutingStrategies.Tunnel, handledEventsToo: true);
+        WatchOutsidePointer();
         SourceInput.Focus();
+    }
+
+    private void WatchOutsidePointer()
+    {
+        _topLevel = TopLevel.GetTopLevel(this);
+        _topLevel?.RemoveHandler(PointerPressedEvent, OnOutsidePointerPressed);
+        _topLevel?.AddHandler(PointerPressedEvent, OnOutsidePointerPressed, RoutingStrategies.Tunnel, handledEventsToo: true);
+    }
+
+    private void OnModelLayoutUpdated(object? sender, EventArgs args)
+    {
+        if (_viewer.CurrentModel.Source == _viewer.Markdown) BeginEdit();
+    }
+
+    private void StopWaitingForModel()
+    {
+        _waitingForModel = false;
+        _viewer.LayoutUpdated -= OnModelLayoutUpdated;
+        _topLevel?.RemoveHandler(PointerPressedEvent, OnOutsidePointerPressed);
+        _topLevel = null;
     }
 
     private MermaidDiagramViewModel? ResolveState()
@@ -116,6 +156,7 @@ internal partial class MermaidDiagramView : UserControl
 
     internal void Commit()
     {
+        if (_waitingForModel) StopWaitingForModel();
         if (!_state.IsEditing) return;
         _state.IsEditing = false;
         _viewer.PropertyChanged -= OnViewerChanged;
