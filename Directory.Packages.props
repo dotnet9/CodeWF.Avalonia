@@ -85,7 +85,6 @@
     <!-- 测试 -->
     <PackageVersion Include="coverlet.collector" Version="$(CoverletCollectorVersion)" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)" />
-    <PackageVersion Include="xunit" Version="$(XunitVersion)" />
     <PackageVersion Include="xunit.v3" Version="$(XunitV3Version)" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="$(XunitRunnerVisualStudioVersion)" />
     <PackageVersion Include="Bogus" Version="$(BogusVersion)" />

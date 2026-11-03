@@ -51,7 +51,7 @@ jobs:
       - name: Pack
         shell: pwsh
         run: |
-          # 仅打包 10 个库项目（tests / demo 不参与）
+          # 仅打包 11 个库项目（tests / demo 不参与）
           $projects = @(
             'src/MindView/CodeWF.Avalonia.MindView/CodeWF.Avalonia.MindView.csproj',
             'src/Controls/CodeWF.Avalonia.Controls/CodeWF.Avalonia.Controls.csproj',
@@ -61,6 +61,7 @@ jobs:
             'src/Markdown/CodeWF.Avalonia.Markdown/CodeWF.Avalonia.Markdown.csproj',
             'src/Markdown/CodeWF.Avalonia.Markdown.Lite/CodeWF.Avalonia.Markdown.Lite.csproj',
             'src/Log/CodeWF.Avalonia.Log/CodeWF.Avalonia.Log.csproj',
+            'src/Motion/CodeWF.Avalonia.Motion/CodeWF.Avalonia.Motion.csproj',
             'src/Lang/CodeWF.Avalonia.Lang/CodeWF.Avalonia.Lang.csproj',
             'src/Lang/CodeWF.Avalonia.Lang.Generator/CodeWF.Avalonia.Lang.Generator.csproj'
           )

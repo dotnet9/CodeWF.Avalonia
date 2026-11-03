@@ -41,6 +41,7 @@ A suite of UI control and capability libraries for Avalonia 12, published with t
 | [CodeWF.Avalonia.Markdown](https://www.nuget.org/packages/CodeWF.Avalonia.Markdown) | 完整包：图片/公式/Mermaid/代码高亮/多格式导出/源码与所见即所得编辑器 | Avalonia.AvaloniaEdit、AnimatedImage.Avalonia、Mermaider、SkiaSharp、Svg.Skia、Svg.Controls.Skia.Avalonia、Sylinko.CSharpMath.Avalonia、TextMateSharp(.Grammars)、CodeWF.Avalonia.Markdown.Lite、CodeWF.Avalonia.Controls\*、CodeWF.Avalonia.Lang\* |
 | [CodeWF.Avalonia.MindView](https://www.nuget.org/packages/CodeWF.Avalonia.MindView) | 脑图编辑、缩略图、导入导出、只读 Markdown 结构图，内含浅深色主题与主题色 API | Avalonia、Markdig、CodeWF.Avalonia.Lang |
 | [CodeWF.Avalonia.Log](https://www.nuget.org/packages/CodeWF.Avalonia.Log) | 日志查看控件与桌面通知（配合 CodeWF.Toolkit.Logging） | Avalonia、Xaml.Behaviors、CodeWF.Toolkit.Logging |
+| [CodeWF.Avalonia.Motion](https://www.nuget.org/packages/CodeWF.Avalonia.Motion) | 通用弹簧动效、可中断过渡与动效分级，支持裁剪与 NativeAOT | Avalonia |
 | [CodeWF.Avalonia.Lang](https://www.nuget.org/packages/CodeWF.Avalonia.Lang) | I18n 标记扩展与转换器；直接使用 Toolkit 唯一语言管理器，支持业务资源覆盖 | Avalonia、CodeWF.Toolkit.Lang |
 | [CodeWF.Avalonia.Lang.Generator](https://www.nuget.org/packages/CodeWF.Avalonia.Lang.Generator) | 编译期源生成器：从语言资源生成强类型 Key | Roslyn（`PrivateAssets=all`，netstandard2.0） |
 
@@ -182,7 +183,7 @@ Each Dock document contains its demonstration and property panel; both move toge
 
 Windows x64 NativeAOT Demo：标题栏仅保留平铺八色点，模式复用 Ursa 三态按钮，语言图标弹出列表，默认 .NET 紫，共八套配色；浅色、深色与跟随系统分别选择。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
 
-当前版本 `12.2.48`，修复混排字号与选区颜色，统一源码与即时编辑的选区浮条及样式面板，Mermaid 单击直接编辑上方独立源码卡片，支持块外提交、连续图表切换与阅读位置保持；演示程序的选中标签与通知文字在鼠尾草配色下也保持可读。详细变更见[更新日志](UpdateLog.md)，安装器和平台边界见[安装器说明](scripts/installer/README.md)，历史原生演示验证见[原生演示台文档](docs/NativeDemo.md)。
+当前版本 `12.2.48.1`，主分支使用 .NET 11 RC3 与 Avalonia 12.1.5，统一 xunit.v3 测试并修复精简 AOT 发布遗漏 XAML 资源的问题；保留混排字号、选区浮条、Mermaid 上方独立源码卡片与阅读位置保持等能力。详细变更见[更新日志](UpdateLog.md)，安装器和平台边界见[安装器说明](scripts/installer/README.md)，历史原生演示验证见[原生演示台文档](docs/NativeDemo.md)。
 
 以下为 `12.1.4.25` 的 Dock 文档分屏、浮动与重新停靠效果（真实 Windows NativeAOT + Skia 离屏渲染），来源见[截图记录](docs/recheck25-native-media.md)：
 

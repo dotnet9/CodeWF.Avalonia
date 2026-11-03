@@ -23,7 +23,6 @@ using global::Avalonia.Styling;
 using global::Avalonia.Threading;
 using global::Avalonia.VisualTree;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace CodeWF.Avalonia.Content.Tests.Markdown.Themes;
 

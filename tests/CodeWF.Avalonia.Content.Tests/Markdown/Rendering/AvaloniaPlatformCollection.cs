@@ -28,7 +28,10 @@ public sealed class AvaloniaPlatformFixture
     {
         await action();
         return true;
-    }, CancellationToken.None);
+    }, CancellationToken.None)
+        // Headless 内联完成任务；将 xunit 后续测试移回线程池，避免 UI 线程等待自身的下一次调度。
+        .ContinueWith(task => task.GetAwaiter().GetResult(), CancellationToken.None,
+            TaskContinuationOptions.None, TaskScheduler.Default);
 
     public sealed class TestEntryPoint
     {
