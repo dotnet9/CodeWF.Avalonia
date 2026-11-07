@@ -93,6 +93,11 @@ public static class StudioPaletteEngine
             ["StudioRaisedColor"] = Over(paper, ink, hoverAlpha),
             ["StudioBorderColor"] = Over(paper, ink, borderAlpha),
             ["StudioControlBorderColor"] = Over(paper, ink, controlBorderAlpha),
+            // v7：文字级强调色——accent 落在正文/代码文字上时用（对 paper/surface ≥4.5:1，规则 §2/§3）；
+            // 与原型 mix(ink->accent,40%) 同式（accent 40% + ink 60%）。
+            ["StudioAccentInkColor"] = Mix(accent, ink, 0.60),
+            // v7：输入类控件描边——对所在面板 ≥3:1（WCAG 1.4.11）；与原型 mix(paper->ink,55%) 同式。
+            ["StudioFieldBorderColor"] = Mix(paper, ink, 0.55),
             // 原型 --hover 落在纸面：resolveConstants 传给回底规则的是公式里的前景键（ink），不是派生键名，
             // 「hover 落 surface」那条特例在这条路径上从不生效。照面板算会暗一档，与静态令牌不同式。
             ["StudioHoverColor"] = Over(paper, ink, hoverAlpha),

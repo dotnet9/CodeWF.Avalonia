@@ -9,6 +9,10 @@
     <SolidColorBrush x:Key="StudioSelected" Color="{StaticResource StudioSelectedColor}"/>
     <Color x:Key="StudioControlBorderColor">#4d4949</Color>
     <SolidColorBrush x:Key="StudioControlBorder" Color="{StaticResource StudioControlBorderColor}"/>
+    <Color x:Key="StudioAccentInkColor">#f9ccd2</Color>
+    <SolidColorBrush x:Key="StudioAccentInk" Color="{StaticResource StudioAccentInkColor}"/>
+    <Color x:Key="StudioFieldBorderColor">#8f8788</Color>
+    <SolidColorBrush x:Key="StudioFieldBorder" Color="{StaticResource StudioFieldBorderColor}"/>
     <Color x:Key="StudioFocusRingColor">#FDA4AF</Color>
     <SolidColorBrush x:Key="StudioFocusRing" Color="{StaticResource StudioFocusRingColor}"/>
     <Color x:Key="StudioDisabledColor">#6d6767</Color>

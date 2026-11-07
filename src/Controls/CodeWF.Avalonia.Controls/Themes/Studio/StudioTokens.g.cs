@@ -15,6 +15,8 @@ public static partial class StudioTokens
     d["StudioPressedColor"] = v["StudioPressedColor"];
     d["StudioSelectedColor"] = v["StudioSelectedColor"];
     d["StudioControlBorderColor"] = v["StudioControlBorderColor"];
+    d["StudioAccentInkColor"] = v["StudioAccentInkColor"];
+    d["StudioFieldBorderColor"] = v["StudioFieldBorderColor"];
     d["StudioFocusRingColor"] = v["StudioFocusRingColor"];
     d["StudioDisabledColor"] = v["StudioDisabledColor"];
     d["StudioBackgroundColor"] = v["StudioBackgroundColor"];
@@ -59,6 +61,8 @@ public static partial class StudioTokens
     ("StudioPressed", "StudioPressedColor", true),
     ("StudioSelected", "StudioSelectedColor", true),
     ("StudioControlBorder", "StudioControlBorderColor", true),
+    ("StudioAccentInk", "StudioAccentInkColor", true),
+    ("StudioFieldBorder", "StudioFieldBorderColor", true),
     ("StudioFocusRing", "StudioFocusRingColor", true),
     ("StudioDisabled", "StudioDisabledColor", true),
     ("StudioBackground", "StudioBackgroundColor", true),

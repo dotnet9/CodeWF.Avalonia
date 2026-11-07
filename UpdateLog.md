@@ -1,5 +1,11 @@
 ﻿# 更新日志
 
+## 12.2.49 (2026-11-07)
+
+- 配色：令牌规则升版 `ruleVersion 7`，新增派生键 `accentInk`（mix(ink→accent,40%)，accent 落在行内代码/代码关键字/选中项文字等正文性文字上的文字级强调色，对 paper/surface ≥ 4.5:1）与 `fieldBorder`（mix(paper→ink,55%)，输入类控件描边，对所在面板 ≥ 3:1）。
+- 引擎：`StudioPaletteEngine.Derive` 同步输出 `StudioAccentInkColor` / `StudioFieldBorderColor`；静态令牌（Vex sync_native_design.cjs 生成的 18 个 Tokens/*.axaml）与 `StudioTokens.Fill` 键表同步补齐，`StudioTokenParityTests` 全绿。
+- 原型：palette-rules.js 派生表、palettes.css 快照与 Markdown 排版目录同步（代码关键字、行内代码改走 accentInk）。
+
 ## 12.2.48.1 (2026-11-03)
 
 - 测试：统一使用 xunit.v3，移除已弃用的 xunit v2 依赖；迁移测试输出与串行执行配置，保留现有测试覆盖。

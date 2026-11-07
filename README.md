@@ -183,7 +183,7 @@ Each Dock document contains its demonstration and property panel; both move toge
 
 Windows x64 NativeAOT Demo：标题栏仅保留平铺八色点，模式复用 Ursa 三态按钮，语言图标弹出列表，默认 .NET 紫，共八套配色；浅色、深色与跟随系统分别选择。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
 
-当前版本 `12.2.48.1`，主分支使用 .NET 11 RC3 与 Avalonia 12.1.5，统一 xunit.v3 测试并修复精简 AOT 发布遗漏 XAML 资源的问题；保留混排字号、选区浮条、Mermaid 上方独立源码卡片与阅读位置保持等能力。详细变更见[更新日志](UpdateLog.md)，安装器和平台边界见[安装器说明](scripts/installer/README.md)，历史原生演示验证见[原生演示台文档](docs/NativeDemo.md)。
+当前版本 `12.2.49`，主分支使用 .NET 11 RC3 与 Avalonia 12.1.5，统一 xunit.v3 测试并修复精简 AOT 发布遗漏 XAML 资源的问题；保留混排字号、选区浮条、Mermaid 上方独立源码卡片与阅读位置保持等能力。详细变更见[更新日志](UpdateLog.md)，安装器和平台边界见[安装器说明](scripts/installer/README.md)，历史原生演示验证见[原生演示台文档](docs/NativeDemo.md)。
 
 以下为 `12.1.4.25` 的 Dock 文档分屏、浮动与重新停靠效果（真实 Windows NativeAOT + Skia 离屏渲染），来源见[截图记录](docs/recheck25-native-media.md)：
 
