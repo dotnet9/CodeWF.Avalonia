@@ -12,7 +12,7 @@ public sealed record MarkdownSyntaxOptions(
 {
     public MarkdownPipeline CreatePipeline()
     {
-        var builder = new MarkdownPipelineBuilder().UseAdvancedExtensions();
+        var builder = new MarkdownPipelineBuilder().UseAdvancedExtensions().UseAlertBlocks().UseYamlFrontMatter();
         if (!Math) builder.Extensions.RemoveAll(extension => extension is MathExtension);
         if (!AutoLinks) builder.Extensions.RemoveAll(extension => extension is AutoLinkExtension);
         builder.Extensions.RemoveAll(extension => extension is EmphasisExtraExtension);

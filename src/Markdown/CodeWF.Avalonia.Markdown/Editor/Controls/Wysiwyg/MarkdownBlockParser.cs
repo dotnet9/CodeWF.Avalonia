@@ -23,7 +23,7 @@ public static class MarkdownBlockParser
     private const string TaskCheckedPrefix = "- [x] ";
 
     private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
-        .UseAdvancedExtensions()
+        .UseAdvancedExtensions().UseAlertBlocks().UseYamlFrontMatter()
         .UseYamlFrontMatter()
         .UsePreciseSourceLocation()
         .Build();

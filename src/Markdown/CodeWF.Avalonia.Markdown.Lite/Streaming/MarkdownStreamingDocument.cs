@@ -44,7 +44,7 @@ public sealed record MarkdownStreamingSnapshot(
 public sealed class MarkdownStreamingDocument : IDisposable
 {
 	private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
-		.UseAdvancedExtensions()
+		.UseAdvancedExtensions().UseAlertBlocks().UseYamlFrontMatter()
 		.Build();
 
 	private readonly object _gate = new();

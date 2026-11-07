@@ -59,6 +59,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
 
     internal static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
         .UseAdvancedExtensions()
+        .UseAlertBlocks()
         .Build();
 
     private MarkdownPipeline _documentPipeline = Pipeline;
@@ -728,6 +729,8 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         pipeline.Register(new MathBlockRenderer());
         pipeline.Register(new CodeBlockRenderer());
         pipeline.Register(new ListRenderer());
+        pipeline.Register(new Rendering.AlertRenderer());
+        pipeline.Register(new Rendering.FrontMatterRenderer());
         pipeline.Register(new QuoteRenderer());
         pipeline.Register(new TableRenderer());
         pipeline.Register(new ThematicBreakRenderer());
