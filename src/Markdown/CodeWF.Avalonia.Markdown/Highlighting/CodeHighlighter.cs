@@ -46,7 +46,7 @@ internal static class CodeHighlighter
 
         // 长代码按行切块：每块独立排版，流式追加只重建尾部块，前面的排版结果不重算。
         // 词法状态经同一会话跨块延续，分块不改变配色。
-        if (lines is not null && lineCount > MarkdownCodeChunking.ThresholdLines)
+        if (grammar is not null && lines is not null && lineCount > MarkdownCodeChunking.ThresholdLines)
         {
             var chunked = new ChunkedHighlightedCodeBody(
                 normalized, lines, fontFamily, fontSize, lineHeight, isDark,

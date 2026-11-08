@@ -93,7 +93,7 @@ public sealed class PropertyGridHeadlessTests
             var grid = new PropertyGrid { Items = new[] { original } };
             grid.Items = new[] { replacement };
             Assert.Same(replacement, grid.SelectedItem);
-            Assert.Equal("Translated", grid.SelectedItem.Description);
+            Assert.Equal("Translated", Assert.IsType<PropertyItem>(grid.SelectedItem).Description);
             Assert.False(original.IsSelected);
         });
     }

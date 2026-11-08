@@ -529,7 +529,7 @@ static void VerifyTitleBar(global::CodeWF.Avalonia.Demo.Views.MainWindow shell, 
     var cards = PaletteCards();
     cards[0].RaiseEvent(new global::Avalonia.Interactivity.RoutedEventArgs(global::Avalonia.Controls.Button.ClickEvent));
     Require(ReferenceEquals(model.SelectedPalette, (AppearanceOption)cards[0].Tag!), "Palette card clicks apply the chosen palette.");
-    string TipText(object? tip) => tip switch { string text => text, TextBlock block => block.Text, _ => string.Empty };
+    string TipText(object? tip) => tip switch { string text => text, TextBlock block => block.Text ?? string.Empty, _ => string.Empty };
     Require(TipText(global::Avalonia.Controls.ToolTip.GetTip(languageButton)) == I18nManager.Instance.GetResource(DemoKeys.Shell.GlobalSettings.LanguageLabel)
         && TipText(global::Avalonia.Controls.ToolTip.GetTip(appearanceButton)) == I18nManager.Instance.GetResource(DemoKeys.Shell.AppearanceMenu),
         "The existing title-bar tooltips follow the host language.");

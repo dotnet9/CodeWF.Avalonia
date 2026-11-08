@@ -623,8 +623,8 @@ public sealed class MarkdownLiveEditorViewTests
         {
             window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
             var previews = view.GetVisualDescendants().OfType<global::CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>().ToArray();
-            Assert.Contains(previews, preview => preview.Classes.Contains("MdBeforeHeading") && preview.Markdown.TrimEnd() == "paragraph");
-            Assert.DoesNotContain(previews, preview => preview.Classes.Contains("MdBeforeHeading") && preview.Markdown.Contains("end"));
+            Assert.Contains(previews, preview => preview.Classes.Contains("MdBeforeHeading") && preview.Markdown?.TrimEnd() == "paragraph");
+            Assert.DoesNotContain(previews, preview => preview.Classes.Contains("MdBeforeHeading") && preview.Markdown?.Contains("end") == true);
             view.SetText("paragraph\n\nend"); window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
             Assert.DoesNotContain(view.GetVisualDescendants().OfType<global::CodeWF.Avalonia.Markdown.Controls.MarkdownViewer>(),
                 preview => preview.Classes.Contains("MdBeforeHeading"));

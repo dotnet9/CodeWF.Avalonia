@@ -10,7 +10,7 @@
     <SelfContained>false</SelfContained>
     <RuntimeIdentifier></RuntimeIdentifier>
     <IsPackable>true</IsPackable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>

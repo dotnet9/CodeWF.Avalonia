@@ -82,6 +82,6 @@ public sealed class MarkdownImageDiskCacheTests : IDisposable
 		var file = Assert.Single(files);
 		File.WriteAllBytes(file, []);
 
-		Assert.Equal([], MarkdownImageDiskCache.TryRead("https://example.com/a.png"));
+		Assert.Empty(Assert.IsType<byte[]>(MarkdownImageDiskCache.TryRead("https://example.com/a.png")));
 	}
 }

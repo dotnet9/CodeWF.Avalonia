@@ -90,7 +90,7 @@ public sealed class MarkdownSelectionToolbarTests(AvaloniaPlatformFixture platfo
                 Assert.True(editor.TextArea.Focus()); editor.TextArea.Caret.Offset = 0;
                 for (var i = 0; i < 6; i++) window.KeyPress(Key.Right, RawInputModifiers.Shift, PhysicalKey.ArrowRight, null);
                 window.KeyRelease(Key.Right, RawInputModifiers.Shift, PhysicalKey.ArrowRight, null); Layout();
-                Assert.False(string.IsNullOrEmpty(code.SelectedText), $"source focus={editor.TextArea.IsKeyboardFocusWithin},caret={editor.CaretOffset},text={editor.Text}");
+                Assert.False(string.IsNullOrEmpty(code!.SelectedText), $"source focus={editor.TextArea.IsKeyboardFocusWithin},caret={editor.CaretOffset},text={editor.Text}");
             }
         }
         try

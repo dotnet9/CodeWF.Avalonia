@@ -1,5 +1,12 @@
 ﻿# 更新日志
 
+## 12.2.50 (2026-11-08)
+
+- 依赖：升级 Dock 12.1.5、Ursa 2.3.1、Markdig 1.6.0、TextMateSharp 3 预览版、SkiaSharp/HarfBuzzSharp 最新预览版、Xaml.Behaviors 12.1.5 与 StaticViewLocator 0.8.0。
+- 共享库：同步 CodeWF.Toolkit 1.1.4；TreeDataGrid 12.0.0 与现有 Prism 版本保持固定，继续使用公开可用的 ReactiveUI.Avalonia 12.1.6。
+- 可空与 C#：源生成器启用预览语言版本并增加可空引用、field 属性及空条件赋值编译回归；修复 Markdown 和演示程序的空值处理与可空签名，将可空警告作为构建错误。
+- 验证：完整构建、996 项单元测试及离屏国际化/目录回归通过；发版原型同步新版本徽章。
+
 ## 12.2.49 (2026-11-07)
 
 - 配色：令牌规则升版 `ruleVersion 7`，新增派生键 `accentInk`（mix(ink→accent,40%)，accent 落在行内代码/代码关键字/选中项文字等正文性文字上的文字级强调色，对 paper/surface ≥ 4.5:1）与 `fieldBorder`（mix(paper→ink,55%)，输入类控件描边，对所在面板 ≥ 3:1）。

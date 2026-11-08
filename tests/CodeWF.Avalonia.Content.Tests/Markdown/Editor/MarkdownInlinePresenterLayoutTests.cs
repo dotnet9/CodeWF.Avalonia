@@ -76,7 +76,7 @@ public sealed class MarkdownInlinePresenterLayoutTests(AvaloniaPlatformFixture p
         {
             Layout();
             var preview = view.GetVisualDescendants().OfType<SelectableTextBlock>()
-                .First(text => text.Inlines?.Text.Contains("同段") == true);
+                .First(text => text.Inlines?.Text?.Contains("同段") == true);
             var before = preview.TextLayout.TextLines.Select(line => (line.Height, line.Baseline)).ToArray();
             var glyph = preview.TextLayout.HitTestTextPosition(3);
             var point = preview.TranslatePoint(glyph.Center, window)!.Value;

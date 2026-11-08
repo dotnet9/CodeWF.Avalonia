@@ -13,6 +13,42 @@ namespace CodeWF.Avalonia.Content.Tests.Lang;
 public class SourceGeneratorTests
 {
     [Fact]
+    public void GeneratorCompilesWithNullableAndCurrentLanguageFeatures()
+    {
+        var parseOptions = new CSharpParseOptions(LanguageVersion.Preview);
+        const string consumer = """
+            #nullable enable
+            public sealed class Consumer
+            {
+                public string? Value { get; set => field = value?.Trim(); }
+                public string[] Keys => [Demo.Lang.Text.Greeting];
+                public void Clear(Consumer? target) => target?.Value = null;
+            }
+            """;
+        var references = ((string)System.AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
+            .Split(System.IO.Path.PathSeparator)
+            .Select(path => MetadataReference.CreateFromFile(path));
+        var compilation = CSharpCompilation.Create("NullablePreviewConsumer",
+            [CSharpSyntaxTree.ParseText(consumer, parseOptions)], references,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
+                nullableContextOptions: NullableContextOptions.Enable));
+        var language = new InMemoryAdditionalText("en-US.json", """
+            { "language": "English", "description": "Preview", "cultureName": "en-US",
+              "Demo": { "Lang": { "Text": { "Greeting": "Hello" } } } }
+            """);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(
+            generators: [new LanguageSourceGenerator().AsSourceGenerator()],
+            additionalTexts: [language], parseOptions: parseOptions);
+
+        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out var generated, out var diagnostics);
+
+        Assert.Single(Assert.Single(driver.GetRunResult().Results).GeneratedSources);
+        Assert.Empty(diagnostics);
+        Assert.DoesNotContain(generated.GetDiagnostics(), diagnostic =>
+            diagnostic.Severity is DiagnosticSeverity.Error or DiagnosticSeverity.Warning);
+    }
+
+    [Fact]
     public void ThreeSegmentKeysAndMatchingMembersProduceCompilableCode()
     {
         var source = GenerateText(("demo.json", """

@@ -592,7 +592,7 @@ internal sealed class MarkdownInlineRenderer(IMarkdownRenderContext context)
     private Inline CreateImage(LinkInline imageInline)
     {
         var altText = MarkdownPlainTextExtractor.ExtractPlainText(imageInline);
-        if (_context.CreateImageControl(imageInline.Url, altText) is { } imageControl)
+        if (imageInline.Url is { } source && _context.CreateImageControl(source, altText) is { } imageControl)
         {
             return CreateInlineContainer(imageControl);
         }

@@ -6,27 +6,27 @@
     <AvaloniaEditVersion>12.0.0</AvaloniaEditVersion>
     <AvaloniaEditTextMateVersion>12.0.0</AvaloniaEditTextMateVersion>
     <SemiAvaloniaVersion>12.1.0.1</SemiAvaloniaVersion>
-    <DockVersion>12.1.0.13</DockVersion>
+    <DockVersion>12.1.5</DockVersion>
     <TreeDataGridAvaloniaVersion>12.0.0</TreeDataGridAvaloniaVersion>
-    <UrsaAvaloniaVersion>2.3.0</UrsaAvaloniaVersion>
+    <UrsaAvaloniaVersion>2.3.1</UrsaAvaloniaVersion>
     <AnimatedImageAvaloniaVersion>2.1.4</AnimatedImageAvaloniaVersion>
-    <MarkdigVersion>1.5.1</MarkdigVersion>
+    <MarkdigVersion>1.6.0</MarkdigVersion>
     <MermaiderVersion>0.15.1</MermaiderVersion>
     <SvgControlsSkiaAvaloniaVersion>12.0.0.17</SvgControlsSkiaAvaloniaVersion>
     <SvgSkiaVersion>5.2.3</SvgSkiaVersion>
-    <SkiaSharpVersion>4.156.0-preview.1.26512.10</SkiaSharpVersion>
-    <HarfBuzzSharpVersion>14.4.0.100-preview.1.26512.10</HarfBuzzSharpVersion>
+    <SkiaSharpVersion>4.158.0-preview.1.26556.2</SkiaSharpVersion>
+    <HarfBuzzSharpVersion>14.4.0.300-preview.1.26556.2</HarfBuzzSharpVersion>
     <SylinkoCSharpMathAvaloniaVersion>12.0.0</SylinkoCSharpMathAvaloniaVersion>
-    <TextMateSharpVersion>2.0.4</TextMateSharpVersion>
-    <TextMateSharpGrammarsVersion>2.0.4</TextMateSharpGrammarsVersion>
-    <CodeWFToolkitVersion>1.1.2</CodeWFToolkitVersion>
+    <TextMateSharpVersion>3.0.0-preview.1</TextMateSharpVersion>
+    <TextMateSharpGrammarsVersion>3.0.0-preview.1</TextMateSharpGrammarsVersion>
+    <CodeWFToolkitVersion>1.1.4</CodeWFToolkitVersion>
     <ReactiveUIVersion>26.0.1</ReactiveUIVersion>
     <ReactiveUIAvaloniaVersion>12.1.6</ReactiveUIAvaloniaVersion>
     <PrismCoreVersion>9.0.537</PrismCoreVersion>
     <PrismAvaloniaVersion>9.0.537.11300-pre</PrismAvaloniaVersion>
     <DryIocVersion>6.0.0-preview-08</DryIocVersion>
-    <XamlBehaviorsVersion>12.0.7</XamlBehaviorsVersion>
-    <StaticViewLocatorVersion>0.7.0</StaticViewLocatorVersion>
+    <XamlBehaviorsVersion>12.1.5</XamlBehaviorsVersion>
+    <StaticViewLocatorVersion>0.8.0</StaticViewLocatorVersion>
     <MicrosoftCodeAnalysisAnalyzersVersion>5.9.0</MicrosoftCodeAnalysisAnalyzersVersion>
     <MicrosoftCodeAnalysisCSharpVersion>5.9.0</MicrosoftCodeAnalysisCSharpVersion>
     <MicrosoftSourceLinkGitHubVersion>11.0.100-rc.3.26522.148</MicrosoftSourceLinkGitHubVersion>

@@ -46,7 +46,10 @@ public sealed class MarkdownTypewriterStream : IDisposable
 		MarkdownStreamPacer.PacingPreset preset = MarkdownStreamPacer.PacingPreset.Balanced)
 	{
 		ArgumentNullException.ThrowIfNull(target);
-		var timer = new DispatcherTimer(TimeSpan.FromMilliseconds(16), DispatcherPriority.Background, static (sender, _) => ((MarkdownTypewriterStream)((DispatcherTimer)sender).Tag!).Tick());
+		var timer = new DispatcherTimer(TimeSpan.FromMilliseconds(16), DispatcherPriority.Background, static (sender, _) =>
+		{
+			if (sender is DispatcherTimer { Tag: MarkdownTypewriterStream stream }) stream.Tick();
+		});
 		var stream = new MarkdownTypewriterStream(target, new MarkdownStreamPacer(preset), timer);
 		timer.Tag = stream;
 		timer.Start();

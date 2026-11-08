@@ -239,11 +239,11 @@ public sealed class MarkdownEditorMutationService : IMarkdownEditorMutationServi
         int selectionStart,
         int selectionLength)
     {
-        var text = editor.Text ?? string.Empty;
         editor.Document.Replace(start, length, replacement);
         editor.CaretOffset = start + replacement.Length;
-        editor.SelectionStart = Math.Clamp(selectionStart, 0, editor.Text.Length);
-        editor.SelectionLength = Math.Clamp(selectionLength, 0, editor.Text.Length - editor.SelectionStart);
+        var textLength = editor.Document.TextLength;
+        editor.SelectionStart = Math.Clamp(selectionStart, 0, textLength);
+        editor.SelectionLength = Math.Clamp(selectionLength, 0, textLength - editor.SelectionStart);
     }
 
     private static bool TryCreateMarkdownTable(string selectedText, out string table)
