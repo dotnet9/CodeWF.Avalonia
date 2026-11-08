@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [switch]$Execute,
+    [string]$ResumeResult = '',
     [string]$OutputDirectory = (Join-Path ([IO.Path]::GetTempPath()) 'CodeWFAvaloniaVersionMigration')
 )
 
@@ -52,10 +53,35 @@ while ($remaining.Count) {
 }
 
 $results = [Collections.Generic.List[object]]::new()
+$completed = @{}
+if ($ResumeResult) {
+    foreach ($entry in @(Get-Content -LiteralPath $ResumeResult -Raw | ConvertFrom-Json)) {
+        $key = "$($entry.id)/$($entry.version)"
+        if ($entry.status -notin @(200, 202, 204) -or $completed.ContainsKey($key) -or
+            -not @($manifest.packages | Where-Object { $_.id -ceq $entry.id -and $_.version -ceq $entry.version }).Count) {
+            throw 'Resume audit contains an invalid or duplicate completed package.'
+        }
+        $completed[$key] = $true
+        $results.Add($entry)
+    }
+    Write-Output "Resuming after $($completed.Count) accepted unlist requests."
+}
 try {
     foreach ($package in $manifest.packages) {
+        if ($completed.ContainsKey("$($package.id)/$($package.version)")) { continue }
         $uri = "https://www.nuget.org/api/v2/package/$($package.id)/$($package.version)"
-        $response = Invoke-WebRequest -Uri $uri -Method Delete -Headers @{ 'X-NuGet-ApiKey' = $env:NUGET_API_KEY } -TimeoutSec 60
+        while ($true) {
+            try {
+                $response = Invoke-WebRequest -Uri $uri -Method Delete -Headers @{ 'X-NuGet-ApiKey' = $env:NUGET_API_KEY } -TimeoutSec 60
+                break
+            } catch {
+                if ($_.ErrorDetails.Message -notmatch 'Out of call volume quota.*replenished in (\d{2}:\d{2}:\d{2})') { throw }
+                $delay = [TimeSpan]::Parse($Matches[1], [Globalization.CultureInfo]::InvariantCulture)
+                if ($delay.TotalSeconds -gt 3600) { throw }
+                Write-Host "NuGet quota exhausted; resume at $([DateTime]::UtcNow.Add($delay).ToString('O'))."
+                Start-Sleep -Seconds ([int][Math]::Ceiling($delay.TotalSeconds) + 5)
+            }
+        }
         if ($response.StatusCode -notin @(200, 202, 204)) { throw "Unlist failed: $($package.id)/$($package.version)" }
         $results.Add([pscustomobject]@{ id = $package.id; version = $package.version; status = $response.StatusCode })
         Write-Output "Unlisted $($package.id) $($package.version)"

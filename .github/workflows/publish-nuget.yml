@@ -13,10 +13,15 @@ on:
         description: '仅取消列出清单中的旧 12.2 系列（NuGet 可信发布策略须包含 Unlist 权限）'
         type: boolean
         default: false
+      resume_run_id:
+        description: '续跑时，提供已保存迁移记录的工作流运行 ID'
+        type: string
+        default: ''
 
 permissions:
   contents: write # 创建 GitHub Release
   id-token: write # NuGet 可信发布：用 OIDC 令牌换取一次性发布凭据
+  actions: read # 续跑只读取本仓先前的迁移审计产物
 
 jobs:
   publish:
@@ -126,8 +131,17 @@ jobs:
     # 策略按工作流文件授权；在同一个 publish-nuget.yml 内重新获取包含 Unlist 的凭据。
     if: github.event_name == 'workflow_dispatch' && inputs.unlist_legacy_versions
     runs-on: windows-latest
+    timeout-minutes: 70
     steps:
       - uses: actions/checkout@v4
+      - name: 还原已完成请求的审计记录
+        if: inputs.resume_run_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-version-migration
+          path: ${{ runner.temp }}/CodeWFAvaloniaVersionMigrationResume
+          run-id: ${{ inputs.resume_run_id }}
+          github-token: ${{ github.token }}
       - name: NuGet login (Trusted Publishing, Unlist)
         uses: nuget/login@v1
         id: login
@@ -137,7 +151,11 @@ jobs:
         shell: pwsh
         env:
           NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
-        run: ./scripts/migrate_nuget_versions.ps1 -Execute -OutputDirectory '${{ runner.temp }}/CodeWFAvaloniaVersionMigration'
+        run: |
+          $resume = Join-Path $env:RUNNER_TEMP 'CodeWFAvaloniaVersionMigrationResume/migration-result.json'
+          $options = @{}
+          if (Test-Path -LiteralPath $resume) { $options.ResumeResult = $resume }
+          ./scripts/migrate_nuget_versions.ps1 -Execute -OutputDirectory '${{ runner.temp }}/CodeWFAvaloniaVersionMigration' @options
       - name: 保存版本迁移记录
         if: always()
         uses: actions/upload-artifact@v4
