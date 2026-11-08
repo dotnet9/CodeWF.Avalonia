@@ -31,6 +31,10 @@ jobs:
       - name: 测试
         run: dotnet test CodeWF.Avalonia.slnx -c Release --no-build
 
+      - name: 验证 NuGet 迁移等待与取消列出清单
+        shell: pwsh
+        run: ./scripts/tests/nuget_migration_test.ps1
+
   aot-smoke:
     name: AOT 冒烟（Demo 发布与运行）
     runs-on: windows-latest

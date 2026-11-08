@@ -19,7 +19,7 @@
     <SylinkoCSharpMathAvaloniaVersion>12.0.0</SylinkoCSharpMathAvaloniaVersion>
     <TextMateSharpVersion>3.0.0-preview.1</TextMateSharpVersion>
     <TextMateSharpGrammarsVersion>3.0.0-preview.1</TextMateSharpGrammarsVersion>
-    <CodeWFToolkitVersion>1.1.4</CodeWFToolkitVersion>
+    <CodeWFToolkitVersion>1.1.6</CodeWFToolkitVersion>
     <ReactiveUIVersion>26.0.1</ReactiveUIVersion>
     <ReactiveUIAvaloniaVersion>12.1.6</ReactiveUIAvaloniaVersion>
     <PrismCoreVersion>9.0.537</PrismCoreVersion>

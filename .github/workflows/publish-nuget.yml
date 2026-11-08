@@ -110,14 +110,14 @@ jobs:
           exit 0
 
       - name: 迁移版本规则并取消列出旧 12.2 系列
-        if: github.ref == 'refs/tags/v12.1.5.1'
+        if: github.ref == 'refs/tags/v12.1.5.2'
         shell: pwsh
         env:
           NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
         run: ./scripts/migrate_nuget_versions.ps1 -Execute -OutputDirectory '${{ runner.temp }}/CodeWFAvaloniaVersionMigration'
 
       - name: 保存版本迁移记录
-        if: always() && github.ref == 'refs/tags/v12.1.5.1'
+        if: always() && github.ref == 'refs/tags/v12.1.5.2'
         uses: actions/upload-artifact@v4
         with:
           name: nuget-version-migration

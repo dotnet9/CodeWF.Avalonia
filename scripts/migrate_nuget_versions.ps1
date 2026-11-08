@@ -11,7 +11,7 @@ $manifest = Get-Content (Join-Path $PSScriptRoot 'nuget-version-migration.json')
 [xml]$versions = Get-Content (Join-Path $root 'build/Versions.props') -Raw
 if ($manifest.replacementVersion -ne $props.Project.PropertyGroup.Version -or
     $manifest.avaloniaVersion -ne $versions.Project.PropertyGroup.AvaloniaVersion -or
-    $manifest.replacementVersion -ne '12.1.5.1') { throw 'Migration version does not match the release.' }
+    $manifest.replacementVersion -ne '12.1.5.2') { throw 'Migration version does not match the release.' }
 $ids = @(Get-ChildItem (Join-Path $root 'src') -Filter '*.csproj' -Recurse |
     Where-Object { (Get-Content $_.FullName -Raw) -match '<IsPackable>true</IsPackable>' } |
     ForEach-Object BaseName | Sort-Object)
@@ -36,13 +36,13 @@ while ($remaining.Count) {
         $download = Join-Path $OutputDirectory "$id.$($manifest.replacementVersion).nupkg"
         $available = $false
         try {
-            $response = Invoke-WebRequest "https://www.nuget.org/api/v2/package/$id/$($manifest.replacementVersion)" -OutFile $download -PassThru
+            $response = Invoke-WebRequest "https://www.nuget.org/api/v2/package/$id/$($manifest.replacementVersion)" -OutFile $download -PassThru -TimeoutSec 60
             if ($response.StatusCode -eq 200) {
                 $stream = [IO.File]::OpenRead($download)
                 try { $available = $stream.Length -gt 4 -and $stream.ReadByte() -eq 0x50 -and $stream.ReadByte() -eq 0x4b }
                 finally { $stream.Dispose() }
             }
-        } catch { Write-Output "Waiting for public package: $id" }
+        } catch { Write-Host "Waiting for public package: $id" }
         if (-not $available) { $id }
     })
     if ($remaining.Count) {
@@ -55,7 +55,7 @@ $results = [Collections.Generic.List[object]]::new()
 try {
     foreach ($package in $manifest.packages) {
         $uri = "https://www.nuget.org/api/v2/package/$($package.id)/$($package.version)"
-        $response = Invoke-WebRequest -Uri $uri -Method Delete -Headers @{ 'X-NuGet-ApiKey' = $env:NUGET_API_KEY }
+        $response = Invoke-WebRequest -Uri $uri -Method Delete -Headers @{ 'X-NuGet-ApiKey' = $env:NUGET_API_KEY } -TimeoutSec 60
         if ($response.StatusCode -notin @(200, 202, 204)) { throw "Unlist failed: $($package.id)/$($package.version)" }
         $results.Add([pscustomobject]@{ id = $package.id; version = $package.version; status = $response.StatusCode })
         Write-Output "Unlisted $($package.id) $($package.version)"
