@@ -8,6 +8,11 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      unlist_legacy_versions:
+        description: '仅取消列出清单中的旧 12.2 系列（NuGet 可信发布策略须包含 Unlist 权限）'
+        type: boolean
+        default: false
 
 permissions:
   contents: write # 创建 GitHub Release
@@ -15,6 +20,7 @@ permissions:
 
 jobs:
   publish:
+    if: ${{ !inputs.unlist_legacy_versions }}
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -115,3 +121,27 @@ jobs:
         with:
           generate_release_notes: true
           make_latest: true
+
+  unlist-legacy:
+    # 策略按工作流文件授权；在同一个 publish-nuget.yml 内重新获取包含 Unlist 的凭据。
+    if: github.event_name == 'workflow_dispatch' && inputs.unlist_legacy_versions
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: NuGet login (Trusted Publishing, Unlist)
+        uses: nuget/login@v1
+        id: login
+        with:
+          user: dotnet9
+      - name: 确认新包可公开下载并取消列出清单内旧版本
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: ./scripts/migrate_nuget_versions.ps1 -Execute -OutputDirectory '${{ runner.temp }}/CodeWFAvaloniaVersionMigration'
+      - name: 保存版本迁移记录
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-version-migration
+          path: ${{ runner.temp }}/CodeWFAvaloniaVersionMigration/migration-result.json
+          if-no-files-found: warn
