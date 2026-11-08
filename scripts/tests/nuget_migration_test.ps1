@@ -10,6 +10,7 @@ function Invoke-WebRequest {
     $id = [Uri]::UnescapeDataString(([Uri]$Uri).Segments[-2].Trim('/'))
     if ($id -notin $manifest.packageIds) { throw "Invalid package ID entered the polling queue: $id" }
     if ($Method -eq 'Delete') {
+        if ($state.denied) { throw 'Fixture: API key does not grant Unlist permission.' }
         $state.deleted.Add($Uri)
         return [pscustomobject]@{ StatusCode = 200 }
     }
@@ -34,4 +35,14 @@ try {
     if ($state.sleeps -ne 1 -or $state.attempts.Count -ne 11 -or $results.Count -ne $manifest.packages.Count -or
         $state.deleted.Count -ne $manifest.packages.Count) { throw 'Migration fixture did not verify the exact package set.' }
     Write-Output "PASS: delayed public packages recovered; $($results.Count) exact legacy versions unlisted offline."
+    $state.denied = $true
+    $state.deleted.Clear()
+    $rejected = $false
+    try { & (Join-Path $scriptRoot 'migrate_nuget_versions.ps1') -Execute -OutputDirectory $OutputDirectory }
+    catch { $rejected = $_.Exception.Message -eq 'Fixture: API key does not grant Unlist permission.' }
+    $failedResults = Get-Content (Join-Path $OutputDirectory 'migration-result.json') -Raw
+    if (-not $rejected -or $state.deleted.Count -ne 0 -or $failedResults.Trim() -ne '[]') {
+        throw 'A denied unlist operation must fail and preserve an empty JSON audit.'
+    }
+    Write-Output 'PASS: missing Unlist permission fails without reporting successful removals.'
 } finally { $env:NUGET_API_KEY = $previousKey }

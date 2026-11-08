@@ -25,7 +25,7 @@ foreach ($package in $manifest.packages) {
 }
 Write-Output "Validated migration: $($manifest.packages.Count) legacy versions across $($ids.Count) packages -> $($manifest.replacementVersion)"
 if (-not $Execute) { return }
-if ([string]::IsNullOrWhiteSpace($env:NUGET_API_KEY)) { throw 'Trusted Publishing API key is required.' }
+if ([string]::IsNullOrWhiteSpace($env:NUGET_API_KEY)) { throw 'A NuGet API key with Unlist permission is required.' }
 New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 
 # 先证明新版本可公开下载，再隐藏旧系列；只使用官方源，不借用构建产物或本地缓存。
@@ -62,6 +62,6 @@ try {
     }
 }
 finally {
-    $results | ConvertTo-Json -Depth 4 | Set-Content (Join-Path $OutputDirectory 'migration-result.json') -Encoding utf8
+    ConvertTo-Json -InputObject @($results.ToArray()) -Depth 4 | Set-Content (Join-Path $OutputDirectory 'migration-result.json') -Encoding utf8
 }
 Write-Output "Unlisting accepted: $($results.Count) versions. Explicit old references remain restorable."

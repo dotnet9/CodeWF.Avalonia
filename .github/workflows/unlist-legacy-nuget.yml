@@ -1,0 +1,34 @@
+name: 取消列出旧 NuGet 版本
+
+# Trusted Publishing 仅授予发布权限；取消列出使用独立、最小权限的仓库密钥。
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unlist:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 验证取消列出凭据已配置
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_UNLIST_API_KEY }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:NUGET_API_KEY)) {
+            throw '请配置仅允许 CodeWF.Avalonia.* 取消列出的 NUGET_UNLIST_API_KEY 仓库密钥；不要在日志或对话中提供密钥。'
+          }
+      - name: 确认新包可公开下载并取消列出清单内旧版本
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_UNLIST_API_KEY }}
+        run: ./scripts/migrate_nuget_versions.ps1 -Execute -OutputDirectory '${{ runner.temp }}/CodeWFAvaloniaVersionMigration'
+      - name: 保存版本迁移记录
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-version-migration
+          path: ${{ runner.temp }}/CodeWFAvaloniaVersionMigration/migration-result.json
+          if-no-files-found: warn
