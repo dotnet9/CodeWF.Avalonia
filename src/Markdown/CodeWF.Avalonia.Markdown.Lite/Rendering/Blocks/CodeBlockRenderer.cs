@@ -11,7 +11,8 @@ internal sealed class CodeBlockRenderer : IMarkdownBlockRenderer
 {
     public Control? TryRender(Block block, string? sourceMarkdown, IMarkdownRenderContext context)
     {
-        if (block is not CodeBlock codeBlock)
+        // YAML 元数据继承 CodeBlock，交给专用元数据卡而非代码工具栏。
+        if (block is not CodeBlock codeBlock || block is Markdig.Extensions.Yaml.YamlFrontMatterBlock)
         {
             return null;
         }

@@ -27,6 +27,31 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
 public sealed class MarkdownCodeBlockFrameTests(AvaloniaPlatformFixture platform)
 {
 	[Theory]
+	[InlineData(false)]
+	[InlineData(true)]
+	public void BlogFrontMatter_RendersMetadataInsteadOfCode(bool customSyntax) => platform.Run(() =>
+	{
+		const string source = "---\ntitle: Avalonia 博文\ndate: 2024-12-05 21:47:17\ncategories:\n  - Avalonia UI\ntags:\n  - \"C#\"\ndraft: false\n---\n\n# 正文\n\n```csharp\nstring? text = null;\n```\n";
+		var (window, viewer) = CreateViewer(source, viewer =>
+		{
+			if (customSyntax) viewer.SyntaxOptions = new MarkdownSyntaxOptions();
+		});
+		try
+		{
+			var metadata = Assert.Single(viewer.GetVisualDescendants().OfType<Border>(),
+				border => border.Classes.Contains("MdFrontMatter"));
+			var text = metadata.GetVisualDescendants().OfType<TextBlock>().Select(block => block.Text).ToArray();
+			Assert.Contains("title", text);
+			Assert.Contains("Avalonia 博文", text);
+			Assert.Contains("  - Avalonia UI", text);
+			Assert.Single(viewer.GetVisualDescendants().OfType<Border>(),
+				border => border.Classes.Contains(MarkdownStyleKeys.CodeBlock));
+			Assert.Equal(source, viewer.Markdown);
+		}
+		finally { window.Close(); }
+	});
+
+	[Theory]
 	[InlineData("#FFFFFF", false)]
 	[InlineData("#202020", true)]
 	[InlineData("#20000000", false)]

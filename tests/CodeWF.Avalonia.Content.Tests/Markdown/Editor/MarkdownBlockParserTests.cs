@@ -12,6 +12,22 @@ namespace CodeWF.Avalonia.Content.Tests.Markdown.Editor;
 public sealed class MarkdownBlockParserTests
 {
     [Theory]
+    [InlineData("\n")]
+    [InlineData("\r\n")]
+    public void BlogFrontMatter_RemainsMetadataAndPreservesSourceWhenBodyChanges(string newline)
+    {
+        var markdown = "---\ntitle: Avalonia 博文\ncategories:\n  - Avalonia UI\ntags: [CSharp, Markdown]\ndraft: false\n---\n\n# Body\n\nOriginal paragraph\n"
+            .Replace("\n", newline, StringComparison.Ordinal);
+        var blocks = MarkdownBlockParser.Parse(markdown);
+        Assert.Equal(MarkdownBlockKind.Raw, blocks[0].Kind);
+        Assert.StartsWith("---", blocks[0].Raw);
+        Assert.Equal(markdown, MarkdownBlockParser.Write(blocks));
+        blocks.Single(block => block.Text == "Original paragraph").Text = "Edited paragraph";
+        Assert.Equal(markdown.Replace("Original paragraph", "Edited paragraph", StringComparison.Ordinal),
+            MarkdownBlockParser.Write(blocks));
+    }
+
+    [Theory]
     [InlineData("# Title\n\nRead [link][site] and note[^n].\n\n[site]: https://example.com\n[^n]: Footnote text.\n\n## Next\n\nBody\n")]
     [InlineData("# Title\r\n\r\nRead [link][site] and note[^n].\r\n\r\nBody\r\n\r\n[site]: https://example.com\r\n[^n]: Footnote text.\r\n")]
     [InlineData("[site]: https://example.com\n\n[^n]: Footnote text.\n")]

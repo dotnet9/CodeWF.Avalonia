@@ -24,7 +24,6 @@ public static class MarkdownBlockParser
 
     private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
         .UseAdvancedExtensions().UseAlertBlocks().UseYamlFrontMatter()
-        .UseYamlFrontMatter()
         .UsePreciseSourceLocation()
         .Build();
 
@@ -93,6 +92,14 @@ public static class MarkdownBlockParser
                         IsFenced = true,
                         Language = fenced.Info ?? string.Empty,
                         Text = ExtractCode(fenced)
+                    });
+                    break;
+
+                case Markdig.Extensions.Yaml.YamlFrontMatterBlock:
+                    blocks.Add(new MarkdownBlockModel
+                    {
+                        Kind = MarkdownBlockKind.Raw,
+                        Raw = text.Substring(block.Span.Start, block.Span.Length)
                     });
                     break;
 

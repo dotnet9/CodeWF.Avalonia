@@ -52,7 +52,7 @@ internal static class MarkdownBlockClassifier
 			ParagraphBlock paragraph when IsImageParagraph(paragraph) => MarkdownBlockKind.Image,
 			ParagraphBlock => MarkdownBlockKind.Paragraph,
 			FencedCodeBlock => MarkdownBlockKind.Code,
-			CodeBlock => MarkdownBlockKind.Code,
+			CodeBlock when block is not Markdig.Extensions.Yaml.YamlFrontMatterBlock => MarkdownBlockKind.Code,
 			ListBlock => MarkdownBlockKind.List,
 			QuoteBlock => MarkdownBlockKind.Quote,
 			ThematicBreakBlock => MarkdownBlockKind.ThematicBreak,

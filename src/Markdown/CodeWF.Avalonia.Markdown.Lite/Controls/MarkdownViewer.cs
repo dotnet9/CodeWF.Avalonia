@@ -60,6 +60,7 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     internal static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
         .UseAdvancedExtensions()
         .UseAlertBlocks()
+        .UseYamlFrontMatter()
         .Build();
 
     private MarkdownPipeline _documentPipeline = Pipeline;

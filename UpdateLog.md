@@ -1,5 +1,10 @@
 ﻿# 更新日志
 
+## 12.2.51 (2026-11-08)
+
+- Markdown：默认阅读管线启用 YAML front matter，避免博文元数据被渲染成水平线、标题或普通代码块；即时视图保留元数据卡和原始 YAML 分隔符。
+- 回归：增加博客日期、分类/标签列表、普通代码块以及 LF/CRLF 编辑往返测试，正文编辑不会改写 YAML 头。
+
 ## 12.2.50 (2026-11-08)
 
 - 依赖：升级 Dock 12.1.5、Ursa 2.3.1、Markdig 1.6.0、TextMateSharp 3 预览版、SkiaSharp/HarfBuzzSharp 最新预览版、Xaml.Behaviors 12.1.5 与 StaticViewLocator 0.8.0。
