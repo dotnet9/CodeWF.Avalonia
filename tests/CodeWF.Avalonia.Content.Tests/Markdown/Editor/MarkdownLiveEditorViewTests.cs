@@ -29,6 +29,37 @@ public sealed class MarkdownLiveEditorViewTests
 
     public MarkdownLiveEditorViewTests(AvaloniaPlatformFixture platform) => _platform = platform;
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ControlEnterCommitsRenderedParagraphWithoutInsertingNewline(bool styled) => _platform.Run(() =>
+    {
+        var view = new MarkdownLiveEditorView { HeaderText = null, ChipText = null };
+        var paragraph = styled ? "<span style=\"background-color:#FFF3BF\">重要结论</span>，保留后文。" : "重要结论，保留后文。";
+        view.SetText(paragraph + "\n\n第二段保持完整。");
+        var window = new Window { Width = 640, Height = 420, Content = view };
+        window.Styles.Add(new global::Semi.Avalonia.SemiTheme());
+        window.Styles.Add(new MarkdownFullThemes());
+        window.Show();
+        try
+        {
+            Dispatcher.UIThread.RunJobs(); window.UpdateLayout();
+            view.FocusBlock(0); Dispatcher.UIThread.RunJobs();
+            var block = view.GetVisualDescendants().OfType<MarkdownBlockView>().First();
+            var input = block.ActiveEditor!;
+            input.CaretIndex = input.SelectionStart = input.SelectionEnd = 1;
+            var before = view.Text;
+
+            window.KeyPress(Key.Enter, RawInputModifiers.Control, PhysicalKey.Enter, null);
+            window.KeyRelease(Key.Enter, RawInputModifiers.Control, PhysicalKey.Enter, null);
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.Equal(before, view.Text);
+            Assert.False(block.IsEditing);
+        }
+        finally { window.Close(); }
+    });
+
     [Fact]
     public void ContextSourceLineBindsActualPointerAndKeyboardTargetsWithoutChangingText() => _platform.Run(() =>
     {

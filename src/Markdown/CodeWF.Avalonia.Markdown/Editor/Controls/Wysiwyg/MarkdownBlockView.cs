@@ -180,7 +180,7 @@ internal sealed class MarkdownBlockView : UserControl
             TextCommitted?.Invoke(this, ModelText);
         };
         _editor.LostFocus += (_, _) => CommitIfFocusLeft();
-        _editor.KeyDown += OnEditorKeyDown;
+        _editor.AddHandler(KeyDownEvent, OnEditorKeyDown, RoutingStrategies.Tunnel);
         _editor.PropertyChanged += (_, e) =>
         {
             if (_editing && e.Property.Name is "CaretIndex" or "SelectionStart" or "SelectionEnd") EditorSelectionChanged?.Invoke();
