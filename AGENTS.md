@@ -11,7 +11,7 @@ dotnet test tests/CodeWF.Avalonia.Content.Tests/CodeWF.Avalonia.Content.Tests.cs
 dotnet run --project bench/CodeWF.Avalonia.Markdown.Benchmarks -c Release -- all
 ```
 
-- 包版本由 `Directory.Build.props` 的 `Version` 统一管理，当前发布线为 `12.2.x`；依赖版本在 `build/Versions.props` 中集中维护，`Directory.Packages.props` 引用版本变量，框架默认值在 `build/ProjectDefaults.props`。发布标签必须与包版本一致。
+- 包版本由 `Directory.Build.props` 的 `Version` 统一管理，采用 `Avalonia版本.自研修订号`（当前 `12.1.5.x`）；依赖版本在 `build/Versions.props` 中集中维护，`Directory.Packages.props` 引用版本变量，框架默认值在 `build/ProjectDefaults.props`。发布标签必须与包版本一致。
 - 发版升版本号后必须重跑 `scripts/build_standalone_prototype.ps1`：原型标题栏
   版本徽章取自版本号，漏更会导致 CI 的 `sync_design_catalog -Check` 失败。
 - 提交：中文、一个逻辑单元一个提交，随做随推。
