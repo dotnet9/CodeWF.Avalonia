@@ -393,13 +393,14 @@ public class WindowedStackPanel : Panel
     {
         PrepareAnchor();
         CollectDecorators();
-        var width = double.IsFinite(availableSize.Width) ? availableSize.Width : _lastWidth;
-        if (!double.IsFinite(width))
+        var virtualizing = IsVirtualizing;
+        // Auto 列先按无限宽查询自然尺寸；短文档须把该约束传给图片和文本。
+        var width = double.IsFinite(availableSize.Width) || !virtualizing ? availableSize.Width : _lastWidth;
+        if (virtualizing && !double.IsFinite(width))
         {
             width = 0;
         }
 
-        var virtualizing = IsVirtualizing;
         var (windowTop, windowBottom) = ResolveVisibleWindow(virtualizing, availableSize);
         var isVisibleWindow = !double.IsNegativeInfinity(windowTop) && !double.IsPositiveInfinity(windowBottom);
 
@@ -450,7 +451,7 @@ public class WindowedStackPanel : Panel
             y -= Spacing;
         }
 
-        _lastWidth = width;
+        if (double.IsFinite(width)) _lastWidth = width;
         var size = new Size(maxWidth, Math.Max(0, y));
         CompensateAnchor(size.Height);
         return size;

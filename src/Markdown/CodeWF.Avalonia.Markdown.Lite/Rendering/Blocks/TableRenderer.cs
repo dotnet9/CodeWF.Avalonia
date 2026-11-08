@@ -94,12 +94,12 @@ internal sealed class TableRenderer : IMarkdownBlockRenderer
 
     private static Control? CreateTableCellBlock(Block block, bool isHeader, IMarkdownRenderContext context)
     {
-        var child = block is ParagraphBlock paragraph
-            ? context.CreateParagraph(paragraph, false, new Thickness(0))
-            : context.ConvertBlock(block, null);
+        // 图片段落也必须经过块管线，才能正常挂载模板并按单元格宽度量测。
+        var child = context.ConvertBlock(block, null);
 
         if (child is SelectableTextBlock textBlock)
         {
+            if (block is ParagraphBlock) textBlock.Margin = new Thickness(0);
             // 表格排版独立于正文：主题可用 CodeWFMarkdownTableCellFontSize/LineHeight 覆写字号与行高。
             textBlock.Bind(SelectableTextBlock.FontSizeProperty, textBlock.GetResourceObservable("CodeWFMarkdownTableCellFontSize"));
             textBlock.Bind(SelectableTextBlock.LineHeightProperty, textBlock.GetResourceObservable("CodeWFMarkdownTableCellLineHeight"));

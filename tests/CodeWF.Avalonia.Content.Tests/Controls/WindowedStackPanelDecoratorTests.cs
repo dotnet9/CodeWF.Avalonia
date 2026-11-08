@@ -22,6 +22,25 @@ public sealed class WindowedStackPanelDecoratorTests(AvaloniaPlatformFixture pla
 
     [Theory]
     [MemberData(nameof(HostNames))]
+    public void ShortContentKeepsItsNaturalWidthInsideAnAutoColumn(string hostName) => platform.Run(() =>
+    {
+        var panel = CreatePanel(hostName);
+        panel.AddItem(new TextBlock { Text = "Natural width for table-cell content", TextWrapping = global::Avalonia.Media.TextWrapping.Wrap });
+        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
+        grid.Children.Add(panel.View);
+        var window = new Window { Width = 500, Height = 300, Content = grid };
+        window.Show();
+        try
+        {
+            Dispatcher.UIThread.RunJobs(); window.UpdateLayout();
+            Assert.InRange(panel.View.Bounds.Width, 100, 500);
+            Assert.True(panel.View.DesiredSize.Height < 100);
+        }
+        finally { window.Close(); }
+    });
+
+    [Theory]
+    [MemberData(nameof(HostNames))]
     public void UnregisteredChildSharesItsBandInsteadOfShiftingEveryLaterBlock(string hostName) => platform.Run(() =>
     {
         var panel = CreatePanel(hostName);
