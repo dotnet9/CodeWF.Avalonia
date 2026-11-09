@@ -66,7 +66,11 @@ public sealed class MarkdownOutlinePanel : TemplatedControl
 	private StackPanel? _emptyState;
 	private StackPanel? _noMatchState;
 	private readonly List<OutlineRow> _rows = [];
-	private readonly List<OutlineRow> _visibleRows = [];
+	// 评审修订（Vex UI 验证抓到的真实竞态）：可见集用 ObservableCollection 原地增删，
+	// ItemsSource 只在首次挂上；此前每次 Refilter 都「置空再赋值」重置 ItemsSource，
+	// 快速连续重建（逐字输入/多窗竞争）时 Avalonia 容器生成器在处理上一次变更途中
+	// 又收到新 Reset，Remove(index) 直接越界崩溃。
+	private readonly System.Collections.ObjectModel.ObservableCollection<OutlineRow> _visibleRows = [];
 	private bool _applyingSelection;
 
 	public MarkdownOutlinePanel()
@@ -250,10 +254,10 @@ public sealed class MarkdownOutlinePanel : TemplatedControl
 			_visibleRows.Add(row);
 		}
 
-		if (_list is not null)
+		if (_list is not null && !ReferenceEquals(_list.ItemsSource, _visibleRows))
 		{
+			// 只在首次（或模板重建后）挂源；此后集合原地变更，避免高频重置 ItemsSource。
 			_applyingSelection = true;
-			_list.ItemsSource = null;
 			_list.ItemsSource = _visibleRows;
 			_applyingSelection = false;
 		}
