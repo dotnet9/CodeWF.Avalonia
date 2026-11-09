@@ -300,4 +300,4 @@ if (args.includes('--check')) {
 }
 
 writeAll();
-console.log('默认配色: ' + data.default + ' · 版本戳: CodeWF.Avalonia ' + version);
+console.log('默认配色: ' + data.default + ' · 规则版本: ruleVersion ' + data.ruleVersion);
