@@ -272,6 +272,21 @@ public sealed partial class MarkdownMindMapView : UserControl
         Rebuild(false);
         ZoomChanged?.Invoke(this, EventArgs.Empty);
     }
+
+    /// <summary>
+    /// 回到中心（Vex 原型 C3 评审新增，宿主缩放坞「回到中心」按钮消费）：平移画布后容易迷失，
+    /// 保持当前缩放不动，把根节点带回视口中心偏左的位置（与 Fit 的右布局锚点同款口径）。
+    /// </summary>
+    public void CenterOnRoot()
+    {
+        if (_width <= 0 || Bounds.Width <= 0 || Bounds.Height <= 0) return;
+        if (Root is not { } root || !_bounds.TryGetValue(root, out var rootRect)) return;
+        _translate.X = Math.Max(24, Bounds.Width * 0.16) - rootRect.X * Zoom;
+        _translate.Y = Bounds.Height / 2 - rootRect.Center.Y * Zoom;
+        _hasViewport = true;
+        Rebuild(false);
+        ZoomChanged?.Invoke(this, EventArgs.Empty);
+    }
     public void EnsureViewport() { if (!_hasViewport && IsEffectivelyVisible) Fit(.75); }
 
     private void Rebuild(bool geometry = true)
