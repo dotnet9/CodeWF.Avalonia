@@ -62,18 +62,23 @@ public sealed class ToolTipHelper
     }
 
     /// <summary>
-    ///     创建统一样式的 ToolTip 内容：折行、最大宽度、前景跟随主题令牌；空文本返回 null（不显示提示）。
+    ///     创建统一样式的 ToolTip：折行、最大宽度、前景跟随主题令牌；空文本返回 null（不显示提示）。
+    ///     显式创建 ToolTip 实例并把 MaxWidth 以本地值写入：宿主主题（如 Semi 的 320）是样式值，
+    ///     本地值优先——否则长路径在 320 处被硬裁（TextBlock 自身 480 的软约束拦不住容器裁切）。
     /// </summary>
     public static object? CreateTextTip(string? text, double maxWidth = DefaultMaxWidth)
     {
         return string.IsNullOrWhiteSpace(text)
             ? null
-            : new TextBlock
+            : new ToolTip
             {
-                Text = text,
-                TextWrapping = TextWrapping.Wrap,
                 MaxWidth = maxWidth,
-                [!TextBlock.ForegroundProperty] = new DynamicResourceExtension("ToolTipForeground")
+                Content = new TextBlock
+                {
+                    Text = text,
+                    TextWrapping = TextWrapping.Wrap,
+                    [!TextBlock.ForegroundProperty] = new DynamicResourceExtension("ToolTipForeground")
+                }
             };
     }
 }
