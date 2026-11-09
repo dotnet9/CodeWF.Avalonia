@@ -2,6 +2,13 @@ param([string]$OutputDirectory = (Join-Path ([IO.Path]::GetTempPath()) 'CodeWFNu
 $ErrorActionPreference = 'Stop'
 $scriptRoot = Split-Path $PSScriptRoot -Parent
 $manifest = Get-Content (Join-Path $scriptRoot 'nuget-version-migration.json') -Raw | ConvertFrom-Json
+# 该脚本只服务于把 12.2.xx 旧包迁移到 manifest.replacementVersion 的一次性流程；
+# 仓库版本一旦越过该目标（后续正常发版），迁移即成历史，CI 跳过测试而不是永远红着。
+[xml]$currentProps = Get-Content (Join-Path (Split-Path $scriptRoot -Parent) 'Directory.Build.props') -Raw
+if ($currentProps.Project.PropertyGroup.Version -ne $manifest.replacementVersion) {
+    Write-Output "SKIP: NuGet 迁移工具针对 $($manifest.replacementVersion)，当前版本 $($currentProps.Project.PropertyGroup.Version) 已越过迁移目标。"
+    exit 0
+}
 $state = @{ attempts = @{}; deleted = [Collections.Generic.List[string]]::new(); sleeps = 0 }
 
 # 所有网络与等待均在测试作用域内替换，真实发布凭据不会用于测试。
