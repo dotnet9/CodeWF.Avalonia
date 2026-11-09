@@ -32,7 +32,7 @@
     <MicrosoftSourceLinkGitHubVersion>11.0.100-rc.3.26522.148</MicrosoftSourceLinkGitHubVersion>
     <CoverletCollectorVersion>10.1.0</CoverletCollectorVersion>
     <MicrosoftNetTestSdkVersion>18.11.0</MicrosoftNetTestSdkVersion>
-    <XunitV3Version>4.0.2</XunitV3Version>
+    <XunitV3Version>4.0.3</XunitV3Version>
     <XunitRunnerVisualStudioVersion>4.0.1</XunitRunnerVisualStudioVersion>
     <BogusVersion>35.6.5</BogusVersion>
   </PropertyGroup>

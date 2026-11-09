@@ -1,5 +1,15 @@
 ﻿# 更新日志
 
+## 12.1.5.6 (2026-11-09)
+
+- Markdown：新增 `MarkdownOutlinePanel` 文档大纲侧栏控件（标题筛选 + 分层行列表 + 空态提示），供宿主（Vex/Vox）以薄壳方式共用同一份大纲 UI；行模型 `OutlineRow`，数据面吃 `MarkdownOutlineItem` 并经 `MarkdownOutlineNumbering.WithNumbers` 统一算序号，`ShowNumbers` 控制序号显隐（默认关，序号列宽随内容、与标题一个字距）。
+- Markdown：`MarkdownOutlineExtractor.ExtractFromText` 文本级提取（管线解析优先、空结果退化为跳过围栏代码块的逐行扫描）；新增 `OutlineExpansionState`/`OutlineExpansionKey` 折叠状态编解码与稳定键生成（文档路径 + 标题祖先链 + 同名序号），宿主共用折叠持久化口径。
+- 视觉契约：`OutlinePanel*` 资源键（颜色/字号/行高/行高内距）提供中性兜底，宿主应用层同名覆写即可整体换肤；筛选语义统一为「标题匹配 + 父链」，键盘左右键折叠（有子级时生效），`NavigateRequested`/`ExpandedChanged` 事件交宿主接跳转与持久化；新增面板无头测试。
+
+## 12.1.5.5 (2026-11-09)
+
+- Markdown：新增大纲章节序号能力——`MarkdownOutlineItem` 增加非位置属性 `Number`，配套扩展 `MarkdownOutlineNumbering.WithNumbers` 按出现顺序逐级计数（1、1.1、1.1.1；跳级以 0 占位），`Extract` 保持纯提取不填序号，是否显示由宿主偏好决定；新增编号单元测试。
+
 ## 12.1.5.2 (2026-11-08)
 
 - 修复 NuGet 索引延迟时等待提示混入包清单的问题，增加首次不可下载、随后可下载的离线迁移回归；确认新包公开可下载后再取消列出旧 12.2 系列。
