@@ -241,9 +241,11 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
         try
         {
             var svg = MermaidRenderer.RenderSvg(source, options);
-            svg = InlineCssVariables(svg, options);
+            // 象限图统一化必须先于 CSS 变量内联：内联会把 var(--_group-fill) 等目标串改写为具体色值，
+            // 统一化的精确匹配将全部落空（12.1.6.1 回归根因）。
             if (options.Style == DiagramStyle.Quiet && Regex.IsMatch(source, @"^\s*quadrantChart\b", RegexOptions.Multiline | RegexOptions.CultureInvariant))
                 svg = NormalizeQuadrantCells(svg);
+            svg = InlineCssVariables(svg, options);
             if (Regex.IsMatch(source, @"^\s*sankey(?:-beta)?\b", RegexOptions.Multiline | RegexOptions.CultureInvariant))
                 svg = FitSankeyLabels(svg);
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(svg));
