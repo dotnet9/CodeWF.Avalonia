@@ -165,6 +165,23 @@ public partial class MarkdownEditorView : UserControl
     public static readonly StyledProperty<Thickness> EditorPaddingProperty =
         AvaloniaProperty.Register<MarkdownEditorView, Thickness>(nameof(EditorPadding), new Thickness(6, 28, 34, 28));
 
+    /// <summary>
+    /// 代码自动换行开关。关闭（false）时源码区横向滚动：
+    /// TextEditor 以 Disabled 为横滚基准值，直接改 WordWrap 会被 AvaloniaEdit 还原成 Disabled，
+    /// 因此这里成对改写滚动条可见性，保证「关=横向滚动」真实生效。
+    /// </summary>
+    public bool WordWrap
+    {
+        get => _editor.WordWrap;
+        set
+        {
+            _editor.WordWrap = value;
+            _editor.HorizontalScrollBarVisibility = value
+                ? global::Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled
+                : global::Avalonia.Controls.Primitives.ScrollBarVisibility.Auto;
+        }
+    }
+
     public Thickness EditorPadding
     {
         get => GetValue(EditorPaddingProperty);

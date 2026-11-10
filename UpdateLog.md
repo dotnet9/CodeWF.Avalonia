@@ -1,5 +1,10 @@
 ﻿# 更新日志
 
+## 12.1.5.9 (2026-11-10)
+
+- Markdown：`MarkdownEditorView` 新增 `WordWrap` 属性——关闭（false）时源码区横向滚动。此前 TextEditor 以 Disabled 为横滚基准值，AvaloniaEdit 的 WordWrap=false 会还原保存值，导致宿主「代码自动换行」开关永远无效（永远软换行）；现成对改写滚动条可见性，保证「关=横向滚动、开=软换行」真实生效（Vex 偏好接线，Vox 写作页默认横滚与原型同口径）。
+- MindView：`MarkdownMindMapView.Fit` 增加 `focusLine` 可读适配口径——下限 ≥.75 时根节点钉左（所有布局）并垂直对焦最后一个不晚于编辑行的标题节点（Vex 原型 fit(true) 同口径），`UpdateFocusLine` 供宿主随光标更新目标，尺寸变化重适配保持对焦；`EnsureViewport` 首视同样带对焦；「适应画布」全貌行为（下限 MinZoom）不变。
+
 ## 12.1.5.6 (2026-11-09)
 
 - Markdown：新增 `MarkdownOutlinePanel` 文档大纲侧栏控件（标题筛选 + 分层行列表 + 空态提示），供宿主（Vex/Vox）以薄壳方式共用同一份大纲 UI；行模型 `OutlineRow`，数据面吃 `MarkdownOutlineItem` 并经 `MarkdownOutlineNumbering.WithNumbers` 统一算序号，`ShowNumbers` 控制序号显隐（默认关，序号列宽随内容、与标题一个字距）。

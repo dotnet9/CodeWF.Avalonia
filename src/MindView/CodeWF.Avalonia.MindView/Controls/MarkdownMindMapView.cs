@@ -72,6 +72,7 @@ public sealed partial class MarkdownMindMapView : UserControl
     private readonly Dictionary<MarkdownMindMapNode, Border> _cards = [];
     private bool _hasViewport;
     private double? _fitMinimum;
+    private int? _fitFocusLine;
     private Size _lastViewportSize;
     private ViewportState? _pendingViewport;
     private Rect _realizedRegion;
@@ -109,7 +110,7 @@ public sealed partial class MarkdownMindMapView : UserControl
     {
         var node = Flatten(Root).FirstOrDefault(n => n.Id == id);
         if (node is null) return false;
-        Reveal(Root!); _selected = node; Rebuild(); _fitMinimum = null;
+        Reveal(Root!); _selected = node; Rebuild(); _fitMinimum = null; _fitFocusLine = null;
         if (_bounds.TryGetValue(node, out var rect))
         { _translate.X = Bounds.Width / 2 - rect.Center.X * Zoom; _translate.Y = Bounds.Height / 2 - (rect.Top + RenderedHeight(node, rect) / 2) * Zoom; _hasViewport = true; }
         Rebuild(false);
@@ -160,7 +161,7 @@ public sealed partial class MarkdownMindMapView : UserControl
         SizeChanged += (_, _) =>
         {
             var next = Bounds.Size;
-            if (_fitMinimum is { } minimum) Fit(minimum);
+            if (_fitMinimum is { } minimum) Fit(minimum, _fitFocusLine);
             else if (_hasViewport && _lastViewportSize.Width > 0 && _lastViewportSize.Height > 0 && next.Width > 0 && next.Height > 0)
             { _translate.X += (next.Width - _lastViewportSize.Width) / 2; _translate.Y += (next.Height - _lastViewportSize.Height) / 2; }
             _lastViewportSize = next;
@@ -254,7 +255,12 @@ public sealed partial class MarkdownMindMapView : UserControl
         Rebuild(false);
         ZoomChanged?.Invoke(this, EventArgs.Empty);
     }
-    public void Fit(double? minimum = null)
+    /// <summary>
+    /// 适配视口。minimum ≥ .75 时走「可读适配」：根节点钉在左侧、垂直居中；
+    /// focusLine（宿主当前编辑行）给定时垂直对焦最后一个不晚于该行的标题节点——与 Vex 原型可读 fit 同口径。
+    /// minimum 省略或低于 .75 时保留「适应画布」全貌行为（下限取 MinZoom）。
+    /// </summary>
+    public void Fit(double? minimum = null, int? focusLine = null)
     {
         if (_width <= 0 || Bounds.Width <= 0 || Bounds.Height <= 0) return;
         var floor = minimum ?? MinZoom;
@@ -262,15 +268,44 @@ public sealed partial class MarkdownMindMapView : UserControl
         _scale.ScaleX = _scale.ScaleY = scale;
         _translate.X = Math.Max(floor >= .75 ? 24 : 0, (Bounds.Width - _width * scale) / 2);
         _translate.Y = (Bounds.Height - _height * scale) / 2;
-        if (floor >= .75 && LayoutKind == MindMapLayoutKind.Right && Root is { } root && _bounds.TryGetValue(root, out var rootRect))
+        if (floor >= .75 && Root is { } root && _bounds.TryGetValue(root, out var rootRect))
         {
+            // 可读口径：根节点钉左（所有布局，与原型一致），垂直对焦编辑行所在章节或根节点。
             _translate.X = 32 - rootRect.X * scale;
-            _translate.Y = Bounds.Height / 2 - rootRect.Center.Y * scale;
+            var focusRect = FindFocusRect(root, focusLine, scale);
+            if (focusRect is { } target)
+            {
+                var contentHeight = _height * scale;
+                var anchor = contentHeight > Bounds.Height ? target : rootRect;
+                _translate.Y = Bounds.Height / 2 - anchor.Center.Y * scale;
+            }
+            else
+            {
+                _translate.Y = Bounds.Height / 2 - rootRect.Center.Y * scale;
+            }
         }
         _hasViewport = true;
         _fitMinimum = minimum;
+        _fitFocusLine = focusLine;
         Rebuild(false);
         ZoomChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>深度优先找最后一个 SourceLine ≤ focusLine 的可见节点矩形；没有匹配时回退根节点。</summary>
+    private Rect? FindFocusRect(MarkdownMindMapNode node, int? focusLine, double scale)
+    {
+        if (focusLine is not { } line) return null;
+        MarkdownMindMapNode? best = null;
+        CollectFocusCandidate(node, line, ref best);
+        if (best is not { } target || !_bounds.TryGetValue(target, out var rect)) return null;
+        return rect;
+    }
+
+    private void CollectFocusCandidate(MarkdownMindMapNode node, int line, ref MarkdownMindMapNode? best)
+    {
+        if (node.SourceLine <= line && node.Kind != MarkdownMindMapNodeKind.Document) best = node;
+        if (node.IsCollapsed) return;
+        foreach (var child in node.Children) CollectFocusCandidate(child, line, ref best);
     }
 
     /// <summary>
@@ -287,7 +322,10 @@ public sealed partial class MarkdownMindMapView : UserControl
         Rebuild(false);
         ZoomChanged?.Invoke(this, EventArgs.Empty);
     }
-    public void EnsureViewport() { if (!_hasViewport && IsEffectivelyVisible) Fit(.75); }
+    public void EnsureViewport() { if (!_hasViewport && IsEffectivelyVisible) Fit(.75, _fitFocusLine); }
+
+    /// <summary>宿主在编辑行变化后调用：更新可读适配的垂直对焦目标（不改当前视野，下次适配生效）。</summary>
+    public void UpdateFocusLine(int? line) => _fitFocusLine = line;
 
     private void Rebuild(bool geometry = true)
     {
