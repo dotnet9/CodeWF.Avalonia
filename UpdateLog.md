@@ -1,6 +1,14 @@
 ﻿# 更新日志
 
-## 12.1.5.11 (2026-11-10)
+## 12.1.6.1 (2026-11-10)
+
+- 跟随上游 Avalonia 12.1.6：全包版本前三段切换为 12.1.6（12.1.5.11 未随本 tag 发布，其内容并入本版）。
+- Markdown：象限图统一化配色方向修正——四格统一为浅 accent 底与 accent 描边（12.1.5.10 误以趋近底色的 group-fill 抹平，观感近乎无填充）；直角与 1px 描边口径不变。
+- MindView：`Fit` 可读跟随（钉左+垂直对焦编辑行）仅在显式传入 focusLine 时启用，无参 `Fit` 全貌与各布局默认行为完全回归。
+- Controls：`ToolTipHelper` 折行保险——TextBlock 本地写入 `MaxWidth`，宿主主题模板不传导 ToolTip.MaxWidth 时长路径提示仍折行。
+- 测试：MindViewControlTests 提示断言改 TipText 取文本；ToolTipHelperTests 断言随本地 MaxWidth 行为更新。
+
+
 
 - Markdown：象限图统一化修正配色方向——四格统一为浅 accent 底与 accent 描边（12.1.5.10 误以趋近底色的 group-fill 抹平，观感近乎无填充）；直角与 1px 描边口径不变。
 - MindView：`Fit` 可读跟随（钉左+垂直对焦编辑行）仅在显式传入 focusLine 时启用，无参 `Fit` 全貌与各布局默认行为完全回归。

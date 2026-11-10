@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <AvaloniaVersion>12.1.5</AvaloniaVersion>
+    <AvaloniaVersion>12.1.6</AvaloniaVersion>
     <AvaloniaControlsDataGridVersion>12.1.2</AvaloniaControlsDataGridVersion>
     <DotNetLibrariesVersion>11.0.0-rc.3.26522.148</DotNetLibrariesVersion>
     <AvaloniaEditVersion>12.0.0</AvaloniaEditVersion>
