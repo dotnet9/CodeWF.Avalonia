@@ -3,6 +3,7 @@ using global::Avalonia.Controls;
 using global::Avalonia.Input;
 using global::Avalonia.Layout;
 using global::Avalonia.Media;
+using global::Avalonia.Markup.Xaml.MarkupExtensions;
 using global::Avalonia.Styling;
 using global::Avalonia.Animation;
 using CodeWF.Avalonia.MindView.Markdown;
@@ -322,6 +323,27 @@ public sealed partial class MarkdownMindMapView : UserControl
         Rebuild(false);
         ZoomChanged?.Invoke(this, EventArgs.Empty);
     }
+    /// <summary>
+    ///     统一文本提示（与 Controls 的 ToolTipHelper.CreateTextTip 同语义的本地实现）：
+    ///     TextBlock 承载折行 + 最大宽度，前景走 ToolTipForeground 主题令牌；空文本返回 null。
+    ///     MindView 不引用 Controls（避免连带 Semi 依赖），故此处本地实现，改两处时需同步。
+    /// </summary>
+    private static object? CreateTextTip(string? text, double maxWidth = 320)
+    {
+        return string.IsNullOrWhiteSpace(text)
+            ? null
+            : new ToolTip
+            {
+                MaxWidth = maxWidth,
+                Content = new TextBlock
+                {
+                    Text = text,
+                    TextWrapping = TextWrapping.Wrap,
+                    [!TextBlock.ForegroundProperty] = new DynamicResourceExtension("ToolTipForeground")
+                }
+            };
+    }
+
     public void EnsureViewport() { if (!_hasViewport && IsEffectivelyVisible) Fit(.75, _fitFocusLine); }
 
     /// <summary>宿主在编辑行变化后调用：更新可读适配的垂直对焦目标（不改当前视野，下次适配生效）。</summary>
@@ -393,7 +415,7 @@ public sealed partial class MarkdownMindMapView : UserControl
             var heading = node.Kind == MarkdownMindMapNodeKind.Heading;
             var card = CreateNodeCard(node, rect, dark, line, background, foreground);
             if (EnableMotion) card.Transitions = new Transitions { new BrushTransition { Property = Border.BorderBrushProperty, Duration = TimeSpan.FromMilliseconds(160) } };
-            ToolTip.SetTip(card, node.FullText);
+            ToolTip.SetTip(card, CreateTextTip(node.FullText));
             Canvas.SetLeft(card, rect.X); Canvas.SetTop(card, rect.Y);
             Point? dragStart = null;
             bool dragging = false;
@@ -465,7 +487,7 @@ public sealed partial class MarkdownMindMapView : UserControl
                     Padding = new Thickness(0), FontSize = 10, CornerRadius = new CornerRadius(11), Background = background,
                     Foreground = foreground, BorderBrush = line, BorderThickness = new Thickness(1)
                 };
-                ToolTip.SetTip(fold, MindViewLocalization.GetResource(node.IsCollapsed ? MindViewL.ExpandBranch : MindViewL.CollapseBranch));
+                ToolTip.SetTip(fold, CreateTextTip(MindViewLocalization.GetResource(node.IsCollapsed ? MindViewL.ExpandBranch : MindViewL.CollapseBranch)));
                 Canvas.SetLeft(fold, rect.Right - 9); Canvas.SetTop(fold, rect.Center.Y - 9);
                 fold.Click += (_, e) => { ToggleCollapse(node); e.Handled = true; };
                 _canvas.Children.Add(fold);

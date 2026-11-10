@@ -77,6 +77,8 @@ public sealed class ToolTipHelper
                 {
                     Text = text,
                     TextWrapping = TextWrapping.Wrap,
+                    // 本地 MaxWidth 写在 TextBlock 上：宿主主题（Ursa/Semi）模板不传导 ToolTip.MaxWidth 时依旧折行不裁切。
+                    MaxWidth = maxWidth,
                     [!TextBlock.ForegroundProperty] = new DynamicResourceExtension("ToolTipForeground")
                 }
             };

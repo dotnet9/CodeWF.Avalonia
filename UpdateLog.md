@@ -1,5 +1,12 @@
 ﻿# 更新日志
 
+## 12.1.5.10 (2026-11-10)
+
+- Controls：`ToolTipHelper` 折行保险——TextBlock 本地写入 `MaxWidth`（与 ToolTip.MaxWidth 同值）。宿主主题模板（Ursa/Semi）不把 ToolTip.MaxWidth 传导给内容时，长路径提示依旧折行，不再被屏幕边缘裁切。
+- MindView：导图节点卡片/折叠钮提示改统一文本提示（折行+限宽+主题前景令牌），修复暗色下黑底单行被裁的观感。
+- Markdown：象限图渲染对齐原型——四格统一浅 accent 底、清晰 1px 描边、直角矩形；不再走逐格数据配色与强调格（Mermaider Quiet 渲染后经 NormalizeQuadrantCells 统一化）。
+- 升版 12.1.5.10，UpdateLog 补段。
+
 ## 12.1.5.9 (2026-11-10)
 
 - Markdown：`MarkdownEditorView` 新增 `WordWrap` 属性——关闭（false）时源码区横向滚动。此前 TextEditor 以 Disabled 为横滚基准值，AvaloniaEdit 的 WordWrap=false 会还原保存值，导致宿主「代码自动换行」开关永远无效（永远软换行）；现成对改写滚动条可见性，保证「关=横向滚动、开=软换行」真实生效（Vex 偏好接线，Vox 写作页默认横滚与原型同口径）。

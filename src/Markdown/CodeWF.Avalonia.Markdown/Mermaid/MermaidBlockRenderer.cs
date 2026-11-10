@@ -242,6 +242,8 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
         {
             var svg = MermaidRenderer.RenderSvg(source, options);
             svg = InlineCssVariables(svg, options);
+            if (options.Style == DiagramStyle.Quiet && Regex.IsMatch(source, @"^\s*quadrantChart\b", RegexOptions.Multiline | RegexOptions.CultureInvariant))
+                svg = NormalizeQuadrantCells(svg);
             if (Regex.IsMatch(source, @"^\s*sankey(?:-beta)?\b", RegexOptions.Multiline | RegexOptions.CultureInvariant))
                 svg = FitSankeyLabels(svg);
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(svg));
@@ -330,15 +332,15 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
             LayerSpacing = ResolveOptionalDouble(app, theme, "CodeWFMarkdownMermaidLayerSpacing"),
             RoundedEdges = ResolveOptionalBool(app, theme, "CodeWFMarkdownMermaidRoundedEdges") ?? true,
             Transparent = true,
-            // 新版 Quiet 只强调一个象限；保留四格独立配色以便阅读数据。
-            Style = source is not null && Regex.IsMatch(source, @"^\s*quadrantChart\b", RegexOptions.Multiline | RegexOptions.CultureInvariant)
-                ? DiagramStyle.Tonal : DiagramStyle.Quiet
+            // 象限图渲染后经 NormalizeQuadrantCells 统一为四格同色（原型口径：浅 accent 底、清晰描边、直角）；
+            // 全局 Quiet 不再对 quadrantChart 特判 Tonal，数据调色板也不再喂给它（filled 集合已剔除）。
+            Style = DiagramStyle.Quiet
         };
     }
 
     private static string[]? ResolveDataPalette(Application? app, ThemeVariant theme, string? source)
     {
-        var filled = source is not null && Regex.IsMatch(source, @"^\s*(?:pie|journey|timeline|treemap|quadrantChart)\b", RegexOptions.Multiline | RegexOptions.CultureInvariant);
+        var filled = source is not null && Regex.IsMatch(source, @"^\s*(?:pie|journey|timeline|treemap)\b", RegexOptions.Multiline | RegexOptions.CultureInvariant);
         foreach (var key in filled ? new[] { "CodeWFMarkdownMermaidFillPalette", "CodeWFMarkdownMermaidDataPalette" } : new[] { "CodeWFMarkdownMermaidDataPalette" })
             if (app?.TryGetResource(key, theme, out var palette) == true && palette is string colors
                 && colors.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries) is { Length: > 0 } values) return values;
@@ -390,6 +392,31 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
     /// 把 Mermaider 的 CSS 自定义属性引用展开为字面量色值。表中的公式镜像自 Mermaider 样式块里的
     /// color-mix 定义；命中表值即用它，不看 Mermaider 自带的回退，保证同一主题升级前后色值不变。
     /// </summary>
+    /// <summary>
+    ///     象限图四格统一化（原型口径）：Quiet 会给一格强调填充（近白）而其余为 group-fill，
+    ///     这里把强调格的填充/描边抹平为与其余三格一致，并把圆角改直角——原型象限图为
+    ///     四格同色浅 accent 底、清晰 1px 描边、直角矩形。
+    /// </summary>
+    private static string NormalizeQuadrantCells(string svg)
+    {
+        var emphasizedFill = "fill=\"color-mix(in srgb, var(--accent, var(--fg)) 6%, var(--bg))\"";
+        var uniformFill = "fill=\"var(--_group-fill)\"";
+        var emphasizedStroke = "stroke=\"color-mix(in srgb, var(--accent, var(--fg)) 42%, var(--bg))\"";
+        var uniformStroke = "stroke=\"var(--_line)\"";
+        var rounded = " rx=\"10\" ry=\"10\"";
+        var normalized = svg
+            .Replace(emphasizedFill, uniformFill)
+            .Replace(emphasizedStroke, uniformStroke)
+            .Replace("stroke-width=\"1.25\"", "stroke-width=\"1\"")
+            .Replace("stroke=\"var(--_line-soft)\"", "stroke=\"var(--_line)\"");
+        if (!ReferenceEquals(normalized, svg))
+        {
+            // 仅象限单元矩形参与：rx="10" 只出现在格子上（点为圆形、标题无框），直接移除。
+            normalized = normalized.Replace(rounded, string.Empty);
+        }
+        return normalized;
+    }
+
     internal static string InlineCssVariables(string svg, MermaidRenderOptions options)
     {
         var bg = Parse(options.Bg ?? "#FFFFFF");
