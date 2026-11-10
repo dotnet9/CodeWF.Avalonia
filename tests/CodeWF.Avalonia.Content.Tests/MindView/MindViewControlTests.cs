@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Avalonia;
+using Avalonia.Controls;
 using global::Avalonia.Controls;
 using global::Avalonia.Media;
 using global::Avalonia.Threading;
@@ -19,6 +20,13 @@ namespace CodeWF.Avalonia.Content.Tests.MindView;
 [Collection("AvaloniaPlatform")]
 public class MindViewControlTests(AvaloniaPlatformFixture platform)
 {
+    private static string? TipText(Control control)
+    {
+        var tip = ToolTip.GetTip(control);
+        if (tip is string text) return text;
+        return (tip as ToolTip)?.Content is TextBlock block ? block.Text : null;
+    }
+
     [Fact]
     public void EveryPaletteSupportsBothModesAndStructuralEditing() => platform.Run(() =>
     {
@@ -110,7 +118,7 @@ public class MindViewControlTests(AvaloniaPlatformFixture platform)
             Assert.True(view.VisibleNodeCount > collapsedCount);
             Assert.Equal(3, target.HeadingLevel);
             window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
-            var card = view.GetVisualDescendants().OfType<Border>().Single(b => ToolTip.GetTip(b)?.ToString() == "小节");
+            var card = view.GetVisualDescendants().OfType<Border>().Single(b => TipText(b) == "小节");
             var center = card.TranslatePoint(new global::Avalonia.Point(card.Bounds.Width / 2, card.Bounds.Height / 2), view)!.Value;
             Assert.InRange(center.X, view.Bounds.Width / 2 - 1, view.Bounds.Width / 2 + 1);
             Assert.Contains(view.GetVisualDescendants().OfType<Panel>(), panel => panel.Background == Brushes.Beige);
@@ -134,7 +142,7 @@ public class MindViewControlTests(AvaloniaPlatformFixture platform)
             view.CollapseAll(); Assert.Equal(121, view.VisibleNodeCount);
             var last = root.Children.Last(); view.RevealNode(last.Id); window.UpdateLayout();
             window.Width = 980; window.Height = 640; window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
-            var card = view.GetVisualDescendants().OfType<Border>().Single(b => ToolTip.GetTip(b)?.ToString() == last.FullText);
+            var card = view.GetVisualDescendants().OfType<Border>().Single(b => TipText(b) == last.FullText);
             var center = card.TranslatePoint(new global::Avalonia.Point(card.Bounds.Width / 2, card.Bounds.Height / 2), view)!.Value;
             Assert.InRange(center.X, view.Bounds.Width / 2 - 1, view.Bounds.Width / 2 + 1);
             Assert.InRange(center.Y, view.Bounds.Height / 2 - 1, view.Bounds.Height / 2 + 1);
@@ -152,7 +160,7 @@ public class MindViewControlTests(AvaloniaPlatformFixture platform)
         try
         {
             view.Fit(.75); window.Width = 780; window.Height = 500; window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
-            var root = view.GetVisualDescendants().OfType<Border>().Single(b => ToolTip.GetTip(b)?.ToString() == view.Root!.FullText);
+            var root = view.GetVisualDescendants().OfType<Border>().Single(b => TipText(b) == view.Root!.FullText);
             var point = root.TranslatePoint(default, view)!.Value;
             Assert.True(point.X >= 0 && point.Y >= 0);
             Assert.InRange(root.Bounds.Height, 46.1, 46.2);

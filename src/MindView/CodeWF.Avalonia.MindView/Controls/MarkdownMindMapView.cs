@@ -269,7 +269,7 @@ public sealed partial class MarkdownMindMapView : UserControl
         _scale.ScaleX = _scale.ScaleY = scale;
         _translate.X = Math.Max(floor >= .75 ? 24 : 0, (Bounds.Width - _width * scale) / 2);
         _translate.Y = (Bounds.Height - _height * scale) / 2;
-        if (floor >= .75 && Root is { } root && _bounds.TryGetValue(root, out var rootRect))
+        if (floor >= .75 && focusLine is not null && Root is { } root && _bounds.TryGetValue(root, out var rootRect))
         {
             // 可读口径：根节点钉左（所有布局，与原型一致），垂直对焦编辑行所在章节或根节点。
             _translate.X = 32 - rootRect.X * scale;

@@ -36,7 +36,10 @@ public sealed class ToolTipHelperTests
         var tip = Assert.IsType<ToolTip>(ToolTipHelper.CreateTextTip("提示", 480));
         Assert.Equal(480, tip.MaxWidth);
         var content = Assert.IsType<TextBlock>(tip.Content);
-        Assert.True(double.IsPositiveInfinity(content.MaxWidth), "折行交给 ToolTip 根约束，文本块不再自限宽度");
+        // 评审修订（2026-11-10）：宿主主题模板（Ursa/Semi）不把 ToolTip.MaxWidth 传导给内容时，
+        // 文本块需自带本地 MaxWidth 才能折行——断言随行为更新。
+        Assert.Equal(480, content.MaxWidth);
+        Assert.Equal(TextWrapping.Wrap, content.TextWrapping);
     }
 
     [Fact]
