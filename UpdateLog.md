@@ -1,5 +1,12 @@
 ﻿# 更新日志
 
+## 12.1.5.11 (2026-11-10)
+
+- Markdown：象限图统一化修正配色方向——四格统一为浅 accent 底与 accent 描边（12.1.5.10 误以趋近底色的 group-fill 抹平，观感近乎无填充）；直角与 1px 描边口径不变。
+- MindView：`Fit` 可读跟随（钉左+垂直对焦编辑行）仅在显式传入 focusLine 时启用，无参 `Fit` 全貌与各布局默认行为完全回归。
+- 测试：MindViewControlTests 提示断言改 TipText 取文本（适配统一文本提示实例化后的 ToolTip 结构）；ToolTipHelperTests 断言随 TextBlock 本地 MaxWidth 行为更新。
+- 升版 12.1.5.11，UpdateLog 补段。
+
 ## 12.1.5.10 (2026-11-10)
 
 - Controls：`ToolTipHelper` 折行保险——TextBlock 本地写入 `MaxWidth`（与 ToolTip.MaxWidth 同值）。宿主主题模板（Ursa/Semi）不把 ToolTip.MaxWidth 传导给内容时，长路径提示依旧折行，不再被屏幕边缘裁切。

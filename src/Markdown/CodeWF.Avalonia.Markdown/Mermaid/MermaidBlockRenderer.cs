@@ -391,24 +391,22 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
     /// <summary>
     /// 把 Mermaider 的 CSS 自定义属性引用展开为字面量色值。表中的公式镜像自 Mermaider 样式块里的
     /// color-mix 定义；命中表值即用它，不看 Mermaider 自带的回退，保证同一主题升级前后色值不变。
-    /// </summary>
     /// <summary>
-    ///     象限图四格统一化（原型口径）：Quiet 会给一格强调填充（近白）而其余为 group-fill，
-    ///     这里把强调格的填充/描边抹平为与其余三格一致，并把圆角改直角——原型象限图为
-    ///     四格同色浅 accent 底、清晰 1px 描边、直角矩形。
+    ///     象限图四格统一化（原型口径）：Quiet 会给一格强调填充而其余为 group-fill（趋近底色，
+    ///     观感近乎无填充），这里以「强调格」的浅 accent 底与 accent 描边为准，把其余三格统一为
+    ///     同款 accent tint，并把圆角改直角——原型象限图为四格同色浅 primary 底、清晰 1px 描边、直角矩形。
     /// </summary>
     private static string NormalizeQuadrantCells(string svg)
     {
-        var emphasizedFill = "fill=\"color-mix(in srgb, var(--accent, var(--fg)) 6%, var(--bg))\"";
-        var uniformFill = "fill=\"var(--_group-fill)\"";
-        var emphasizedStroke = "stroke=\"color-mix(in srgb, var(--accent, var(--fg)) 42%, var(--bg))\"";
-        var uniformStroke = "stroke=\"var(--_line)\"";
+        var accentTintFill = "fill=\"color-mix(in srgb, var(--accent, var(--fg)) 6%, var(--bg))\"";
+        var groupFill = "fill=\"var(--_group-fill)\"";
+        var accentStroke = "stroke=\"color-mix(in srgb, var(--accent, var(--fg)) 42%, var(--bg))\"";
+        var softStroke = "stroke=\"var(--_line-soft)\"";
         var rounded = " rx=\"10\" ry=\"10\"";
         var normalized = svg
-            .Replace(emphasizedFill, uniformFill)
-            .Replace(emphasizedStroke, uniformStroke)
-            .Replace("stroke-width=\"1.25\"", "stroke-width=\"1\"")
-            .Replace("stroke=\"var(--_line-soft)\"", "stroke=\"var(--_line)\"");
+            .Replace(groupFill, accentTintFill)
+            .Replace(softStroke, accentStroke)
+            .Replace("stroke-width=\"1.25\"", "stroke-width=\"1\"");
         if (!ReferenceEquals(normalized, svg))
         {
             // 仅象限单元矩形参与：rx="10" 只出现在格子上（点为圆形、标题无框），直接移除。

@@ -50,6 +50,13 @@ public sealed class MarkdownMindMapAppearanceTests(AvaloniaPlatformFixture platf
         finally { window.Close(); }
     });
 
+    private static string? TipText(Control control)
+    {
+        var tip = ToolTip.GetTip(control);
+        if (tip is string text) return text;
+        return (tip as ToolTip)?.Content is TextBlock block ? block.Text : null;
+    }
+
     [Theory]
     [InlineData(MindMapStyleKind.Quiet)]
     [InlineData(MindMapStyleKind.Colorful)]
@@ -64,7 +71,7 @@ public sealed class MarkdownMindMapAppearanceTests(AvaloniaPlatformFixture platf
         try
         {
             view.Fit(.8); window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
-            Border Card(string title) => view.GetVisualDescendants().OfType<Border>().Single(b => ToolTip.GetTip(b)?.ToString() == title);
+            Border Card(string title) => view.GetVisualDescendants().OfType<Border>().Single(b => TipText(b) == title);
             var first = Card("First");
             var thickness = first.BorderThickness;
             var stroke = ((ISolidColorBrush)first.BorderBrush!).Color; var fill = ((ISolidColorBrush)first.Background!).Color;
