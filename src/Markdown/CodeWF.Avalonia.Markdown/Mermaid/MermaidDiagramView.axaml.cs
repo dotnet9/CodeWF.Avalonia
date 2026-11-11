@@ -108,7 +108,7 @@ internal partial class MermaidDiagramView : UserControl
             Stretch = Stretch.Uniform,
             Child = MermaidBlockRenderer.CreateMermaidBlock(_state.Source, _viewer)
         };
-        _zoomDialog = MarkdownMediaZoomDialog.Show(topLevel, content, _viewer);
+        _zoomDialog = MarkdownMediaZoomDialog.Show(topLevel, content, _viewer, detachWatch: this);
         if (_zoomDialog is not null) _zoomDialog.Dismissed += () => _zoomDialog = null;
     }
 

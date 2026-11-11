@@ -65,3 +65,18 @@ dotnet run --project bench/CodeWF.Avalonia.Markdown.Benchmarks -c Release -- all
 - 无障碍：Avalonia 无公开 TextPattern，文本级光标浏览不可用（见 D19）。
 - 行内单个 `_` 不参与 remend 补全（snake_case 误报成本高于收益，见 §4.1）。
 - 解析失败保留旧快照不清空（流式规格 B2），排障先看 `Failed` 事件。
+
+## 发布与版本线
+
+- 每个功能/修复提交随附版本递增（`Directory.Build.props` 的 `<Version>`），
+  历史提交都是"……；升版 X.Y.Z.W"形态；nuget 发布只在推 `v*` tag 时触发
+  （publish-nuget.yml），平时推 main 不会发包。
+- **nuget.org 上存在两条版本线**：现行 `12.1.6.x` 与历史 `12.2.x`（1102 时代所发，
+  已废弃但仍在架上）。版本排序 `12.2.x > 12.1.6.x`——任何 `>= 12.1.x` 的浮动解析
+  都会命中旧线。消费方必须**逐包精确钉版**；新包上架前用 flatcontainer
+  `index.json` + 探针工程还原验证（验证队列可拖几十分钟，且 http-cache 会缓存
+  旧索引响应，先 `dotnet nuget locals http-cache --clear` 再探）。
+- 本地候选包打**同版本号**会被官方源+全局缓存抢（见 2026-11-11 影子包事故）：
+  临时验证用 `packageSourceMapping` 把 `codewf.avalonia.*` 强制映射到候选源，
+  并把该前缀下消费到的全部兄弟包补齐；最终判定看**编译输出 bin 里 DLL 的
+  标记物**（新方法名 grep），nupkg 对 ≠ 提取对 ≠ 编译对。

@@ -72,9 +72,12 @@ internal sealed class MarkdownMediaZoomDialog : Panel
     /// <summary>
     /// 弹出放大对话框：topLevel/OverlayLayer 缺失（如控件尚未挂树）时静默不弹；
     /// contentCleanup 为内容自带的非托管资源（动画帧流等），随对话框关闭释放。
+    /// <paramref name="detachWatch"/> 为来源控件（图片/图表视图）：它脱离视觉树
+    /// （切文档、切布局导致的重渲染）时对话框自动关闭，避免遮罩滞留挡住新内容。
     /// </summary>
     public static MarkdownMediaZoomDialog? Show(TopLevel? topLevel, Control content,
-        MarkdownViewer? themeSource = null, IDisposable? contentCleanup = null)
+        MarkdownViewer? themeSource = null, IDisposable? contentCleanup = null,
+        Control? detachWatch = null)
     {
         var overlay = topLevel is null ? null : OverlayLayer.GetOverlayLayer(topLevel);
         if (overlay is null)
@@ -87,6 +90,13 @@ internal sealed class MarkdownMediaZoomDialog : Panel
         dialog.BindThemeBrushes(themeSource);
         overlay.Children.Add(dialog);
         dialog.WatchTopLevel(topLevel, overlay);
+        if (detachWatch is not null)
+        {
+            void OnSourceDetached(object? sender, VisualTreeAttachmentEventArgs args) => dialog.Close();
+            detachWatch.DetachedFromVisualTree += OnSourceDetached;
+            dialog.Dismissed += () => detachWatch.DetachedFromVisualTree -= OnSourceDetached;
+        }
+
         // 焦点给对话框：Esc 的第一通道；焦点被内容抢走时由 TopLevel 隧道兜底。
         dialog.Focus();
         return dialog;

@@ -263,6 +263,35 @@ public sealed class MarkdownImageSourceEditTests(AvaloniaPlatformFixture platfor
     });
 
     [Fact]
+    public void ReadingViewerZoomDialogClosesWhenSourceDetaches() => platform.Run(() =>
+    {
+        CodeWFMarkdownImagesExtensions.UseImages();
+        var svgSource = CreateSvgSource();
+        var viewer = CreateViewer("# Title\n\n![logo](" + svgSource + ")\n\nAfter.", editingEnabled: false);
+        var window = new Window { Width = 640, Height = 800, Content = viewer };
+        AddTestStyles(window);
+
+        window.Show();
+        try
+        {
+            var rendered = WaitForRenderedImage(viewer, window);
+            ClickAt(window, rendered);
+            Dispatcher.UIThread.RunJobs(); window.UpdateLayout(); Dispatcher.UIThread.RunJobs();
+            Assert.Contains(window.GetVisualDescendants(), item => item is MarkdownMediaZoomDialog);
+
+            // 来源脱离视觉树（切文档/切布局的等价路径）：对话框必须自动关闭，遮罩不得滞留。
+            window.Content = new global::Avalonia.Controls.TextBlock { Text = "replaced" };
+            Dispatcher.UIThread.RunJobs(); window.UpdateLayout();
+            Assert.DoesNotContain(window.GetVisualDescendants(), item => item is MarkdownMediaZoomDialog);
+        }
+        finally
+        {
+            window.Close();
+            MarkdownViewer.RegisterImageControlFactory(null);
+        }
+    });
+
+    [Fact]
     public void ReadingViewerMermaidClickOpensZoomDialog() => platform.Run(() =>
     {
         CodeWF.Avalonia.Markdown.Mermaid.CodeWFMarkdownMermaidExtensions.EnsureRegistered();

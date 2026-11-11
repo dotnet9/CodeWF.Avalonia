@@ -840,7 +840,7 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
         }
 
         var viewer = this.GetVisualAncestors().OfType<MarkdownViewer>().FirstOrDefault();
-        MarkdownMediaZoomDialog.Show(TopLevel.GetTopLevel(this), content, viewer, cleanup);
+        MarkdownMediaZoomDialog.Show(TopLevel.GetTopLevel(this), content, viewer, cleanup, detachWatch: this);
     }
 
     private Control CreateBitmapContent(Bitmap bitmap)
