@@ -19,10 +19,8 @@
     <Thickness x:Key="CodeWFMarkdownQuoteMargin">0 8.5 0 12.75</Thickness>
     <Thickness x:Key="CodeWFMarkdownQuotePadding">15 9</Thickness>
     <x:Double x:Key="CodeWFMarkdownQuoteContentSpacing">0</x:Double>
-    <!-- 表格块：工具条占位后表格自身只留底距；单元格 12.5px/23.75 行高、上下 5 内距。 -->
+    <!-- 表格块：工具条占位后表格自身只留底距；单元格字号/行高与正文同源（ParagraphFontSize/LineHeight），此处只保留内距与高度节奏。 -->
     <Thickness x:Key="CodeWFMarkdownTableMargin">0 15 0 15</Thickness>
     <Thickness x:Key="CodeWFMarkdownTableCellPadding">10 5</Thickness>
     <x:Double x:Key="CodeWFMarkdownTableCellMinHeight">24.75</x:Double>
-    <x:Double x:Key="CodeWFMarkdownTableCellFontSize">12.5</x:Double>
-    <x:Double x:Key="CodeWFMarkdownTableCellLineHeight">23.75</x:Double>
 </ResourceDictionary>

@@ -1,5 +1,7 @@
+using System.Runtime.CompilerServices;
 using Avalonia.Metadata;
 
+[assembly: InternalsVisibleTo("CodeWF.Avalonia.Controls.Tests")]
 [assembly: XmlnsPrefix("https://codewf.com", "codewf")]
 [assembly: XmlnsDefinition("https://codewf.com", "CodeWF.Avalonia.Controls")]
 [assembly: XmlnsDefinition("https://codewf.com", "CodeWF.Avalonia.Controls.Animations")]

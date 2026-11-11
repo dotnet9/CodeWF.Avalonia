@@ -466,8 +466,7 @@ public class MarkdownThemes : Styles
             sizedResources["CodeWFMarkdownListItemMargin"] = new Thickness(0, 1.5 * scale, 0, 1.5 * scale);
             sizedResources["CodeWFMarkdownListFirstParagraphMargin"] = new Thickness(0);
             sizedResources["CodeWFMarkdownTableCellMinHeight"] = 24.75 * scale;
-            sizedResources["CodeWFMarkdownTableCellFontSize"] = 12.5 * scale;
-            sizedResources["CodeWFMarkdownTableCellLineHeight"] = 23.75 * scale;
+            // 单元格字号/行高不再单独缩小：渲染层直接绑定正文 ParagraphFontSize/LineHeight（与段落同源）。
             foreach (var entry in typographyResources)
             {
                 sizedResources[entry.Key] = entry.Value switch

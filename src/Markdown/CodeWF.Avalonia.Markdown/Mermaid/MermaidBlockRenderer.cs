@@ -55,7 +55,11 @@ public sealed class MermaidBlockRenderer : IMarkdownBlockRenderer
         }
 
         var diagram = (Border)CreateMermaidBlock(ExtractSource(fenced), context);
-        if (context is MarkdownViewer viewer && MermaidEditing.GetIsEnabled(viewer) && sourceMarkdown is not null)
+        // 交互包裹条件：编辑态（MermaidEditing.IsEnabled）走 MermaidDiagramView 的源码编辑；
+        // 纯阅读（IsDiagramEditingEnabled=false）也包一层——点击弹出放大查看对话框。
+        // 即时编辑块内预览（IsMediaZoomEnabled=false）不包：预览保持纯渲染，点击交给块编辑流程。
+        if (context is MarkdownViewer viewer && sourceMarkdown is not null && viewer.IsMediaZoomEnabled
+            && (MermaidEditing.GetIsEnabled(viewer) || !viewer.IsDiagramEditingEnabled))
         {
             var preview = diagram.Child!;
             diagram.Child = null;

@@ -3,6 +3,7 @@ using Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Input;
 using global::Avalonia.Interactivity;
+using global::Avalonia.Media;
 using global::Avalonia.Threading;
 using global::Avalonia.VisualTree;
 using CodeWF.Avalonia.Markdown.Controls;
@@ -35,7 +36,13 @@ internal partial class MermaidDiagramView : UserControl
         context.BindTheme(SourceBadge, Button.BackgroundProperty, MarkdownViewer.BackgroundProperty);
         context.BindTheme(SourceBadge, Button.BorderBrushProperty, MarkdownViewer.BorderLineBrushProperty);
         context.BindTheme(SourceBadge, Button.ForegroundProperty, MarkdownViewer.ForegroundProperty);
-        PreviewButton.Click += (_, args) => { BeginEdit(); args.Handled = true; };
+        // 阅读视图（IsDiagramEditingEnabled=false）：徽标隐藏；图表保持可命中，
+        // 点击语义变为「放大查看」（纯只读遮罩对话框，与 Typora 一致），光标保持手型暗示可点。
+        if (!viewer.IsDiagramEditingEnabled)
+        {
+            SourceBadge.IsVisible = false;
+        }
+        PreviewButton.Click += (_, args) => { ActivatePreview(); args.Handled = true; };
         SourceBadge.Click += (_, args) => { BeginEdit(); args.Handled = true; };
         PreviewButton.AddHandler(PointerPressedEvent, OnPreviewPointerPressed, RoutingStrategies.Tunnel);
         SourceBadge.AddHandler(PointerPressedEvent, OnPreviewPointerPressed, RoutingStrategies.Tunnel);
@@ -67,11 +74,48 @@ internal partial class MermaidDiagramView : UserControl
         if (!args.GetCurrentPoint(this).Properties.IsLeftButtonPressed) return;
         // 上一张源码收起后按钮会移位，不能等原坐标上的 MouseUp 再激活。
         args.Handled = true;
+        ActivatePreview();
+    }
+
+    /// <summary>
+    /// 预览点击语义分派：编辑态展开图上方源码编辑；纯阅读弹出放大查看对话框
+    /// （纯只读遮罩层，与块级图片的阅读态一致）。等待模型续接的 BeginEdit 内部
+    /// 仍保留阅读态闸门，任何迟到路径都不会误入编辑。
+    /// </summary>
+    private void ActivatePreview()
+    {
+        if (!_viewer.IsDiagramEditingEnabled)
+        {
+            OpenZoomDialog();
+            return;
+        }
+
         BeginEdit();
+    }
+
+    /// <summary>已打开的放大对话框（防重复弹出）；随对话框关闭清空。</summary>
+    private MarkdownMediaZoomDialog? _zoomDialog;
+
+    private void OpenZoomDialog()
+    {
+        if (_zoomDialog is not null) return;
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel is null) return;
+        // 对话框内用等价渲染管线（CreateMermaidBlock：无徽标、无源码框、主题变化自动重渲）
+        // 只读重画同一份 mermaid 源，Viewbox 让整图适配 ~80% 区域（SVG 无级缩放）。
+        var content = new Viewbox
+        {
+            Stretch = Stretch.Uniform,
+            Child = MermaidBlockRenderer.CreateMermaidBlock(_state.Source, _viewer)
+        };
+        _zoomDialog = MarkdownMediaZoomDialog.Show(topLevel, content, _viewer);
+        if (_zoomDialog is not null) _zoomDialog.Dismissed += () => _zoomDialog = null;
     }
 
     private void BeginEdit()
     {
+        // 阅读视图禁用图表编辑：任何入口（点击、徽标、等待模型后的续接）都在这里挡下。
+        if (!_viewer.IsDiagramEditingEnabled) return;
         if (_state.IsEditing) { SourceInput.Focus(); return; }
         // 点另一张图会先提交上一张；等异步正文模型落地后继续这次点击。
         if (_viewer.CurrentModel.Source != _viewer.Markdown)

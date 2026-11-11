@@ -325,24 +325,171 @@ public sealed partial class MarkdownMindMapView : UserControl
     }
     /// <summary>
     ///     统一文本提示（与 Controls 的 ToolTipHelper.CreateTextTip 同语义的本地实现）：
-    ///     TextBlock 承载折行 + 最大宽度，前景走 ToolTipForeground 主题令牌；空文本返回 null。
+    ///     长文案生成前按宽度启发式确定性预折行（插入 '\n'），TextBlock 的 Wrap 只作兜底——
+    ///     规避 ToolTip 弹窗首测 re-wrap 竞态（同一长文案有时单行硬裁、有时只显示盘符、有时正常折行）。
+    ///     再把 TextBlock.Width 钉成本地值（各行估宽最大值 + 余量，clamp 到 maxWidth）：
+    ///     弹窗宽度不再依赖宿主主题（Semi/Ursa 覆盖原生 ToolTip 样式）的测量时机，首测即终态。
+    ///     高度是同一竞态的另一半：弹窗首测高度曾被记成单行，两行文本的第二行被窗口裁掉——
+    ///     故 TextBlock.Height 按预折行行数 × 保守行高 + 余量钉死（行高 17px/行 + 4px，宁可略高不裁字），
+    ///     ToolTip.Height = 内容高 + 垂直 Padding 余量（垂直 14 + 6）；两处都是本地值，首测即终态。
+    ///     前景走 ToolTipForeground 主题令牌；空文本返回 null。
     ///     MindView 不引用 Controls（避免连带 Semi 依赖），故此处本地实现，改两处时需同步。
     /// </summary>
     private static object? CreateTextTip(string? text, double maxWidth = 320)
     {
-        return string.IsNullOrWhiteSpace(text)
-            ? null
-            : new ToolTip
+        if (string.IsNullOrWhiteSpace(text)) return null;
+        var wrapped = WrapText(text, maxWidth);
+        // Height 本地值钉死：行数取自预折行结果，行高用保守常量——弹窗首测高度曾被记成单行，
+        // 第二行被窗口裁掉；宁可略高不裁字，首测即终态。
+        var height = wrapped.Split('\n').Length * TipLineHeight + TipHeightMargin;
+        return new ToolTip
+        {
+            MaxWidth = maxWidth,
+            // ToolTip.Height 本地值 = 内容高 + 垂直 Padding 余量（Chrome.axaml ToolTip Padding=10,7 → 垂直 14 + 6 余量）。
+            Height = height + TipVerticalMargin,
+            Content = new TextBlock
             {
+                // 确定性预折行：不依赖弹窗首测/重排时机；Wrap 只兜估宽偏小的行（如全大写 ASCII）。
+                Text = wrapped,
+                TextWrapping = TextWrapping.Wrap,
+                // Width 本地值钉死内容宽度：取各行估宽最大值 + 余量并 clamp，首测即终态。
+                Width = MeasureTipWidth(wrapped, maxWidth),
+                // Height 本地值钉死内容高度：行数 × 保守行高 + 余量，与 Width 同一竞态的另一半，首测即终态。
+                Height = height,
+                // 本地 MaxWidth 写在 TextBlock 上：宿主主题模板不传导 ToolTip.MaxWidth 时依旧折行不裁切。
                 MaxWidth = maxWidth,
-                Content = new TextBlock
-                {
-                    Text = text,
-                    TextWrapping = TextWrapping.Wrap,
-                    [!TextBlock.ForegroundProperty] = new DynamicResourceExtension("ToolTipForeground")
-                }
-            };
+                [!TextBlock.ForegroundProperty] = new DynamicResourceExtension("ToolTipForeground")
+            }
+        };
     }
+
+    /// <summary>宽度启发式口径与 Controls.ToolTipHelper 一致：CJK/全角 1.0em、ASCII 0.6em，em 取提示实际字号。</summary>
+    private const double TipFontSize = 12;
+    private const double AsciiWidthInEm = 0.6;
+    private const double LineWidthMargin = 40;
+    private const double TipWidthMargin = 16;
+
+    /// <summary>高度口径与 Controls.ToolTipHelper 一致：保守行高 17px/行（FontSize 12）+ 4px 余量，ToolTip 再加垂直 20。</summary>
+    private const double TipLineHeight = 17;
+    private const double TipHeightMargin = 4;
+    private const double TipVerticalMargin = 20;
+
+    /// <summary>钉死提示宽度：预折行结果各行估宽最大值 + 余量，clamp 到 maxWidth（口径与 Controls.ToolTipHelper 一致）。</summary>
+    private static double MeasureTipWidth(string wrappedText, double maxWidth)
+    {
+        var widest = 0d;
+        foreach (var line in wrappedText.Split('\n')) widest = Math.Max(widest, MeasureTextWidth(line));
+        return Math.Min(widest + TipWidthMargin, maxWidth);
+    }
+
+    /// <summary>确定性预折行：行宽预算 = maxWidth - 安全余量；不超预算原样返回；已含换行保留硬断行；只插 '\n' 不丢字符。</summary>
+    private static string WrapText(string text, double maxWidth)
+    {
+        if (string.IsNullOrEmpty(text)) return text;
+
+        var budget = Math.Max(TipFontSize, maxWidth - LineWidthMargin);
+        if (MeasureTextWidth(text) <= budget) return text;
+
+        var builder = new System.Text.StringBuilder(text.Length + 16);
+        var first = true;
+        foreach (var line in text.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n'))
+        {
+            if (!first) builder.Append('\n');
+            first = false;
+            AppendWrappedLine(builder, line, budget);
+        }
+
+        return builder.ToString();
+    }
+
+    private static double MeasureTextWidth(string text)
+    {
+        var width = 0d;
+        foreach (var character in text) width += GetCharWidth(character);
+        return width;
+    }
+
+    private static void AppendWrappedLine(System.Text.StringBuilder builder, string line, double budget)
+    {
+        var lineWidth = 0d;
+        var hasContent = false;
+        var index = 0;
+        while (index < line.Length)
+        {
+            var end = GetTokenEnd(line, index);
+            var tokenWidth = MeasureRangeWidth(line, index, end);
+
+            if (hasContent && lineWidth + tokenWidth > budget)
+            {
+                builder.Append('\n');
+                lineWidth = 0;
+                hasContent = false;
+            }
+
+            if (!hasContent && tokenWidth > budget)
+            {
+                // 单个不可断超长 token（如无分隔符的长 ASCII 路径段）按字符强断，至少放一个字符保证推进。
+                while (index < end)
+                {
+                    var width = GetCharWidth(line[index]);
+                    if (hasContent && lineWidth + width > budget)
+                    {
+                        builder.Append('\n');
+                        lineWidth = 0;
+                        hasContent = false;
+                    }
+
+                    builder.Append(line[index]);
+                    lineWidth += width;
+                    hasContent = true;
+                    index++;
+                }
+
+                continue;
+            }
+
+            builder.Append(line, index, end - index);
+            lineWidth += tokenWidth;
+            hasContent = true;
+            index = end;
+        }
+    }
+
+    private static int GetTokenEnd(string line, int start)
+    {
+        var character = line[start];
+        if (IsWideChar(character) || !char.IsLetterOrDigit(character)) return start + 1;
+
+        var end = start + 1;
+        while (end < line.Length && char.IsLetterOrDigit(line[end]) && !IsWideChar(line[end])) end++;
+        return end;
+    }
+
+    private static double MeasureRangeWidth(string line, int start, int end)
+    {
+        var width = 0d;
+        for (var index = start; index < end; index++) width += GetCharWidth(line[index]);
+        return width;
+    }
+
+    private static double GetCharWidth(char character) =>
+        char.IsControl(character) ? 0
+            : IsWideChar(character) ? TipFontSize
+            : character <= '\u007F' ? TipFontSize * AsciiWidthInEm
+            : TipFontSize;
+
+    private static bool IsWideChar(char character) =>
+        character is >= '\u1100' and <= '\u115F'      // Hangul Jamo
+            or >= '\u2E80' and <= '\u303E'            // CJK 部首、康熙部首、CJK 符号
+            or >= '\u3041' and <= '\u33FF'            // 假名、注音、CJK 用符号
+            or >= '\u3400' and <= '\u4DBF'            // CJK 扩展 A
+            or >= '\u4E00' and <= '\u9FFF'            // CJK 统一表意
+            or >= '\uA000' and <= '\uA4CF'            // 彝文
+            or >= '\uAC00' and <= '\uD7A3'            // Hangul 音节
+            or >= '\uF900' and <= '\uFAFF'            // CJK 兼容表意
+            or >= '\uFE30' and <= '\uFE4F'            // CJK 兼容形式
+            or >= '\uFF00' and <= '\uFF60'            // 全角 ASCII、半角片假名
+            or >= '\uFFE0' and <= '\uFFE6';           // 全角符号
 
     public void EnsureViewport() { if (!_hasViewport && IsEffectivelyVisible) Fit(.75, _fitFocusLine); }
 

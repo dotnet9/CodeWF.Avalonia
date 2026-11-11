@@ -19,7 +19,7 @@ internal sealed class SpecialBlockRenderer : IMarkdownBlockRenderer
 {
     public Control? TryRender(Block block, string? sourceMarkdown, IMarkdownRenderContext context)
     {
-        if (block is ParagraphBlock paragraph && TryCreateImageBlock(paragraph, context) is { } imageBlock)
+        if (block is ParagraphBlock paragraph && TryCreateImageBlock(paragraph, sourceMarkdown, context) is { } imageBlock)
         {
             return imageBlock;
         }
@@ -48,7 +48,7 @@ internal sealed class SpecialBlockRenderer : IMarkdownBlockRenderer
         return null;
     }
 
-    private static Control? TryCreateImageBlock(ParagraphBlock paragraph, IMarkdownRenderContext context)
+    private static Control? TryCreateImageBlock(ParagraphBlock paragraph, string? sourceMarkdown, IMarkdownRenderContext context)
     {
         var first = paragraph.Inline?.FirstChild;
         if (first is not LinkInline { IsImage: true } image || HasNonEmptySibling(first.NextSibling))
@@ -63,8 +63,48 @@ internal sealed class SpecialBlockRenderer : IMarkdownBlockRenderer
         }
 
         imageControl.HorizontalAlignment = HorizontalAlignment.Left;
+        // 单图段落记录图片语法区间（行内图片/幻灯片不记录），图片能力包据此提供图上方源码编辑。
+        MarkdownImageEdit.SetSourceSpan(imageControl, ResolveImageSyntaxSpan(paragraph, sourceMarkdown, context.CurrentBlockOrigin));
         return imageControl;
     }
+
+    /// <summary>
+    /// 在单图段落的源码切片里定位 <c>![alt](url)</c> 语法区间。块 Span 恒精确，
+    /// 行内 Span 需 precise 管线才可靠，因此按切片正则定位而非 <see cref="LinkInline"/> 的 Span。
+    /// 定位失败（引用式/转义等非常规写法）返回 null，交互回退为点击放大。
+    /// </summary>
+    private static MarkdownImageEditSpan? ResolveImageSyntaxSpan(ParagraphBlock paragraph, string? sourceMarkdown, int origin)
+    {
+        if (sourceMarkdown is null
+            || paragraph.Span.Start < 0
+            || paragraph.Span.Start + origin >= sourceMarkdown.Length)
+        {
+            return null;
+        }
+
+        var sliceStart = Math.Min(paragraph.Span.Start + origin, sourceMarkdown.Length);
+        // 块 Span 的 End 为末字符位置（含），与 MarkdownSpecialBlocks.GetSourceText 口径一致。
+        var sliceEnd = Math.Min(paragraph.Span.End + 1 + origin, sourceMarkdown.Length);
+        if (sliceEnd <= sliceStart)
+        {
+            return null;
+        }
+
+        var slice = sourceMarkdown[sliceStart..sliceEnd];
+        var inline = ImageSyntax.Match(slice);
+        if (inline.Success)
+        {
+            return new MarkdownImageEditSpan(sliceStart + inline.Index, inline.Length);
+        }
+
+        var reference = RefImageSyntax.Match(slice);
+        return reference.Success
+            ? new MarkdownImageEditSpan(sliceStart + reference.Index, reference.Length)
+            : null;
+    }
+
+    private static readonly Regex ImageSyntax = new(@"!\[[^\]]*\]\([^)]*\)", RegexOptions.Compiled);
+    private static readonly Regex RefImageSyntax = new(@"!\[[^\]]*\]\[[^\]]*\]", RegexOptions.Compiled);
 
     /// <summary>
     /// 无图片能力时的降级渲染：替代文本。

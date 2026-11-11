@@ -97,7 +97,8 @@ internal sealed class MarkdownImagePreviewWindow : Window
         _animatedStream?.Dispose();
     }
 
-    private static Control CreateBitmapContent(Bitmap bitmap)
+    /// <summary>位图内容：阅读放大对话框（MarkdownMediaZoomDialog）也复用这三类内容工厂，保持同一渲染口径。</summary>
+    internal static Control CreateBitmapContent(Bitmap bitmap)
     {
         return new Image
         {
@@ -109,7 +110,7 @@ internal sealed class MarkdownImagePreviewWindow : Window
         };
     }
 
-    private static Control CreateSvgContent(byte[] svgBytes, Bitmap fallbackBitmap)
+    internal static Control CreateSvgContent(byte[] svgBytes, Bitmap fallbackBitmap)
     {
         try
         {
@@ -131,7 +132,7 @@ internal sealed class MarkdownImagePreviewWindow : Window
         }
     }
 
-    private static Control CreateAnimatedGifContent(byte[] gifBytes, Bitmap fallbackBitmap, out MemoryStream animatedStream)
+    internal static Control CreateAnimatedGifContent(byte[] gifBytes, Bitmap fallbackBitmap, out MemoryStream animatedStream)
     {
         animatedStream = new MemoryStream(gifBytes, writable: false);
         var image = new Image

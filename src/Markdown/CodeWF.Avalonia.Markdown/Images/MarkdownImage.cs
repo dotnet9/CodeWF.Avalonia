@@ -9,9 +9,11 @@ using global::Avalonia.Layout;
 using global::Avalonia.Media;
 using global::Avalonia.Media.Imaging;
 using global::Avalonia.Threading;
+using global::Avalonia.VisualTree;
 using CodeWF.Toolkit.Lang;
 using SkiaSharp;
 
+using CodeWF.Avalonia.Markdown.Mermaid;
 using CodeWF.Avalonia.Markdown.Rendering;
 
 namespace CodeWF.Avalonia.Markdown.Controls;
@@ -24,9 +26,11 @@ public enum MarkdownImageSizing
 }
 
 [TemplatePart(ContentHostPartName, typeof(ContentControl), IsRequired = true)]
+[TemplatePart(SourceInputPartName, typeof(TextBox))]
 public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Rendering.IMarkdownInteractiveVisual
 {
     private const string ContentHostPartName = "PART_ContentHost";
+    private const string SourceInputPartName = "PART_SourceInput";
     private const double DefaultMaxImageWidth = 900;
     private const double DefaultMaxImageHeight = 520;
     private const long MaxImageByteCacheBytes = 128L * 1024 * 1024;
@@ -43,6 +47,7 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
     private static long _imagePreviewCacheBytes;
 
     private ContentControl? _contentHost;
+    private TextBox? _sourceInput;
     private Bitmap? _bitmap;
     private MemoryStream? _animatedStream;
     private byte[]? _imageBytes;
@@ -56,6 +61,19 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
     private Point? _pressedPoint;
     private bool _isPointerDragging;
     private Size _imagePixelSize;
+
+    // ---- 图上方源码编辑（Typora 式，仅编辑态 MarkdownViewer 的独立成段图片） ----
+    private readonly DispatcherTimer _sourcePreviewTimer = new() { Interval = TimeSpan.FromMilliseconds(300) };
+    private readonly List<IDisposable> _sourceBindings = [];
+    private bool _sourceEditing;
+    private bool _sourcePreviewPending;
+    private MarkdownViewer? _sourceViewer;
+    private TopLevel? _sourceTopLevel;
+    private MarkdownImageEditSpan? _sourceSpan;
+    private string? _editMarkdown;
+    private string? _editSyntax;
+    private string? _editSource;
+    private string? _editAlt;
 
     public static readonly StyledProperty<MarkdownImageSizing> SizingProperty =
         AvaloniaProperty.Register<MarkdownImage, MarkdownImageSizing>(nameof(Sizing));
@@ -120,11 +138,39 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
         base.OnApplyTemplate(e);
 
         _contentHost = e.NameScope.Find<ContentControl>(ContentHostPartName);
+        _sourceInput = e.NameScope.Find<TextBox>(SourceInputPartName);
+        if (_sourceInput is { } sourceInput)
+        {
+            sourceInput.KeyDown += OnSourceInputKeyDown;
+            sourceInput.LostFocus += (_, _) => Dispatcher.UIThread.Post(() =>
+            {
+                if (_sourceEditing && sourceInput.IsKeyboardFocusWithin != true) CommitSourceEdit();
+            });
+            sourceInput.TextChanged += (_, _) =>
+            {
+                if (!_sourceEditing) return;
+                _sourcePreviewTimer.Stop();
+                _sourcePreviewPending = true;
+                _sourcePreviewTimer.Start();
+            };
+            _sourcePreviewTimer.Tick += (_, _) =>
+            {
+                _sourcePreviewTimer.Stop();
+                if (_sourceEditing && _sourcePreviewPending)
+                {
+                    _sourcePreviewPending = false;
+                    ApplySourcePreview();
+                }
+            };
+        }
+
         QueueLoad();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        // 块被重渲染/虚拟化回收前先提交未落盘的源码，避免用户输入丢失（与 MermaidDiagramView 一致）。
+        CommitSourceEdit();
         Interlocked.Increment(ref _loadVersion);
         CancelCurrentLoad();
         ClearImageState();
@@ -454,12 +500,256 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
         _pressedPoint = null;
         _isPointerDragging = false;
 
-        if (shouldOpen)
+        if (!shouldOpen)
         {
-            OpenPreviewWindow();
+            return;
+        }
+
+        e.Handled = true;
+        switch (ResolveClickAction())
+        {
+            case ImageClickAction.SourceEdit:
+                BeginSourceEdit();
+                break;
+            case ImageClickAction.PreviewWindow:
+                OpenPreviewWindow();
+                break;
+            case ImageClickAction.ReadingZoom:
+                OpenReadingZoomDialog();
+                break;
+        }
+    }
+
+    private enum ImageClickAction
+    {
+        SourceEdit,
+        PreviewWindow,
+        ReadingZoom,
+        None
+    }
+
+    /// <summary>
+    /// 图片点击行为：编辑态 MarkdownViewer（IsDiagramEditingEnabled=true）中独立成段的图片
+    /// 在图上方展开源码编辑（Typora 式，回写走 MermaidEditing.EditCommitted 同一通道）；
+    /// 纯阅读（=false）独立成段的图片弹出放大查看对话框（纯查看，与 Mermaid 阅读态一致，
+    /// 即时编辑块内预览经 IsMediaZoomEnabled=false 保持无交互，点击交给块编辑流程）；
+    /// 行内图片、幻灯片等嵌入场景（无源码区间）以及 Viewer 之外的独立使用保持原有
+    /// 点击放大窗（MarkdownImagePreviewWindow，带缩放/旋转/另存）。
+    /// </summary>
+    private ImageClickAction ResolveClickAction()
+    {
+        var viewer = this.GetVisualAncestors().OfType<MarkdownViewer>().FirstOrDefault();
+        if (viewer is null || MarkdownImageEdit.GetSourceSpan(this) is null || _sourceInput is null)
+        {
+            return ImageClickAction.PreviewWindow;
+        }
+
+        if (viewer.IsDiagramEditingEnabled)
+        {
+            return ImageClickAction.SourceEdit;
+        }
+
+        return viewer.IsMediaZoomEnabled ? ImageClickAction.ReadingZoom : ImageClickAction.None;
+    }
+
+    /// <summary>展开图上方源码框；已在编辑中时仅重新聚焦输入框。</summary>
+    private void BeginSourceEdit()
+    {
+        if (_sourceEditing)
+        {
+            _sourceInput?.Focus();
+            return;
+        }
+
+        var viewer = this.GetVisualAncestors().OfType<MarkdownViewer>().FirstOrDefault();
+        if (_sourceInput is null
+            || viewer?.Markdown is not { } markdown
+            || MarkdownImageEdit.GetSourceSpan(this) is not { } span
+            || span.Start < 0
+            || span.Start + span.Length > markdown.Length)
+        {
+            return;
+        }
+
+        _sourceEditing = true;
+        _sourceViewer = viewer;
+        _sourceSpan = span;
+        _editMarkdown = markdown;
+        _editSyntax = markdown.Substring(span.Start, span.Length);
+        _editSource = Source;
+        _editAlt = AltText;
+        _sourcePreviewPending = false;
+        _sourceInput.Text = _editSyntax;
+
+        // 源码框配色跟随 Viewer 主题属性（与 MermaidDiagramView 对源码框的 BindTheme 同一套来源）。
+        foreach (var binding in _sourceBindings)
+        {
+            binding.Dispose();
+        }
+
+        _sourceBindings.Clear();
+        _sourceBindings.Add(_sourceInput.Bind(TextBox.ForegroundProperty, viewer.GetObservable(MarkdownViewer.ForegroundProperty)));
+        _sourceBindings.Add(_sourceInput.Bind(TextBox.BackgroundProperty, viewer.GetObservable(MarkdownViewer.CodeBackgroundBrushProperty)));
+        _sourceBindings.Add(_sourceInput.Bind(TextBox.BorderBrushProperty, viewer.GetObservable(MarkdownViewer.BorderLineBrushProperty)));
+        _sourceBindings.Add(_sourceInput.Bind(TextBox.FontFamilyProperty, viewer.GetObservable(MarkdownViewer.CodeFontFamilyProperty)));
+
+        _sourceInput.IsVisible = true;
+        _sourceViewer.PropertyChanged += OnSourceViewerChanged;
+        _sourceTopLevel = TopLevel.GetTopLevel(this);
+        _sourceTopLevel?.RemoveHandler(PointerPressedEvent, OnSourceOutsidePointer);
+        _sourceTopLevel?.AddHandler(PointerPressedEvent, OnSourceOutsidePointer, RoutingStrategies.Tunnel, handledEventsToo: true);
+        _sourceInput.Focus();
+        _sourceInput.CaretIndex = _sourceInput.Text?.Length ?? 0;
+    }
+
+    /// <summary>提交源码：通过 MermaidEditing.EditCommitted 同一事件通道回写宿主（原文不匹配即拒绝过期回写）。</summary>
+    internal void CommitSourceEdit()
+    {
+        if (!_sourceEditing)
+        {
+            return;
+        }
+
+        _sourceEditing = false;
+        _sourcePreviewTimer.Stop();
+        _sourcePreviewPending = false;
+        TeardownSourceEdit();
+        var viewer = _sourceViewer;
+        var span = _sourceSpan;
+        var original = _editMarkdown;
+        var syntax = _editSyntax;
+        _sourceViewer = null;
+        _sourceSpan = null;
+        _editMarkdown = null;
+        _editSyntax = null;
+        _editSource = null;
+        _editAlt = null;
+        if (viewer is null || span is null || original is null || syntax is null || viewer.Markdown != original)
+        {
+            return;
+        }
+
+        var replacement = _sourceInput?.Text ?? string.Empty;
+        if (string.Equals(replacement, syntax, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        var start = Math.Clamp(span.Start, 0, original.Length);
+        var end = Math.Clamp(start + span.Length, start, original.Length);
+        viewer.RaiseEvent(new MermaidEditEventArgs(original, original[..start] + replacement + original[end..], start));
+    }
+
+    /// <summary>Esc 取消：恢复点击前的图片显示，不产生文档回写。</summary>
+    private void CancelSourceEdit()
+    {
+        if (!_sourceEditing)
+        {
+            return;
+        }
+
+        _sourceEditing = false;
+        _sourcePreviewTimer.Stop();
+        _sourcePreviewPending = false;
+        TeardownSourceEdit();
+        _sourceViewer = null;
+        _sourceSpan = null;
+        _editMarkdown = null;
+        _editSyntax = null;
+        Source = _editSource;
+        AltText = _editAlt;
+        _editSource = null;
+        _editAlt = null;
+    }
+
+    private void TeardownSourceEdit()
+    {
+        _sourceTopLevel?.RemoveHandler(PointerPressedEvent, OnSourceOutsidePointer);
+        _sourceTopLevel = null;
+        if (_sourceViewer is { } viewer)
+        {
+            viewer.PropertyChanged -= OnSourceViewerChanged;
+        }
+
+        foreach (var binding in _sourceBindings)
+        {
+            binding.Dispose();
+        }
+
+        _sourceBindings.Clear();
+        if (_sourceInput is { } input)
+        {
+            input.IsVisible = false;
+        }
+    }
+
+    /// <summary>文档在编辑期间被外部改动：立即收起并拒绝过期回写（与 MermaidDiagramView 同策略）。</summary>
+    private void OnSourceViewerChanged(object? sender, AvaloniaPropertyChangedEventArgs args)
+    {
+        if (args.Property == MarkdownViewer.MarkdownProperty || args.Property == MarkdownViewer.ImageBasePathProperty)
+        {
+            CommitSourceEdit();
+        }
+    }
+
+    private void OnSourceOutsidePointer(object? sender, PointerPressedEventArgs args)
+    {
+        // 从顶层监听，工具条/侧栏以及已处理过指针的控件也能结束图片源码编辑。
+        if (args.Source is Visual visual && (ReferenceEquals(visual, this) || visual.GetVisualAncestors().Contains(this)))
+        {
+            return;
+        }
+
+        CommitSourceEdit();
+    }
+
+    private void OnSourceInputKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (!_sourceEditing)
+        {
+            return;
+        }
+
+        if (e.Key == Key.Escape)
+        {
+            CancelSourceEdit();
+            e.Handled = true;
+        }
+        else if (e.Key == Key.Enter && e.KeyModifiers is KeyModifiers.None or KeyModifiers.Control)
+        {
+            // 图片源码一行为主：回车（含 Ctrl+Enter，与 Mermaid 源码提交一致）即提交。
+            CommitSourceEdit();
             e.Handled = true;
         }
     }
+
+    /// <summary>
+    /// 编辑中按语法可用性做实时预览（300ms 防抖，与 MermaidDiagramView 的预览节奏一致）：
+    /// 语法不完整时保持当前画面，避免半截路径把图片打成加载失败。
+    /// </summary>
+    private static readonly System.Text.RegularExpressions.Regex SourceSyntax =
+        new(@"^\s*!\[(?<alt>[^\]]*)\]\(\s*<?(?<url>[^)\s>]*)>?(?:\s+""(?<title>[^""]*)"")?\s*\)\s*$",
+            System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    private void ApplySourcePreview()
+    {
+        if (_sourceInput?.Text is not { } text
+            || SourceSyntax.Match(text) is not { Success: true } match)
+        {
+            return;
+        }
+
+        var source = match.Groups["url"].Value;
+        var alt = match.Groups["alt"].Value;
+        if (!string.Equals(Source, source, StringComparison.Ordinal))
+        {
+            Source = source;
+            AltText = alt;
+        }
+    }
+
+    /// <summary>保存、关闭或切换文档前提交仍有焦点的图片源码（宿主经 MermaidEditing.CommitPendingEdits 调用）。</summary>
+    internal void CommitPendingSourceEdit() => CommitSourceEdit();
 
     private void OpenPreviewWindow()
     {
@@ -495,6 +785,62 @@ public class MarkdownImage : TemplatedControl, CodeWF.Avalonia.Markdown.Renderin
         {
             window.Show();
         }
+    }
+
+    /// <summary>
+    /// 纯阅读的放大查看对话框（纯查看）：同一图片源在 ~80% 可用区域的遮罩层里展示，
+    /// SVG 走矢量渲染、动图继续播帧，点遮罩或 Esc 关闭。与 <see cref="OpenPreviewWindow"/>
+    /// 的区别：阅读放大挂在宿主窗口 OverlayLayer 内、无工具条；预览窗是独立窗口。
+    /// </summary>
+    private void OpenReadingZoomDialog()
+    {
+        if (_bitmap is null || _previewBytes is null)
+        {
+            return;
+        }
+
+        Bitmap previewBitmap;
+        try
+        {
+            using var previewStream = new MemoryStream(_previewBytes);
+            previewBitmap = new Bitmap(previewStream);
+        }
+        catch
+        {
+            return;
+        }
+
+        var bytes = _imageBytes ?? _previewBytes;
+        Control content;
+        IDisposable? cleanup = null;
+        if (_isSvg)
+        {
+            // 矢量渲染：放大后文字与线条不发糊（失败时工厂内部回落预览位图）。
+            content = MarkdownImagePreviewWindow.CreateSvgContent(bytes, previewBitmap);
+        }
+        else if (_isAnimated)
+        {
+            content = MarkdownImagePreviewWindow.CreateAnimatedGifContent(bytes, previewBitmap, out var stream);
+            cleanup = stream;
+        }
+        else
+        {
+            content = MarkdownImagePreviewWindow.CreateBitmapContent(previewBitmap);
+        }
+
+        // 遮罩内大图按卡片适配（Uniform），避免 Fill 在非等比卡片里拉伸变形。
+        switch (content)
+        {
+            case Image image:
+                image.Stretch = Stretch.Uniform;
+                break;
+            case global::Avalonia.Svg.Skia.Svg svg:
+                svg.Stretch = Stretch.Uniform;
+                break;
+        }
+
+        var viewer = this.GetVisualAncestors().OfType<MarkdownViewer>().FirstOrDefault();
+        MarkdownMediaZoomDialog.Show(TopLevel.GetTopLevel(this), content, viewer, cleanup);
     }
 
     private Control CreateBitmapContent(Bitmap bitmap)

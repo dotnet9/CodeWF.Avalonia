@@ -1,8 +1,11 @@
+using CodeWF.Avalonia.Markdown;
 using CodeWF.Avalonia.Markdown.Controls;
 using CodeWF.Avalonia.Markdown.Rendering;
+using CodeWF.Avalonia.Markdown.Themes;
 using global::Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Threading;
+using global::Avalonia.VisualTree;
 using Markdig;
 using Xunit;
 
@@ -111,5 +114,65 @@ public sealed class MarkdownTableLayoutTests(AvaloniaPlatformFixture platform)
         grid.Arrange(new Rect(0, 0, 1000, grid.DesiredSize.Height));
         Assert.True(grid.ColumnDefinitions[1].ActualWidth > grid.ColumnDefinitions[0].ActualWidth * 2);
         Assert.True(grid.ColumnDefinitions.Sum(column => column.ActualWidth) < 500);
+    });
+
+    [Fact]
+    public void CellTextMatchesBodyTypographyAndFollowsViewerChanges() => platform.Run(() =>
+    {
+        var viewer = new MarkdownViewer { ParagraphFontSize = 17, ParagraphLineHeight = 30 };
+        const string source = "| Head |\n| --- |\n| Cell |";
+        var document = Markdig.Markdown.Parse(source, new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
+        var container = Assert.IsType<Border>(new TableRenderer().TryRender(document[0], source, viewer));
+        var grid = Assert.IsType<MarkdownTableGrid>(container.Child);
+        var textBlocks = grid.GetVisualDescendants().OfType<SelectableTextBlock>().ToArray();
+        Assert.Equal(2, textBlocks.Length);
+        Assert.All(textBlocks, block =>
+        {
+            Assert.Equal(17, block.FontSize);
+            Assert.Equal(30, block.LineHeight);
+        });
+        viewer.ParagraphFontSize = 15;
+        Assert.All(textBlocks, block => Assert.Equal(15, block.FontSize));
+        // 表头只保留加粗差异，字号与正文同源。
+        Assert.Equal(global::Avalonia.Media.FontWeight.SemiBold, textBlocks[0].FontWeight);
+        Assert.Equal(global::Avalonia.Media.FontWeight.Normal, textBlocks[1].FontWeight);
+    });
+
+    [Theory]
+    [InlineData(MarkdownTypographySizes.Normal)]
+    [InlineData(MarkdownTypographySizes.Compact)]
+    public void CellTypographyScalesWithBodyTier(string size) => platform.Run(() =>
+    {
+        // 档位值取排版资源计算结果（文章主题按档位缩放正文），与宿主（如 Vex）把档位值
+        // 绑到查看器 ParagraphFontSize 的方式同源；断言单元格与正文完全一致。
+        var sized = MarkdownThemes.CreateTypographyResources("Simple", size);
+        var bodySize = Assert.IsType<double>(sized[MarkdownStyleKeys.ParagraphFontSizeResource]);
+        var viewer = new MarkdownViewer { Markdown = "| 头 |\n| --- |\n| 格 |", ParagraphFontSize = bodySize };
+        viewer.Template = new global::Avalonia.Controls.Templates.FuncControlTemplate<MarkdownViewer>((_, scope) =>
+        {
+            var panel = new StackPanel();
+            scope.Register("PART_DocumentHost", panel);
+            return panel;
+        });
+        var window = new Window { Content = viewer, Width = 300, Height = 200 };
+        window.Styles.Add(new MarkdownThemes());
+        window.Show();
+        try
+        {
+            Dispatcher.UIThread.RunJobs();
+            window.UpdateLayout();
+            var textBlocks = viewer.GetVisualDescendants()
+                .OfType<StackPanel>()
+                .Where(panel => panel.Classes.Contains(MarkdownStyleKeys.TableCellContent))
+                .SelectMany(panel => panel.Children.OfType<SelectableTextBlock>())
+                .ToArray();
+            Assert.Equal(2, textBlocks.Length);
+            Assert.All(textBlocks, block =>
+            {
+                Assert.Equal(viewer.ParagraphFontSize, block.FontSize, 4);
+                Assert.Equal(viewer.ParagraphLineHeight, block.LineHeight, 4);
+            });
+        }
+        finally { window.Close(); }
     });
 }

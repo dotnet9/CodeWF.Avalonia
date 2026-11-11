@@ -100,9 +100,11 @@ internal sealed class TableRenderer : IMarkdownBlockRenderer
         if (child is SelectableTextBlock textBlock)
         {
             if (block is ParagraphBlock) textBlock.Margin = new Thickness(0);
-            // 表格排版独立于正文：主题可用 CodeWFMarkdownTableCellFontSize/LineHeight 覆写字号与行高。
-            textBlock.Bind(SelectableTextBlock.FontSizeProperty, textBlock.GetResourceObservable("CodeWFMarkdownTableCellFontSize"));
-            textBlock.Bind(SelectableTextBlock.LineHeightProperty, textBlock.GetResourceObservable("CodeWFMarkdownTableCellLineHeight"));
+            // 单元格正文字号与段落同源：直接跟随 MarkdownViewer 的正文排版尺寸/行高，
+            // 主题与排版档位（TypographyTheme/TypographySize）变化时与正文一致缩放；
+            // 表头仅保留加粗与底色差异，不再整体缩小。HTML 显式设置的行内字号在行内渲染层落本地值，不受此处影响。
+            context.BindTheme(textBlock, SelectableTextBlock.FontSizeProperty, MarkdownViewer.ParagraphFontSizeProperty);
+            context.BindTheme(textBlock, SelectableTextBlock.LineHeightProperty, MarkdownViewer.ParagraphLineHeightProperty);
             if (isHeader)
             {
                 textBlock.FontWeight = FontWeight.SemiBold;

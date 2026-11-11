@@ -49,6 +49,15 @@ internal sealed class MarkdownBlockView : UserControl
     private TopLevel? _diagramOwner;
     private bool IsDiagram => _isCode && string.Equals(Model.Language, "mermaid", StringComparison.OrdinalIgnoreCase);
 
+    /// <summary>
+    /// 块正文包含图片语法（不含表格单元格/代码/公式块）。这类块在整体替换成原始文本时
+    /// 会表现为「图片消失、失焦又回来」（旧实现），与图表一致改走媒体布局：
+    /// 编辑时上方挂源码输入框、下方保留渲染预览。
+    /// </summary>
+    private bool HasImageSyntax => !_isCode && !_isTableCell && Model.Kind != MarkdownBlockKind.Raw
+        && ModelText.Contains("![", StringComparison.Ordinal);
+    private bool IsSourceOverlay => IsDiagram || HasImageSyntax;
+
     private double _runFontSize = 15;
 
     private bool _editing;
@@ -64,7 +73,7 @@ internal sealed class MarkdownBlockView : UserControl
         _isCode = isCode;
         _isTableCell = isTableCell;
         _options = options;
-        _editor = IsDiagram ? new MermaidSourceInput() : new MarkdownInputTextBox();
+        _editor = IsSourceOverlay ? new MermaidSourceInput() : new MarkdownInputTextBox();
 
         if (isCode && !IsDiagram)
         {
@@ -118,19 +127,24 @@ internal sealed class MarkdownBlockView : UserControl
         _editor.AcceptsReturn = true;
         _editor.ClearSelectionOnLostFocus = false;
         _editor.TextWrapping = TextWrapping.Wrap;
-        _editor.FontFamily = _isCode ? _options.CodeFontFamily : _options.ContentFontFamily;
+        _editor.FontFamily = _isCode || IsSourceOverlay ? _options.CodeFontFamily : _options.ContentFontFamily;
         if (_isCode) _editor.TextWrapping = _options.CodeWrap ? TextWrapping.Wrap : TextWrapping.NoWrap;
         _editor.FontSize = _runFontSize;
         _editor.Foreground = _options.TextBrush;
         _editor.CaretBrush = _options.AccentBrush;
         _editor.HorizontalAlignment = HorizontalAlignment.Stretch;
         _editor.Text = ModelText;
-        if (IsDiagram)
+        if (IsSourceOverlay)
         {
             _layer.RowDefinitions = new RowDefinitions("Auto,Auto");
             _editor.Margin = new Thickness(0, 0, 0, 10);
             _editor.Background = _options.CodeBackgroundBrush;
             _editor.BorderBrush = _options.SeparatorBrush;
+            if (!IsDiagram)
+            {
+                // 图片源通常一行写完，不留图表源码卡的最小高度，编辑时更贴近 Typora 的紧凑源码框。
+                _editor.MinHeight = 0;
+            }
         }
         else
         {
@@ -189,7 +203,7 @@ internal sealed class MarkdownBlockView : UserControl
 
     private void EnsureSourceInput()
     {
-        if (IsDiagram == (_editor is MermaidSourceInput)) return;
+        if (IsSourceOverlay == (_editor is MermaidSourceInput)) return;
         var wasEditing = _editing;
         var caret = _editor.CaretIndex;
         var originalText = _editOriginalText;
@@ -198,11 +212,11 @@ internal sealed class MarkdownBlockView : UserControl
         _editing = false;
         EndInlineEditor();
         _editingLayer.Children.Remove(_editor);
-        _editor = IsDiagram ? new MermaidSourceInput() : new MarkdownInputTextBox();
+        _editor = IsSourceOverlay ? new MermaidSourceInput() : new MarkdownInputTextBox();
         ConfigureSourceInput();
         _editor.BeforeTextInput = textEntering;
         _editingLayer.Children.Add(_editor);
-        _layer.RowDefinitions = new RowDefinitions(IsDiagram ? "Auto,Auto" : "Auto,20");
+        _layer.RowDefinitions = new RowDefinitions(IsSourceOverlay ? "Auto,Auto" : "Auto,20");
         if (wasEditing)
         {
             BeginEdit(caret);
@@ -304,8 +318,8 @@ internal sealed class MarkdownBlockView : UserControl
         _syncingText = false;
         _editing = true;
         UpdateRichText();
-        _inlineEditing = !IsDiagram && (_isCode || Model.Kind != MarkdownBlockKind.Raw && !ModelText.Contains("![", StringComparison.Ordinal) && !ModelText.Contains('$'));
-        if (IsDiagram)
+        _inlineEditing = !IsSourceOverlay && (_isCode || Model.Kind != MarkdownBlockKind.Raw && !ModelText.Contains("![", StringComparison.Ordinal) && !ModelText.Contains('$'));
+        if (IsSourceOverlay)
         {
             _editingLayer.Children.Remove(_editor);
             SetDisplay(_preview!);
@@ -516,12 +530,16 @@ internal sealed class MarkdownBlockView : UserControl
             case Key.Enter when e.KeyModifiers == KeyModifiers.Control:
                 CommitAndRender(); e.Handled = true; break;
 
-            case Key.Enter when !_isCode && Model.Kind != MarkdownBlockKind.Raw && e.KeyModifiers == KeyModifiers.None:
+            case Key.Enter when !_isCode && !HasImageSyntax && Model.Kind != MarkdownBlockKind.Raw && e.KeyModifiers == KeyModifiers.None:
                 e.Handled = true;
                 var caret = _editor.CaretIndex;
                 CommitAndRender();
                 SplitRequested?.Invoke(this, caret);
                 break;
+
+            case Key.Enter when HasImageSyntax && e.KeyModifiers == KeyModifiers.None:
+                // 图片源码一行为主：回车即提交，不走段内换行/拆块。
+                CommitAndRender(); e.Handled = true; break;
 
             case Key.Enter when e.KeyModifiers == KeyModifiers.Shift:
                 var start = Math.Min(_editor.SelectionStart, _editor.SelectionEnd);
@@ -542,7 +560,7 @@ internal sealed class MarkdownBlockView : UserControl
     private void UpdateRichText()
     {
         if (_isCode) EnsureSourceInput();
-        if (_editing && !_inlineEditing && !IsDiagram) return;
+        if (_editing && !_inlineEditing && !IsSourceOverlay) return;
         if (IsDiagram)
         {
             _editor.Foreground = _options.TextBrush;
@@ -582,8 +600,8 @@ internal sealed class MarkdownBlockView : UserControl
     private void SetDisplay(Control display)
     {
         if (!_layer.Children.Contains(display)) { _layer.Children.Clear(); _layer.Children.Add(display); _layer.Children.Add(_editingLayer); }
-        Grid.SetRow(display, IsDiagram ? 1 : 0);
-        if (IsDiagram)
+        Grid.SetRow(display, IsSourceOverlay ? 1 : 0);
+        if (IsSourceOverlay)
         {
             if (_editing && !_layer.Children.Contains(_editor))
             {
@@ -655,6 +673,10 @@ internal sealed class MarkdownBlockView : UserControl
         IsTaskEditingEnabled = false,
         ShowCodeBlockHeader = false,
         CodeFontFamily = _options.CodeFontFamily,
-        IsDefaultContextMenuEnabled = _options.IsDefaultContextMenuEnabled
+        IsDefaultContextMenuEnabled = _options.IsDefaultContextMenuEnabled,
+        // 块内的图表/图片编辑由本视图（上方源码框）承担，内嵌预览保持纯渲染：
+        // 关闭阅读态放大（IsMediaZoomEnabled）避免点击预览弹遮罩对话框抢占块编辑入口。
+        IsDiagramEditingEnabled = false,
+        IsMediaZoomEnabled = false
     };
 }

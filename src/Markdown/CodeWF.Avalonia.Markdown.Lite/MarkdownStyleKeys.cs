@@ -62,6 +62,9 @@ public static class MarkdownStyleKeys
     public const string ImagePreviewButton = "MdImagePreviewButton";
     public const string ImagePreviewZoomText = "MdImagePreviewZoomText";
     public const string ImagePreviewContent = "MdImagePreviewContent";
+    public const string MediaZoomDialog = "MdMediaZoomDialog";
+    public const string MediaZoomDialogBackdrop = "MdMediaZoomDialogBackdrop";
+    public const string MediaZoomDialogContent = "MdMediaZoomDialogContent";
     public const string Link = "MdLink";
 
     public const string TextBrushResource = "TextBlockDefaultForeground";

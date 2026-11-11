@@ -10,7 +10,19 @@
             <ControlTheme x:Key="{x:Type mdimg:MarkdownImage}" TargetType="mdimg:MarkdownImage">
                 <Setter Property="Template">
                     <ControlTemplate TargetType="{x:Type mdimg:MarkdownImage}">
-                        <ContentControl Name="PART_ContentHost" />
+                        <!-- 源码输入区默认收起：仅编辑态 MarkdownViewer（IsDiagramEditingEnabled）里点击独立成段图片时展开，
+                             与 MermaidDiagramView 的「上方源码框」交互一致；展开样式（前景/背景/边框/字体）由代码按 Viewer 属性绑定。 -->
+                        <StackPanel>
+                            <TextBox Name="PART_SourceInput"
+                                     IsVisible="False"
+                                     AcceptsReturn="False" TextWrapping="NoWrap"
+                                     FontFamily="Consolas,Menlo,monospace" FontSize="13" LineHeight="24"
+                                     Padding="14,12" BorderThickness="1" CornerRadius="8" MinHeight="0"
+                                     HorizontalAlignment="Stretch" VerticalContentAlignment="Center"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                     ScrollViewer.VerticalScrollBarVisibility="Disabled" />
+                            <ContentControl Name="PART_ContentHost" />
+                        </StackPanel>
                     </ControlTemplate>
                 </Setter>
             </ControlTheme>

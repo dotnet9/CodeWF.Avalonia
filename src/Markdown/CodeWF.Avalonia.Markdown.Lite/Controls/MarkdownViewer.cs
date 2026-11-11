@@ -287,6 +287,22 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
         AvaloniaProperty.Register<MarkdownViewer, bool>(nameof(ShowCodeBlockHeader), true);
 
     /// <summary>
+    /// 是否启用图表/媒体的原位源码编辑总开关：Mermaid 图表（含徽标入口）与独立成段图片的
+    /// 「图上方源码框」交互都受它控制；写作/即时编辑预览默认开启，纯阅读视图可关闭——
+    /// 纯阅读下点击图表/图片弹出放大查看对话框（纯查看，与 Typora 一致），不再出现源码输入。
+    /// </summary>
+    public static readonly StyledProperty<bool> IsDiagramEditingEnabledProperty =
+        AvaloniaProperty.Register<MarkdownViewer, bool>(nameof(IsDiagramEditingEnabled), true);
+
+    /// <summary>
+    /// 阅读态媒体放大总开关：纯阅读（IsDiagramEditingEnabled=false）下点击块级图片或
+    /// Mermaid 图表弹出放大查看对话框。嵌入预览（即时编辑块内预览等）需要保持纯渲染、
+    /// 让点击继续走宿主的块编辑流程时可关闭本属性。
+    /// </summary>
+    public static readonly StyledProperty<bool> IsMediaZoomEnabledProperty =
+        AvaloniaProperty.Register<MarkdownViewer, bool>(nameof(IsMediaZoomEnabled), true);
+
+    /// <summary>
     /// 流式渐显：流式源 append-only 增长时，新出现的块以淡入入场（旧块不动、不改透明度）。
     /// 与 <see cref="MarkdownStreamPacer"/> 的显示时刻登记配合——节奏器决定「何时出现」，本属性决定「怎么出现」。
     /// </summary>
@@ -556,6 +572,20 @@ public partial class MarkdownViewer : TemplatedControl, Rendering.IMarkdownRende
     {
         get => GetValue(ShowCodeBlockHeaderProperty);
         set => SetValue(ShowCodeBlockHeaderProperty, value);
+    }
+
+    /// <summary>Mermaid 图表点击展开源码编辑开关；语义见 <see cref="IsDiagramEditingEnabledProperty"/>。</summary>
+    public bool IsDiagramEditingEnabled
+    {
+        get => GetValue(IsDiagramEditingEnabledProperty);
+        set => SetValue(IsDiagramEditingEnabledProperty, value);
+    }
+
+    /// <summary>纯阅读点击块级图片/Mermaid 弹放大查看对话框的开关；语义见 <see cref="IsMediaZoomEnabledProperty"/>。</summary>
+    public bool IsMediaZoomEnabled
+    {
+        get => GetValue(IsMediaZoomEnabledProperty);
+        set => SetValue(IsMediaZoomEnabledProperty, value);
     }
 
     public double UnorderedListMarkerWidth

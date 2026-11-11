@@ -15,10 +15,11 @@ public sealed class MermaidEditing : AvaloniaObject
     public static bool GetIsEnabled(MarkdownViewer viewer) => viewer.GetValue(IsEnabledProperty);
     public static void SetIsEnabled(MarkdownViewer viewer, bool value) => viewer.SetValue(IsEnabledProperty, value);
 
-    /// <summary>保存、关闭或切换文档前提交仍有焦点的图表源码。</summary>
+    /// <summary>保存、关闭或切换文档前提交仍有焦点的图表源码（含图片源码，二者共用 EditCommitted 回写通道）。</summary>
     public static void CommitPendingEdits(MarkdownViewer viewer)
     {
         foreach (var diagram in viewer.GetVisualDescendants().OfType<MermaidDiagramView>().ToArray()) diagram.Commit();
+        foreach (var image in viewer.GetVisualDescendants().OfType<MarkdownImage>().ToArray()) image.CommitPendingSourceEdit();
     }
 
     public static readonly RoutedEvent<MermaidEditEventArgs> EditCommittedEvent =
