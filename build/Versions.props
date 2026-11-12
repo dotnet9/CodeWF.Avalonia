@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AvaloniaVersion>12.1.6</AvaloniaVersion>
     <AvaloniaControlsDataGridVersion>12.1.2</AvaloniaControlsDataGridVersion>
-    <DotNetLibrariesVersion>11.0.0-rc.3.26522.148</DotNetLibrariesVersion>
+    <DotNetLibrariesVersion>11.0.0</DotNetLibrariesVersion>
     <AvaloniaEditVersion>12.0.0</AvaloniaEditVersion>
     <AvaloniaEditTextMateVersion>12.0.0</AvaloniaEditTextMateVersion>
     <SemiAvaloniaVersion>12.1.0.1</SemiAvaloniaVersion>
@@ -11,7 +11,7 @@
     <UrsaAvaloniaVersion>2.3.1</UrsaAvaloniaVersion>
     <AnimatedImageAvaloniaVersion>2.1.4</AnimatedImageAvaloniaVersion>
     <MarkdigVersion>1.6.0</MarkdigVersion>
-    <MermaiderVersion>0.15.1</MermaiderVersion>
+    <MermaiderVersion>0.16.0</MermaiderVersion>
     <SvgControlsSkiaAvaloniaVersion>12.0.0.17</SvgControlsSkiaAvaloniaVersion>
     <SvgSkiaVersion>5.2.3</SvgSkiaVersion>
     <SkiaSharpVersion>4.158.0-preview.1.26556.2</SkiaSharpVersion>
