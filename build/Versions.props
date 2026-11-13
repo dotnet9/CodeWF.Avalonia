@@ -11,10 +11,10 @@
     <UrsaAvaloniaVersion>2.3.1</UrsaAvaloniaVersion>
     <AnimatedImageAvaloniaVersion>2.1.4</AnimatedImageAvaloniaVersion>
     <MarkdigVersion>1.6.0</MarkdigVersion>
-    <MermaiderVersion>0.16.0</MermaiderVersion>
+    <MermaiderVersion>0.17.0</MermaiderVersion>
     <SvgControlsSkiaAvaloniaVersion>12.0.0.17</SvgControlsSkiaAvaloniaVersion>
     <SvgSkiaVersion>5.2.3</SvgSkiaVersion>
-    <SkiaSharpVersion>4.158.0-preview.1.26556.2</SkiaSharpVersion>
+    <SkiaSharpVersion>4.158.0-preview.2.26560.5</SkiaSharpVersion>
     <HarfBuzzSharpVersion>14.4.0.300-preview.1.26556.2</HarfBuzzSharpVersion>
     <SylinkoCSharpMathAvaloniaVersion>12.0.0</SylinkoCSharpMathAvaloniaVersion>
     <TextMateSharpVersion>3.0.0-preview.1</TextMateSharpVersion>

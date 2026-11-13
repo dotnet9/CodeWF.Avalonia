@@ -80,7 +80,7 @@
     <PackageVersion Include="System.Windows.Extensions" Version="$(DotNetLibrariesVersion)" />
 
     <!-- 打包基础设施 -->
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="$(MicrosoftSourceLinkGitHubVersion)" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="11.0.100" />
 
     <!-- 测试 -->
     <PackageVersion Include="coverlet.collector" Version="$(CoverletCollectorVersion)" />

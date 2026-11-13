@@ -29,20 +29,29 @@ public partial class MarkdownEditorView
         DetachedFromVisualTree += (_, _) => HideSelectionToolbar();
     }
 
+    /// <summary>
+    /// 选区工具条扩展槽（2026-11-13，随 12.1.6.5）：宿主可在拖选工具条尾部追加自定义按钮
+    /// （如 Vox 的「添加到 AI 会话」）。默认空集合时工具条与既有行为完全一致，既有消费者不受影响。
+    /// extras 在工具条视觉树内，可直接复用 .format 样式类与 CodeWFMarkdownSelection* 资源。
+    /// </summary>
+    public IList<Control> SelectionBarExtras { get; } = new List<Control>();
+
     private void ShowSelectionToolbar()
     {
         if (_editor.SelectionLength == 0 || !_editor.TextArea.IsKeyboardFocusWithin) { HideSelectionToolbar(); return; }
         if (_selectionBarPopup is null)
         {
+            var toolbar = new MarkdownSelectionToolbar
+            {
+                DataContext = new MarkdownSelectionToolbarViewModel(action => _ = ExecuteAsync(action),
+                    ApplySpanStyle, GetSpanStyle, () => _ = ExecuteAsync(MarkdownEditorAction.ClearSpanStyles), HideSelectionToolbar)
+            };
+            toolbar.AppendExtras(SelectionBarExtras);
             _selectionBarPopup = new Popup
             {
                 PlacementTarget = this, Placement = PlacementMode.Top,
                 IsLightDismissEnabled = true, OverlayDismissEventPassThrough = true, OverlayInputPassThroughElement = this, ShouldUseOverlayLayer = true,
-                Child = new MarkdownSelectionToolbar
-                {
-                    DataContext = new MarkdownSelectionToolbarViewModel(action => _ = ExecuteAsync(action),
-                        ApplySpanStyle, GetSpanStyle, () => _ = ExecuteAsync(MarkdownEditorAction.ClearSpanStyles), HideSelectionToolbar)
-                }
+                Child = toolbar
             };
             LogicalChildren.Add(_selectionBarPopup);
         }

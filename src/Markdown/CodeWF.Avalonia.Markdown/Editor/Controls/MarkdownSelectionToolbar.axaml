@@ -22,7 +22,7 @@
   <Border Padding="3" CornerRadius="8" Background="{DynamicResource CodeWFMarkdownSelectionBackgroundBrush}"
           BorderBrush="{DynamicResource CodeWFMarkdownSelectionBorderBrush}" BorderThickness="1"
           BoxShadow="{DynamicResource CodeWFMarkdownSelectionShadow}">
-    <StackPanel Orientation="Horizontal" Spacing="1">
+    <StackPanel Name="Items" Orientation="Horizontal" Spacing="1">
       <Button Name="Bold" Classes="format" Command="{Binding FormatCommand}" CommandParameter="{x:Static actions:MarkdownEditorAction.Bold}" ToolTip.Tip="{Binding Bold}" AutomationProperties.Name="{Binding Bold}"><Viewbox Width="16" Height="16"><Canvas Width="24" Height="24"><Path Classes="stroke" Data="M6 4h7a4 4 0 0 1 0 8H6z M6 12h8a4 4 0 0 1 0 8H6z"/></Canvas></Viewbox></Button>
       <Button Name="Italic" Classes="format" Command="{Binding FormatCommand}" CommandParameter="{x:Static actions:MarkdownEditorAction.Italic}" ToolTip.Tip="{Binding Italic}" AutomationProperties.Name="{Binding Italic}"><Viewbox Width="16" Height="16"><Canvas Width="24" Height="24"><Path Classes="stroke" Data="M10 4h8 M6 20h8 M14 4l-4 16"/></Canvas></Viewbox></Button>
       <Button Name="Strike" Classes="format" Command="{Binding FormatCommand}" CommandParameter="{x:Static actions:MarkdownEditorAction.Strikethrough}" ToolTip.Tip="{Binding Strike}" AutomationProperties.Name="{Binding Strike}"><TextBlock Classes="glyph" Text="S" TextDecorations="Strikethrough"/></Button>
