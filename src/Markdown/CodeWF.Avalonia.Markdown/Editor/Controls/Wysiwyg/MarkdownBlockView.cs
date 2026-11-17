@@ -531,25 +531,19 @@ internal sealed class MarkdownBlockView : UserControl
                 CommitAndRender(); e.Handled = true; break;
 
             case Key.Enter when !_isCode && !HasImageSyntax && Model.Kind != MarkdownBlockKind.Raw && e.KeyModifiers == KeyModifiers.None:
-                // 原型语义（instant-editor.js）：标题回车拆出新段落；普通段落回车=块内换行，
-                // 有选区先删选区（对齐常规编辑器），避免"选中文字回车无效/被拆块"的错觉。
+                // Typora 语义：回车=在光标处拆出新段落（焦点进新块），空段落可连续存在
+                // （末尾连敲即持续加空行）。有选区时先删选区再拆。
                 e.Handled = true;
-                if (Model.Kind == MarkdownBlockKind.Heading)
+                var enterText = _editor.Text ?? string.Empty;
+                var enterStart = Math.Clamp(Math.Min(_editor.SelectionStart, _editor.SelectionEnd), 0, enterText.Length);
+                var enterEnd = Math.Clamp(Math.Max(_editor.SelectionStart, _editor.SelectionEnd), enterStart, enterText.Length);
+                if (enterEnd > enterStart)
                 {
-                    var splitCaret = _editor.CaretIndex;
-                    CommitAndRender();
-                    SplitRequested?.Invoke(this, splitCaret);
+                    _editor.Text = enterText.Remove(enterStart, enterEnd - enterStart);
+                    _editor.CaretIndex = enterStart;
                 }
-                else
-                {
-                    // 以编辑器自身文本为基准（模型同步走 TextChanged 链，可能有滞后），并 clamp 防越界；
-                    // 保持编辑态（CommitAndRender 会退出编辑），支持连续回车。
-                    var text = _editor.Text ?? string.Empty;
-                    var selStart = Math.Clamp(Math.Min(_editor.SelectionStart, _editor.SelectionEnd), 0, text.Length);
-                    var selLength = Math.Min(Math.Abs(_editor.SelectionEnd - _editor.SelectionStart), text.Length - selStart);
-                    _editor.Text = text.Remove(selStart, selLength).Insert(selStart, "\n");
-                    _editor.CaretIndex = selStart + 1;
-                }
+                CommitAndRender();
+                SplitRequested?.Invoke(this, _editor.CaretIndex);
                 break;
 
             case Key.Enter when HasImageSyntax && e.KeyModifiers == KeyModifiers.None:
