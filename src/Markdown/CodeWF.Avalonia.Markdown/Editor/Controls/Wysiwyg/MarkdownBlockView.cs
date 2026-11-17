@@ -531,10 +531,23 @@ internal sealed class MarkdownBlockView : UserControl
                 CommitAndRender(); e.Handled = true; break;
 
             case Key.Enter when !_isCode && !HasImageSyntax && Model.Kind != MarkdownBlockKind.Raw && e.KeyModifiers == KeyModifiers.None:
+                // 原型语义（instant-editor.js）：标题回车拆出新段落；普通段落回车=块内换行，
+                // 有选区先删选区（对齐常规编辑器），避免"选中文字回车无效/被拆块"的错觉。
                 e.Handled = true;
-                var caret = _editor.CaretIndex;
-                CommitAndRender();
-                SplitRequested?.Invoke(this, caret);
+                if (Model.Kind == MarkdownBlockKind.Heading)
+                {
+                    var splitCaret = _editor.CaretIndex;
+                    CommitAndRender();
+                    SplitRequested?.Invoke(this, splitCaret);
+                }
+                else
+                {
+                    var selStart = Math.Min(_editor.SelectionStart, _editor.SelectionEnd);
+                    var selLength = Math.Abs(_editor.SelectionEnd - _editor.SelectionStart);
+                    _editor.Text = CurrentText.Remove(selStart, selLength).Insert(selStart, "\n");
+                    _editor.CaretIndex = selStart + 1;
+                    CommitAndRender();
+                }
                 break;
 
             case Key.Enter when HasImageSyntax && e.KeyModifiers == KeyModifiers.None:
