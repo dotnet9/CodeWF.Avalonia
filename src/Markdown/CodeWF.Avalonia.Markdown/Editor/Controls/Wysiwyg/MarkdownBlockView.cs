@@ -542,11 +542,13 @@ internal sealed class MarkdownBlockView : UserControl
                 }
                 else
                 {
-                    var selStart = Math.Min(_editor.SelectionStart, _editor.SelectionEnd);
-                    var selLength = Math.Abs(_editor.SelectionEnd - _editor.SelectionStart);
-                    _editor.Text = CurrentText.Remove(selStart, selLength).Insert(selStart, "\n");
+                    // 以编辑器自身文本为基准（模型同步走 TextChanged 链，可能有滞后），并 clamp 防越界；
+                    // 保持编辑态（CommitAndRender 会退出编辑），支持连续回车。
+                    var text = _editor.Text ?? string.Empty;
+                    var selStart = Math.Clamp(Math.Min(_editor.SelectionStart, _editor.SelectionEnd), 0, text.Length);
+                    var selLength = Math.Min(Math.Abs(_editor.SelectionEnd - _editor.SelectionStart), text.Length - selStart);
+                    _editor.Text = text.Remove(selStart, selLength).Insert(selStart, "\n");
                     _editor.CaretIndex = selStart + 1;
-                    CommitAndRender();
                 }
                 break;
 
