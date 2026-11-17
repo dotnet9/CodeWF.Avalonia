@@ -354,7 +354,18 @@ public partial class MarkdownLiveEditorView : UserControl
             _models.Clear();
             _activeIndex = -1;
             _models.AddRange(MarkdownBlockParser.Parse(markdown));
-            RebuildBlocks();
+            // 空文档保持一个空段落并光标就位：点击即可输入（Typora 行为），
+            // 否则零块视图点不进任何编辑器，空白文档等于不可编辑。
+            if (_models.Count == 0)
+            {
+                _models.Add(new MarkdownBlockModel { Kind = MarkdownBlockKind.Paragraph });
+                RebuildBlocks();
+                FocusBlock(0);
+            }
+            else
+            {
+                RebuildBlocks();
+            }
             if (!_restoringHistory) { _undo.Clear(); _redo.Clear(); }
             _lastSnapshot = CaptureSnapshot();
         }
