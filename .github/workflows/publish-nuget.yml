@@ -1,4 +1,4 @@
-name: publish-nuget
+﻿name: publish-nuget
 
 # 推送 v* 格式 tag 时触发（例如 v12.1.4.0-preview.1），也支持在 Actions 页面手动触发。
 # 包版本号以 Directory.Build.props 的 <Version> 为准（发版前先升版本），
@@ -62,15 +62,12 @@ jobs:
       - name: Pack
         shell: pwsh
         run: |
-          # 仅打包 11 个库项目（tests / demo 不参与）
+          # 仅打包 8 个库项目（tests / demo 不参与；Markdown/MindView 已迁至 Vex 仓，随 Vex CI 发布）
           $projects = @(
-            'src/MindView/CodeWF.Avalonia.MindView/CodeWF.Avalonia.MindView.csproj',
             'src/Controls/CodeWF.Avalonia.Controls/CodeWF.Avalonia.Controls.csproj',
             'src/DataGrid/CodeWF.Avalonia.DataGrid/CodeWF.Avalonia.DataGrid.csproj',
             'src/TreeDataGrid/CodeWF.Avalonia.TreeDataGrid/CodeWF.Avalonia.TreeDataGrid.csproj',
             'src/Dock/CodeWF.Avalonia.Dock/CodeWF.Avalonia.Dock.csproj',
-            'src/Markdown/CodeWF.Avalonia.Markdown/CodeWF.Avalonia.Markdown.csproj',
-            'src/Markdown/CodeWF.Avalonia.Markdown.Lite/CodeWF.Avalonia.Markdown.Lite.csproj',
             'src/Log/CodeWF.Avalonia.Log/CodeWF.Avalonia.Log.csproj',
             'src/Motion/CodeWF.Avalonia.Motion/CodeWF.Avalonia.Motion.csproj',
             'src/Lang/CodeWF.Avalonia.Lang/CodeWF.Avalonia.Lang.csproj',
