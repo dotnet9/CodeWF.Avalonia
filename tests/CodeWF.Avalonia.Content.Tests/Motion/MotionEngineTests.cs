@@ -1,6 +1,6 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
-using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
+using CodeWF.Avalonia.Content.Tests;
 using CodeWF.Avalonia.Motion;
 using global::Avalonia.Media;
 
@@ -168,7 +168,7 @@ public sealed class MotionEngineTests(AvaloniaPlatformFixture platform)
     {
         // 无头平台的共享会话与既有测试一致（Markdown/Rendering/AvaloniaPlatformCollection）。
         var session = typeof(AvaloniaPlatformFixture).Assembly.GetType(
-            "CodeWF.Avalonia.Content.Tests.Markdown.Rendering.AvaloniaPlatformFixture", throwOnError: true)!;
+            "CodeWF.Avalonia.Content.Tests.AvaloniaPlatformFixture", throwOnError: true)!;
         var fixture = (AvaloniaPlatformFixture)Activator.CreateInstance(session, nonPublic: true)!;
         fixture.Run(() =>
         {

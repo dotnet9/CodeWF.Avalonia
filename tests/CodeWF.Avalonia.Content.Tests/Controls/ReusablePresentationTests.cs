@@ -1,8 +1,8 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Threading;
-using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
+using CodeWF.Avalonia.Content.Tests;
 using CodeWF.Avalonia.Controls.Animations;
 using CodeWF.Avalonia.Controls.Controls;
 using Xunit;

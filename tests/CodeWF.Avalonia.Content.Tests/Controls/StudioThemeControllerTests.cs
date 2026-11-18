@@ -1,10 +1,10 @@
-using CodeWF.Avalonia.Controls.Themes;
+﻿using CodeWF.Avalonia.Controls.Themes;
 using System.Reflection;
 using global::Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Media;
 using global::Avalonia.Platform;
-using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
+using CodeWF.Avalonia.Content.Tests;
 using Semi.Avalonia;
 using Xunit;
 

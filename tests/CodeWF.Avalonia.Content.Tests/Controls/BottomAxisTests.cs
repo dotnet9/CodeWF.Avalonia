@@ -1,8 +1,8 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using CodeWF.Avalonia.Controls.Controls;
-using CodeWF.Avalonia.Content.Tests.Markdown.Rendering;
+using CodeWF.Avalonia.Content.Tests;
 using Xunit;
 
 namespace CodeWF.Avalonia.Content.Tests.Controls;
