@@ -151,17 +151,20 @@ public partial class MarkdownLiveEditorView : UserControl
         _container = new Border { Child = _blockHost, MaxWidth = DocumentMaxWidth };
         // Typora 行为：点击块间/文档空白，光标落到最近的段落块（空白文档也能点击落光标）。
         // 点在块内时交给块自己的 OnPointerPressed（BeginEdit 保 caret），这里只接管空白区。
-        _container.AddHandler(PointerPressedEvent, (_, e) =>
+        // 挂自身根 Tunnel：点击落在块宿主边界外（文档下方空白）时事件不经过 _container，
+        // Tunnel 从根向下必经此 handler；点在块内时交还给块自己的处理。
+        this.AddHandler(PointerPressedEvent, (_, e) =>
         {
-            try { System.IO.File.AppendAllText(@"E:/github/temp_files/live-diag.log", "container pressed src=" + e.Source?.GetType().Name + System.Environment.NewLine); } catch { }
+            try { System.IO.File.AppendAllText(@"E:/github/temp_files/live-diag.log", "root pressed src=" + e.Source?.GetType().Name + System.Environment.NewLine); } catch { }
             if (e.Source is not Visual source) return;
             foreach (var view in _blockViews)
             {
                 if (ReferenceEquals(source, view) || source.GetVisualAncestors().Contains(view)) return;
             }
             var nearest = FindNearestBlockIndex(e.GetCurrentPoint(_container).Position.Y);
+            try { System.IO.File.AppendAllText(@"E:/github/temp_files/live-diag.log", "nearest=" + nearest + System.Environment.NewLine); } catch { }
             if (nearest >= 0) FocusBlock(nearest);
-        }, RoutingStrategies.Bubble);
+        }, RoutingStrategies.Tunnel);
         Content = BuildContent();
 
         SetText(string.Empty);
