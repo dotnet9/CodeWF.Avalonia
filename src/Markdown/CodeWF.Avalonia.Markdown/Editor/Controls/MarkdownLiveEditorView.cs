@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using global::Avalonia.Controls;
 using global::Avalonia.Controls.Presenters;
 using global::Avalonia.VisualTree;
@@ -153,6 +153,7 @@ public partial class MarkdownLiveEditorView : UserControl
         // 点在块内时交给块自己的 OnPointerPressed（BeginEdit 保 caret），这里只接管空白区。
         _container.AddHandler(PointerPressedEvent, (_, e) =>
         {
+            try { System.IO.File.AppendAllText(@"E:/github/temp_files/live-diag.log", "container pressed src=" + e.Source?.GetType().Name + System.Environment.NewLine); } catch { }
             if (e.Source is not Visual source) return;
             foreach (var view in _blockViews)
             {
@@ -366,6 +367,7 @@ public partial class MarkdownLiveEditorView : UserControl
             _models.Clear();
             _activeIndex = -1;
             _models.AddRange(MarkdownBlockParser.Parse(markdown));
+            try { System.IO.File.AppendAllText(@"E:/github/temp_files/live-diag.log", "SetText models=" + _models.Count + System.Environment.NewLine); } catch { }
             // 空文档保持一个空段落并光标就位：点击即可输入（Typora 行为），
             // 否则零块视图点不进任何编辑器，空白文档等于不可编辑。
             if (_models.Count == 0)
