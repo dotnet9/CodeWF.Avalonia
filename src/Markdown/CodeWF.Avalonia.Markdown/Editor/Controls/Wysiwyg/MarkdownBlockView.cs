@@ -150,9 +150,9 @@ internal sealed class MarkdownBlockView : UserControl
         {
             _editor.Padding = new Thickness(0);
             _editor.BorderThickness = new Thickness(0);
-            _editor.MinHeight = 0;
-            _editor.MinWidth = 0;
             _editor.Background = Brushes.Transparent;
+            // 空文档/空段落：一行高度的空白块也要可点击可显光标（Typora 空文档行为）。
+            _editor.MinHeight = _runFontSize * 1.6;
             _editor.Template = new FuncControlTemplate<TextBox>((box, scope) =>
             {
                 var presenter = new MarkdownInlinePresenter(_options, _isCode || Model.Kind == MarkdownBlockKind.Raw) { Name = "PART_TextPresenter" };

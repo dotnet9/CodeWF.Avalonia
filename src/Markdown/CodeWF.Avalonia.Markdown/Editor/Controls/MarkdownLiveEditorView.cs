@@ -149,6 +149,18 @@ public partial class MarkdownLiveEditorView : UserControl
         UpdatePaneHead();
 
         _container = new Border { Child = _blockHost, MaxWidth = DocumentMaxWidth };
+        // Typora 行为：点击块间/文档空白，光标落到最近的段落块（空白文档也能点击落光标）。
+        // 点在块内时交给块自己的 OnPointerPressed（BeginEdit 保 caret），这里只接管空白区。
+        _container.AddHandler(PointerPressedEvent, (_, e) =>
+        {
+            if (e.Source is not Visual source) return;
+            foreach (var view in _blockViews)
+            {
+                if (ReferenceEquals(source, view) || source.GetVisualAncestors().Contains(view)) return;
+            }
+            var nearest = FindNearestBlockIndex(e.GetCurrentPoint(_container).Position.Y);
+            if (nearest >= 0) FocusBlock(nearest);
+        }, RoutingStrategies.Bubble);
         Content = BuildContent();
 
         SetText(string.Empty);
@@ -433,6 +445,24 @@ public partial class MarkdownLiveEditorView : UserControl
     }
 
     /// <summary>按块序号聚焦（0 基）。</summary>
+    /// <summary>按点击的纵坐标找最近的块（垂直范围内直接命中，否则取距离最小者）。</summary>
+    private int FindNearestBlockIndex(double y)
+    {
+        if (_blockViews.Count == 0) return -1;
+        int nearest = -1;
+        double best = double.MaxValue;
+        for (var i = 0; i < _blockViews.Count; i++)
+        {
+            var top = _blockViews[i].TranslatePoint(new Point(0, 0), _container);
+            if (top is not { } origin) continue;
+            var bottom = origin.Y + _blockViews[i].Bounds.Height;
+            if (y >= origin.Y && y <= bottom) return i;
+            var distance = y < origin.Y ? origin.Y - y : y - bottom;
+            if (distance < best) { best = distance; nearest = i; }
+        }
+        return nearest;
+    }
+
     public void FocusBlock(int index)
     {
         if (index < 0 || index >= _blockViews.Count)
