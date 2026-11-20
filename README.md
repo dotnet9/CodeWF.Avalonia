@@ -5,11 +5,11 @@
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Target](https://img.shields.io/badge/target-net11.0-512bd4)](https://learn.microsoft.com/dotnet/core/whats-new/dotnet-11)
 
-面向 Avalonia 12 的 UI 控件与能力库合集：基础自定义控件、表格增强、Dock 布局、Markdown 渲染与编辑、思维导图、国际化、日志查看，均以 `CodeWF.Avalonia.*` 前缀发布，XAML 命名空间统一挂 `https://codewf.com`。
+面向 Avalonia 12 的 UI 控件与能力库合集：基础自定义控件、表格增强、Dock 布局、国际化、日志查看，均以 `CodeWF.Avalonia.*` 前缀发布，XAML 命名空间统一挂 `https://codewf.com`。
 
 A suite of UI control and capability libraries for Avalonia 12, published with the `CodeWF.Avalonia.*` prefix and a unified XAML namespace `https://codewf.com`.
 
-> 当前发布线为 `12.2.x`，包版本统一维护于 `Directory.Build.props`；依赖版本变量集中维护于 `build/Versions.props`，中央包声明在 `Directory.Packages.props`，框架默认值在 `build/ProjectDefaults.props`。
+> 当前发布线为 `12.1.6.x`，包版本统一维护于 `Directory.Build.props`；依赖版本变量集中维护于 `build/Versions.props`，中央包声明在 `Directory.Packages.props`，框架默认值在 `build/ProjectDefaults.props`。nuget.org 上并存已废弃的历史 `12.2.x` 版本线（版本号更大，浮动解析会命中它），消费方请逐包精确钉版。
 
 主分支跟随 .NET 11 和最新稳定／预览依赖；Win7 历史兼容基线冻结在 `win7-archive`，不再维护。
 
@@ -20,7 +20,6 @@ A suite of UI control and capability libraries for Avalonia 12, published with t
 | 桌面应用外壳：统一标题栏、新手引导、状态徽标/卡片、穿梭框与可搜索列表 | `CodeWF.Avalonia.Controls` |
 | 数据表格：三态排序（升/降/取消）、自然排序、截断 ToolTip；树形表格同款，另附通用属性面板 | `CodeWF.Avalonia.DataGrid`、`CodeWF.Avalonia.TreeDataGrid` |
 | 多文档工作区：Dock 布局适配、梯形文档页签、中英文本地化 | `CodeWF.Avalonia.Dock` |
-| Markdown 写作与发布：渲染、图片/公式/Mermaid/代码高亮、PNG/PDF/Word/公众号 HTML 导出、源码与所见即所得编辑器 | `CodeWF.Avalonia.Markdown.Lite`、`CodeWF.Avalonia.Markdown` |
 | 运行期观测与本地化：实时日志查看、桌面通知、I18n 标记扩展与强类型 Key 生成 | `CodeWF.Avalonia.Log`、`CodeWF.Avalonia.Lang`、`CodeWF.Avalonia.Lang.Generator` |
 
 ## 包一览 / Packages
@@ -37,15 +36,10 @@ A suite of UI control and capability libraries for Avalonia 12, published with t
 | [CodeWF.Avalonia.DataGrid](https://www.nuget.org/packages/CodeWF.Avalonia.DataGrid) | 官方 DataGrid 增强：三态排序、自然排序、智能 ToolTip，内置 Semi 主题入口 | Avalonia.Controls.DataGrid、**Semi.Avalonia** |
 | [CodeWF.Avalonia.TreeDataGrid](https://www.nuget.org/packages/CodeWF.Avalonia.TreeDataGrid) | 社区版 TreeDataGrid.Avalonia 增强：三态排序、Ctrl+A 全选、智能 ToolTip，内置 Semi 主题（本地 vendor，不依赖商业版）；含通用 PropertyGrid | TreeDataGrid.Avalonia、Avalonia.Controls.ColorPicker、**Semi.Avalonia**、CodeWF.Avalonia.Lang |
 | [CodeWF.Avalonia.Dock](https://www.nuget.org/packages/CodeWF.Avalonia.Dock) | 基于 Dock.Avalonia 的布局扩展与 Semi 风格主题，含中英文本地化 | Dock.Avalonia、Dock.Avalonia.Themes.Simple、**Semi.Avalonia** |
-| [CodeWF.Avalonia.Markdown.Lite](https://www.nuget.org/packages/CodeWF.Avalonia.Markdown.Lite) | Markdown 渲染引擎（常规元素）+ 12 套排版主题 | Avalonia、Markdig、CodeWF.Avalonia.Controls\*、CodeWF.Avalonia.Lang\* |
-| [CodeWF.Avalonia.Markdown](https://www.nuget.org/packages/CodeWF.Avalonia.Markdown) | 完整包：图片/公式/Mermaid/代码高亮/多格式导出/源码与所见即所得编辑器 | Avalonia.AvaloniaEdit、AnimatedImage.Avalonia、Mermaider、SkiaSharp、Svg.Skia、Svg.Controls.Skia.Avalonia、Sylinko.CSharpMath.Avalonia、TextMateSharp(.Grammars)、CodeWF.Avalonia.Markdown.Lite、CodeWF.Avalonia.Controls\*、CodeWF.Avalonia.Lang\* |
-| [CodeWF.Avalonia.MindView](https://www.nuget.org/packages/CodeWF.Avalonia.MindView) | 脑图编辑、缩略图、导入导出、只读 Markdown 结构图，内含浅深色主题与主题色 API | Avalonia、Markdig、CodeWF.Avalonia.Lang |
 | [CodeWF.Avalonia.Log](https://www.nuget.org/packages/CodeWF.Avalonia.Log) | 日志查看控件与桌面通知（配合 CodeWF.Toolkit.Logging） | Avalonia、Xaml.Behaviors、CodeWF.Toolkit.Logging |
 | [CodeWF.Avalonia.Motion](https://www.nuget.org/packages/CodeWF.Avalonia.Motion) | 通用弹簧动效、可中断过渡与动效分级，支持裁剪与 NativeAOT | Avalonia |
 | [CodeWF.Avalonia.Lang](https://www.nuget.org/packages/CodeWF.Avalonia.Lang) | I18n 标记扩展与转换器；直接使用 Toolkit 唯一语言管理器，支持业务资源覆盖 | Avalonia、CodeWF.Toolkit.Lang |
 | [CodeWF.Avalonia.Lang.Generator](https://www.nuget.org/packages/CodeWF.Avalonia.Lang.Generator) | 编译期源生成器：从语言资源生成强类型 Key | Roslyn（`PrivateAssets=all`，netstandard2.0） |
-
-\* 标注的依赖由对应包经传递引用带入，无需单独安装；它们本身不依赖 Semi，见 [主题与依赖](#主题与依赖--themes-and-dependencies)。
 
 ## 快速开始 / Quick start
 
@@ -64,7 +58,7 @@ dotnet add package CodeWF.Avalonia.DataGrid
              xmlns:codewf="https://codewf.com">
   <!-- xmlns:semi  → Semi.Avalonia 包；xmlns:codewf → CodeWF.Avalonia.* 包 -->
   <Application.Styles>
-    <!-- Semi 基础主题：Controls / DataGrid / TreeDataGrid / Dock 四个包需要；Markdown、Log、Lang 不需要 -->
+    <!-- Semi 基础主题：Controls / DataGrid / TreeDataGrid / Dock 四个包需要；Log、Lang 不需要 -->
     <semi:SemiTheme Locale="zh-CN" />
     <!-- 基础控件样式（Guide / Transfer / StatusBadge / CodeWFWindow 等） -->
     <codewf:ACSemiTheme />
@@ -78,8 +72,6 @@ dotnet add package CodeWF.Avalonia.DataGrid
 
 | 你只需要 | Application.Styles 里放什么 |
 |---|---|
-| Markdown 渲染（Lite，不引入 Semi） | `<codewf:MarkdownThemes />` |
-| Markdown 完整能力（编辑器/导出/图表） | `<codewf:MarkdownFullThemes />`（继承自 Lite 的 `MarkdownThemes`） |
 | 日志查看控件 | `<codewf:CodeWFLogTheme />` + 先初始化 `CodeWF.Toolkit.Logging` 的 `Logger` |
 | 树形表格 + 属性面板 | `<semi:SemiTheme />`、`<codewf:TreeDataGridSemiTheme />` |
 | Dock 多文档工作区 | `<semi:SemiTheme />`、`<codewf:DockSemiTheme />` |
@@ -87,7 +79,7 @@ dotnet add package CodeWF.Avalonia.DataGrid
 
 ## 主题与依赖 / Themes and dependencies
 
-六个主题入口分别属于哪个包、是否依赖 Semi、能否省略：
+五个主题入口分别属于哪个包、是否依赖 Semi、能否省略：
 
 | 主题入口 | 所属包 | 依赖 Semi | 可否省略 |
 |---|---|---|---|
@@ -96,7 +88,6 @@ dotnet add package CodeWF.Avalonia.DataGrid
 | `TreeDataGridSemiTheme` | TreeDataGrid | 是 | 用了 TreeDataGrid 增强或 PropertyGrid 则必须引入 |
 | `DockSemiTheme` | Dock | 是 | 用了 Dock 布局则必须引入 |
 | `CodeWFLogTheme` | Log | 否 | 只在不使用日志查看控件时可省 |
-| `MarkdownThemes` / `MarkdownFullThemes` | Markdown.Lite / Markdown | 否 | 用了 Markdown 控件则必须引入（后者包含前者） |
 
 **八套常规配色 × 三态模式**：在 Semi 与控件样式之后加载 `<codewf:StudioTheme />`，由 `CodeWF.Avalonia.Controls.Themes.StudioThemeController` 统一管理。
 
@@ -122,29 +113,9 @@ _themeController = new StudioThemeController(Application.Current!)
 
 现有 `SemiTheme.Aquatic/Desert/Dusk/NightSky` 和日志的 `CodeWFLogTheme.HighContrast` 仍可直接使用；高对比属于独立无障碍主题，不计入八套常规配色。
 
-### 改色时的两个事实
+### 改色时的注意事项
 
 - **`CodeWFLogTheme` 是 `sealed`**：它只能整体引入，不支持继承后覆盖配色。若需要自定义日志配色，请在应用资源里覆盖同名画笔键（`Application.Resources` 的优先级高于主题）。
-- **`MarkdownThemes` 可以继承**：它是 public 无参构造的 `Styles`，`MarkdownFullThemes` 就是这么来的；排版主题/尺寸也支持运行时切换：
-
-```csharp
-public class MyMarkdownThemes : MarkdownThemes
-{
-    public MyMarkdownThemes()
-    {
-        TypographyTheme = MarkdownTypographyThemes.TechnologyBlue; // 默认 Basic
-        TypographySize = MarkdownTypographySizes.Small;            // 默认 Normal
-    }
-}
-```
-
-```xml
-<codewf:MarkdownThemes TypographyTheme="TechnologyBlue" TypographySize="Small" />
-```
-
-排版主题共 12 套，Key 见 `MarkdownTypographyThemes`（Basic 为默认），尺寸见 `MarkdownTypographySizes`。
-
-全局/局部切换还可调用 `MarkdownThemes.OverrideTypographyResources(...)`，无需重建控件。
 
 > 注意：主题资源以程序集内绝对 URI（`avares://CodeWF.Avalonia.*/Themes/...`）引用，不要手动改写资源字典路径。
 
@@ -153,8 +124,6 @@ public class MyMarkdownThemes : MarkdownThemes
 | 情形 | 宿主需要做什么 |
 |---|---|
 | Dock | `DockSemiTheme` 以 Dock 官方的 `Dock.Avalonia.Themes.Simple` 为基座，并自带 `{x:Type Button}` / `{x:Type Window}` 基类主题（Semi.Avalonia 12.x 不再提供这两个基类主题），因此**不需要**再引入 `FluentTheme`；但 Semi 基础主题仍需引入。保留开源主题的原因与 `Semi.Avalonia.Dock` 的依赖、许可区别见 [Dock 文档](docs/CodeWF.Avalonia.Dock%20说明文档.md)。 |
-| AvaloniaEdit（Markdown 完整包） | 编辑器需要宿主提供字体令牌（`FontSizeNormal` 等，通常来自所引用的主题包）。缺少时编辑器字号会回退到默认值，不影响功能。 |
-| Markdown 语言资源 | 中英日繁体 JSON 嵌入 Markdown.Lite 程序集，默认自动读取并跟随 Lang 文化，缺失文化回退英文；宿主无需复制库 JSON。应用自己的同名键可覆盖默认文案。 |
 | 日志控件 | 需先初始化 `CodeWF.Toolkit.Logging` 的 `Logger`，控件订阅其 UI 日志事件流；回调在后台线程，界面订阅方自行调度到 UI 线程。 |
 
 ## 包 → 源码 → 文档索引 / Source & docs index
@@ -165,7 +134,6 @@ public class MyMarkdownThemes : MarkdownThemes
 | DataGrid | [src/DataGrid](src/DataGrid/CodeWF.Avalonia.DataGrid) | [说明文档](docs/CodeWF.Avalonia.DataGrid%20说明文档.md) |
 | TreeDataGrid（含 PropertyGrid） | [src/TreeDataGrid](src/TreeDataGrid/CodeWF.Avalonia.TreeDataGrid) | [说明文档](docs/CodeWF.Avalonia.TreeDataGrid%20说明文档.md) |
 | Dock | [src/Dock](src/Dock/CodeWF.Avalonia.Dock) | [说明文档](docs/CodeWF.Avalonia.Dock%20说明文档.md) |
-| Markdown / Markdown.Lite | [src/Markdown](src/Markdown) | [说明文档](docs/CodeWF.Avalonia.Markdown%20说明文档.md) |
 | Log | [src/Log](src/Log/CodeWF.Avalonia.Log) | [说明文档](docs/CodeWF.Avalonia.Log%20说明文档.md) |
 | Lang / Lang.Generator | [src/Lang](src/Lang) | [说明文档](docs/CodeWF.Avalonia.Lang%20说明文档.md) |
 
@@ -173,9 +141,9 @@ public class MyMarkdownThemes : MarkdownThemes
 
 八套配色的深浅资源、真实控件交互态和对比度回归见[配色验证说明](docs/ThemeVerification.md)。统一 .NET 紫安装体验见[单文件交互原型](design/CodeWF.安装器原型.html)，当前为待验收设计，尚未应用于实际安装器。
 
-Demo 保留 Ribbon + Dock，按输入与选择、反馈与引导、数据展示、布局与导航、Markdown、开发工具分类；每个主菜单对应一个具体控件或 API。首页先展示目录，组合工作流集中到“综合示例”。新增展开动画独立页，块编辑、平面表格增强与状态卡片提供具体用例。共享主题接口、MVVM 约定与截图检查见 [原生演示台文档](docs/NativeDemo.md)。
+Demo 保留 Ribbon + Dock，按输入与选择、反馈与引导、数据展示、布局与导航、开发工具分类；每个主菜单对应一个具体控件或 API。首页先展示目录，组合工作流集中到“综合示例”。新增展开动画独立页，平面表格增强与状态卡片提供具体用例。共享主题接口、MVVM 约定与截图检查见 [原生演示台文档](docs/NativeDemo.md)。
 
-文档内使用 Grid + GridSplitter 放置演示与独立属性面板，浮动时整体移动。命令区进一步按状态、引导、表格、窗口、布局动效、Markdown 阅读 / 编辑 / 导出等用途分组。参数与演示优先展示，源码按需打开；长 API 名保持完整，窄窗口可横向滚动。仓库通过 `global.json` 选择.NET 11 RC SDK（版本固定在 `global.json`）。
+文档内使用 Grid + GridSplitter 放置演示与独立属性面板，浮动时整体移动。命令区进一步按状态、引导、表格、窗口、布局动效等用途分组。参数与演示优先展示，源码按需打开；长 API 名保持完整，窄窗口可横向滚动。仓库通过 `global.json` 选择.NET 11 RC SDK（版本固定在 `global.json`）。
 
 ![Ribbon 功能子组与原生 Dock 工作区](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-ribbon.png)
 
@@ -183,7 +151,7 @@ Each Dock document contains its demonstration and property panel; both move toge
 
 Windows x64 NativeAOT Demo：标题栏仅保留平铺八色点，模式复用 Ursa 三态按钮，语言图标弹出列表，默认 .NET 紫，共八套配色；浅色、深色与跟随系统分别选择。首页目录包含 32 个页面，实验区按需展开；完整功能与验收范围见上面的文档。
 
-当前版本 `12.2.49`，主分支使用 .NET 11 RC3 与 Avalonia 12.1.5，统一 xunit.v3 测试并修复精简 AOT 发布遗漏 XAML 资源的问题；保留混排字号、选区浮条、Mermaid 上方独立源码卡片与阅读位置保持等能力。详细变更见[更新日志](UpdateLog.md)，安装器和平台边界见[安装器说明](scripts/installer/README.md)，历史原生演示验证见[原生演示台文档](docs/NativeDemo.md)。
+包版本统一维护于 `Directory.Build.props`（当前发布线 `12.1.6.x`）。详细变更见[更新日志](UpdateLog.md)，安装器和平台边界见[安装器说明](scripts/installer/README.md)，历史原生演示验证见[原生演示台文档](docs/NativeDemo.md)。
 
 以下为 `12.1.4.25` 的 Dock 文档分屏、浮动与重新停靠效果（真实 Windows NativeAOT + Skia 离屏渲染），来源见[截图记录](docs/recheck25-native-media.md)：
 
@@ -198,8 +166,6 @@ Windows x64 NativeAOT Demo：标题栏仅保留平铺八色点，模式复用 Ur
 ![AI 极光浅色原生演示台](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-aurora-light.png)
 
 ![StatusCard 独立演示](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-status-card.png)
-
-![Markdown 实时编辑](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-markdown.png)
 
 ![平面表格增强](https://raw.githubusercontent.com/dotnet9/CodeWF.Avalonia/main/docs/images/studio-treegrid.png)
 
@@ -222,16 +188,12 @@ dotnet run --project demo/CodeWF.Avalonia.Demo -f net11.0 -- --smoke
 - `ci.yml`：`dotnet build -c Release` + `dotnet test`，外加 NativeAOT 发布并在 Windows 上运行 `--smoke`。
 - `publish-nuget.yml`：推送 `v*` tag 时打包并发布 NuGet（Trusted Publishing）。
 - `release.yml`：同一 tag 触发五平台演示应用发布（win-x64、linux-x64、linux-arm64、osx-x64、osx-arm64）。
-- 包版本沿用 `12.2.x` 发布线，Avalonia 依赖版本在 `build/Versions.props` 独立维护；发布标签与包版本一致。
+- 包版本沿用 `12.1.6.x` 发布线，Avalonia 依赖版本在 `build/Versions.props` 独立维护；发布标签与包版本一致。
 - 变更记录见 [UpdateLog.md](UpdateLog.md)。
 
 ## 许可与贡献 / License and contributing
 
 [MIT](LICENSE)。Issue 与 PR 都欢迎，提交前请确保 `dotnet build CodeWF.Avalonia.slnx -c Release` 与 `dotnet test` 通过。
-
-## 思维导图接入
-
-`CodeWF.Avalonia.MindView` 的控件和主题合并为一个包，版本随本仓统一版本。宿主可使用 Semi、Ursa 或其它 Avalonia 主题。编辑型脑图使用 `MindMapEditor` / `MindMapMiniMap`，只读 Markdown 导图使用 `MarkdownMindMapView`。详细 API 和接入例子见 [MindView README](src/MindView/CodeWF.Avalonia.MindView/README.md)。
 
 ## 统一安装体验
 
