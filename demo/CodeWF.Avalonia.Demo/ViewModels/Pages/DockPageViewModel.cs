@@ -8,16 +8,16 @@ using Dock.Model.ReactiveUI.Controls;
 
 namespace CodeWF.Avalonia.Demo.ViewModels.Pages;
 
-/// <summary>文档区上下文：DataTemplate 按 Context 类型匹配 MarkdownViewer。</summary>
-public record MarkdownDocumentContext(string Markdown);
+/// <summary>文档区上下文：DataTemplate 按 Context 类型匹配正文视图。</summary>
+public record DocumentContext(string Text);
 
 /// <summary>工具区上下文：同上。</summary>
-public record MarkdownToolContext(string Markdown);
+public record ToolContext(string Text);
 
 /// <summary>
 /// Dock 演示页 VM：用 Dock.Model.ReactiveUI 构建工作区布局（左工具栏 + 文档区）。
 /// 12.x 无 Content/DocumentTemplate：内容放进 Context，由 DockPage.axaml 的
-/// DataTemplates 按 Context 类型解析为 MarkdownViewer。
+/// DataTemplates 按 Context 类型解析为正文视图。
 /// </summary>
 public class DockPageViewModel
 {
@@ -31,7 +31,7 @@ public class DockPageViewModel
         {
             Id = "Tool.Overview",
             Title = L.Instance.GetResource(DemoResources.Content.Dock.overviewTool.WorkspaceOverview),
-            Context = new MarkdownToolContext(ToolOverviewMarkdown),
+            Context = new ToolContext(ToolOverviewText),
         };
         var toolDock = new ToolDock
         {
@@ -42,8 +42,8 @@ public class DockPageViewModel
             Proportion = 0.28,
         };
 
-        var designDocument = new Document { Id = "Doc.Design", Title = L.Instance.GetResource(DemoResources.Content.Dock.designDocument.DesignNotes), Context = new MarkdownDocumentContext(DocDesignMarkdown) };
-        var apiDocument = new Document { Id = "Doc.Api", Title = L.Instance.GetResource(DemoResources.Content.Dock.apiDocument.APIDraft), Context = new MarkdownDocumentContext(DocApiMarkdown) };
+        var designDocument = new Document { Id = "Doc.Design", Title = L.Instance.GetResource(DemoResources.Content.Dock.designDocument.DesignNotes), Context = new DocumentContext(DocDesignText) };
+        var apiDocument = new Document { Id = "Doc.Api", Title = L.Instance.GetResource(DemoResources.Content.Dock.apiDocument.APIDraft), Context = new DocumentContext(DocApiText) };
         var docDock = new DocumentDock
         {
             Id = "DocDock",
@@ -77,9 +77,9 @@ public class DockPageViewModel
 
     private static AvaloniaList<T> CreateList<T>(params T[] items) => new(items);
 
-    private static string ToolOverviewMarkdown => L.Instance.GetResource(DemoResources.Content.Dock.ToolOverviewMarkdown.WorkspaceOverviewLeftToolPanelRightDraggableDocuments);
+    private static string ToolOverviewText => L.Instance.GetResource(DemoResources.Content.Dock.ToolOverviewMarkdown.WorkspaceOverviewLeftToolPanelRightDraggableDocuments);
 
-    private static string DocDesignMarkdown => L.Instance.GetResource(DemoResources.Content.Dock.DocDesignMarkdown.DesignNotesDockLayoutRootDockProportionalDockToolDockDocumentDock);
+    private static string DocDesignText => L.Instance.GetResource(DemoResources.Content.Dock.DocDesignMarkdown.DesignNotesDockLayoutRootDockProportionalDockToolDockDocumentDock);
 
-    private static string DocApiMarkdown => L.Instance.GetResource(DemoResources.Content.Dock.DocApiMarkdown.APIDraftCsharpVarFactoryNewDockModel);
+    private static string DocApiText => L.Instance.GetResource(DemoResources.Content.Dock.DocApiMarkdown.APIDraftCsharpVarFactoryNewDockModel);
 }

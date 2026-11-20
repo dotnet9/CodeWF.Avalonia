@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
@@ -8,8 +8,6 @@
     <PackageReference Include="Avalonia.Headless" />
     <PackageReference Include="CodeWF.Toolkit.Core" />
     <ProjectReference Include="../../demo/CodeWF.Avalonia.Demo/CodeWF.Avalonia.Demo.csproj" />
-    <ProjectReference Include="../../src/MindView/CodeWF.Avalonia.MindView/CodeWF.Avalonia.MindView.csproj" />
-    <TrimmerRootAssembly Include="CodeWF.Avalonia.MindView" />
     <TrimmerRootDescriptor Include="../../demo/CodeWF.Avalonia.Demo/Properties/Trimming/TrimmerRoots.xml" />
   </ItemGroup>
 </Project>

@@ -341,86 +341,6 @@ window.CodeWFDemoCatalog = [
     "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/>"
   },
   {
-    "titleKey": "Demo.Group.Markdown",
-    "titleZh": "Markdown",
-    "titleEn": "Markdown",
-    "id": "markdown",
-    "items": [
-      {
-        "titleKey": "Demo.Item.MarkdownViewer",
-        "page": "MarkdownViewerPage",
-        "api": "MarkdownViewer",
-        "package": "CodeWF.Avalonia.Markdown",
-        "prototypeId": "md-viewer",
-        "titleZh": "MarkdownViewer",
-        "titleEn": "MarkdownViewer",
-        "description": "MarkdownViewer",
-        "sectionKey": "Demo.Catalog.SectionReading",
-        "icon": "▤",
-        "prototypeIcon": "<path d=\"M19 1a2 2 0 0 1 2 2v19a1 1 0 0 1-1 1H6a3 3 0 0 1-3-3V5a4 4 0 0 1 4-4h12ZM6 19a1 1 0 0 0 0 2h13v-2H6Z\" fill=\"currentColor\" stroke=\"none\"/>",
-        "iconKey": "SemiIconBook"
-      },
-      {
-        "titleKey": "Demo.Item.MarkdownLite",
-        "page": "MarkdownLitePage",
-        "api": "Lite.MarkdownViewer",
-        "package": "CodeWF.Avalonia.Markdown.Lite",
-        "prototypeId": "md-lite",
-        "titleZh": "Lite.MarkdownViewer",
-        "titleEn": "Lite.MarkdownViewer",
-        "description": "Lite.MarkdownViewer",
-        "sectionKey": "Demo.Catalog.SectionReading",
-        "icon": "▭",
-        "prototypeIcon": "<path d=\"M19 1a2 2 0 0 1 2 2v19a1 1 0 0 1-1 1H6a3 3 0 0 1-3-3V5a4 4 0 0 1 4-4h12ZM6 19a1 1 0 0 0 0 2h13v-2H6Z\" fill=\"currentColor\" stroke=\"none\"/>",
-        "iconKey": "SemiIconBook"
-      },
-      {
-        "titleKey": "Demo.Item.MarkdownEditor",
-        "page": "MarkdownEditorPage",
-        "api": "MarkdownEditorView",
-        "package": "CodeWF.Avalonia.Markdown",
-        "prototypeId": "md-editor",
-        "titleZh": "MarkdownEditorView",
-        "titleEn": "MarkdownEditorView",
-        "description": "MarkdownEditorView",
-        "sectionKey": "Demo.Catalog.SectionEditing",
-        "icon": "✎",
-        "prototypeIcon": "<path d=\"M14.5 4.5l 5 5 2.09-2.09a2 2 0 0 0 0-2.82L19.4 2.4a2 2 0 0 0-2.82 0L14.5 4.5Z\n        M2.25 21.13l 1.68-5.88a1 1 0 0 1 .25-.43L13 6l5 5-8.82 8.82a1 1 0 0 1-.43.25l-5.88 1.68a.5.5 0 0 1-.62-.62Z\" fill=\"currentColor\" stroke=\"none\"/>",
-        "iconKey": "SemiIconEdit"
-      },
-      {
-        "titleKey": "Demo.Item.MarkdownLiveEditor",
-        "page": "MarkdownLiveEditorPage",
-        "api": "MarkdownLiveEditorView",
-        "package": "CodeWF.Avalonia.Markdown",
-        "prototypeId": "md-live",
-        "titleZh": "MarkdownLiveEditorView",
-        "titleEn": "MarkdownLiveEditorView",
-        "description": "MarkdownLiveEditorView",
-        "sectionKey": "Demo.Catalog.SectionEditing",
-        "icon": "⚡",
-        "prototypeIcon": "<path d=\"m16.43 4.1 3.54 3.54 1.48-1.48c.55-.55.55-1.45 0-2L19.9 2.62a1.42 1.42 0 0 0-2 0L16.43 4.1Z\n        m-8.76 11.88 1.19-4.17a.7.7 0 0 1.18-.3l6.24-6.25 3.54 3.54-6.24 6.24a.7.7 0 0 1-.3.18l-4.17 1.2a.35.35 0 0 1-.44-.44Z\n        M7.97 9.78c-.28.29-.5.63-.64 1l-.05.17-1.19 4.17A2.35 2.35 0 0 0 9 18.02l4.17-1.18c.44-.13.84-.37 1.17-.7l4.8-4.8a.5.5 0 0 1 .86.36V21a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h9.54a.5.5 0 0 1 .36.85L7.97 9.78Z\" fill=\"currentColor\" stroke=\"none\"/>",
-        "iconKey": "SemiIconEdit2"
-      },
-      {
-        "titleKey": "Demo.Item.MarkdownExport",
-        "page": "MarkdownExportPage",
-        "api": "MarkdownDocumentExporter",
-        "package": "CodeWF.Avalonia.Markdown",
-        "prototypeId": "md-export",
-        "titleZh": "MarkdownDocumentExporter",
-        "titleEn": "MarkdownDocumentExporter",
-        "description": "MarkdownDocumentExporter",
-        "sectionKey": "Demo.Catalog.SectionExport",
-        "icon": "⇪",
-        "prototypeIcon": "<path d=\"M17.84 8.06A6.5 6.5 0 1 0 5.18 11 4.5 4.5 0 0 0 5.5 20H17a6 6 0 0 0 .84-11.94Zm-5.52.2a.5.5 0 0 0-.64 0l-5.15 4.3a.25.25 0 0 0 .16.44H10v4.5c0 .28.22.5.5.5h3a.5.5 0 0 0 .5-.5V13h3.31c.23 0 .34-.3.16-.44l-5.15-4.3Z\" fill=\"currentColor\" stroke=\"none\"/>",
-        "iconKey": "SemiIconUpload"
-      }
-    ],
-    "icon": "▤",
-    "prototypeIcon": "<path d=\"M4.5 10.8L12 4l7.5 6.8\"/><path d=\"M6.5 10v9.5h11V10\"/>"
-  },
-  {
     "titleKey": "Demo.Group.Utilities",
     "titleZh": "开发工具",
     "titleEn": "Developer Tools",
@@ -475,19 +395,6 @@ window.CodeWFDemoCatalog = [
     "titleEn": "Examples",
     "id": "examples",
     "items": [
-      {
-        "titleKey": "Demo.Item.MarkdownFlow",
-        "page": "MarkdownFlowPage",
-        "api": "",
-        "package": "",
-        "prototypeId": "flow-write",
-        "titleZh": "Markdown 工作流",
-        "titleEn": "Markdown workflow",
-        "description": "",
-        "icon": "▶",
-        "prototypeIcon": "<path d=\"M2 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z\n        M9.5 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V3Z\n        M10.5 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\n        M2 10.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3Z\n        M18 9.5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\n        M9.5 10.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-3Z\n        M3 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1H3Z\n        M17 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V3Z\n        M18 17a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3Z\" fill=\"currentColor\" stroke=\"none\"/>",
-        "iconKey": "SemiIconApps"
-      },
       {
         "titleKey": "Demo.Item.DataFlow",
         "page": "DataFlowPage",
@@ -579,10 +486,7 @@ window.CodeWFCatalogText = {
     "SectionLogs": "日志",
     "SectionWindows": "窗口",
     "SectionNavigation": "停靠与页签",
-    "SectionLayout": "布局与动效",
-    "SectionReading": "阅读",
-    "SectionEditing": "编辑",
-    "SectionExport": "导出"
+    "SectionLayout": "布局与动效"
   },
   "en-US": {
     "Title": "Control catalog",
@@ -630,10 +534,7 @@ window.CodeWFCatalogText = {
     "SectionLogs": "Logs",
     "SectionWindows": "Windows",
     "SectionNavigation": "Dock & Tabs",
-    "SectionLayout": "Layout & Motion",
-    "SectionReading": "Reading",
-    "SectionEditing": "Editing",
-    "SectionExport": "Export"
+    "SectionLayout": "Layout & Motion"
   }
 };
 window.CodeWFCatalogDescriptions = {
@@ -696,18 +597,6 @@ window.CodeWFCatalogDescriptions = {
     "SegmentedPanel": {
       "Desc": "点选各段，实时查看轨道间距、等宽排布与指示块圆角。"
     },
-    "MarkdownViewer": {
-      "Desc": "渲染 Markdown、代码、公式和图表，切换排版主题。"
-    },
-    "MarkdownLite": {
-      "Desc": "使用轻量渲染器展示常规 Markdown 元素与排版主题。"
-    },
-    "MarkdownEditor": {
-      "Desc": "编辑 Markdown 源码，体验语法高亮与编辑工具。"
-    },
-    "MarkdownLiveEditor": {
-      "Desc": "体验 Markdown 实时编辑与预览。"
-    },
     "If": {
       "Desc": "改变条件，观察 If 标记扩展的值选择。",
       "Xaml": "<TextBlock.Text>\n  <codewf:If Condition=\"{Binding IsBusy}\" True=\"Busy\" False=\"Ready\" />\n</TextBlock.Text>"
@@ -718,9 +607,6 @@ window.CodeWFCatalogDescriptions = {
     },
     "Lang": {
       "Desc": "切换语言，验证资源绑定和文案实时更新。"
-    },
-    "MarkdownExport": {
-      "Desc": "将 Markdown 导出为 PNG、PDF、Word 或 HTML。"
     },
     "ContentExpansionAnimator": {
       "Desc": "展开、折叠、横纵布局与快速反向；尺寸和透明度由同一动画进度驱动。"
@@ -785,18 +671,6 @@ window.CodeWFCatalogDescriptions = {
     "SegmentedPanel": {
       "Desc": "Select a segment to preview track spacing, equal-width layout, and thumb corner radius."
     },
-    "MarkdownViewer": {
-      "Desc": "Render Markdown, code, formulas and diagrams with typography themes."
-    },
-    "MarkdownLite": {
-      "Desc": "Explore standard Markdown elements and typography in the lightweight renderer."
-    },
-    "MarkdownEditor": {
-      "Desc": "Edit Markdown source with syntax highlighting and editing tools."
-    },
-    "MarkdownLiveEditor": {
-      "Desc": "Explore live Markdown editing and preview."
-    },
     "If": {
       "Desc": "Change a condition to inspect value selection by the If markup extension.",
       "Xaml": "<TextBlock.Text>\n  <codewf:If Condition=\"{Binding IsBusy}\" True=\"Busy\" False=\"Ready\" />\n</TextBlock.Text>"
@@ -807,9 +681,6 @@ window.CodeWFCatalogDescriptions = {
     },
     "Lang": {
       "Desc": "Switch language to verify resource bindings and live text updates."
-    },
-    "MarkdownExport": {
-      "Desc": "Export Markdown to PNG, PDF, Word or HTML."
     },
     "ContentExpansionAnimator": {
       "Desc": "Expand, collapse and reverse horizontal or vertical layout animations with a single progress value."
@@ -1374,183 +1245,6 @@ window.CodeWFPrototypeResources = {
           "FailedToSaveLayout": "保存布局失败："
         }
       },
-      "MarkdownEditor": {
-        "View": {
-          "SourceEditorPoweredByAvaloniaEditWithTextMateHighlighting": "MarkdownEditorView：AvaloniaEdit 承载的源码编辑器，内置语法着色（TextMate）与约 40 项编辑动作（标题 / 列表 / 表格 / 代码块 / 数学块等）。下方为常用动作按钮，完整动作集见 MarkdownEditorAction 枚举。",
-          "Bold": "加粗",
-          "Italic": "斜体",
-          "InlineCode": "行内代码",
-          "Heading2": "标题 2",
-          "Table": "表格",
-          "TaskList": "任务列表",
-          "CodeBlock": "代码块",
-          "Quote": "引用"
-        },
-        "Properties": {
-          "EditorFontSize": "编辑器字号",
-          "EditorTextFontSize": "编辑器文本字号。",
-          "ShowLineNumbers": "显示行号",
-          "ShowLineNumbersToTheLeftOfThe": "是否在编辑器左侧显示行号。",
-          "AutoPairing": "自动配对",
-          "AutomaticallyCompletePairedMarkersSuchAsAndBackticks": "输入 **、` 等成对标记时自动补全后半个标记。"
-        },
-        "Source": {
-          "CSharp": "var editor = new MarkdownEditorView(new MarkdownEditorOptions\r\n{\r\n    LinkUrlPlaceholder = \"https://example.com\",\r\n    CodeFenceLanguage = \"csharp\",\r\n    EnableAutoPair = true,\r\n    ShowLineNumbers = true,\r\n    FontSize = 15,\r\n});\r\nEditorHost.Content = editor;\r\neditor.SetText(\"# 标题\\n\\n正文\");\r\neditor.MarkdownChanged += (_, text) => Save(text);\r\n\r\n// 40 项动作统一入口：MarkdownEditorAction 枚举\r\nawait editor.ExecuteAsync(MarkdownEditorAction.Bold);\r\nawait editor.ExecuteAsync(MarkdownEditorAction.Table);\r\neditor.InsertTable(\"| 列一 | 列二 |\\\\n| --- | --- |\\\\n| A | B |\");\r\neditor.WrapSelection(\"**\", \"**\");\r\n\r\n// 光标 / 选区 / 行数\r\nvar (line, column, lineCount) = editor.CaretPosition;\r\nvar text = editor.Text;",
-          "Xaml": "<!-- MarkdownEditorView 为纯代码构建控件（无 XAML 模板依赖），在代码中创建并放入容器 -->\r\n<Border x:Name=\"EditorHost\" />"
-        },
-        "OnTable": {
-          "Column1Column2AB": "| 列一 | 列二 |\n| --- | --- |\n| A | B |"
-        },
-        "Samples": {
-          "Markdown": "# MarkdownEditorView\r\n\r\nAvaloniaEdit 驱动的 Markdown 源码编辑器。\r\n\r\n## 内置能力\r\n- TextMate 语法着色\r\n- 标题 / 列表 / 表格 / 任务列表 / 代码块 / 数学块等约 40 项动作\r\n- 查找替换、自动配对、行号、字号\r\n\r\n```csharp\r\nvar editor = new MarkdownEditorView();\r\n```\r\n\r\n> 用上方按钮或快捷键体验编辑动作；修改会实时反映在状态栏。"
-        },
-        "UpdateStatus": {
-          "LineColumnLinesCharactersFormat": "行 {0} / 列 {1} · 共 {2} 行 · {3} 字符"
-        }
-      },
-      "MarkdownExport": {
-        "View": {
-          "ExportMarkdownAsPNGPDFWordOrHTML": "MarkdownDocumentExporter：把 Markdown 导出为 PNG / PDF / Word / HTML；MarkdownHtmlClipboard 提供公众号（微信 / 知乎 / 掘金）富文本复制。导出排版主题可在右侧属性面板选择。",
-          "ExportPNG": "导出 PNG",
-          "ExportPDF": "导出 PDF",
-          "ExportWord": "导出 Word",
-          "ExportHTML": "导出 HTML",
-          "CopyPublishingHTML": "复制公众号 HTML"
-        },
-        "Properties": {
-          "ExportTheme": "导出主题",
-          "TypographyThemeOfTheExportedDocument": "导出文档使用的排版主题。",
-          "TypographySize": "排版尺寸",
-          "TypographySizeOfTheExportedDocument": "导出排版尺寸。",
-          "CopyDestination": "复制目标",
-          "WeChat": "微信",
-          "Zhihu": "知乎",
-          "Juejin": "掘金",
-          "DestinationPlatformForRichText": "公众号富文本复制的目标平台。"
-        },
-        "copyKind": {
-          "WeChat": "微信"
-        },
-        "Source": {
-          "CSharp": "// 四种格式一条龙：MarkdownDocumentExporter（themeName / typographySize 可选）\r\nMarkdownDocumentExporter.ExportMarkdown(markdown, ExportKind.Png, @\"D:\\\\out\\\\doc.png\");\r\nMarkdownDocumentExporter.ExportMarkdown(markdown, ExportKind.Pdf, @\"D:\\\\out\\\\doc.pdf\");\r\nMarkdownDocumentExporter.ExportMarkdown(markdown, ExportKind.Word, @\"D:\\\\out\\\\doc.docx\");\r\nMarkdownDocumentExporter.ExportMarkdown(markdown, ExportKind.Html, @\"D:\\\\out\\\\doc.html\",\r\n    themeName: MarkdownTypographyThemes.WeChatFormat);\r\n\r\n// 公众号富文本复制（微信 / 知乎 / 掘金），写入系统剪贴板后可直接粘贴\r\nvar ok = await MarkdownHtmlClipboard.TrySetHtmlAsync(\r\n    markdown, \"公众号\", MarkdownTypographyThemes.WeChatFormat);\r\n\r\n// 存储选择器拿到本地路径后再导出\r\nvar file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions\r\n{\r\n    Title = \"导出 PNG\",\r\n    DefaultExtension = \".png\",\r\n});\r\nif (file is not null)\r\n{\r\n    MarkdownDocumentExporter.ExportMarkdown(markdown, ExportKind.Png, file.Path.LocalPath);\r\n}",
-          "Xaml": "<!-- 导出按钮 + 存储选择器，导出实现见 C# 段 -->\r\n<Button Content=\"导出 PNG\" Click=\"OnExportPng\" />\r\n<Button Content=\"复制公众号 HTML\" Click=\"OnCopyWechat\" />"
-        },
-        "ExportAsync": {
-          "ExportingFormat": "正在导出 {0} → {1}",
-          "ExportCompleteFormat": "导出完成：{0}",
-          "ExportFailedFormat": "导出失败：{0}"
-        },
-        "OnCopyWechat": {
-          "Zhihu": "知乎",
-          "Juejin": "掘金",
-          "CopiedRichTextPasteItIntoTheEditorFormat": "已复制 {0} 富文本，可直接粘贴到编辑器。",
-          "CopyFailed": "复制失败："
-        },
-        "OnExportHtml": {
-          "ExportHTML": "导出 HTML"
-        },
-        "OnExportPdf": {
-          "ExportPDF": "导出 PDF"
-        },
-        "OnExportPng": {
-          "ExportPNG": "导出 PNG"
-        },
-        "OnExportWord": {
-          "ExportWord": "导出 Word"
-        },
-        "Samples": {
-          "Markdown": "# 导出示例文档\r\n\r\n这份文档用于演示 **PNG / PDF / Word / HTML** 四种导出与公众号富文本复制。\r\n\r\n## 特性清单\r\n- 按排版主题渲染导出样式\r\n- PDF 支持页面尺寸与边距选项\r\n- 公众号 HTML 兼容微信编辑器粘贴\r\n\r\n## 表格\r\n\r\n| 格式 | 说明 |\r\n| --- | --- |\r\n| PNG | 位图，适合预览分享 |\r\n| PDF | 打印与归档 |\r\n| Word | 二次编辑 |\r\n| HTML | 发布到公众号 / 站点 |\r\n\r\n```csharp\r\nMarkdownDocumentExporter.ExportMarkdown(md, ExportKind.Pdf, path);\r\n```\r\n\r\n> 提示：导出主题可在右侧属性面板切换后重试。"
-        }
-      },
-      "MarkdownFlow": {
-        "CSharpCode": {
-          "AddStepDemoSceneStepOpenNewMarkdownViewerPageAddStep": "// 场景页把「打开 → 编辑 → 预览 → 导出 → 回写」编成一条工作流，\n// 每一步直接复用组件库里的同一个页面实例（不重复实现）：\nAddStep(\"Demo.Scene.Step.Open\", new MarkdownViewerPage());\nAddStep(\"Demo.Scene.Step.Edit\", new MarkdownEditorPage());\nAddStep(\"Demo.Scene.Step.Preview\", new MarkdownLiveEditorPage());\nAddStep(\"Demo.Scene.Step.Export\", new MarkdownExportPage());\nAddStep(\"Demo.Scene.Step.WriteBack\", new MarkdownLitePage());\nAttachSceneShell();\n\n// 任务勾选回写源文由 MarkdownViewer 发起：\nviewer.TaskWriteBackRequested += (_, e) => e.Result.Markdown = e.Rendered;"
-        },
-        "XamlCode": {
-          "CodewfMarkdownViewerMarkdownTypographyThemeCodewfMarkdownEditorViewMarkdownShowLineNumbers": "<!-- 场景页外壳由 ScenePageBase 构建：工作流步骤条 + 内嵌组件页 -->\n<codewf:MarkdownViewer Markdown=\"{Binding Content}\"\n                       TypographyTheme=\"{Binding Theme}\" />\n<codewf:MarkdownEditorView Markdown=\"{Binding Source}\" ShowLineNumbers=\"True\" />\n<codewf:MarkdownLiveEditorView Markdown=\"{Binding Doc}\" />"
-        }
-      },
-      "MarkdownLite": {
-        "View": {
-          "MarkdownLiteUsesMarkdigAndASmallerRendering": "CodeWF.Avalonia.Markdown.Lite：Markdig 解析 + 自研渲染管线，只渲染常规元素——标题 / 段落 / 列表 / 引用 / 表格 / 链接 / 代码块（单色）/ 图片替代文本 / 公式原文，内置同款 12 套排版主题，体积与依赖更小。"
-        },
-        "Properties": {
-          "TypographyTheme": "排版主题",
-          "LiteIncludesTheSame18TypographyThemesFour": "Lite 内置同款 12 套排版主题，此处列出常用四个。",
-          "TypographySize": "排版尺寸"
-        },
-        "Source": {
-          "CSharp": "// Lite 包：只带渲染管线与 12 套排版主题（无编辑器 / 导出 / 数学 / Mermaid / TextMate 高亮）\r\n// 完整包：在其上叠加图片（GIF/SVG）、公式、图表、代码高亮、PNG/PDF/Word/公众号导出\r\n//\r\n// 下方示例演示降级行为：图片退化为替代文本、公式保留原文、代码块单色。\r\nvar viewer = new MarkdownViewer\r\n{\r\n    Markdown = \"# Lite 示例\",\r\n    TypographyTheme = MarkdownTypographyThemes.Simple,\r\n    EnableVirtualization = true,\r\n};",
-          "Xaml": "<!-- Lite 与完整包的渲染控件同名同命名空间，换包不换代码 -->\r\n<PackageReference Include=\"CodeWF.Avalonia.Markdown.Lite\" />\r\n\r\n<codewf:MarkdownViewer Markdown=\"{Binding Content}\"\r\n                       TypographyTheme=\"Basic\"\r\n                       TypographySize=\"Normal\" />"
-        },
-        "Samples": {
-          "Markdown": "# Markdown Lite 渲染范围\r\n\r\n本页内容刻意只使用 **Lite 支持的元素**：标题、**加粗**、*斜体*、`行内代码`、[链接](https://codewf.com)、列表、表格与代码块。\r\n\r\n## 列表\r\n- 基础块级元素\r\n- 表格与引用\r\n- 任务列表勾选回写同样可用\r\n\r\n> 引用块：Lite 与完整包共用同一渲染管线。\r\n\r\n## 降级演示（完整包能力在 Lite 中的表现）\r\n\r\n| 元素 | Lite 行为 |\r\n| --- | --- |\r\n| 图片 | 显示替代文本 |\r\n| 数学公式 | 显示 LaTeX 原文 |\r\n| 代码高亮 | 单色渲染 |\r\n\r\n```csharp\r\n// 代码块单色渲染（完整包为 TextMate 高亮）\r\nConsole.WriteLine(\"Hello, Markdown Lite!\");\r\n```\r\n\r\n- [x] 使用 Lite 渲染\r\n- [ ] 切换排版主题（右侧属性面板）"
-        }
-      },
-      "MarkdownLiveEditor": {
-        "View": {
-          "MarkdownLiveEditorViewEditsBlockModelsDirectlyHeadingsParagraphsLists": "MarkdownLiveEditorView：单栏所见即所得编辑。文档按块（标题 / 段落 / 列表 / 表格 / 代码块）建模，编辑时直接在块上进行，所见即所得；写作体验与渲染结果一致。",
-          "InsertText": "插入文本",
-          "FocusFirstBlock": "聚焦首块",
-          "Bold": "加粗",
-          "Table": "表格"
-        },
-        "Properties": {
-          "TypographyTheme": "排版主题",
-          "TypographyThemeUsedByTheLiveEditor": "所见即所得视图应用的排版主题。",
-          "EditorFontSize": "编辑器字号",
-          "FontSizeOfTheBlockEditor": "块编辑器文本字号。"
-        },
-        "Source": {
-          "CSharp": "var editor = new MarkdownLiveEditorView(new MarkdownEditorOptions\r\n{\r\n    EnableAutoPair = true,\r\n    FontSize = 15,\r\n});\r\neditor.TypographyTheme = MarkdownTypographyThemes.Verdrant;  // 所见即所得的排版主题\r\neditor.SetText(\"# 实时编辑\\\\n\\\\n直接在块上编辑\");\r\nEditorHost.Content = editor;\r\n\r\neditor.MarkdownChanged += (_, text) => Save(text);\r\neditor.FocusBlock(0);                       // 聚焦指定块\r\nawait editor.ExecuteAsync(MarkdownEditorAction.Bold);\r\neditor.InsertText(\"追加文本\");\r\n\r\n// 块模型指标\r\nvar blockCount = editor.BlockCount;\r\nvar activeBlock = editor.ActiveBlockIndex;\r\nvar markdown = editor.Text;                 // = MarkdownBlockParser.Write(models)",
-          "Xaml": "<!-- MarkdownLiveEditorView 为纯代码构建控件，在代码中创建并放入容器 -->\r\n<Border x:Name=\"EditorHost\" />"
-        },
-        "OnInsert": {
-          "ContentAddedWithInsertText": "\n\n新插入的内容（InsertText）。"
-        },
-        "Samples": {
-          "Markdown": "# 所见即所得\r\n\r\n直接在块上编辑：标题、段落、列表、表格都是可编辑块。\r\n\r\n## 列表\r\n- 块级建模（MarkdownBlockModel）\r\n- 编辑即渲染\r\n- 无左右分栏\r\n\r\n> 点击任意块开始编辑；顶部按钮演示插入与聚焦。\r\n\r\n| 能力 | 说明 |\r\n| --- | --- |\r\n| FocusBlock | 聚焦指定块 |\r\n| ApplyExternalEdit | 外部回写 |"
-        },
-        "UpdateStatus": {
-          "BlocksActiveBlockCharactersFormat": "块数 {0} · 活动块索引 {1} · {2} 字符"
-        }
-      },
-      "MarkdownViewer": {
-        "View": {
-          "EditMarkdownSource": "编辑 Markdown 源文本",
-          "Apply": "应用",
-          "AppendParagraphIncremental": "追加段落（增量）",
-          "ResetSample": "重置示例",
-          "StreamingHeader": "流式渲染（StreamingSource）",
-          "StreamingDescription": "逐片追加文本，Viewer 只解析冻结边界之外的新内容；演示文本与上方示例相同。",
-          "StartStreaming": "开始流式输出",
-          "CompleteStreaming": "完成流式",
-          "ExitStreaming": "退出流式"
-        },
-        "Properties": {
-          "TypographyTheme": "排版主题",
-          "18TypographyThemesChangesRenderImmediately": "12 套排版主题，提交后立即重渲染。",
-          "TypographySize": "排版尺寸",
-          "NormalSmallSmallUsesCompactTypography": "Normal / Small，Small 为紧凑排版。",
-          "Virtualization": "虚拟化",
-          "RealizeVisibleBlocksAboveTheThresholdToReduce": "超过阈值后按窗口实现块级内容，长文档显存占用更低。",
-          "VirtualizationThreshold": "虚拟化阈值",
-          "EnableVirtualizationAboveThisBlockCount": "块数超过该值才启用虚拟化。"
-        },
-        "Source": {
-          "CSharp": "// 主题切换：单控件覆盖\r\nviewer.TypographyTheme = MarkdownTypographyThemes.GeekBlack;\r\nviewer.TypographySize = MarkdownTypographySizes.Compact;\r\n\r\n// 应用级全局覆盖\r\nMarkdownThemes.OverrideTypographyResources(Application.Current, MarkdownTypographyThemes.TenderGreen);\r\n\r\n// 渲染指标与任务回写\r\nviewer.TaskWriteBackRequested += (_, e) =>\r\n    editor.ApplyExternalEdit(e.Markdown);   // 勾选任务后同步回编辑器\r\nvar parseMs = viewer.LastParseDuration.TotalMilliseconds;\r\nvar mode = viewer.LastRenderMode;           // Incremental / Full\r\nvar realized = viewer.RealizedBlockCount;",
-          "Xaml": "<!-- 12 套排版主题、增量渲染、块级虚拟化、任务勾选回写 -->\r\n<codewf:MarkdownViewer Markdown=\"{Binding Content}\"\r\n                       TypographyTheme=\"{Binding Theme}\"\r\n                       TypographySize=\"{Binding Size}\"\r\n                       EnableVirtualization=\"True\"\r\n                       VirtualizationThreshold=\"40\" />"
-        },
-        "UpdateMetrics": {
-          "ModeParsingMsRealizedBlocksFormat": "渲染模式：{0} · 解析耗时：{1:F1} ms · 已实现块：{2}"
-        },
-        "AppendParagraph": {
-          "NewParagraphIncrementalRenderingReparsesAndLaysOut": "\n\n新增段落：增量渲染只解析与重排变更块（"
-        },
-        "Samples": {
-          "Markdown": "# MarkdownViewer 演示\r\n\r\n完整渲染管线：**Markdig 解析** → 块级模型 → `WindowedStackPanel` 虚拟化呈现。\r\n\r\n## 任务回写\r\n勾选下面的任务，Markdown 源文本会同步更新（TaskWriteBackRequested）：\r\n\r\n- [x] 解析 Markdown 文本\r\n- [ ] 调整排版主题（右侧属性面板）\r\n- [ ] 展开输入参数，修改源文本后点击「应用」，观察增量渲染耗时\r\n\r\n## 表格与代码\r\n\r\n| 能力 | 说明 |\r\n| --- | --- |\r\n| 增量渲染 | 只重排变更块 |\r\n| 虚拟化 | 超过阈值后按窗口实现块 |\r\n\r\n```csharp\r\nvar viewer = new MarkdownViewer { Markdown = \"# 你好\" };\r\n```\r\n\r\n> 提示：右侧 PropertyGrid 即本控件的兄弟实例——属性面板自身也是一次自我演示。"
-        }
-      },
       "MarkupExtension": {
         "View": {
           "IfSwitchMarkupExtensionsEvaluateConditionalAndMulti": "If / Switch 标记扩展：在 XAML 里直接做条件取值与多分支取值，条件与分支支持绑定与常量混合，省去为纯展示逻辑写转换器。切换下方开关与状态，观察文本即时变化。",
@@ -1932,7 +1626,6 @@ window.CodeWFPrototypeResources = {
       "Step.Tabs": "多文档页签",
       "Step.Panels": "面板联动",
       "Step.Status": "状态反馈",
-      "Summary.Markdown": "5 步写作流程 · 每一步复用下方组件页",
       "Summary.Data": "4 步表数据流程 · 与属性面板联动",
       "Summary.Docs": "4 步多文档流程 · 面板与页签协同"
     },
@@ -2289,183 +1982,6 @@ window.CodeWFPrototypeResources = {
         },
         "SaveLayoutTo": {
           "FailedToSaveLayout": "Failed to save layout: "
-        }
-      },
-      "MarkdownEditor": {
-        "View": {
-          "SourceEditorPoweredByAvaloniaEditWithTextMateHighlighting": "Source editor powered by AvaloniaEdit, with TextMate highlighting and Markdown editing commands. Try the common actions below; see MarkdownEditorAction for the complete set.",
-          "Bold": "Bold",
-          "Italic": "Italic",
-          "InlineCode": "Inline code",
-          "Heading2": "Heading 2",
-          "Table": "Table",
-          "TaskList": "Task list",
-          "CodeBlock": "Code block",
-          "Quote": "Quote"
-        },
-        "Properties": {
-          "EditorFontSize": "Editor font size",
-          "EditorTextFontSize": "Editor text font size.",
-          "ShowLineNumbers": "Show line numbers",
-          "ShowLineNumbersToTheLeftOfThe": "Show line numbers to the left of the editor.",
-          "AutoPairing": "Auto pairing",
-          "AutomaticallyCompletePairedMarkersSuchAsAndBackticks": "Automatically complete paired markers such as ** and backticks."
-        },
-        "Source": {
-          "CSharp": "var editor = new MarkdownEditorView(new MarkdownEditorOptions\n{\n    LinkUrlPlaceholder = \"https://example.com\",\n    CodeFenceLanguage = \"csharp\",\n    EnableAutoPair = true,\n    ShowLineNumbers = true,\n    FontSize = 15,\n});\nEditorHost.Content = editor;\neditor.SetText(\"Example\");\neditor.MarkdownChanged += (_, text) => Save(text);\n\nawait editor.ExecuteAsync(MarkdownEditorAction.Bold);\nawait editor.ExecuteAsync(MarkdownEditorAction.Table);\neditor.InsertTable(\"Example\");\neditor.WrapSelection(\"**\", \"**\");\n\nvar (line, column, lineCount) = editor.CaretPosition;\nvar text = editor.Text;",
-          "Xaml": "<Border x:Name=\"EditorHost\" />"
-        },
-        "OnTable": {
-          "Column1Column2AB": "| Column 1 | Column 2 |\n| --- | --- |\n| A | B |"
-        },
-        "Samples": {
-          "Markdown": "# MarkdownEditorView\n\nMarkdown source editing with AvaloniaEdit.\n\n## Built-in actions\n- Bold and italic\n- Headings and tables\n- Task lists and code\n\n```csharp\nawait editor.ExecuteAsync(MarkdownEditorAction.Bold);\n```"
-        },
-        "UpdateStatus": {
-          "LineColumnLinesCharactersFormat": "Line {0} / column {1} · {2} lines · {3} characters"
-        }
-      },
-      "MarkdownExport": {
-        "View": {
-          "ExportMarkdownAsPNGPDFWordOrHTML": "Export Markdown as PNG, PDF, Word, or HTML, or copy rich text for WeChat, Zhihu, and Juejin. Set export typography in the property panel.",
-          "ExportPNG": "Export PNG",
-          "ExportPDF": "Export PDF",
-          "ExportWord": "Export Word",
-          "ExportHTML": "Export HTML",
-          "CopyPublishingHTML": "Copy publishing HTML"
-        },
-        "Properties": {
-          "ExportTheme": "Export theme",
-          "TypographyThemeOfTheExportedDocument": "Typography theme of the exported document.",
-          "TypographySize": "Typography size",
-          "TypographySizeOfTheExportedDocument": "Typography size of the exported document.",
-          "CopyDestination": "Copy destination",
-          "WeChat": "WeChat",
-          "Zhihu": "Zhihu",
-          "Juejin": "Juejin",
-          "DestinationPlatformForRichText": "Destination platform for rich text."
-        },
-        "copyKind": {
-          "WeChat": "WeChat"
-        },
-        "Source": {
-          "CSharp": "MarkdownDocumentExporter.ExportMarkdown(markdown, ExportKind.Png, @\"D:\\\\out\\\\doc.png\");\nMarkdownDocumentExporter.ExportMarkdown(markdown, ExportKind.Pdf, @\"D:\\\\out\\\\doc.pdf\");\nMarkdownDocumentExporter.ExportMarkdown(markdown, ExportKind.Word, @\"D:\\\\out\\\\doc.docx\");\nMarkdownDocumentExporter.ExportMarkdown(markdown, ExportKind.Html, @\"D:\\\\out\\\\doc.html\",\n    themeName: MarkdownTypographyThemes.WeChatFormat);\n\nvar ok = await MarkdownHtmlClipboard.TrySetHtmlAsync(\n    markdown, \"Example\", MarkdownTypographyThemes.WeChatFormat);\n\nvar file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions\n{\n    Title = \"Export PNG\",\n    DefaultExtension = \".png\",\n});\nif (file is not null)\n{\n    MarkdownDocumentExporter.ExportMarkdown(markdown, ExportKind.Png, file.Path.LocalPath);\n}",
-          "Xaml": "<Button Content=\"Export PNG\" Command=\"{Binding ExportCommand}\" />"
-        },
-        "ExportAsync": {
-          "ExportingFormat": "Exporting {0} → {1}",
-          "ExportCompleteFormat": "Export complete: {0}",
-          "ExportFailedFormat": "Export failed: {0}"
-        },
-        "OnCopyWechat": {
-          "Zhihu": "Zhihu",
-          "Juejin": "Juejin",
-          "CopiedRichTextPasteItIntoTheEditorFormat": "Copied {0} rich text. Paste it into the editor.",
-          "CopyFailed": "Copy failed: "
-        },
-        "OnExportHtml": {
-          "ExportHTML": "Export HTML"
-        },
-        "OnExportPdf": {
-          "ExportPDF": "Export PDF"
-        },
-        "OnExportPng": {
-          "ExportPNG": "Export PNG"
-        },
-        "OnExportWord": {
-          "ExportWord": "Export Word"
-        },
-        "Samples": {
-          "Markdown": "# Export example\n\nExport this document as **PNG / PDF / Word / HTML** or copy rich text.\n\n## Lists\n- Typography themes\n- File export\n\n| Format | Extension |\n| --- | --- |\n| Image | .png |\n| Document | .pdf |\n\n```csharp\nConsole.WriteLine(\"Hello, CodeWF!\");\n```\n\n> Choose a theme in the property panel."
-        }
-      },
-      "MarkdownFlow": {
-        "CSharpCode": {
-          "AddStepDemoSceneStepOpenNewMarkdownViewerPageAddStep": "AddStep(\"Demo.Scene.Step.Open\", new MarkdownViewerPage());\nAddStep(\"Demo.Scene.Step.Edit\", new MarkdownEditorPage());\nAddStep(\"Demo.Scene.Step.Preview\", new MarkdownLiveEditorPage());\nAddStep(\"Demo.Scene.Step.Export\", new MarkdownExportPage());\nAddStep(\"Demo.Scene.Step.WriteBack\", new MarkdownLitePage());\nAttachSceneShell();\n\nviewer.TaskWriteBackRequested += (_, e) => e.Result.Markdown = e.Rendered;"
-        },
-        "XamlCode": {
-          "CodewfMarkdownViewerMarkdownTypographyThemeCodewfMarkdownEditorViewMarkdownShowLineNumbers": "<codewf:MarkdownViewer Markdown=\"{Binding Content}\"\n                       TypographyTheme=\"{Binding Theme}\" />\n<codewf:MarkdownEditorView Markdown=\"{Binding Source}\" ShowLineNumbers=\"True\" />\n<codewf:MarkdownLiveEditorView Markdown=\"{Binding Doc}\" />"
-        }
-      },
-      "MarkdownLite": {
-        "View": {
-          "MarkdownLiteUsesMarkdigAndASmallerRendering": "Markdown.Lite uses Markdig and a smaller rendering pipeline for common Markdown elements. It includes the same 12 typography themes with fewer dependencies."
-        },
-        "Properties": {
-          "TypographyTheme": "Typography theme",
-          "LiteIncludesTheSame18TypographyThemesFour": "Lite includes the same 12 typography themes; four common themes are listed here.",
-          "TypographySize": "Typography size"
-        },
-        "Source": {
-          "CSharp": "//\nvar viewer = new MarkdownViewer\n{\n    Markdown = \"# Lite Example\",\n    TypographyTheme = MarkdownTypographyThemes.Simple,\n    EnableVirtualization = true,\n};",
-          "Xaml": "<PackageReference Include=\"CodeWF.Avalonia.Markdown.Lite\" />\n\n<codewf:MarkdownViewer Markdown=\"{Binding Content}\"\n                       TypographyTheme=\"Basic\"\n                       TypographySize=\"Normal\" />"
-        },
-        "Samples": {
-          "Markdown": "# Markdown Lite\n\nHeadings, **bold**, *italic*, `inline code`, lists, quotes, tables, links, and code blocks.\n\n- Smaller dependency set\n- 12 typography themes\n\n| Feature | Supported |\n| --- | --- |\n| Common Markdown | Yes |\n| Export | Use full package |\n\n```csharp\nviewer.Markdown = source;\n```\n\n> A focused rendering package."
-        }
-      },
-      "MarkdownLiveEditor": {
-        "View": {
-          "MarkdownLiveEditorViewEditsBlockModelsDirectlyHeadingsParagraphsLists": "MarkdownLiveEditorView edits block models directly: headings, paragraphs, lists, tables, and code. Its editing appearance matches the rendered output.",
-          "InsertText": "Insert text",
-          "FocusFirstBlock": "Focus first block",
-          "Bold": "Bold",
-          "Table": "Table"
-        },
-        "Properties": {
-          "TypographyTheme": "Typography theme",
-          "TypographyThemeUsedByTheLiveEditor": "Typography theme used by the live editor.",
-          "EditorFontSize": "Editor font size",
-          "FontSizeOfTheBlockEditor": "Font size of the block editor."
-        },
-        "Source": {
-          "CSharp": "var editor = new MarkdownLiveEditorView(new MarkdownEditorOptions\n{\n    EnableAutoPair = true,\n    FontSize = 15,\n});\neditor.TypographyTheme = MarkdownTypographyThemes.Verdrant;\neditor.SetText(\"# Live editing\\\\n\\\\nEdit blocks directly\");\nEditorHost.Content = editor;\n\neditor.MarkdownChanged += (_, text) => Save(text);\neditor.FocusBlock(0);\nawait editor.ExecuteAsync(MarkdownEditorAction.Bold);\neditor.InsertText(\"Appended text\");\n\nvar blockCount = editor.BlockCount;\nvar activeBlock = editor.ActiveBlockIndex;\nvar markdown = editor.Text;                 // = MarkdownBlockParser.Write(models)",
-          "Xaml": "<Border x:Name=\"EditorHost\" />"
-        },
-        "OnInsert": {
-          "ContentAddedWithInsertText": "\n\nContent added with InsertText."
-        },
-        "Samples": {
-          "Markdown": "# Live editing\n\nEdit headings, paragraphs, lists, and tables directly.\n\n## List\n- Block models\n- Incremental rendering\n\n```csharp\nvar editor = new MarkdownLiveEditorView();\n```\n\n| Feature | State |\n| --- | --- |\n| Editing | Ready |"
-        },
-        "UpdateStatus": {
-          "BlocksActiveBlockCharactersFormat": "{0} blocks · active block {1} · {2} characters"
-        }
-      },
-      "MarkdownViewer": {
-        "View": {
-          "EditMarkdownSource": "Edit Markdown source",
-          "Apply": "Apply",
-          "AppendParagraphIncremental": "Append paragraph (incremental)",
-          "ResetSample": "Reset sample",
-          "StreamingHeader": "Streaming (StreamingSource)",
-          "StreamingDescription": "Appends text in chunks; the viewer parses only content beyond the frozen boundary. Same sample text as above.",
-          "StartStreaming": "Start streaming",
-          "CompleteStreaming": "Complete streaming",
-          "ExitStreaming": "Exit streaming"
-        },
-        "Properties": {
-          "TypographyTheme": "Typography theme",
-          "18TypographyThemesChangesRenderImmediately": "12 typography themes; changes render immediately.",
-          "TypographySize": "Typography size",
-          "NormalSmallSmallUsesCompactTypography": "Normal / Small; Small uses compact typography.",
-          "Virtualization": "Virtualization",
-          "RealizeVisibleBlocksAboveTheThresholdToReduce": "Realize visible blocks above the threshold to reduce memory use for long documents.",
-          "VirtualizationThreshold": "Virtualization threshold",
-          "EnableVirtualizationAboveThisBlockCount": "Enable virtualization above this block count."
-        },
-        "Source": {
-          "CSharp": "viewer.TypographyTheme = MarkdownTypographyThemes.GeekBlack;\nviewer.TypographySize = MarkdownTypographySizes.Compact;\n\nMarkdownThemes.OverrideTypographyResources(Application.Current, MarkdownTypographyThemes.TenderGreen);\n\nviewer.TaskWriteBackRequested += (_, e) =>\n    editor.ApplyExternalEdit(e.Markdown);\nvar parseMs = viewer.LastParseDuration.TotalMilliseconds;\nvar mode = viewer.LastRenderMode;           // Incremental / Full\nvar realized = viewer.RealizedBlockCount;",
-          "Xaml": "<codewf:MarkdownViewer Markdown=\"{Binding Content}\"\n                       TypographyTheme=\"{Binding Theme}\"\n                       TypographySize=\"{Binding Size}\"\n                       EnableVirtualization=\"True\"\n                       VirtualizationThreshold=\"40\" />"
-        },
-        "UpdateMetrics": {
-          "ModeParsingMsRealizedBlocksFormat": "Mode: {0} · parsing: {1:F1} ms · realized blocks: {2}"
-        },
-        "AppendParagraph": {
-          "NewParagraphIncrementalRenderingReparsesAndLaysOut": "\n\nNew paragraph: incremental rendering reparses and lays out changed blocks only ("
-        },
-        "Samples": {
-          "Markdown": "# MarkdownViewer\n\n**Markdig** → block models → windowed rendering.\n\n## Features\n- [x] Incremental rendering\n- [ ] Task write-back\n\n| Component | Purpose |\n| --- | --- |\n| Viewer | Render Markdown |\n| Editor | Edit source |\n\n```csharp\nviewer.Markdown = source;\n```\n\n> Try changing the typography theme."
         }
       },
       "MarkupExtension": {
@@ -2849,7 +2365,6 @@ window.CodeWFPrototypeResources = {
       "Step.Tabs": "Doc tabs",
       "Step.Panels": "Panel sync",
       "Step.Status": "Status",
-      "Summary.Markdown": "5-step writing flow · each step reuses the component pages below",
       "Summary.Data": "4-step data flow · wired to the property panel",
       "Summary.Docs": "4-step multi-document flow · panels and tabs working together"
     },
@@ -2862,156 +2377,45 @@ window.CodeWFPrototypeResources = {
 };
 window.CodeWFMarkdownSamples = {
   "zh-CN": {
-    "viewer": "# MarkdownViewer 演示\r\n\r\n完整渲染管线：**Markdig 解析** → 块级模型 → `WindowedStackPanel` 虚拟化呈现。\r\n\r\n## 任务回写\r\n勾选下面的任务，Markdown 源文本会同步更新（TaskWriteBackRequested）：\r\n\r\n- [x] 解析 Markdown 文本\r\n- [ ] 调整排版主题（右侧属性面板）\r\n- [ ] 展开输入参数，修改源文本后点击「应用」，观察增量渲染耗时\r\n\r\n## 表格与代码\r\n\r\n| 能力 | 说明 |\r\n| --- | --- |\r\n| 增量渲染 | 只重排变更块 |\r\n| 虚拟化 | 超过阈值后按窗口实现块 |\r\n\r\n```csharp\r\nvar viewer = new MarkdownViewer { Markdown = \"# 你好\" };\r\n```\r\n\r\n> 提示：右侧 PropertyGrid 即本控件的兄弟实例——属性面板自身也是一次自我演示。",
-    "lite": "# Markdown Lite 渲染范围\r\n\r\n本页内容刻意只使用 **Lite 支持的元素**：标题、**加粗**、*斜体*、`行内代码`、[链接](https://codewf.com)、列表、表格与代码块。\r\n\r\n## 列表\r\n- 基础块级元素\r\n- 表格与引用\r\n- 任务列表勾选回写同样可用\r\n\r\n> 引用块：Lite 与完整包共用同一渲染管线。\r\n\r\n## 降级演示（完整包能力在 Lite 中的表现）\r\n\r\n| 元素 | Lite 行为 |\r\n| --- | --- |\r\n| 图片 | 显示替代文本 |\r\n| 数学公式 | 显示 LaTeX 原文 |\r\n| 代码高亮 | 单色渲染 |\r\n\r\n```csharp\r\n// 代码块单色渲染（完整包为 TextMate 高亮）\r\nConsole.WriteLine(\"Hello, Markdown Lite!\");\r\n```\r\n\r\n- [x] 使用 Lite 渲染\r\n- [ ] 切换排版主题（右侧属性面板）",
-    "editor": "# MarkdownEditorView\r\n\r\nAvaloniaEdit 驱动的 Markdown 源码编辑器。\r\n\r\n## 内置能力\r\n- TextMate 语法着色\r\n- 标题 / 列表 / 表格 / 任务列表 / 代码块 / 数学块等约 40 项动作\r\n- 查找替换、自动配对、行号、字号\r\n\r\n```csharp\r\nvar editor = new MarkdownEditorView();\r\n```\r\n\r\n> 用上方按钮或快捷键体验编辑动作；修改会实时反映在状态栏。",
-    "live": "# 所见即所得\r\n\r\n直接在块上编辑：标题、段落、列表、表格都是可编辑块。\r\n\r\n## 列表\r\n- 块级建模（MarkdownBlockModel）\r\n- 编辑即渲染\r\n- 无左右分栏\r\n\r\n> 点击任意块开始编辑；顶部按钮演示插入与聚焦。\r\n\r\n| 能力 | 说明 |\r\n| --- | --- |\r\n| FocusBlock | 聚焦指定块 |\r\n| ApplyExternalEdit | 外部回写 |",
-    "apply": "应用",
-    "append": "追加段落（增量）",
-    "reset": "重置示例",
-    "themeLabel": "排版主题",
-    "sizeLabel": "排版尺寸",
-    "virtualizationLabel": "虚拟化",
-    "thresholdLabel": "虚拟化阈值"
+    "viewer": null,
+    "lite": null,
+    "editor": null,
+    "live": null,
+    "apply": null,
+    "append": null,
+    "reset": null,
+    "themeLabel": null,
+    "sizeLabel": null,
+    "virtualizationLabel": null,
+    "thresholdLabel": null
   },
   "en-US": {
-    "viewer": "# MarkdownViewer\n\n**Markdig** → block models → windowed rendering.\n\n## Features\n- [x] Incremental rendering\n- [ ] Task write-back\n\n| Component | Purpose |\n| --- | --- |\n| Viewer | Render Markdown |\n| Editor | Edit source |\n\n```csharp\nviewer.Markdown = source;\n```\n\n> Try changing the typography theme.",
-    "lite": "# Markdown Lite\n\nHeadings, **bold**, *italic*, `inline code`, lists, quotes, tables, links, and code blocks.\n\n- Smaller dependency set\n- 12 typography themes\n\n| Feature | Supported |\n| --- | --- |\n| Common Markdown | Yes |\n| Export | Use full package |\n\n```csharp\nviewer.Markdown = source;\n```\n\n> A focused rendering package.",
-    "editor": "# MarkdownEditorView\n\nMarkdown source editing with AvaloniaEdit.\n\n## Built-in actions\n- Bold and italic\n- Headings and tables\n- Task lists and code\n\n```csharp\nawait editor.ExecuteAsync(MarkdownEditorAction.Bold);\n```",
-    "live": "# Live editing\n\nEdit headings, paragraphs, lists, and tables directly.\n\n## List\n- Block models\n- Incremental rendering\n\n```csharp\nvar editor = new MarkdownLiveEditorView();\n```\n\n| Feature | State |\n| --- | --- |\n| Editing | Ready |",
-    "apply": "Apply",
-    "append": "Append paragraph (incremental)",
-    "reset": "Reset sample",
-    "themeLabel": "Typography theme",
-    "sizeLabel": "Typography size",
-    "virtualizationLabel": "Virtualization",
-    "thresholdLabel": "Virtualization threshold"
+    "viewer": null,
+    "lite": null,
+    "editor": null,
+    "live": null,
+    "apply": null,
+    "append": null,
+    "reset": null,
+    "themeLabel": null,
+    "sizeLabel": null,
+    "virtualizationLabel": null,
+    "thresholdLabel": null
   }
 };
 window.CodeWFMarkdownTypography = {
-  "Common": {
-    "CodeWFMarkdownParagraphFontSize": 16.0,
-    "CodeWFMarkdownParagraphLineHeight": 28.0,
-    "CodeWFMarkdownHeading1FontSize": 30.0,
-    "CodeWFMarkdownHeading2FontSize": 26.0,
-    "CodeWFMarkdownHeading3FontSize": 22.0,
-    "CodeWFMarkdownHeading4FontSize": 20.0,
-    "CodeWFMarkdownHeading5FontSize": 18.0,
-    "CodeWFMarkdownHeading6FontSize": 16.0,
-    "CodeWFMarkdownBlockSpacing": 8.0,
-    "CodeWFMarkdownDocumentBottomPadding": 72.0,
-    "CodeWFMarkdownCodeBlockFontSize": 14.0,
-    "CodeWFMarkdownCodeBlockLineHeight": 22.0,
-    "CodeWFMarkdownCodeLanguageFontSize": 12.0,
-    "CodeWFMarkdownCodeBlockSpacing": 4.0,
-    "CodeWFMarkdownCodeBlockHeaderSpacing": 8.0,
-    "CodeWFMarkdownCopyButtonMinWidth": 54.0,
-    "CodeWFMarkdownCopyButtonHeight": 24.0,
-    "CodeWFMarkdownCodeBlockToolButtonSize": 24.0,
-    "CodeWFMarkdownCodeBlockToolbarSpacing": 2.0,
-    "CodeWFMarkdownCodeBlockFooterSpacing": 4.0,
-    "CodeWFMarkdownListSpacing": 6.0,
-    "CodeWFMarkdownListItemContentSpacing": 4.0,
-    "CodeWFMarkdownUnorderedListMarkerWidth": 24.0,
-    "CodeWFMarkdownOrderedListMarkerMinWidth": 28.0,
-    "CodeWFMarkdownOrderedListMarkerCharacterWidth": 9.0,
-    "CodeWFMarkdownOrderedListMarkerExtraWidth": 6.0,
-    "CodeWFMarkdownQuoteContentSpacing": 4.0,
-    "CodeWFMarkdownThematicBreakHeight": 1.0,
-    "CodeWFMarkdownTableCellMinHeight": 38.0,
-    "CodeWFMarkdownTableCellContentSpacing": 4.0,
-    "CodeWFMarkdownImageMaxWidth": 900.0,
-    "CodeWFMarkdownImageMaxHeight": 520.0,
-    "CodeWFMarkdownImageFallbackOpacity": 0.72,
-    "CodeWFMarkdownImagePreviewWidth": 1120.0,
-    "CodeWFMarkdownImagePreviewHeight": 760.0,
-    "CodeWFMarkdownImagePreviewMinWidth": 720.0,
-    "CodeWFMarkdownImagePreviewMinHeight": 480.0,
-    "CodeWFMarkdownImagePreviewToolbarSpacing": 8.0,
-    "CodeWFMarkdownImagePreviewZoomTextMinWidth": 58.0
-  },
-  "Basic": {
-    "CodeWFMarkdownParagraphFontSize": 16.0,
-    "CodeWFMarkdownParagraphLineHeight": 26.0,
-    "CodeWFMarkdownHeading1FontSize": 32.0,
-    "CodeWFMarkdownHeading2FontSize": 24.0,
-    "CodeWFMarkdownHeading3FontSize": 20.0,
-    "CodeWFMarkdownHeading4FontSize": 18.0,
-    "CodeWFMarkdownHeading5FontSize": 16.0,
-    "CodeWFMarkdownHeading6FontSize": 16.0,
-    "CodeWFMarkdownTableCellMinHeight": 34.0,
-    "CodeWFMarkdownTableCellContentSpacing": 0.0
-  },
+  "Common": {},
+  "Basic": {},
   "OrangeHeart": {},
-  "InkBlack": {
-    "CodeWFMarkdownHeading1FontSize": 29.0
-  },
-  "ColorfulPurple": {
-    "CodeWFMarkdownHeading1FontSize": 32.0,
-    "CodeWFMarkdownParagraphLineHeight": 29.0
-  },
+  "InkBlack": {},
+  "ColorfulPurple": {},
   "TenderGreen": {},
-  "RedScarlet": {
-    "CodeWFMarkdownHeading1FontSize": 31.0
-  },
-  "TechnologyBlue": {
-    "CodeWFMarkdownParagraphLineHeight": 29.0
-  },
+  "RedScarlet": {},
+  "TechnologyBlue": {},
   "LanQing": {},
-  "Yamabuki": {
-    "CodeWFMarkdownHeading1FontSize": 31.0
-  },
+  "Yamabuki": {},
   "GeekBlack": {},
-  "Simple": {
-    "CodeWFMarkdownParagraphLineHeight": 28.5,
-    "CodeWFMarkdownBlockSpacing": 0.0,
-    "CodeWFMarkdownHeading1LineHeight": 43.5,
-    "CodeWFMarkdownHeading2LineHeight": 33.6,
-    "CodeWFMarkdownHeading3LineHeight": 28.46,
-    "CodeWFMarkdownListSpacing": 0.0,
-    "CodeWFMarkdownQuoteContentSpacing": 0.0,
-    "CodeWFMarkdownTableCellMinHeight": 24.75,
-    "CodeWFMarkdownTableCellFontSize": 12.5,
-    "CodeWFMarkdownTableCellLineHeight": 23.75
-  },
-  "WeChatFormat": {
-    "CodeWFMarkdownParagraphFontSize": 16.0,
-    "CodeWFMarkdownParagraphLineHeight": 26.0,
-    "CodeWFMarkdownHeading2FontSize": 22.4,
-    "CodeWFMarkdownHeading3FontSize": 19.2,
-    "CodeWFMarkdownQuoteContentSpacing": 0.0
-  },
-  "CompactTypographyResources": {
-    "CodeWFMarkdownParagraphFontSize": 14.0,
-    "CodeWFMarkdownParagraphLineHeight": 22.0,
-    "CodeWFMarkdownHeading1FontSize": 26.0,
-    "CodeWFMarkdownHeading2FontSize": 22.0,
-    "CodeWFMarkdownHeading3FontSize": 19.0,
-    "CodeWFMarkdownHeading4FontSize": 17.0,
-    "CodeWFMarkdownHeading5FontSize": 15.0,
-    "CodeWFMarkdownHeading6FontSize": 14.0,
-    "CodeWFMarkdownBlockSpacing": 4.0,
-    "CodeWFMarkdownDocumentBottomPadding": 40.0,
-    "CodeWFMarkdownCodeBlockFontSize": 13.0,
-    "CodeWFMarkdownCodeBlockLineHeight": 20.0,
-    "CodeWFMarkdownCodeLanguageFontSize": 11.0,
-    "CodeWFMarkdownCodeBlockSpacing": 4.0,
-    "CodeWFMarkdownCodeBlockHeaderSpacing": 6.0,
-    "CodeWFMarkdownCopyButtonMinWidth": 48.0,
-    "CodeWFMarkdownCopyButtonHeight": 24.0,
-    "CodeWFMarkdownCodeBlockToolButtonSize": 22.0,
-    "CodeWFMarkdownCodeBlockToolbarSpacing": 2.0,
-    "CodeWFMarkdownCodeBlockFooterSpacing": 4.0,
-    "CodeWFMarkdownListSpacing": 3.0,
-    "CodeWFMarkdownListItemContentSpacing": 2.0,
-    "CodeWFMarkdownUnorderedListMarkerWidth": 20.0,
-    "CodeWFMarkdownOrderedListMarkerMinWidth": 24.0,
-    "CodeWFMarkdownOrderedListMarkerCharacterWidth": 8.0,
-    "CodeWFMarkdownOrderedListMarkerExtraWidth": 4.0,
-    "CodeWFMarkdownQuoteContentSpacing": 3.0,
-    "CodeWFMarkdownTableCellMinHeight": 28.0,
-    "CodeWFMarkdownTableCellContentSpacing": 2.0,
-    "CodeWFMarkdownImagePreviewToolbarSpacing": 6.0,
-    "CodeWFMarkdownImagePreviewZoomTextMinWidth": 52.0
-  }
+  "Simple": {},
+  "WeChatFormat": {},
+  "CompactTypographyResources": {}
 };

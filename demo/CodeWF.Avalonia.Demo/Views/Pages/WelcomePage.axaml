@@ -31,25 +31,6 @@
     <StackPanel Spacing="10">
      <TextBlock Text="{codewf:I18n Demo.Studio.Lab}" Classes="studio-kicker" />
      <TabControl Classes="studio-lab" SelectedIndex="{Binding LabIndex}">
-<TabItem Header="{codewf:I18n Demo.Studio.Markdown}">
-       <Grid RowDefinitions="Auto,170,Auto" ColumnDefinitions="*,*">
-        <TextBlock Text="{codewf:I18n Demo.Studio.Source}" Classes="studio-kicker" Margin="0,0,0,8" />
-        <TextBlock Grid.Column="1" Text="{codewf:I18n Demo.Studio.Preview}" Classes="studio-kicker" Margin="12,0,0,8" />
-        <codewf:MarkdownEditorView Grid.Row="1" Text="{Binding Markdown, Mode=TwoWay}" EditorFontSize="11"
-                                   ShowLineNumbers="False" EditorPadding="10,8" EditorLineHeight="20"
-                                   EditorBackgroundKey="StudioBackground" EditorForegroundKey="StudioText"
-                                   AccentKey="StudioAccent" CodeKey="StudioAccent" QuoteKey="StudioMuted"
-                                   LinkKey="StudioAccent" SeparatorKey="StudioBorder" />
-        <Border Grid.Row="1" Grid.Column="1" Margin="12,0,0,0" CornerRadius="8" Background="{DynamicResource StudioRaised}">
-         <codewf:MarkdownViewer Markdown="{Binding Markdown}" Margin="13,10" Classes="studio-preview"
-                                ParagraphFontSize="12" ParagraphLineHeight="22" Heading1FontSize="17"
-                                Heading2FontSize="16" Heading3FontSize="15" HeadingMargin="0,0,0,6"
-                                ParagraphMargin="0,0,0,6" BlockSpacing="4" DocumentBottomPadding="8"
-                                InlineCodeBackgroundBrush="{DynamicResource StudioRaised}" Foreground="{DynamicResource StudioText}" />
-        </Border>
-        <Button Classes="demo-action" Grid.Row="2" Grid.ColumnSpan="2" Content="{codewf:I18n Demo.Studio.Open}" Command="{Binding NavigateCommand}" CommandParameter="Demo.Item.MarkdownViewer" Margin="0,10,0,0" HorizontalAlignment="Left" />
-       </Grid>
-      </TabItem>
       <TabItem Header="{codewf:I18n Demo.Studio.Sort}">
        <StackPanel Spacing="8">
         <TextBlock Text="{codewf:I18n Demo.Studio.SortHint}" Classes="studio-muted" />

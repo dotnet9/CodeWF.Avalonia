@@ -46,26 +46,6 @@ public static class ResourceKeys
         {
             public const string @Desc = "Demo.Api.Log.Desc";
         }
-        public static class @MarkdownEditor
-        {
-            public const string @Desc = "Demo.Api.MarkdownEditor.Desc";
-        }
-        public static class @MarkdownExport
-        {
-            public const string @Desc = "Demo.Api.MarkdownExport.Desc";
-        }
-        public static class @MarkdownLite
-        {
-            public const string @Desc = "Demo.Api.MarkdownLite.Desc";
-        }
-        public static class @MarkdownLiveEditor
-        {
-            public const string @Desc = "Demo.Api.MarkdownLiveEditor.Desc";
-        }
-        public static class @MarkdownViewer
-        {
-            public const string @Desc = "Demo.Api.MarkdownViewer.Desc";
-        }
         public static class @Notifications
         {
             public const string @Desc = "Demo.Api.Notifications.Desc";
@@ -147,8 +127,6 @@ public static class ResourceKeys
         public const string @Project = "Demo.Catalog.Project";
         public const string @Ready = "Demo.Catalog.Ready";
         public const string @Run = "Demo.Catalog.Run";
-        public const string @SectionEditing = "Demo.Catalog.SectionEditing";
-        public const string @SectionExport = "Demo.Catalog.SectionExport";
         public const string @SectionGrids = "Demo.Catalog.SectionGrids";
         public const string @SectionGuidance = "Demo.Catalog.SectionGuidance";
         public const string @SectionLayout = "Demo.Catalog.SectionLayout";
@@ -156,7 +134,6 @@ public static class ResourceKeys
         public const string @SectionNavigation = "Demo.Catalog.SectionNavigation";
         public const string @SectionNotifications = "Demo.Catalog.SectionNotifications";
         public const string @SectionProperties = "Demo.Catalog.SectionProperties";
-        public const string @SectionReading = "Demo.Catalog.SectionReading";
         public const string @SectionStatuses = "Demo.Catalog.SectionStatuses";
         public const string @SectionWindows = "Demo.Catalog.SectionWindows";
         public const string @Source = "Demo.Catalog.Source";
@@ -555,224 +532,6 @@ public static class ResourceKeys
             {
                 public const string @LogViewSubscribesToLoggerSLiveEventsWith = "Demo.Content.Log.View.LogViewSubscribesToLoggerSLiveEventsWith";
                 public const string @WriteBatchEventStreamLoadTest = "Demo.Content.Log.View.WriteBatchEventStreamLoadTest";
-            }
-        }
-        public static class @MarkdownEditor
-        {
-            public static class @OnTable
-            {
-                public const string @Column1Column2AB = "Demo.Content.MarkdownEditor.OnTable.Column1Column2AB";
-            }
-            public static class @Properties
-            {
-                public const string @AutoPairing = "Demo.Content.MarkdownEditor.Properties.AutoPairing";
-                public const string @AutomaticallyCompletePairedMarkersSuchAsAndBackticks = "Demo.Content.MarkdownEditor.Properties.AutomaticallyCompletePairedMarkersSuchAsAndBackticks";
-                public const string @EditorFontSize = "Demo.Content.MarkdownEditor.Properties.EditorFontSize";
-                public const string @EditorTextFontSize = "Demo.Content.MarkdownEditor.Properties.EditorTextFontSize";
-                public const string @ShowLineNumbers = "Demo.Content.MarkdownEditor.Properties.ShowLineNumbers";
-                public const string @ShowLineNumbersToTheLeftOfThe = "Demo.Content.MarkdownEditor.Properties.ShowLineNumbersToTheLeftOfThe";
-            }
-            public static class @Samples
-            {
-                public const string @Markdown = "Demo.Content.MarkdownEditor.Samples.Markdown";
-            }
-            public static class @Source
-            {
-                public const string @CSharp = "Demo.Content.MarkdownEditor.Source.CSharp";
-                public const string @Xaml = "Demo.Content.MarkdownEditor.Source.Xaml";
-            }
-            public static class @UpdateStatus
-            {
-                public const string @LineColumnLinesCharactersFormat = "Demo.Content.MarkdownEditor.UpdateStatus.LineColumnLinesCharactersFormat";
-            }
-            public static class @View
-            {
-                public const string @Bold = "Demo.Content.MarkdownEditor.View.Bold";
-                public const string @CodeBlock = "Demo.Content.MarkdownEditor.View.CodeBlock";
-                public const string @Heading2 = "Demo.Content.MarkdownEditor.View.Heading2";
-                public const string @InlineCode = "Demo.Content.MarkdownEditor.View.InlineCode";
-                public const string @Italic = "Demo.Content.MarkdownEditor.View.Italic";
-                public const string @Quote = "Demo.Content.MarkdownEditor.View.Quote";
-                public const string @SourceEditorPoweredByAvaloniaEditWithTextMateHighlighting = "Demo.Content.MarkdownEditor.View.SourceEditorPoweredByAvaloniaEditWithTextMateHighlighting";
-                public const string @Table = "Demo.Content.MarkdownEditor.View.Table";
-                public const string @TaskList = "Demo.Content.MarkdownEditor.View.TaskList";
-            }
-        }
-        public static class @MarkdownExport
-        {
-            public static class @ExportAsync
-            {
-                public const string @ExportCompleteFormat = "Demo.Content.MarkdownExport.ExportAsync.ExportCompleteFormat";
-                public const string @ExportFailedFormat = "Demo.Content.MarkdownExport.ExportAsync.ExportFailedFormat";
-                public const string @ExportingFormat = "Demo.Content.MarkdownExport.ExportAsync.ExportingFormat";
-            }
-            public static class @OnCopyWechat
-            {
-                public const string @CopiedRichTextPasteItIntoTheEditorFormat = "Demo.Content.MarkdownExport.OnCopyWechat.CopiedRichTextPasteItIntoTheEditorFormat";
-                public const string @CopyFailed = "Demo.Content.MarkdownExport.OnCopyWechat.CopyFailed";
-                public const string @Juejin = "Demo.Content.MarkdownExport.OnCopyWechat.Juejin";
-                public const string @Zhihu = "Demo.Content.MarkdownExport.OnCopyWechat.Zhihu";
-            }
-            public static class @OnExportHtml
-            {
-                public const string @ExportHTML = "Demo.Content.MarkdownExport.OnExportHtml.ExportHTML";
-            }
-            public static class @OnExportPdf
-            {
-                public const string @ExportPDF = "Demo.Content.MarkdownExport.OnExportPdf.ExportPDF";
-            }
-            public static class @OnExportPng
-            {
-                public const string @ExportPNG = "Demo.Content.MarkdownExport.OnExportPng.ExportPNG";
-            }
-            public static class @OnExportWord
-            {
-                public const string @ExportWord = "Demo.Content.MarkdownExport.OnExportWord.ExportWord";
-            }
-            public static class @Properties
-            {
-                public const string @CopyDestination = "Demo.Content.MarkdownExport.Properties.CopyDestination";
-                public const string @DestinationPlatformForRichText = "Demo.Content.MarkdownExport.Properties.DestinationPlatformForRichText";
-                public const string @ExportTheme = "Demo.Content.MarkdownExport.Properties.ExportTheme";
-                public const string @Juejin = "Demo.Content.MarkdownExport.Properties.Juejin";
-                public const string @TypographySize = "Demo.Content.MarkdownExport.Properties.TypographySize";
-                public const string @TypographySizeOfTheExportedDocument = "Demo.Content.MarkdownExport.Properties.TypographySizeOfTheExportedDocument";
-                public const string @TypographyThemeOfTheExportedDocument = "Demo.Content.MarkdownExport.Properties.TypographyThemeOfTheExportedDocument";
-                public const string @WeChat = "Demo.Content.MarkdownExport.Properties.WeChat";
-                public const string @Zhihu = "Demo.Content.MarkdownExport.Properties.Zhihu";
-            }
-            public static class @Samples
-            {
-                public const string @Markdown = "Demo.Content.MarkdownExport.Samples.Markdown";
-            }
-            public static class @Source
-            {
-                public const string @CSharp = "Demo.Content.MarkdownExport.Source.CSharp";
-                public const string @Xaml = "Demo.Content.MarkdownExport.Source.Xaml";
-            }
-            public static class @View
-            {
-                public const string @CopyPublishingHTML = "Demo.Content.MarkdownExport.View.CopyPublishingHTML";
-                public const string @ExportHTML = "Demo.Content.MarkdownExport.View.ExportHTML";
-                public const string @ExportMarkdownAsPNGPDFWordOrHTML = "Demo.Content.MarkdownExport.View.ExportMarkdownAsPNGPDFWordOrHTML";
-                public const string @ExportPDF = "Demo.Content.MarkdownExport.View.ExportPDF";
-                public const string @ExportPNG = "Demo.Content.MarkdownExport.View.ExportPNG";
-                public const string @ExportWord = "Demo.Content.MarkdownExport.View.ExportWord";
-            }
-            public static class @copyKind
-            {
-                public const string @WeChat = "Demo.Content.MarkdownExport.copyKind.WeChat";
-            }
-        }
-        public static class @MarkdownFlow
-        {
-            public static class @CSharpCode
-            {
-                public const string @AddStepDemoSceneStepOpenNewMarkdownViewerPageAddStep = "Demo.Content.MarkdownFlow.CSharpCode.AddStepDemoSceneStepOpenNewMarkdownViewerPageAddStep";
-            }
-            public static class @XamlCode
-            {
-                public const string @CodewfMarkdownViewerMarkdownTypographyThemeCodewfMarkdownEditorViewMarkdownShowLineNumbers = "Demo.Content.MarkdownFlow.XamlCode.CodewfMarkdownViewerMarkdownTypographyThemeCodewfMarkdownEditorViewMarkdownShowLineNumbers";
-            }
-        }
-        public static class @MarkdownLite
-        {
-            public static class @Properties
-            {
-                public const string @LiteIncludesTheSame18TypographyThemesFour = "Demo.Content.MarkdownLite.Properties.LiteIncludesTheSame18TypographyThemesFour";
-                public const string @TypographySize = "Demo.Content.MarkdownLite.Properties.TypographySize";
-                public const string @TypographyTheme = "Demo.Content.MarkdownLite.Properties.TypographyTheme";
-            }
-            public static class @Samples
-            {
-                public const string @Markdown = "Demo.Content.MarkdownLite.Samples.Markdown";
-            }
-            public static class @Source
-            {
-                public const string @CSharp = "Demo.Content.MarkdownLite.Source.CSharp";
-                public const string @Xaml = "Demo.Content.MarkdownLite.Source.Xaml";
-            }
-            public static class @View
-            {
-                public const string @MarkdownLiteUsesMarkdigAndASmallerRendering = "Demo.Content.MarkdownLite.View.MarkdownLiteUsesMarkdigAndASmallerRendering";
-            }
-        }
-        public static class @MarkdownLiveEditor
-        {
-            public static class @OnInsert
-            {
-                public const string @ContentAddedWithInsertText = "Demo.Content.MarkdownLiveEditor.OnInsert.ContentAddedWithInsertText";
-            }
-            public static class @Properties
-            {
-                public const string @EditorFontSize = "Demo.Content.MarkdownLiveEditor.Properties.EditorFontSize";
-                public const string @FontSizeOfTheBlockEditor = "Demo.Content.MarkdownLiveEditor.Properties.FontSizeOfTheBlockEditor";
-                public const string @TypographyTheme = "Demo.Content.MarkdownLiveEditor.Properties.TypographyTheme";
-                public const string @TypographyThemeUsedByTheLiveEditor = "Demo.Content.MarkdownLiveEditor.Properties.TypographyThemeUsedByTheLiveEditor";
-            }
-            public static class @Samples
-            {
-                public const string @Markdown = "Demo.Content.MarkdownLiveEditor.Samples.Markdown";
-            }
-            public static class @Source
-            {
-                public const string @CSharp = "Demo.Content.MarkdownLiveEditor.Source.CSharp";
-                public const string @Xaml = "Demo.Content.MarkdownLiveEditor.Source.Xaml";
-            }
-            public static class @UpdateStatus
-            {
-                public const string @BlocksActiveBlockCharactersFormat = "Demo.Content.MarkdownLiveEditor.UpdateStatus.BlocksActiveBlockCharactersFormat";
-            }
-            public static class @View
-            {
-                public const string @Bold = "Demo.Content.MarkdownLiveEditor.View.Bold";
-                public const string @FocusFirstBlock = "Demo.Content.MarkdownLiveEditor.View.FocusFirstBlock";
-                public const string @InsertText = "Demo.Content.MarkdownLiveEditor.View.InsertText";
-                public const string @MarkdownLiveEditorViewEditsBlockModelsDirectlyHeadingsParagraphsLists = "Demo.Content.MarkdownLiveEditor.View.MarkdownLiveEditorViewEditsBlockModelsDirectlyHeadingsParagraphsLists";
-                public const string @Table = "Demo.Content.MarkdownLiveEditor.View.Table";
-            }
-        }
-        public static class @MarkdownViewer
-        {
-            public static class @AppendParagraph
-            {
-                public const string @NewParagraphIncrementalRenderingReparsesAndLaysOut = "Demo.Content.MarkdownViewer.AppendParagraph.NewParagraphIncrementalRenderingReparsesAndLaysOut";
-            }
-            public static class @Properties
-            {
-                public const string @_18TypographyThemesChangesRenderImmediately = "Demo.Content.MarkdownViewer.Properties.18TypographyThemesChangesRenderImmediately";
-                public const string @EnableVirtualizationAboveThisBlockCount = "Demo.Content.MarkdownViewer.Properties.EnableVirtualizationAboveThisBlockCount";
-                public const string @NormalSmallSmallUsesCompactTypography = "Demo.Content.MarkdownViewer.Properties.NormalSmallSmallUsesCompactTypography";
-                public const string @RealizeVisibleBlocksAboveTheThresholdToReduce = "Demo.Content.MarkdownViewer.Properties.RealizeVisibleBlocksAboveTheThresholdToReduce";
-                public const string @TypographySize = "Demo.Content.MarkdownViewer.Properties.TypographySize";
-                public const string @TypographyTheme = "Demo.Content.MarkdownViewer.Properties.TypographyTheme";
-                public const string @Virtualization = "Demo.Content.MarkdownViewer.Properties.Virtualization";
-                public const string @VirtualizationThreshold = "Demo.Content.MarkdownViewer.Properties.VirtualizationThreshold";
-            }
-            public static class @Samples
-            {
-                public const string @Markdown = "Demo.Content.MarkdownViewer.Samples.Markdown";
-            }
-            public static class @Source
-            {
-                public const string @CSharp = "Demo.Content.MarkdownViewer.Source.CSharp";
-                public const string @Xaml = "Demo.Content.MarkdownViewer.Source.Xaml";
-            }
-            public static class @UpdateMetrics
-            {
-                public const string @ModeParsingMsRealizedBlocksFormat = "Demo.Content.MarkdownViewer.UpdateMetrics.ModeParsingMsRealizedBlocksFormat";
-            }
-            public static class @View
-            {
-                public const string @AppendParagraphIncremental = "Demo.Content.MarkdownViewer.View.AppendParagraphIncremental";
-                public const string @Apply = "Demo.Content.MarkdownViewer.View.Apply";
-                public const string @CompleteStreaming = "Demo.Content.MarkdownViewer.View.CompleteStreaming";
-                public const string @EditMarkdownSource = "Demo.Content.MarkdownViewer.View.EditMarkdownSource";
-                public const string @ExitStreaming = "Demo.Content.MarkdownViewer.View.ExitStreaming";
-                public const string @ResetSample = "Demo.Content.MarkdownViewer.View.ResetSample";
-                public const string @StartStreaming = "Demo.Content.MarkdownViewer.View.StartStreaming";
-                public const string @StreamingDescription = "Demo.Content.MarkdownViewer.View.StreamingDescription";
-                public const string @StreamingHeader = "Demo.Content.MarkdownViewer.View.StreamingHeader";
             }
         }
         public static class @MarkupExtension
@@ -1244,7 +1003,6 @@ public static class ResourceKeys
         public const string @Infrastructure = "Demo.Group.Infrastructure";
         public const string @Input = "Demo.Group.Input";
         public const string @Layout = "Demo.Group.Layout";
-        public const string @Markdown = "Demo.Group.Markdown";
         public const string @Present = "Demo.Group.Present";
         public const string @Utilities = "Demo.Group.Utilities";
     }
@@ -1264,12 +1022,6 @@ public static class ResourceKeys
         public const string @If = "Demo.Item.If";
         public const string @Lang = "Demo.Item.Lang";
         public const string @Log = "Demo.Item.Log";
-        public const string @MarkdownEditor = "Demo.Item.MarkdownEditor";
-        public const string @MarkdownExport = "Demo.Item.MarkdownExport";
-        public const string @MarkdownFlow = "Demo.Item.MarkdownFlow";
-        public const string @MarkdownLite = "Demo.Item.MarkdownLite";
-        public const string @MarkdownLiveEditor = "Demo.Item.MarkdownLiveEditor";
-        public const string @MarkdownViewer = "Demo.Item.MarkdownViewer";
         public const string @MarkupExtension = "Demo.Item.MarkupExtension";
         public const string @Notifications = "Demo.Item.Notifications";
         public const string @PropertyGrid = "Demo.Item.PropertyGrid";
@@ -1351,36 +1103,6 @@ public static class ResourceKeys
             public const string @Desc = "Demo.Page.Log.Desc";
             public const string @Title = "Demo.Page.Log.Title";
         }
-        public static class @MarkdownEditor
-        {
-            public const string @Desc = "Demo.Page.MarkdownEditor.Desc";
-            public const string @Title = "Demo.Page.MarkdownEditor.Title";
-        }
-        public static class @MarkdownExport
-        {
-            public const string @Desc = "Demo.Page.MarkdownExport.Desc";
-            public const string @Title = "Demo.Page.MarkdownExport.Title";
-        }
-        public static class @MarkdownFlow
-        {
-            public const string @Desc = "Demo.Page.MarkdownFlow.Desc";
-            public const string @Title = "Demo.Page.MarkdownFlow.Title";
-        }
-        public static class @MarkdownLite
-        {
-            public const string @Desc = "Demo.Page.MarkdownLite.Desc";
-            public const string @Title = "Demo.Page.MarkdownLite.Title";
-        }
-        public static class @MarkdownLiveEditor
-        {
-            public const string @Desc = "Demo.Page.MarkdownLiveEditor.Desc";
-            public const string @Title = "Demo.Page.MarkdownLiveEditor.Title";
-        }
-        public static class @MarkdownViewer
-        {
-            public const string @Desc = "Demo.Page.MarkdownViewer.Desc";
-            public const string @Title = "Demo.Page.MarkdownViewer.Title";
-        }
         public static class @MarkupExtension
         {
             public const string @Desc = "Demo.Page.MarkupExtension.Desc";
@@ -1456,7 +1178,6 @@ public static class ResourceKeys
         {
             public const string @Data = "Demo.Scene.Summary.Data";
             public const string @Docs = "Demo.Scene.Summary.Docs";
-            public const string @Markdown = "Demo.Scene.Summary.Markdown";
         }
     }
     public static class @Segment
@@ -1615,7 +1336,6 @@ public static class ResourceKeys
         public const string @Lab = "Demo.Studio.Lab";
         public const string @LogSink = "Demo.Studio.LogSink";
         public const string @Logs = "Demo.Studio.Logs";
-        public const string @Markdown = "Demo.Studio.Markdown";
         public const string @Message = "Demo.Studio.Message";
         public const string @Nav = "Demo.Studio.Nav";
         public const string @NoDelivery = "Demo.Studio.NoDelivery";
@@ -1626,7 +1346,6 @@ public static class ResourceKeys
         public const string @PanelHint = "Demo.Studio.PanelHint";
         public const string @Pipeline = "Demo.Studio.Pipeline";
         public const string @PipelineHint = "Demo.Studio.PipelineHint";
-        public const string @Preview = "Demo.Studio.Preview";
         public const string @Props = "Demo.Studio.Props";
         public const string @Publish = "Demo.Studio.Publish";
         public const string @Publisher = "Demo.Studio.Publisher";
@@ -1639,7 +1358,6 @@ public static class ResourceKeys
         public const string @SortName = "Demo.Studio.SortName";
         public const string @SortReady = "Demo.Studio.SortReady";
         public const string @SortStatus = "Demo.Studio.SortStatus";
-        public const string @Source = "Demo.Studio.Source";
         public const string @Subscribed = "Demo.Studio.Subscribed";
         public const string @Subscriber = "Demo.Studio.Subscriber";
         public const string @Tagline = "Demo.Studio.Tagline";
@@ -1657,7 +1375,6 @@ public static class ResourceKeys
         public const string @FeaturesControls = "Demo.Welcome.FeaturesControls";
         public const string @FeaturesData = "Demo.Welcome.FeaturesData";
         public const string @FeaturesInfra = "Demo.Welcome.FeaturesInfra";
-        public const string @FeaturesMarkdown = "Demo.Welcome.FeaturesMarkdown";
         public const string @FeaturesTitle = "Demo.Welcome.FeaturesTitle";
         public const string @UsageLog = "Demo.Welcome.UsageLog";
         public const string @UsageProperties = "Demo.Welcome.UsageProperties";

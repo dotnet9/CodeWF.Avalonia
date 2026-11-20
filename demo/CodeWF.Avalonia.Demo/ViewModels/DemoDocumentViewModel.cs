@@ -101,20 +101,11 @@ public class DemoDocumentViewModel : ReactiveObject, IDisposable
         set { if (value) Segment = DemoSegment.CSharp; }
     }
 
-    /// <summary>XAML 源码（以 Markdown 代码块承载，复用 MarkdownViewer 的高亮渲染）。</summary>
-    public string XamlMarkdown => string.IsNullOrEmpty(Page.XamlCode)
-        ? string.Empty
-        : $"```xml\n{Page.XamlCode.TrimEnd()}\n```";
+    /// <summary>XAML 源码原文，源码面板以只读文本呈现。</summary>
+    public string XamlCodeText => Page.XamlCode?.TrimEnd() ?? string.Empty;
 
-    /// <summary>C# 源码；无内容时回退 XAML 片段，避免空文档。</summary>
-    public string CSharpMarkdown
-    {
-        get
-        {
-            var code = string.IsNullOrEmpty(Page.CSharpCode) ? Page.XamlCode : Page.CSharpCode;
-            return string.IsNullOrEmpty(code) ? string.Empty : $"```csharp\n{code.TrimEnd()}\n```";
-        }
-    }
+    /// <summary>C# 源码原文；无内容时回退 XAML 片段，避免空文档。</summary>
+    public string CSharpCodeText => (string.IsNullOrEmpty(Page.CSharpCode) ? Page.XamlCode : Page.CSharpCode)?.TrimEnd() ?? string.Empty;
 
     private readonly MainViewModel _shell;
     private bool _propertiesVisible = true;
@@ -167,8 +158,8 @@ public class DemoDocumentViewModel : ReactiveObject, IDisposable
     {
         RefreshTitle();
         RefreshProperties();
-        this.RaisePropertyChanged(nameof(XamlMarkdown));
-        this.RaisePropertyChanged(nameof(CSharpMarkdown));
+        this.RaisePropertyChanged(nameof(XamlCodeText));
+        this.RaisePropertyChanged(nameof(CSharpCodeText));
         this.RaisePropertyChanged(nameof(DisplayTitle));
         this.RaisePropertyChanged(nameof(Description));
     }

@@ -5,10 +5,9 @@ using ReactiveUI;
 
 namespace CodeWF.Avalonia.Demo.ViewModels;
 
-/// <summary>The overview uses the same Markdown renderer and grid enhancement as the full demos.</summary>
+/// <summary>The overview uses the same grid enhancement as the full demos.</summary>
 public sealed class WelcomeViewModel : ReactiveObject
 {
-    private string _markdown = L.Instance.GetResource(DemoResources.Content.Welcome.markdown.GiveInterfacesExpressionBuildDesktopExperiencesWithCodeWF);
     private string _copyStatus = string.Empty;
     private int _labIndex;
     private bool _experimentsExpanded;
@@ -23,7 +22,6 @@ public sealed class WelcomeViewModel : ReactiveObject
     public IReadOnlyList<DemoGroupViewModel> CatalogGroups { get; } = DemoCatalog.CreateGroups()
         .Where(group => group.TitleKey is not DemoResources.Group.Home and not DemoResources.Group.Examples).ToArray();
 
-    public string Markdown { get => _markdown; set => this.RaiseAndSetIfChanged(ref _markdown, value); }
     public string CopyStatus { get => _copyStatus; set => this.RaiseAndSetIfChanged(ref _copyStatus, value); }
     public bool ExperimentsExpanded { get => _experimentsExpanded; set => this.RaiseAndSetIfChanged(ref _experimentsExpanded, value); }
     public int LabIndex { get => _labIndex; set => this.RaiseAndSetIfChanged(ref _labIndex, value); }

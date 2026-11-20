@@ -30,15 +30,9 @@ public static class DemoPages
     public const string DiagonalLine = "Demo.Item.DiagonalLine";
     public const string SegmentedPanel = "Demo.Item.SegmentedPanel";
     public const string ContentExpansionAnimator = "Demo.Item.ContentExpansionAnimator";
-    public const string MarkdownViewer = "Demo.Item.MarkdownViewer";
-    public const string MarkdownLite = "Demo.Item.MarkdownLite";
-    public const string MarkdownEditor = "Demo.Item.MarkdownEditor";
-    public const string MarkdownLiveEditor = "Demo.Item.MarkdownLiveEditor";
-    public const string MarkdownExport = "Demo.Item.MarkdownExport";
     public const string If = "Demo.Item.If";
     public const string Switch = "Demo.Item.Switch";
     public const string Lang = "Demo.Item.Lang";
-    public const string MarkdownFlow = "Demo.Item.MarkdownFlow";
     public const string DataFlow = "Demo.Item.DataFlow";
     public const string DocsFlow = "Demo.Item.DocsFlow";
     public const string AppGuide = "Demo.Item.AppGuide";
@@ -47,7 +41,7 @@ public static class DemoPages
 public static partial class DemoCatalog
 {
     /// <summary>目录条目数随 catalog.json 一起生成，运行时的自检与它比对，不再另记一份常数。</summary>
-    public const int RouteCount = 33;
+    public const int RouteCount = 27;
 
     private static DemoPageBase CreatePage(string key) => key switch
     {
@@ -72,15 +66,9 @@ public static partial class DemoCatalog
         DemoPages.DiagonalLine => new ControlApiPage("LeftTop2RightBottomLine"),
         DemoPages.SegmentedPanel => new ControlApiPage("SegmentedPanel"),
         DemoPages.ContentExpansionAnimator => new ContentExpansionPage(),
-        DemoPages.MarkdownViewer => new MarkdownViewerPage(),
-        DemoPages.MarkdownLite => new MarkdownLitePage(),
-        DemoPages.MarkdownEditor => new MarkdownEditorPage(),
-        DemoPages.MarkdownLiveEditor => new MarkdownLiveEditorPage(),
-        DemoPages.MarkdownExport => new MarkdownExportPage(),
         DemoPages.If => new MarkupExtensionPage("If"),
         DemoPages.Switch => new MarkupExtensionPage("Switch"),
         DemoPages.Lang => new LangPage(),
-        DemoPages.MarkdownFlow => new MarkdownFlowPage(),
         DemoPages.DataFlow => new DataFlowPage(),
         DemoPages.DocsFlow => new DocsFlowPage(),
         DemoPages.AppGuide => new AppGuidePage(),

@@ -1,7 +1,6 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:codewf="https://codewf.com" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:dock="using:Dock.Avalonia.Controls"
-             xmlns:md="using:CodeWF.Avalonia.Markdown.Controls"
              xmlns:dockmodel="using:Dock.Model.ReactiveUI.Controls"
              xmlns:vm="using:CodeWF.Avalonia.Demo.ViewModels.Pages"
              x:Class="CodeWF.Avalonia.Demo.Views.Pages.DockPage"
@@ -10,18 +9,20 @@
 
   <UserControl.DataTemplates>
     <!-- 12.x 内容承载：Document/Tool 正文由类型匹配的 DataTemplate 呈现（Context 只服务定位器/命令栏），
-         这里把 Context 里的载荷再向内解析为 MarkdownViewer。 -->
+         这里把 Context 里的载荷再向内解析为只读文本视图。 -->
     <DataTemplate DataType="dockmodel:Document">
       <ContentControl Content="{Binding Context}" />
     </DataTemplate>
     <DataTemplate DataType="dockmodel:Tool">
       <ContentControl Content="{Binding Context}" />
     </DataTemplate>
-    <DataTemplate DataType="vm:MarkdownDocumentContext">
-      <md:MarkdownViewer Markdown="{Binding Markdown}" Margin="8" />
+    <DataTemplate DataType="vm:DocumentContext">
+      <TextBox Text="{Binding Text}" Margin="8" IsReadOnly="True" TextWrapping="Wrap"
+               AcceptsReturn="True" Background="Transparent" BorderThickness="0" />
     </DataTemplate>
-    <DataTemplate DataType="vm:MarkdownToolContext">
-      <md:MarkdownViewer Markdown="{Binding Markdown}" Margin="8" />
+    <DataTemplate DataType="vm:ToolContext">
+      <TextBox Text="{Binding Text}" Margin="8" IsReadOnly="True" TextWrapping="Wrap"
+               AcceptsReturn="True" Background="Transparent" BorderThickness="0" />
     </DataTemplate>
   </UserControl.DataTemplates>
 

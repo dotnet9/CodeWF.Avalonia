@@ -33,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/MindView/CodeWF.Avalonia.MindView/CodeWF.Avalonia.MindView.csproj" />
     <ProjectReference Include="..\..\src\Controls\CodeWF.Avalonia.Controls\CodeWF.Avalonia.Controls.csproj" />
     <ProjectReference Include="..\..\src\TreeDataGrid\CodeWF.Avalonia.TreeDataGrid\CodeWF.Avalonia.TreeDataGrid.csproj" />
     <ProjectReference Include="..\..\src\DataGrid\CodeWF.Avalonia.DataGrid\CodeWF.Avalonia.DataGrid.csproj" />

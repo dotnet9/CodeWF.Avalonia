@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
@@ -35,7 +35,7 @@ internal static class DemoPaletteVerification
             .Select(dark => (Palette: palette.Key, Dark: dark, Name: palette.Key + (dark ? "-dark" : "-light")))).ToArray();
         var shell = new MainWindow();
         var model = (MainViewModel)shell.DataContext!;
-        var scene = new MarkdownFlowPage();
+        var scene = new DocsFlowPage();
         scene.GoToStep(1);
         var sceneWindow = new Window { Width = 1100, Height = 720, Content = scene };
         var blocks = new WindowedStackPanelPage();

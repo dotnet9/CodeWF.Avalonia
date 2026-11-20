@@ -1,70 +1,70 @@
 # AGENTS.md — 仓库协作约定
 
-> 面向 AI 助手与新成员的改动守则。设计决策背景见 `docs/决策记录.md`，
-> 流式规格见 `docs/流式规则.md`，性能数据见 `docs/基准报告.md`。
+> 面向 AI 助手与新成员的改动守则。设计决策背景见 `docs/决策记录.md`。
+> Markdown / MindView 已迁至 `apps/Vex`（Markdown/MindView 包）与 `libs/CodeWF.Toolkit`
+> （无 UI 基础库），相关流式规格与基准报告随包迁移，本仓不再维护。
 
 ## 构建与测试
 
 ```bash
 dotnet build CodeWF.Avalonia.slnx -c Release
-dotnet test tests/CodeWF.Avalonia.Content.Tests/CodeWF.Avalonia.Content.Tests.csproj --filter "FullyQualifiedName~Markdown"
-dotnet run --project bench/CodeWF.Avalonia.Markdown.Benchmarks -c Release -- all
+dotnet test CodeWF.Avalonia.slnx -c Release
+pwsh scripts/sync_localization_keys.ps1 -Check
+pwsh scripts/sync_design_catalog.ps1 -Check
 ```
 
-- 包版本由 `Directory.Build.props` 的 `Version` 统一管理，采用 `Avalonia版本.自研修订号`（当前 `12.1.5.x`）；依赖版本在 `build/Versions.props` 中集中维护，`Directory.Packages.props` 引用版本变量，框架默认值在 `build/ProjectDefaults.props`。发布标签必须与包版本一致。
+- 包版本由 `Directory.Build.props` 的 `Version` 统一管理，采用 `Avalonia版本.自研修订号`（当前 `12.1.6.x`）；依赖版本在 `build/Versions.props` 中集中维护，`Directory.Packages.props` 引用版本变量，框架默认值在 `build/ProjectDefaults.props`。发布标签必须与包版本一致。
 - 发版升版本号后必须重跑 `scripts/build_standalone_prototype.ps1`：原型标题栏
   版本徽章取自版本号，漏更会导致 CI 的 `sync_design_catalog -Check` 失败。
+- Demo 目录与国际化映射是生成物：改 `design/catalog.json` 后跑
+  `scripts/sync_design_catalog.ps1`，改 `I18n/*.json` 后跑
+  `scripts/sync_localization_keys.ps1`，两者 `-Check` 形态都在 CI 门禁里。
 - 提交：中文、一个逻辑单元一个提交，随做随推。
+
+## 包级 README 约定
+
+- 每个可打包工程目录自带 `README.md`（定位、安装、主题接入、快速使用、文档链接），
+  `Directory.Build.props` 按 `$(MSBuildProjectDirectory)` 打包；不要改回共享根 README。
+- nuget.org 上并存现行 `12.1.6.x` 与已废弃历史 `12.2.x` 两条版本线，包级 README
+  必须带精确钉版警告。
 
 ## 改动同步清单（改这里就必须改那里）
 
-### 流式（Streaming/）
+### 主题与样式
 
-1. **改冻结规则**：先改 `docs/流式规则.md`（规格先行），再改
-   `MarkdownStreamSegmenter`，跑 `StreamingEquivalenceTests` 矩阵必须全绿。
-2. **改 remend 处理器**：`MarkdownTailRemender` 加处理器 →
-   `docs/流式规则.md` §4.1 优先级表同步 + `Fixtures/remend/` 加 JSON fixture；
-   fixture 数量基线在 `RemendFixtureTests.FixtureCount_MeetsBaseline`。
-3. **改快照结构**：`MarkdownStreamingSnapshot` 加字段 →
-   `MarkdownViewer.OnStreamingSnapshotReady` 与流式测试同步。
-4. 性能相关改动 → `bench` 跑对照，数字进 `docs/基准报告.md`。
+1. **新增控件样式**：样式入口类（`*Theme`）放对应包 `Themes/`，XAML 资源以程序集
+   内绝对 URI（`avares://CodeWF.Avalonia.*/Themes/...`）引用，不要手动改写路径。
+2. **Studio 八套配色**：配色令牌改动跑 `scripts/sync_design_catalog.ps1`
+   重新生成原型令牌，对比度回归见 `docs/配色与排版令牌规则.md`。
+3. **主题入口增删**：同步根 `README.md` 的主题入口表与快速开始组合表。
 
-### 渲染（Rendering/）
+### 国际化（Lang）
 
-1. **新增块渲染器**：`Rendering/Blocks/` 新建 → `MarkdownViewer.CreateDefaultPipeline`
-   注册 → `MarkdownStyleKeys` 加样式类 → 主题字典（`Themes/`）补对应排版资源。
-2. **`MarkdownBlockKind` 加成员**：分类器 `MarkdownBlockClassifier`、
-   `MarkdownDiffService` 的指纹/比较分支、渲染器管道三处同步，漏一处
-   会出现"解析到了但永远走降级渲染"。
-3. **`IMarkdownRenderContext` 加成员**：唯一实现者是 `MarkdownViewer`；
-   能力包（Mermaid/Math/Images/Highlighting）是该接口的消费者，签名变更
-   要全量编译能力包确认。
+1. 库 JSON 用 `EmbeddedResource` 嵌入程序集，`JsonLocalizer` 读取；
+   业务覆盖优先级 = 业务输出资源 > 外层库内嵌 > 内层依赖库内嵌。
+2. 强类型键一律 T4 或 `CodeWF.Avalonia.Lang.Generator` 生成，不手写映射；
+   Demo 映射由 `scripts/sync_localization_keys.ps1` 维护。
 
-### 块级状态（折叠等）
+### 演示台（Demo）
 
-- 状态字典键 = 块源码起始偏移（`SourceSpan.Start`），存 `MarkdownViewer`
-  不存控件；换文档清理点在 `RenderDocumentFull`（源码变更才清，
-  同文档重渲染保留）。
-
-### 图片（Images）
-
-- 本地加载统一过 `MarkdownImageSourceLoader.LoadLocalFile/Async`——
-  白名单等安全约束加在这两处，不要绕过。
-- 远程读取统一过 `ReadRemoteBytesWithDiskCache/Async`。
+1. **新增/删除演示页**：改 `design/catalog.json` → `sync_design_catalog.ps1`
+   再生成 `DemoCatalog.g.cs` 与原型数据；`DemoResources` 键增删后跑
+   `sync_localization_keys.ps1`。
+2. **离屏验证**：`scripts/localization-verification` 是 AOT 门禁的一部分，
+   验证内容调整要同步 `ci.yml` 的两处调用。
 
 ## 测试约定
 
 - headless 平台测试（控件构造/布局/点击）挂 `[Collection("AvaloniaPlatform")]`
-  + `platform.Run(() => ...)`；纯逻辑（切分器/remend/diff/loader）不挂，
-  直接跑。
+  + `platform.Run(() => ...)`；纯逻辑测试不挂，直接跑。
 - 点击模拟：`window.MouseMove/MouseDown/MouseUp` + `Dispatcher.UIThread.RunJobs()`。
 - 涉及会真的打开浏览器的路径（链接点击），测试必须置 `args.Cancel = true`。
 
 ## 已知边界（不要试图"修复"）
 
 - 无障碍：Avalonia 无公开 TextPattern，文本级光标浏览不可用（见 D19）。
-- 行内单个 `_` 不参与 remend 补全（snake_case 误报成本高于收益，见 §4.1）。
-- 解析失败保留旧快照不清空（流式规格 B2），排障先看 `Failed` 事件。
+- AOT/裁剪：新增包必须保持 NativeAOT 干净，`il_trim_warnings_test.ps1`
+  会卡"本仓代码产生的 IL 告警"。
 
 ## 发布与版本线
 

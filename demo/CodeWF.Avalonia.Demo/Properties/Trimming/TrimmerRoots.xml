@@ -1,11 +1,9 @@
-<linker>
+﻿<linker>
   <assembly fullname="CodeWF.Avalonia.Demo" preserve="all" />
   <assembly fullname="CodeWF.Avalonia.Controls" preserve="all" />
   <assembly fullname="CodeWF.Avalonia.DataGrid" preserve="all" />
   <assembly fullname="CodeWF.Avalonia.TreeDataGrid" preserve="all" />
   <assembly fullname="CodeWF.Avalonia.Dock" preserve="all" />
-  <assembly fullname="CodeWF.Avalonia.Markdown" preserve="all" />
-  <assembly fullname="CodeWF.Avalonia.Markdown.Lite" preserve="all" />
   <assembly fullname="CodeWF.Avalonia.Lang" preserve="all" />
 
   <assembly fullname="Prism" preserve="all" />

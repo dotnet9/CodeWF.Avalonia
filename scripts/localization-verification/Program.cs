@@ -10,8 +10,6 @@ using CodeWF.Avalonia.Controls.Themes;
 using CodeWF.Avalonia.Demo.Infrastructure;
 using CodeWF.Avalonia.Demo.ViewModels;
 using CodeWF.Avalonia.Lang.MarkupExtensions;
-using CodeWF.Avalonia.Markdown;
-using CodeWF.Avalonia.Markdown.Controls;
 using CodeWF.Avalonia.TreeDataGrid.PropertyGrid;
 using CodeWF.Toolkit.Core.UpdateChecking;
 using CodeWF.Toolkit.Lang;
@@ -44,24 +42,19 @@ VerifyThirdPartyLocales();
 VerifyHiddenPropertyRows();
 VerifyPropertyEditors();
 VerifyWindowCapabilities();
-VerifyEditableTableColumns();
-VerifyReadOnlyTableColumns();
-VerifyMindMapLanguageState();
 VerifyStatusLanguageState();
 VerifyDockDocumentTransfer(Path.Combine(Path.GetFullPath(args.FirstOrDefault() ?? Path.GetTempPath()), "dock-captures"));
 var manager = I18nManager.Instance;
 var text = new TextBlock();
 using var binding = text.Bind(TextBlock.TextProperty, (BindingBase)new I18nBinding(DemoKeys.Shell.Ready).ProvideValue(null!));
-var markdown = new MarkdownViewer { Markdown = "```text\nShared language\n```" };
 var properties = new PropertyGrid();
 var slider = new Slider { Value = 45, Maximum = 100, Width = 240 };
 var checkBox = new CheckBox { IsChecked = true, Content = "CheckBox" };
 var input = new TextBox { Text = "TextBox", Width = 240 };
 var selector = new ComboBox { ItemsSource = new[] { "ComboBox" }, SelectedIndex = 0, Width = 240 };
-var panel = new StackPanel { Children = { text, slider, checkBox, input, selector, markdown, properties } };
+var panel = new StackPanel { Children = { text, slider, checkBox, input, selector, properties } };
 var window = new Window { Width = 960, Height = 720, Content = panel };
 window.Show();
-var markdownLabels = new HashSet<string>();
 var propertyLabels = new HashSet<string>();
 var updateLabels = new HashSet<string>();
 var changed = 0;
@@ -107,9 +100,6 @@ try
         window.UpdateLayout();
         Require(changed == notifications + (Equals(previous, manager.Culture) ? 0 : 1), "A language change raises one global event.");
         Require(text.Text == manager.GetResource(DemoKeys.Shell.Ready), "Existing host binding follows the singleton.");
-        var menu = (markdown.ContextMenu!.Items[0] as MenuItem)?.Header as string;
-        Require(menu == MarkdownLocalization.GetResource(MarkdownL.CopyRenderedText), "Existing Markdown menu follows the singleton.");
-        markdownLabels.Add(menu!);
         var search = properties.GetVisualDescendants().OfType<TextBox>().Single(input => input.Name == "SearchBox");
         Require(search.PlaceholderText == PropertyGridLocalization.Get(PropertyKeys.SearchPlaceholder), "Existing property panel follows the singleton.");
         propertyLabels.Add(search.PlaceholderText ?? string.Empty);
@@ -118,24 +108,20 @@ try
         updateLabels.Add(message);
         Console.WriteLine("PASS shared culture: " + culture);
     }
-    Require(markdownLabels.Count == 4 && propertyLabels.Count == 2 && updateLabels.Count == 2, "Host and libraries switch supported cultures and fall back.");
+    Require(propertyLabels.Count == 2 && updateLabels.Count == 2, "Host and libraries switch supported cultures and fall back.");
 
     // 直接使用应用输出 JSON 覆盖一个库键，库的其他翻译仍由程序集提供。
     var output = Path.GetFullPath(args.FirstOrDefault() ?? Path.Combine(Path.GetTempPath(), "codewf-lang-verification"));
     Directory.CreateDirectory(output);
     File.WriteAllText(Path.Combine(output, "en-US.json"), """
         {"language":"English","description":"Verification host","cultureName":"en-US",
-         "CodeWF.Avalonia.Markdown.MarkdownL.CopyRenderedText":"Application copy",
          "Localization.CodeWF_Avalonia_TreeDataGrid.PropertyGrid.SearchPlaceholder":"Application properties"}
         """);
     manager.Register(new JsonLangPlugin { ResourceFolder = output }, CultureInfo.GetCultureInfo("en-US"));
-    manager.AddResource(typeof(PropertyGrid).Assembly, typeof(MarkdownViewer).Assembly);
+    manager.AddResource(typeof(PropertyGrid).Assembly);
     Dispatcher.UIThread.RunJobs();
-    Require(MarkdownLocalization.GetResource(MarkdownL.CopyRenderedText) == "Application copy", "Host resource overrides Markdown after adding a library.");
     Require(PropertyGridLocalization.Get(PropertyKeys.SearchPlaceholder) == "Application properties", "Host resource overrides property panel after adding a library.");
-    Require(Equals((markdown.ContextMenu!.Items[0] as MenuItem)?.Header, "Application copy"), "Existing Markdown menu applies the host override.");
     Require(properties.GetVisualDescendants().OfType<TextBox>().Single(input => input.Name == "SearchBox").PlaceholderText == "Application properties", "Existing property panel applies the host override.");
-    Require(MarkdownLocalization.GetResource(MarkdownL.CopySelectedText) == "Copy selected text", "Missing host key falls back to embedded Markdown.");
     // 覆盖用例结束后恢复宿主资源，后续目录渲染必须使用真实 Demo 文案。
     manager.Register(new JsonLangPlugin { ResourceFolder = DemoBootstrapper.I18nFolder }, CultureInfo.GetCultureInfo("zh-CN"));
     var renders = 0;
@@ -164,7 +150,7 @@ try
         Console.WriteLine("PASS rendered catalog page: " + item.Api);
     }
     Console.WriteLine($"PASS catalog rendering: {renders} page/language/palette combinations; NativeAOT={!System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported}.");
-    Console.WriteLine("PASS: one manager, live host/Markdown/property/update language switching and host resource precedence.");
+    Console.WriteLine("PASS: one manager, live host/property/update language switching and host resource precedence.");
     return 0;
 }
 finally
@@ -181,106 +167,6 @@ void OnCultureChanged(object? sender, EventArgs args)
 static void Require(bool condition, string message)
 {
     if (!condition) throw new InvalidOperationException(message);
-}
-
-static void VerifyEditableTableColumns()
-{
-    // 短名称列保持紧凑，描述列获得更多空间；即时编辑与只读渲染复用同一布局。
-    var editor = new global::CodeWF.Avalonia.Markdown.Editor.Controls.MarkdownLiveEditorView();
-    editor.SetText("| API | Purpose |\n| --- | --- |\n| Open | Open a Markdown document without modifying its source. |\n| Save | Persist edits after the user confirms the destination. |");
-    var window = new Window { Width = 800, Height = 420, Content = editor };
-    window.Show();
-    foreach (var width in new[] { 800d, 380d })
-    {
-        window.Width = width;
-        Dispatcher.UIThread.RunJobs();
-        window.UpdateLayout();
-        var grid = editor.GetVisualDescendants().OfType<Grid>().Single(grid => grid.GetType().Name == "MarkdownTableGrid");
-        Require(grid.ColumnDefinitions[0].ActualWidth < grid.ColumnDefinitions[1].ActualWidth / 2,
-            "An editable table preserves the shorter API column at width " + width);
-        Require(grid.Bounds.Width <= editor.Bounds.Width + 1, "An editable table fits the document at width " + width);
-        var outline = (Border)grid.Parent!;
-        Require(Math.Abs(outline.Bounds.Width - grid.ColumnDefinitions.Sum(column => column.ActualWidth) - 2) <= 2,
-            "The editable table outline hugs its real columns without a blank trailing area at width " + width);
-    }
-    // 使用同一个表格逐次切语，验证原生代码能读取新增内嵌资源并刷新已存在的菜单。
-    var table = editor.GetVisualDescendants().OfType<UserControl>().Single(control => control.GetType().Name == "MarkdownTableView");
-    var headers = new HashSet<string>();
-    var manager = I18nManager.Instance;
-    var originalCulture = manager.Culture;
-    var localizer = new global::CodeWF.Avalonia.Markdown.Editor.Services.MarkdownEditorLocalizer();
-    try
-    {
-        foreach (var culture in new[] { "en-US", "zh-CN", "zh-Hant", "ja-JP" })
-        {
-            manager.Culture = CultureInfo.GetCultureInfo(culture);
-            Dispatcher.UIThread.RunJobs();
-            var expected = MarkdownLocalization.GetResource(MarkdownL.EditorTableAddRow);
-            var header = ((MenuItem)table.ContextMenu!.Items[0]!).Header?.ToString() ?? string.Empty;
-            Require(header == expected && header != MarkdownL.EditorTableAddRow, "Existing editable table menu follows " + culture);
-            Require(localizer.Get(global::CodeWF.Avalonia.Markdown.Editor.Services.MarkdownEditorText.BoldPlaceholder)
-                == MarkdownLocalization.GetResource(MarkdownL.EditorBoldPlaceholder), "Editor actions follow " + culture);
-            headers.Add(header);
-        }
-        Require(headers.Count == 4, "Editable table has four distinct embedded translations.");
-    }
-    finally
-    {
-        manager.Culture = originalCulture;
-        window.Close();
-    }
-    Console.WriteLine("PASS editable table: natural columns and live embedded menu/action translations in four languages.");
-}
-
-static void VerifyReadOnlyTableColumns()
-{
-    var viewer = new MarkdownViewer { Markdown = "| API | Purpose |\n| --- | --- |\n| Open | Open a Markdown document with a naturally sized table. |" };
-    var shell = new Window { Width = 800, Height = 420, Content = viewer };
-    try
-    {
-        shell.Show();
-        foreach (var width in new[] { 800d, 380d, 800d })
-        {
-            shell.Width = width;
-            var deadline = DateTime.UtcNow.AddSeconds(10);
-            Grid? grid;
-            do
-            {
-                Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
-                grid = viewer.GetVisualDescendants().OfType<Grid>().SingleOrDefault(item => item.GetType().Name == "MarkdownTableGrid");
-                if (grid is not null) break;
-                if (DateTime.UtcNow >= deadline) throw new TimeoutException("Read-only Markdown table did not materialize.");
-                Thread.Sleep(1);
-            } while (true);
-            var outline = (Border)grid.Parent!;
-            var columnsWidth = grid.ColumnDefinitions.Sum(column => column.ActualWidth);
-            Require(columnsWidth > 0 && Math.Abs(outline.Bounds.Width - columnsWidth - outline.BorderThickness.Left - outline.BorderThickness.Right) <= 2,
-                "Read-only table outline follows actual columns without a blank trailing area at " + width);
-            Require(grid.ColumnDefinitions[0].ActualWidth < grid.ColumnDefinitions[1].ActualWidth,
-                "Read-only Markdown keeps the shorter API column compact.");
-        }
-        Console.WriteLine("PASS read-only table: natural outline width and resize reflow.");
-    }
-    finally { shell.Close(); }
-}
-static void VerifyMindMapLanguageState()
-{
-    var editor = new global::CodeWF.Avalonia.MindView.Controls.MindMapEditor();
-    var shell = new Window { Width = 600, Height = 400, Content = editor };
-    try
-    {
-        shell.Show(); Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
-        foreach (var culture in new[] { "en-US", "zh-CN", "en-US" })
-        {
-            Task.Run(() => I18nManager.Instance.Culture = CultureInfo.GetCultureInfo(culture)).GetAwaiter().GetResult();
-            Dispatcher.UIThread.RunJobs(); shell.UpdateLayout();
-            Require(editor.CenterTopicPlaceholder == global::CodeWF.Avalonia.MindView.I18n.MindViewLocalization.GetResource(
-                global::CodeWF.Avalonia.MindView.I18n.MindViewL.CenterTopicPlaceholder),
-                "Existing mind-map chrome follows background global culture changes: " + culture);
-        }
-        Console.WriteLine("PASS mind-map: background culture changes refresh the existing editor on the UI thread.");
-    }
-    finally { shell.Close(); }
 }
 
 static void VerifyStatusLanguageState()
