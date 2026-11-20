@@ -2,7 +2,7 @@
   <Import Project="build/ProjectDefaults.props" />
   <PropertyGroup>
     <!-- 包版本统一维护；Avalonia 依赖版本在 Directory.Packages.props 中独立维护。 -->
-    <Version>12.1.6.5</Version>
+    <Version>12.1.6.6</Version>
     <Authors>沙漠尽头的狼</Authors>
     <Company>https://codewf.com</Company>
     <Copyright>Copyright © https://codewf.com</Copyright>
@@ -43,8 +43,8 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(IsPackable)' == 'true'">
-    <!-- 包图标与包内 README：所有包共享仓库根资源 -->
+    <!-- 包图标共享仓库根资源；包内 README 按各工程目录独立维护（PackageReadmeFile 固定为 README.md） -->
     <None Include="$(MSBuildThisFileDirectory)logo.png" Pack="true" PackagePath="" Link="logo.png" />
-    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="" />
+    <None Include="$(MSBuildProjectDirectory)\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>
