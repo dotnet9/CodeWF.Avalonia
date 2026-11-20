@@ -147,12 +147,6 @@ function confirmDlg(title, body, onYes, danger) {
 }
 function closeDlg() { $("dlgm").classList.remove("on"); _dlgYes = null; }
 
-/* ═══ Markdown 排版主题（与 ArticleTypographyCatalog 的 12 套一致，规则 §9） ═══ */
-var MD_THEMES = ["Basic", "Simple", "InkBlack", "GeekBlack", "OrangeHeart", "RedScarlet",
- "ColorfulPurple", "Yamabuki", "TechnologyBlue", "LanQing", "TenderGreen", "WeChatFormat"];
-/* 字号由排版主题决定（验证「外观字号令牌被排版主题接管」） */
-var MD_THEME_FS = { Basic: "13px", GeekBlack: "12.5px", TechnologyBlue: "13.5px", WeChatFormat: "15px" };
-
 /* Navigation is generated from the API catalog. */
 var CATALOG = window.CodeWFDemoCatalog.map(function (group) {
  return { id:group.id, icon:group.icon, items:group.items.map(function (entry) { return {id:entry.prototypeId}; }) };
@@ -228,7 +222,7 @@ REG("welcome", {
  zh: {
   t: "欢迎总览",
   d: "本演示台自身即自研控件的综合实例：外壳是 CodeWFWindow、页签是梯形 TabStrip、右栏是 PropertyGrid、底栏是 LogView、文案走 Lang、内容区是 Dock 工作区。",
-  f: ["24 页", "3 个场景工作流", "6 色板", "中英双语"]
+  f: ["3 个场景工作流", "6 色板", "中英双语"]
  },
  render: function () {
   return '<div class="demo"><h4>快速开始</h4>' +
@@ -239,65 +233,17 @@ REG("welcome", {
    '<tr><td>桌面外壳 / 引导 / 状态</td><td>Controls</td><td>组件库·输入 / 呈现 / 基础设施</td></tr>' +
    '<tr><td>数据表增强</td><td>DataGrid</td><td>数据工作台</td></tr>' +
    '<tr><td>多文档工作区</td><td>Dock</td><td>文档工作区</td></tr>' +
-   '<tr><td>Markdown 写作与导出</td><td>Markdown.Lite / Markdown</td><td>Markdown 工作区</td></tr>' +
+
    '<tr><td>日志与本地化</td><td>Log / Lang</td><td>组件库·基础设施</td></tr>' +
    '</tbody></table></div>' +
    '<div class="demo"><h4>页面索引</h4><table class="dg" style="cursor:default"><tbody>' + pageIndexHtml() + "</tbody></table>" +
-   '<div class="hint">共 24 页：3 个场景工作流 + 21 个组件页，全部可在 Ribbon 页签或导航树里打开。</div></div>' +
+   '<div class="hint">全部页面均可在 Ribbon 页签或导航树里打开。</div></div>' +
    '<div class="demo"><h4>近期更新</h4><table class="dg" style="cursor:default"><tbody>' +
    '<tr><td>v12.1.4.4</td><td>Dock 主题去掉 Fluent 依赖，改以 Dock Simple 为基座并换装 Semi 皮肤</td></tr>' +
    '<tr><td>v12.1.4.3</td><td>高对比色板按变体落地 Semi 语义色，修复深色变体文字看不清</td></tr>' +
    '<tr><td>v12.1.4.2</td><td>Markdown 文档块虚拟化保留重块控件并补滚动锚点补偿</td></tr>' +
    '</tbody></table></div>' +
    '<div class="demo"><h4>快捷键</h4><div class="hint" style="margin:0">Ctrl+K 命令面板 · Ctrl+S 保存布局 · Ctrl+L 语言 · F1 引导 · 双击 Ribbon 页签折叠命令区</div></div>';
- }
-});
-
-/* ═══════════════ 场景一：Markdown 工作区（写作全流程） ═══════════════ */
-var FLOW_WRITE_STEPS = ["打开文档", "编辑", "实时预览", "导出 / 复制", "任务回写"];
-var flowWriteStep = 0, flowWriteSub = "md-viewer";
-var FLOW_WRITE_SUB = ["md-viewer", "md-editor", "md-live", "md-export", "md-viewer"];
-REG("flow-write", {
- zh: {
-  t: "写作全流程",
-  d: "一个完整的 Markdown 工作流：打开 → 编辑 → 实时预览 → 导出 / 公众号复制 → 任务勾选回写源文。子标签直接复用组件页，避免重复实现。",
-  f: ["5 步工作流", "子标签复用组件页", "任务回写"]
- },
- props: [
-  { id: "md.theme", label: "排版主题", type: "combo", options: MD_THEMES.slice(0, 8), value: mdTheme,
-   apply: function (v) { mdTheme = v; applyMdTheme(); log2both("TypographyTheme = " + v); } },
-  { id: "md.wrap", label: "软换行", type: "bool", value: true, apply: function (v) { log2both("SoftLineBreak = " + v); } }
- ],
- render: function (el) {
-  el.innerHTML = '<div class="flow" id="fwFlow">' + FLOW_WRITE_STEPS.map(function (s, i) {
-   return '<span class="st' + (i === flowWriteStep ? " cur" : i < flowWriteStep ? " done" : "") + '" data-s="' + i +
-    '" title="' + esc(s) + '"><span class="n">' + (i < flowWriteStep ? "✓" : i + 1) + '</span>' + esc(s) +
-    '<span class="si">' + '<svg class="svgic s14" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg>' + "</span></span>";
-  }).join("") + "</div>" +
-   '<div class="subtabs" id="fwSub">' +
-   [["md-viewer", "渲染"], ["md-editor", "源码编辑"], ["md-live", "实时编辑"], ["md-export", "导出 / 复制"]].map(function (t) {
-    return '<button data-p="' + t[0] + '"' + (t[0] === flowWriteSub ? ' class="on"' : "") + ">" + t[1] + "</button>";
-   }).join("") + "</div>" +
-   '<div id="fwBody"></div>' +
-   '<div class="demo"><h4>工作流状态</h4><div class="hint" id="fwState" style="margin:0"></div></div>';
-  el.querySelectorAll("#fwFlow .st").forEach(function (n) {
-   n.onclick = function () {
-    flowWriteStep = +n.dataset.s; flowWriteSub = FLOW_WRITE_SUB[flowWriteStep];
-    log2both("工作流步骤 " + (flowWriteStep + 1) + "：" + FLOW_WRITE_STEPS[flowWriteStep]);
-    renderInto("flow-write", $("seg-flow-write") || el);
-   };
-  });
-  el.querySelectorAll("#fwSub button").forEach(function (n) {
-   n.onclick = function () {
-    flowWriteSub = n.dataset.p;
-    log2both("工作流子标签：" + pt(flowWriteSub));
-    document.querySelectorAll("#fwSub button").forEach(function (x) { x.classList.toggle("on", x === n); });
-    renderInto(flowWriteSub, el.querySelector("#fwBody"));
-   };
-  });
-  var st = el.querySelector("#fwState");
-  if (st) st.textContent = "当前步骤 " + (flowWriteStep + 1) + " / 5 · " + FLOW_WRITE_STEPS[flowWriteStep] + " · 子标签 " + pt(flowWriteSub);
-  renderInto(flowWriteSub, el.querySelector("#fwBody"));
  }
 });
 
@@ -437,131 +383,6 @@ REG("flow-docs", {
   }
  }
 });
-
-/* ═══════════════ 组件页：MarkdownViewer / Lite / 编辑器 / 实时编辑 / 导出 ═══════════════ */
-var mdTheme = "GeekBlack";
-function applyMdTheme() {
- var m = document.querySelector(".mdr"); if (!m) return;
- m.style.fontSize = MD_THEME_FS[mdTheme] || "13px";
-}
-REG("md-viewer", {
- zh: {
-  t: "MarkdownViewer",
-  d: "后台线程解析 + 增量渲染 + 块级虚拟化；排版主题即时切换（共 12 套），正文字号由排版主题接管；任务勾选回写 Markdown 源文。",
-  f: ["增量渲染", "块级虚拟化", "12 主题", "任务回写"]
- },
- xaml: '<codewf:MarkdownViewer\n    Markdown="{Binding Content}"\n    TypographyTheme="{Binding Theme}"\n    EnableVirtualization="True" />',
- cs: 'viewer.TaskWriteBackRequested += (_, e) =>\n    e.Result.Markdown = e.Rendered;\n\nMarkdownThemes.OverrideTypographyResources(\n    Application.Current, MarkdownTypographyThemes.GeekBlack);',
- props: [
-  { id: "tt", label: "排版主题", type: "combo", options: MD_THEMES.slice(0, 8), value: mdTheme,
-   apply: function (v) { mdTheme = v; applyMdTheme(); log2both("TypographyTheme = " + v); } },
-  { id: "fs", label: "字号（主题接管）", type: "range", min: 12, max: 20, value: 13, readonly: true,
-   apply: function (v) { var m = document.querySelector(".mdr"); if (m) m.style.fontSize = v + "px"; log2both("FontSize = " + v); } },
-  { id: "vw", label: "虚拟化", type: "bool", value: true, apply: function (v) { log2both("EnableVirtualization = " + v); } }
- ],
- render: function () {
-  return '<div class="mdr" data-tt="geek"><h2>增量渲染 + 块级虚拟化</h2><p>后台线程解析，只重绘<b>变更块</b>；长文档启用<b>虚拟化</b>。</p>' +
-   '<blockquote>GFM：表格 / 任务列表 / 代码块</blockquote><pre>viewer.TaskWriteBackRequested += (_, e) =&gt;\n    e.Result.Markdown = e.Rendered;</pre>' +
-   '<table><tr><th>指标</th><th>说明</th></tr><tr><td>LastRenderMode</td><td>Incremental / Full</td></tr><tr><td>RealizedBlockCount</td><td>实例化块数</td></tr></table>' +
-   '<p><label><input type="checkbox" checked onchange="log2both(\'任务回写 → Markdown 已更新\',\'warn\')"> 采购需求评审</label>　<label><input type="checkbox" onchange="log2both(\'任务回写 → Markdown 已更新\',\'warn\')"> 供应商比价</label></p></div>';
- }
-});
-
-REG("md-lite", {
- zh: {
-  t: "Markdown Lite",
-  d: "与完整包同名同命名空间的轻量渲染器：只依赖 Avalonia + Markdig，不引入 Semi 与重型能力栈，换包不换代码。",
-  f: ["轻量", "零重依赖", "同命名空间"]
- },
- xaml: '<PackageReference Include="CodeWF.Avalonia.Markdown.Lite" />\n\n<codewf:MarkdownThemes />',
- render: function () {
-  return '<div class="demo"><div class="mdr"><h3>Lite 渲染</h3><p>常规元素全支持：标题 / 段落 / 列表 / 引用 / 表格 / <code>行内代码</code>。</p>' +
-   '<ul><li>不依赖 Semi.Avalonia</li><li>嵌入更干净</li></ul></div>' +
-   '<div class="hint">Lite 传递依赖 Controls 与 Lang；这两个包本体也不依赖 Semi。</div></div>';
- }
-});
-
-REG("md-editor", {
- zh: {
-  t: "源码编辑器",
-  d: "AvaloniaEdit 宿主：语法着色、约 40 项动作（ExecuteAsync）、自动配对、行号。此处可编辑，改动后关闭页签会触发未保存确认。",
-  f: ["语法着色", "40 项动作", "自动配对"]
- },
- xaml: '<codewf:MarkdownEditorView\n    Markdown="{Binding Source}"\n    ShowLineNumbers="True" />',
- cs: 'await editor.ExecuteAsync(MarkdownEditorAction.Bold);\n\nvar caret = editor.CaretPosition;  // 元组属性，不可解构\nstatusBar.Text = $"行 {caret.Line} 列 {caret.Column}";',
- render: function () {
-  return '<div class="demo"><div class="row" style="margin-bottom:8px">' +
-   '<button class="btn" style="font-weight:800" title="加粗（Ctrl+B）" onclick="edTaWrap(\'**\')">B</button>' +
-   '<button class="btn" style="font-style:italic" title="斜体（Ctrl+I）" onclick="edTaWrap(\'*\')">I</button>' +
-   '<button class="btn" style="font-family:Consolas" title="行内代码" onclick="edTaWrap(\'`\')">&lt;/&gt;</button>' +
-   '<button class="btn" title="二级标题" onclick="edTaPre(\'## \')">H2</button>' +
-   '<button class="btn" title="无序列表" onclick="edTaPre(\'- \')">列表</button>' +
-   '<button class="btn" title="任务列表" onclick="edTaPre(\'- [ ] \')">任务</button>' +
-   '<button class="btn" title="引用" onclick="edTaPre(\'&gt; \')">引用</button>' +
-   '<button class="btn" title="分隔线" onclick="edTaPre(\'---\')">分隔</button></div>' +
-   '<textarea id="edTa" oninput="markDirty(\'md-editor\')" style="width:100%;height:180px;font-family:Consolas,monospace;font-size:12px;border:1px solid var(--bd);border-radius:6px;padding:10px;background:var(--bg);color:var(--tx)"># 演示文档' + NL + NL + '正文内容。' + NL + '</textarea>' +
-   '<div class="hint">ExecuteAsync(MarkdownEditorAction) 约 40 项动作 · CaretPosition 元组属性（不可解构）</div></div>';
- }
-});
-window.edTaWrap = function (w) {
- var ta = $("edTa"); if (!ta) return;
- var s = ta.selectionStart, e = ta.selectionEnd;
- ta.value = ta.value.slice(0, s) + w + ta.value.slice(s, e) + w + ta.value.slice(e);
- ta.selectionStart = ta.selectionEnd = s + w.length;
- markDirty("md-editor"); log2both("动作：包裹 " + w);
-};
-window.edTaPre = function (p) {
- var ta = $("edTa"); if (!ta) return;
- var s = ta.selectionStart;
- ta.value = ta.value.slice(0, s) + p + ta.value.slice(s);
- ta.selectionStart = ta.selectionEnd = s + p.length;
- markDirty("md-editor"); log2both("动作：插入 " + p);
-};
-
-
-REG("md-export", {
- zh: {
-  t: "导出与复制",
-  d: "MarkdownDocumentExporter：PNG / PDF / Word / HTML；MarkdownHtmlClipboard 一键公众号 / 知乎 / 掘金富文本。导出为长任务，带进度与取消。",
-  f: ["PNG", "PDF", "Word", "公众号复制"]
- },
- cs: 'MarkdownDocumentExporter.ExportMarkdown(\n    md, ExportKind.Pdf, "Simple", "out.pdf");\n\nawait MarkdownHtmlClipboard.SetHtmlAsync(\n    md, CopyKind.Wechat, "Simple");',
- render: function () {
-  return '<div class="demo"><h4>导出目标（ExportKind）</h4><div class="row" style="margin-bottom:4px">' +
-   ["Png｜PNG", "Pdf｜PDF", "Word｜Word", "Html｜HTML"].map(function (x) {
-    return '<span class="ftg" style="margin:0"><span style="padding:2px 10px">' + x + "</span></span>";
-   }).join("") + '</div>' +
-   '<div class="hint" style="margin-top:0">CopyKind：Wechat / Zhihu / Juejin 富文本一键入剪贴板 · 主题与字号可作为参数</div></div>' +
-   '<div class="demo"><h4>动作</h4><div class="row">' +
-   '<button class="btn pri" id="wxExport" onclick="wxExport()">开始导出（长任务 · 可取消）</button>' +
-   '<button class="btn" onclick="log2both(\'MarkdownDocumentExporter.ExportMarkdown(md, ExportKind.Pdf, &quot;Simple&quot;, &quot;out.pdf&quot;)\')">ExportMarkdown</button>' +
-   '<button class="btn" onclick="log2both(\'MarkdownHtmlClipboard.SetHtmlAsync(md, CopyKind.Wechat, &quot;Simple&quot;)\')">公众号复制</button></div>' +
-   '<div class="barwrap" id="wxBar" style="display:none;margin-top:12px"><i></i></div>' +
-   '<div class="hint" id="wxMsg">导出 / 压缩 / 下载这类长任务统一给进度条 + 取消；失败给错误卡片（本页用示意数据）。</div></div>';
- }
-});
-var _wxTimer = null;
-window.wxExport = function () {
- var bar = $("wxBar"), msg = $("wxMsg"), btn = $("wxExport");
- if (!bar) return;
- bar.style.display = "block";
- bar.querySelector("i").style.width = "0%";
- if (msg) msg.textContent = tt("busy.export");
- if (btn) btn.disabled = true;
- var i = 0;
- if (_wxTimer) clearInterval(_wxTimer);
- _wxTimer = setInterval(function () {
-  i += 7;
-  bar.querySelector("i").style.width = Math.min(i, 100) + "%";
-  if (i >= 100) {
-   clearInterval(_wxTimer); _wxTimer = null;
-   if (msg) msg.textContent = tt("busy.done");
-   if (btn) btn.disabled = false;
-   notify("ok", tt("nc.ok"), tt("toast.exported"));
-   log2both("长任务完成（原型示意）", "info");
-  }
- }, 120);
-};
 
 /* ═══════════════ 组件页：DataGrid / PropertyGrid ═══════════════ */
 REG("datagrid", {
@@ -1200,7 +1021,6 @@ function renderDoc(id) {
    if (ACTIVE_DOC !== id) return;
    var t2 = $("seg-" + id); if (!t2) return;
    renderInto(id, t2);
-   if (id === "md-viewer") applyMdTheme();
   }, 90);
  } else {
   target.innerHTML = '<div class="smcode">' + esc(pg[seg]) + "</div>";

@@ -6564,12 +6564,6 @@ function confirmDlg(title, body, onYes, danger) {
 }
 function closeDlg() { $("dlgm").classList.remove("on"); _dlgYes = null; }
 
-/* ═══ Markdown 排版主题（与 ArticleTypographyCatalog 的 12 套一致，规则 §9） ═══ */
-var MD_THEMES = ["Basic", "Simple", "InkBlack", "GeekBlack", "OrangeHeart", "RedScarlet",
- "ColorfulPurple", "Yamabuki", "TechnologyBlue", "LanQing", "TenderGreen", "WeChatFormat"];
-/* 字号由排版主题决定（验证「外观字号令牌被排版主题接管」） */
-var MD_THEME_FS = { Basic: "13px", GeekBlack: "12.5px", TechnologyBlue: "13.5px", WeChatFormat: "15px" };
-
 /* Navigation is generated from the API catalog. */
 var CATALOG = window.CodeWFDemoCatalog.map(function (group) {
  return { id:group.id, icon:group.icon, items:group.items.map(function (entry) { return {id:entry.prototypeId}; }) };
@@ -6645,7 +6639,7 @@ REG("welcome", {
  zh: {
   t: "欢迎总览",
   d: "本演示台自身即自研控件的综合实例：外壳是 CodeWFWindow、页签是梯形 TabStrip、右栏是 PropertyGrid、底栏是 LogView、文案走 Lang、内容区是 Dock 工作区。",
-  f: ["24 页", "3 个场景工作流", "6 色板", "中英双语"]
+  f: ["3 个场景工作流", "6 色板", "中英双语"]
  },
  render: function () {
   return '<div class="demo"><h4>快速开始</h4>' +
@@ -6656,65 +6650,17 @@ REG("welcome", {
    '<tr><td>桌面外壳 / 引导 / 状态</td><td>Controls</td><td>组件库·输入 / 呈现 / 基础设施</td></tr>' +
    '<tr><td>数据表增强</td><td>DataGrid</td><td>数据工作台</td></tr>' +
    '<tr><td>多文档工作区</td><td>Dock</td><td>文档工作区</td></tr>' +
-   '<tr><td>Markdown 写作与导出</td><td>Markdown.Lite / Markdown</td><td>Markdown 工作区</td></tr>' +
+
    '<tr><td>日志与本地化</td><td>Log / Lang</td><td>组件库·基础设施</td></tr>' +
    '</tbody></table></div>' +
    '<div class="demo"><h4>页面索引</h4><table class="dg" style="cursor:default"><tbody>' + pageIndexHtml() + "</tbody></table>" +
-   '<div class="hint">共 24 页：3 个场景工作流 + 21 个组件页，全部可在 Ribbon 页签或导航树里打开。</div></div>' +
+   '<div class="hint">全部页面均可在 Ribbon 页签或导航树里打开。</div></div>' +
    '<div class="demo"><h4>近期更新</h4><table class="dg" style="cursor:default"><tbody>' +
    '<tr><td>v12.1.4.4</td><td>Dock 主题去掉 Fluent 依赖，改以 Dock Simple 为基座并换装 Semi 皮肤</td></tr>' +
    '<tr><td>v12.1.4.3</td><td>高对比色板按变体落地 Semi 语义色，修复深色变体文字看不清</td></tr>' +
    '<tr><td>v12.1.4.2</td><td>Markdown 文档块虚拟化保留重块控件并补滚动锚点补偿</td></tr>' +
    '</tbody></table></div>' +
    '<div class="demo"><h4>快捷键</h4><div class="hint" style="margin:0">Ctrl+K 命令面板 · Ctrl+S 保存布局 · Ctrl+L 语言 · F1 引导 · 双击 Ribbon 页签折叠命令区</div></div>';
- }
-});
-
-/* ═══════════════ 场景一：Markdown 工作区（写作全流程） ═══════════════ */
-var FLOW_WRITE_STEPS = ["打开文档", "编辑", "实时预览", "导出 / 复制", "任务回写"];
-var flowWriteStep = 0, flowWriteSub = "md-viewer";
-var FLOW_WRITE_SUB = ["md-viewer", "md-editor", "md-live", "md-export", "md-viewer"];
-REG("flow-write", {
- zh: {
-  t: "写作全流程",
-  d: "一个完整的 Markdown 工作流：打开 → 编辑 → 实时预览 → 导出 / 公众号复制 → 任务勾选回写源文。子标签直接复用组件页，避免重复实现。",
-  f: ["5 步工作流", "子标签复用组件页", "任务回写"]
- },
- props: [
-  { id: "md.theme", label: "排版主题", type: "combo", options: MD_THEMES.slice(0, 8), value: mdTheme,
-   apply: function (v) { mdTheme = v; applyMdTheme(); log2both("TypographyTheme = " + v); } },
-  { id: "md.wrap", label: "软换行", type: "bool", value: true, apply: function (v) { log2both("SoftLineBreak = " + v); } }
- ],
- render: function (el) {
-  el.innerHTML = '<div class="flow" id="fwFlow">' + FLOW_WRITE_STEPS.map(function (s, i) {
-   return '<span class="st' + (i === flowWriteStep ? " cur" : i < flowWriteStep ? " done" : "") + '" data-s="' + i +
-    '" title="' + esc(s) + '"><span class="n">' + (i < flowWriteStep ? "✓" : i + 1) + '</span>' + esc(s) +
-    '<span class="si">' + '<svg class="svgic s14" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg>' + "</span></span>";
-  }).join("") + "</div>" +
-   '<div class="subtabs" id="fwSub">' +
-   [["md-viewer", "渲染"], ["md-editor", "源码编辑"], ["md-live", "实时编辑"], ["md-export", "导出 / 复制"]].map(function (t) {
-    return '<button data-p="' + t[0] + '"' + (t[0] === flowWriteSub ? ' class="on"' : "") + ">" + t[1] + "</button>";
-   }).join("") + "</div>" +
-   '<div id="fwBody"></div>' +
-   '<div class="demo"><h4>工作流状态</h4><div class="hint" id="fwState" style="margin:0"></div></div>';
-  el.querySelectorAll("#fwFlow .st").forEach(function (n) {
-   n.onclick = function () {
-    flowWriteStep = +n.dataset.s; flowWriteSub = FLOW_WRITE_SUB[flowWriteStep];
-    log2both("工作流步骤 " + (flowWriteStep + 1) + "：" + FLOW_WRITE_STEPS[flowWriteStep]);
-    renderInto("flow-write", $("seg-flow-write") || el);
-   };
-  });
-  el.querySelectorAll("#fwSub button").forEach(function (n) {
-   n.onclick = function () {
-    flowWriteSub = n.dataset.p;
-    log2both("工作流子标签：" + pt(flowWriteSub));
-    document.querySelectorAll("#fwSub button").forEach(function (x) { x.classList.toggle("on", x === n); });
-    renderInto(flowWriteSub, el.querySelector("#fwBody"));
-   };
-  });
-  var st = el.querySelector("#fwState");
-  if (st) st.textContent = "当前步骤 " + (flowWriteStep + 1) + " / 5 · " + FLOW_WRITE_STEPS[flowWriteStep] + " · 子标签 " + pt(flowWriteSub);
-  renderInto(flowWriteSub, el.querySelector("#fwBody"));
  }
 });
 
@@ -6854,131 +6800,6 @@ REG("flow-docs", {
   }
  }
 });
-
-/* ═══════════════ 组件页：MarkdownViewer / Lite / 编辑器 / 实时编辑 / 导出 ═══════════════ */
-var mdTheme = "GeekBlack";
-function applyMdTheme() {
- var m = document.querySelector(".mdr"); if (!m) return;
- m.style.fontSize = MD_THEME_FS[mdTheme] || "13px";
-}
-REG("md-viewer", {
- zh: {
-  t: "MarkdownViewer",
-  d: "后台线程解析 + 增量渲染 + 块级虚拟化；排版主题即时切换（共 12 套），正文字号由排版主题接管；任务勾选回写 Markdown 源文。",
-  f: ["增量渲染", "块级虚拟化", "12 主题", "任务回写"]
- },
- xaml: '<codewf:MarkdownViewer\n    Markdown="{Binding Content}"\n    TypographyTheme="{Binding Theme}"\n    EnableVirtualization="True" />',
- cs: 'viewer.TaskWriteBackRequested += (_, e) =>\n    e.Result.Markdown = e.Rendered;\n\nMarkdownThemes.OverrideTypographyResources(\n    Application.Current, MarkdownTypographyThemes.GeekBlack);',
- props: [
-  { id: "tt", label: "排版主题", type: "combo", options: MD_THEMES.slice(0, 8), value: mdTheme,
-   apply: function (v) { mdTheme = v; applyMdTheme(); log2both("TypographyTheme = " + v); } },
-  { id: "fs", label: "字号（主题接管）", type: "range", min: 12, max: 20, value: 13, readonly: true,
-   apply: function (v) { var m = document.querySelector(".mdr"); if (m) m.style.fontSize = v + "px"; log2both("FontSize = " + v); } },
-  { id: "vw", label: "虚拟化", type: "bool", value: true, apply: function (v) { log2both("EnableVirtualization = " + v); } }
- ],
- render: function () {
-  return '<div class="mdr" data-tt="geek"><h2>增量渲染 + 块级虚拟化</h2><p>后台线程解析，只重绘<b>变更块</b>；长文档启用<b>虚拟化</b>。</p>' +
-   '<blockquote>GFM：表格 / 任务列表 / 代码块</blockquote><pre>viewer.TaskWriteBackRequested += (_, e) =&gt;\n    e.Result.Markdown = e.Rendered;</pre>' +
-   '<table><tr><th>指标</th><th>说明</th></tr><tr><td>LastRenderMode</td><td>Incremental / Full</td></tr><tr><td>RealizedBlockCount</td><td>实例化块数</td></tr></table>' +
-   '<p><label><input type="checkbox" checked onchange="log2both(\'任务回写 → Markdown 已更新\',\'warn\')"> 采购需求评审</label>　<label><input type="checkbox" onchange="log2both(\'任务回写 → Markdown 已更新\',\'warn\')"> 供应商比价</label></p></div>';
- }
-});
-
-REG("md-lite", {
- zh: {
-  t: "Markdown Lite",
-  d: "与完整包同名同命名空间的轻量渲染器：只依赖 Avalonia + Markdig，不引入 Semi 与重型能力栈，换包不换代码。",
-  f: ["轻量", "零重依赖", "同命名空间"]
- },
- xaml: '<PackageReference Include="CodeWF.Avalonia.Markdown.Lite" />\n\n<codewf:MarkdownThemes />',
- render: function () {
-  return '<div class="demo"><div class="mdr"><h3>Lite 渲染</h3><p>常规元素全支持：标题 / 段落 / 列表 / 引用 / 表格 / <code>行内代码</code>。</p>' +
-   '<ul><li>不依赖 Semi.Avalonia</li><li>嵌入更干净</li></ul></div>' +
-   '<div class="hint">Lite 传递依赖 Controls 与 Lang；这两个包本体也不依赖 Semi。</div></div>';
- }
-});
-
-REG("md-editor", {
- zh: {
-  t: "源码编辑器",
-  d: "AvaloniaEdit 宿主：语法着色、约 40 项动作（ExecuteAsync）、自动配对、行号。此处可编辑，改动后关闭页签会触发未保存确认。",
-  f: ["语法着色", "40 项动作", "自动配对"]
- },
- xaml: '<codewf:MarkdownEditorView\n    Markdown="{Binding Source}"\n    ShowLineNumbers="True" />',
- cs: 'await editor.ExecuteAsync(MarkdownEditorAction.Bold);\n\nvar caret = editor.CaretPosition;  // 元组属性，不可解构\nstatusBar.Text = $"行 {caret.Line} 列 {caret.Column}";',
- render: function () {
-  return '<div class="demo"><div class="row" style="margin-bottom:8px">' +
-   '<button class="btn" style="font-weight:800" title="加粗（Ctrl+B）" onclick="edTaWrap(\'**\')">B</button>' +
-   '<button class="btn" style="font-style:italic" title="斜体（Ctrl+I）" onclick="edTaWrap(\'*\')">I</button>' +
-   '<button class="btn" style="font-family:Consolas" title="行内代码" onclick="edTaWrap(\'`\')">&lt;/&gt;</button>' +
-   '<button class="btn" title="二级标题" onclick="edTaPre(\'## \')">H2</button>' +
-   '<button class="btn" title="无序列表" onclick="edTaPre(\'- \')">列表</button>' +
-   '<button class="btn" title="任务列表" onclick="edTaPre(\'- [ ] \')">任务</button>' +
-   '<button class="btn" title="引用" onclick="edTaPre(\'&gt; \')">引用</button>' +
-   '<button class="btn" title="分隔线" onclick="edTaPre(\'---\')">分隔</button></div>' +
-   '<textarea id="edTa" oninput="markDirty(\'md-editor\')" style="width:100%;height:180px;font-family:Consolas,monospace;font-size:12px;border:1px solid var(--bd);border-radius:6px;padding:10px;background:var(--bg);color:var(--tx)"># 演示文档' + NL + NL + '正文内容。' + NL + '</textarea>' +
-   '<div class="hint">ExecuteAsync(MarkdownEditorAction) 约 40 项动作 · CaretPosition 元组属性（不可解构）</div></div>';
- }
-});
-window.edTaWrap = function (w) {
- var ta = $("edTa"); if (!ta) return;
- var s = ta.selectionStart, e = ta.selectionEnd;
- ta.value = ta.value.slice(0, s) + w + ta.value.slice(s, e) + w + ta.value.slice(e);
- ta.selectionStart = ta.selectionEnd = s + w.length;
- markDirty("md-editor"); log2both("动作：包裹 " + w);
-};
-window.edTaPre = function (p) {
- var ta = $("edTa"); if (!ta) return;
- var s = ta.selectionStart;
- ta.value = ta.value.slice(0, s) + p + ta.value.slice(s);
- ta.selectionStart = ta.selectionEnd = s + p.length;
- markDirty("md-editor"); log2both("动作：插入 " + p);
-};
-
-
-REG("md-export", {
- zh: {
-  t: "导出与复制",
-  d: "MarkdownDocumentExporter：PNG / PDF / Word / HTML；MarkdownHtmlClipboard 一键公众号 / 知乎 / 掘金富文本。导出为长任务，带进度与取消。",
-  f: ["PNG", "PDF", "Word", "公众号复制"]
- },
- cs: 'MarkdownDocumentExporter.ExportMarkdown(\n    md, ExportKind.Pdf, "Simple", "out.pdf");\n\nawait MarkdownHtmlClipboard.SetHtmlAsync(\n    md, CopyKind.Wechat, "Simple");',
- render: function () {
-  return '<div class="demo"><h4>导出目标（ExportKind）</h4><div class="row" style="margin-bottom:4px">' +
-   ["Png｜PNG", "Pdf｜PDF", "Word｜Word", "Html｜HTML"].map(function (x) {
-    return '<span class="ftg" style="margin:0"><span style="padding:2px 10px">' + x + "</span></span>";
-   }).join("") + '</div>' +
-   '<div class="hint" style="margin-top:0">CopyKind：Wechat / Zhihu / Juejin 富文本一键入剪贴板 · 主题与字号可作为参数</div></div>' +
-   '<div class="demo"><h4>动作</h4><div class="row">' +
-   '<button class="btn pri" id="wxExport" onclick="wxExport()">开始导出（长任务 · 可取消）</button>' +
-   '<button class="btn" onclick="log2both(\'MarkdownDocumentExporter.ExportMarkdown(md, ExportKind.Pdf, &quot;Simple&quot;, &quot;out.pdf&quot;)\')">ExportMarkdown</button>' +
-   '<button class="btn" onclick="log2both(\'MarkdownHtmlClipboard.SetHtmlAsync(md, CopyKind.Wechat, &quot;Simple&quot;)\')">公众号复制</button></div>' +
-   '<div class="barwrap" id="wxBar" style="display:none;margin-top:12px"><i></i></div>' +
-   '<div class="hint" id="wxMsg">导出 / 压缩 / 下载这类长任务统一给进度条 + 取消；失败给错误卡片（本页用示意数据）。</div></div>';
- }
-});
-var _wxTimer = null;
-window.wxExport = function () {
- var bar = $("wxBar"), msg = $("wxMsg"), btn = $("wxExport");
- if (!bar) return;
- bar.style.display = "block";
- bar.querySelector("i").style.width = "0%";
- if (msg) msg.textContent = tt("busy.export");
- if (btn) btn.disabled = true;
- var i = 0;
- if (_wxTimer) clearInterval(_wxTimer);
- _wxTimer = setInterval(function () {
-  i += 7;
-  bar.querySelector("i").style.width = Math.min(i, 100) + "%";
-  if (i >= 100) {
-   clearInterval(_wxTimer); _wxTimer = null;
-   if (msg) msg.textContent = tt("busy.done");
-   if (btn) btn.disabled = false;
-   notify("ok", tt("nc.ok"), tt("toast.exported"));
-   log2both("长任务完成（原型示意）", "info");
-  }
- }, 120);
-};
 
 /* ═══════════════ 组件页：DataGrid / PropertyGrid ═══════════════ */
 REG("datagrid", {
@@ -7617,7 +7438,6 @@ function renderDoc(id) {
    if (ACTIVE_DOC !== id) return;
    var t2 = $("seg-" + id); if (!t2) return;
    renderInto(id, t2);
-   if (id === "md-viewer") applyMdTheme();
   }, 90);
  } else {
   target.innerHTML = '<div class="smcode">' + esc(pg[seg]) + "</div>";
@@ -8108,7 +7928,7 @@ boot();
   var panels = toolkit ? [
     ["events","消息流","flow-runtime"], ["packet","协议字节","net-packet"], ["pipeline","文件流水线","flow-lab"]
   ] : [
-    ["markdown","实时 Markdown","flow-write"], ["table","自然排序","datagrid"], ["dock","Dock 布局","flow-docs"]
+    ["table","自然排序","datagrid"], ["dock","Dock 布局","flow-docs"]
   ];
   var capabilities = toolkit ? [
     ["bus","事件驱动","Pub/Sub、Command / Query、特性扫描注册。","EventBus · Prism · AspNetCore"],
@@ -8118,7 +7938,6 @@ boot();
     ["image-icon","图像工具链","缩放、水印、格式转换、ICO 与二维码。","Image"],
     ["log-core","运行期观测","文件轮转、UI 日志流、MEL 桥接与核心工具。","Logging · Microsoft · Core"]
   ] : [
-    ["flow-write","Markdown 工作区","从源码编辑、实时预览到多格式导出。","Markdown · Markdown.Lite"],
     ["flow-data","数据交互","三态自然排序、列配置与树形属性编辑。","DataGrid · TreeDataGrid"],
     ["flow-docs","多文档工作区","停靠、面板显隐与梯形文档页签。","Dock · Controls"],
     ["transfer","输入与选择","搜索列表、穿梭框与 If / Switch 标记扩展。","Controls"],
@@ -8126,7 +7945,6 @@ boot();
     ["log","日志与国际化","实时日志、桌面通知与强类型语言资源。","Log · Lang · Lang.Generator"]
   ];
   var selected = panels[0][0];
-  var markdown = "# 让界面更有表现力\n\n用 **CodeWF.Avalonia** 构建桌面体验。\n\n- 实时 Markdown 预览\n- 三态排序与属性编辑\n- `Dock` 多文档工作区";
   var tableRows = [ ["item10","Markdown","就绪"], ["item2","DataGrid","就绪"], ["item1","Dock","就绪"], ["item100","PropertyGrid","就绪"] ];
   var sortState = 0;
   var dockNav = true, dockLog = true;
@@ -8143,10 +7961,10 @@ boot();
       '<div class="studio-sigil" aria-hidden="true"><span>' + (toolkit ? '{ }' : '.NET') + '</span></div></div>' +
       '<div class="studio-meta"><span><b>' + (toolkit ? '11' : '9') + '</b> NUGET PACKAGES</span><span><b>' + allPageIds().length + '</b> ' + label('交互页面','DEMO PAGES') + '</span><span><b>.NET 10</b> / ' + (toolkit ? 'NO UI DEPENDENCY' : 'AVALONIA 12') + '</span><span>MIT LICENSE</span></div>' +
       '<section class="studio-stage" aria-label="' + label('能力体验','Capability preview') + '"><div class="studio-stage-head"><strong>' + label('动手试一试','Try it live') + '</strong><small>INTERACTIVE PREVIEW</small><div class="studio-tabs" role="tablist" aria-label="' + label('演示选择','Preview selection') + '">' +
-      panels.map(function (p,i) { var ens = toolkit ? ['Message flow','Protocol bytes','File pipeline'] : ['Live Markdown','Natural sort','Dock layout']; return '<button type="button" id="studio-tab-' + p[0] + '" role="tab" aria-controls="studio-sandbox" aria-selected="' + (p[0] === selected) + '" data-stage="' + p[0] + '">' + label(p[1],ens[i]) + '</button>'; }).join('') +
+      panels.map(function (p,i) { var ens = toolkit ? ['Message flow','Protocol bytes','File pipeline'] : ['Natural sort','Dock layout']; return '<button type="button" id="studio-tab-' + p[0] + '" role="tab" aria-controls="studio-sandbox" aria-selected="' + (p[0] === selected) + '" data-stage="' + p[0] + '">' + label(p[1],ens[i]) + '</button>'; }).join('') +
       '</div></div><div class="studio-sandbox" id="studio-sandbox" role="tabpanel" aria-labelledby="studio-tab-' + selected + '"></div><div class="studio-stage-foot"><span id="studio-stage-hint"></span><button type="button" class="studio-link" id="studio-open-full">' + label('打开完整演示','Open full demo') + ' ↗</button></div></section>' +
       '<div class="studio-section-label"><span>' + label('从能力出发','Explore the capabilities') + '</span><small>EXPLORE THE LIBRARIES ↙</small></div>' +
-      '<div class="studio-capabilities">' + capabilities.map(function (c,i) { var titles = toolkit ? ['Event-driven apps','Distributed messaging','Binary protocols','Files & data','Image toolchain','Runtime observability'] : ['Markdown workspace','Data interaction','Document workspace','Input & selection','Guides & status','Logging & localization']; return '<button type="button" class="studio-capability" data-open="' + c[0] + '"><span class="studio-icon">' + iconSvg(c[0],'s18') + '</span><span class="studio-arrow">↗</span><h3>' + label(c[1],titles[i]) + '</h3><p>' + label(c[2],c[3]) + '</p><small>' + c[3] + '</small></button>'; }).join('') + '</div>' +
+      '<div class="studio-capabilities">' + capabilities.map(function (c,i) { var titles = toolkit ? ['Event-driven apps','Distributed messaging','Binary protocols','Files & data','Image toolchain','Runtime observability'] : ['Data interaction','Document workspace','Input & selection','Guides & status','Logging & localization']; return '<button type="button" class="studio-capability" data-open="' + c[0] + '"><span class="studio-icon">' + iconSvg(c[0],'s18') + '</span><span class="studio-arrow">↗</span><h3>' + label(c[1],titles[i]) + '</h3><p>' + label(c[2],c[3]) + '</p><small>' + c[3] + '</small></button>'; }).join('') + '</div>' +
       '<div class="studio-install"><code id="studio-install-command">dotnet add package CodeWF.' + (toolkit ? 'Toolkit.EventBus' : 'Avalonia.Controls') + '</code><button type="button" class="studio-link" id="studio-copy">' + label('复制安装命令','Copy install command') + ' ⧉</button></div>' +
       '<p class="studio-note">' + label('浏览器交互示意 · 完整页面展示对应 .NET API；配色遵循高对比令牌规则（8 套）。','Browser interaction previews · Full demos show the .NET APIs. Colors follow the high-contrast token rules (8 palettes).') + '</p></div>';
   }
@@ -8167,17 +7985,7 @@ boot();
     document.querySelectorAll('[data-stage]').forEach(function (b) { b.setAttribute('aria-selected',String(b.dataset.stage === selected)); });
     box.setAttribute('aria-labelledby','studio-tab-' + selected);
     var hint = $('studio-stage-hint');
-    if (selected === 'markdown') {
-      box.innerHTML = '<div class="studio-split"><div><div class="studio-label">SOURCE <span>MarkdownEditorView</span></div><textarea aria-label="Markdown 源码" class="studio-editor" id="studio-md"></textarea></div><div><div class="studio-label">PREVIEW <span>MarkdownViewer</span></div><div class="studio-preview" id="studio-md-preview"></div></div></div>';
-      $('studio-md').value = markdown;
-      function preview() {
-        markdown = $('studio-md').value;
-        var lines = esc(markdown).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').split('\n');
-        $('studio-md-preview').innerHTML = lines.map(function (line) { if (line.startsWith('# ')) return '<h3>' + line.slice(2) + '</h3>'; if (line.startsWith('- ')) return '<div>• ' + line.slice(2) + '</div>'; return '<div>' + (line || '<br>') + '</div>'; }).join('');
-      }
-      $('studio-md').oninput = preview; preview();
-      hint.textContent = label('编辑左侧源码，右侧即时更新','Edit the source to update the preview');
-    } else if (selected === 'table') {
+    if (selected === 'table') {
       var rows = tableRows.slice();
       if (sortState) rows.sort(function (a,b) { return sortState === 1 ? a[0].localeCompare(b[0],undefined,{numeric:true}) : b[0].localeCompare(a[0],undefined,{numeric:true}); });
       box.innerHTML = '<div class="studio-label">DATAGRID <span>' + label('升序 → 降序 → 原始顺序','Ascending → descending → original order') + '</span></div><table class="studio-table"><thead><tr><th><button type="button" id="studio-sort">' + label('名称','Name') + ' ' + (sortState === 1 ? '↑' : sortState === 2 ? '↓' : '↕') + '</button></th><th>' + label('模块','Module') + '</th><th>' + label('状态','Status') + '</th></tr></thead><tbody>' + rows.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td><span class="studio-pill">' + label(r[2],'Ready') + '</span></td></tr>'; }).join('') + '</tbody></table>';
@@ -8620,26 +8428,6 @@ boot();
     return output.join('');
   }
   window.CodeWFRenderMarkdownSample = renderSample;
-  register('md-viewer', {props:typographyProperties('md-viewer',MD_THEMES),xaml:'<codewf:MarkdownViewer Markdown="{Binding AppliedMarkdown}"\n  TypographyTheme="{Binding Theme}" TypographySize="{Binding Size}" />', render:function(el) {
-    var source=samples().viewer;
-    el.classList.add('catalog-markdown-page');
-    el.innerHTML='<details class="catalog-markdown-input"><summary>'+esc(text('Input'))+'</summary><textarea class="catalog-input"></textarea><div class="row">'+['apply','append','reset'].map(function(action){return '<button class="btn" data-markdown-action="'+action+'">'+esc(samples()[action])+'</button>';}).join('')+'</div></details><div class="catalog-markdown-basic"></div>';
-    var input=el.querySelector('textarea'), viewer=el.querySelector('.catalog-markdown-basic'); input.value=source;
-    function paint(){
-      viewer.innerHTML=renderSample(source);
-      applyTypography('md-viewer');
-      viewer.querySelectorAll('[data-task-line]').forEach(function(task){task.onchange=function(){var lines=source.replace(/\r\n/g,'\n').split('\n');lines[task.dataset.taskLine]=lines[task.dataset.taskLine].replace(/\[[ xX]\]/,task.checked?'[x]':'[ ]');source=lines.join('\n');input.value=source;markDirty('md-viewer');};});
-    }
-    el.querySelectorAll('[data-markdown-action]').forEach(function(button){button.onclick=function(){var action=button.dataset.markdownAction;source=action==='reset'?samples().viewer:action==='append'?source+'\n\n'+text('LiveParagraph'):input.value;input.value=source;paint();};});
-    paint();
-  }});
-  register('md-lite', {props:typographyProperties('md-lite',['Basic','Simple','GeekBlack','WeChatFormat']),xaml:'<codewf:MarkdownViewer Markdown="{Binding SampleMarkdown}" />', render:function(el) {el.innerHTML='<div class="catalog-markdown-basic">'+renderSample(samples().lite)+'</div>';applyTypography('md-lite');}});
-  var originalEditorRender = PROTO['md-editor'].render;
-  PROTO['md-editor'].render = function(el) {
-    el.innerHTML = originalEditorRender(el);
-    var input = el.querySelector('#edTa');
-    if (input) { input.value = samples().editor; input.style.fontSize = '15px'; input.style.height = '300px'; }
-  };
   register('status-card',{xaml:'<codewf:StatusCard Width="180" Height="80" Kind="Info" TopText="INFO"\n  BottomText="{codewf:I18n Demo.Catalog.StatusSampleInfo}" />',render:function(el){
     var levels=['Debug','Info','Warn','Error','Fatal'];
     el.innerHTML='<div class="demo"><h4>StatusCard</h4><div class="row catalog-status-row">'+levels.map(function(level){return '<div class="catalog-status card" data-level="'+level+'"><strong>'+level.toUpperCase()+'</strong><span>'+esc(text('StatusSample'+level))+'</span></div>';}).join('')+'</div></div><div class="demo"><h4>Kind / IconWidth</h4><select>'+levels.map(function(l){return '<option'+(l==='Info'?' selected':'')+'>'+l+'</option>';}).join('')+'</select><div class="catalog-status card catalog-driven" data-level="Info"><strong>DRIVEN</strong><span>'+esc(text('StatusDriven'))+'</span></div></div>';
@@ -8664,33 +8452,6 @@ boot();
     el.querySelector('[data-toggle]').onclick=function(){expanded=!expanded;update();};
     el.querySelectorAll('input').forEach(function(input){input.oninput=update;});update();
   }});
-  register('md-live',{xaml:'<codewf:MarkdownLiveEditorView Markdown="{Binding Doc}" />',cs:'liveEditor.FocusBlock(0);\nawait liveEditor.ExecuteAsync(MarkdownEditorAction.Table);',render:function(el){
-    var blocks=samples().live.replace(/\r\n/g,'\n').split(/\n\n+/), active=-1;
-    el.innerHTML='<div class="demo"><p>'+esc(text('LiveHint'))+'</p><div class="row"><button class="btn" data-insert>'+esc(text('LiveInsert'))+'</button><button class="btn" data-focus>'+esc(text('LiveFocus'))+'</button><button class="btn" data-table>'+esc(text('LiveTable'))+'</button></div><div class="catalog-live mdr"></div></div>';
-    function renderBlock(s){
-      return renderSample(s);
-    }
-    function paint(focus){
-      el.querySelector('.catalog-live').innerHTML=blocks.map(function(s,i){return '<div class="catalog-block" tabindex="0" data-block="'+i+'">'+(i===active?'<textarea>'+esc(s)+'</textarea>':renderBlock(s))+'</div>';}).join('');
-      el.querySelectorAll('[data-block]').forEach(function(block){
-        var i=Number(block.dataset.block), input=block.querySelector('textarea');
-        if(input){input.oninput=function(){blocks[i]=input.value;markDirty('md-live');};input.onblur=function(){active=-1;paint();};if(focus)input.focus();}
-        else {block.onclick=function(){active=i;paint(true);};block.onkeydown=function(e){if(e.key==='Enter'){active=i;paint(true);}};}
-      });
-    }
-    el.querySelector('[data-focus]').onclick=function(){active=0;paint(true);};
-    el.querySelector('[data-insert]').onclick=function(){blocks.push(text('LiveParagraph'));active=blocks.length-1;paint(true);};
-    el.querySelector('[data-table]').onclick=function(){blocks.push('| Name | Value |\n| --- | --- |\n| CodeWF | 42 |');active=blocks.length-1;paint(true);};
-    paint();
-  }});
-  var originalPropertyGrid = renderPGrid;
-  renderPGrid = function(id) {
-    originalPropertyGrid(id);
-    if(id!=='md-viewer' && id!=='md-lite')return;
-    var panel=$('pGrid');
-    if($('pgCnt'))$('pgCnt').textContent='('+PROTO[id].props.length+')';
-    var note=document.createElement('p');note.className='hint';note.textContent=text('Preview');panel.appendChild(note);
-  };
   if(ACTIVE_DOC) renderDoc(ACTIVE_DOC);
 })();
 
@@ -8864,31 +8625,15 @@ boot();
     var observer=new ResizeObserver(function(){if(!box.isConnected){observer.disconnect();return;}paint();});observer.observe(box);paint();
   });
 
-  // Markdown 复用已有的源文、排版度量和渲染器，增加真实参数联动。
-  function typography(id){each(id,function(el){var page=el.querySelector('.catalog-markdown-basic,.catalog-live,.catalog-export-preview');if(!page)return;var theme=PROTO[id].props.find(function(p){return p.id==='typography-theme';}),size=PROTO[id].props.find(function(p){return p.id==='typography-size';}),tokens=window.CodeWFMarkdownTypography,metrics=Object.assign({},tokens.Common,tokens[theme?.value||'Basic'],size?.value==='Small'?tokens.CompactTypographyResources:{});page.dataset.typographyTheme=theme?.value||'Basic';page.style.fontSize=metrics.CodeWFMarkdownParagraphFontSize+'px';page.style.lineHeight=metrics.CodeWFMarkdownParagraphLineHeight+'px';page.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach(function(heading){heading.style.fontSize=metrics['CodeWFMarkdownHeading'+heading.tagName.slice(1)+'FontSize']+'px';});page.querySelectorAll('pre').forEach(function(code){code.style.fontSize=metrics.CodeWFMarkdownCodeBlockFontSize+'px';});});}
-  ['md-viewer','md-lite'].forEach(function(id){PROTO[id].props.forEach(function(p){p.apply=function(){typography(id);};});});
-  function markdownVirtualization(){each('md-viewer',function(el){var page=el.querySelector('.catalog-markdown-basic'),enabled=value('md-viewer','md.virtual')&&page.children.length>=value('md-viewer','md.threshold');Array.from(page.children).forEach(function(block){block.style.contentVisibility=enabled?'auto':'visible';block.style.containIntrinsicSize=enabled?'auto 48px':'none';});page.dataset.virtualizing=String(enabled);});}
-  PROTO['md-viewer'].props.push(prop('md.virtual','MarkdownViewer','Virtualization','bool',true,{apply:markdownVirtualization}),number('md.threshold','MarkdownViewer','VirtualizationThreshold',40,1,2000,markdownVirtualization));
-  function editorEffect(){each('md-editor',function(el){var input=el.querySelector('#edTa');input.style.fontSize=value('md-editor','editor.font')+'px';el.querySelector('.catalog-editor-lines').hidden=!value('md-editor','editor.lines');el.querySelector('.catalog-editor-lines').style.fontSize=input.style.fontSize;});}
-  PROTO['md-editor'].props=[number('editor.font','MarkdownEditor','EditorFontSize',15,10,28,editorEffect),prop('editor.lines','MarkdownEditor','ShowLineNumbers','bool',true,{apply:editorEffect}),prop('editor.pair','MarkdownEditor','AutoPairing','bool',true)];
-  function editorRender(el){var commands=['Bold','Italic','InlineCode','Heading2','Table','TaskList','CodeBlock','Quote'];el.innerHTML='<div class="demo"><div class="row">'+commands.map(function(command){return '<button class="btn" data-command="'+command+'">'+esc(view('MarkdownEditor',command))+'</button>';}).join('')+'</div><textarea id="edTa" style="height:300px">'+esc(window.CodeWFMarkdownSamples[LANG].editor)+'</textarea></div>';var input=el.querySelector('#edTa');el.querySelectorAll('[data-command]').forEach(function(button){button.onclick=function(){var command=button.dataset.command,start=input.selectionStart,end=input.selectionEnd,selected=input.value.slice(start,end),markers={Bold:'**',Italic:'*',InlineCode:'`'},prefixes={Heading2:'## ',TaskList:'- [ ] ',Quote:'> '},insert=markers[command]?markers[command]+selected+markers[command]:prefixes[command]?prefixes[command]+selected:command==='Table'?'| Name | Value |\n| --- | --- |\n| CodeWF | 42 |':'```\n'+selected+'\n```';input.setRangeText(insert,start,end,'end');input.dispatchEvent(new Event('input'));input.focus();markDirty('md-editor');};});}
-  replace('md-editor',function(el){editorRender(el);var input=el.querySelector('#edTa'),shell=document.createElement('div'),lines=document.createElement('pre');shell.className='catalog-editor-shell';lines.className='catalog-editor-lines';input.before(shell);shell.append(lines,input);function paintLines(){lines.textContent=input.value.split('\n').map(function(_,index){return index+1;}).join('\n');}input.addEventListener('input',paintLines);input.addEventListener('scroll',function(){lines.scrollTop=input.scrollTop;});input.addEventListener('keydown',function(event){if(!value('md-editor','editor.pair')||event.ctrlKey||event.metaKey||!['*','`','[','('].includes(event.key))return;event.preventDefault();var close={'*':'*','`':'`','[':']','(':')'}[event.key],start=input.selectionStart,end=input.selectionEnd;input.setRangeText(event.key+input.value.slice(start,end)+close,start,end,'select');input.selectionStart=start+1;input.selectionEnd=end+1;paintLines();markDirty('md-editor');});paintLines();editorEffect();});
-  function liveEffect(){typography('md-live');each('md-live',function(el){el.style.setProperty('--live-editor-font',value('md-live','live.font')+'px');});}
-  PROTO['md-live'].props=[choice('typography-theme','MarkdownLiveEditor','TypographyTheme',['Basic','TenderGreen','GeekBlack','OrangeHeart','WeChatFormat'],'TenderGreen',liveEffect),number('live.font','MarkdownLiveEditor','EditorFontSize',15,10,28,liveEffect)];
-  PROTO['md-export'].props=[choice('typography-theme','MarkdownExport','ExportTheme',['Basic','Simple','GeekBlack','WeChatFormat'],'WeChatFormat',function(){typography('md-export');}),choice('typography-size','MarkdownExport','TypographySize',['Normal','Small'],'Normal',function(){typography('md-export');}),choice('export.destination','MarkdownExport','CopyDestination',['WeChat','Zhihu','Juejin'],'WeChat',function(selected){each('md-export',function(el){el.querySelector('[data-copy]').textContent=label('MarkdownExport',selected);});},true)];
-  PROTO['md-export'].props[2].type='radio';
-  replace('md-export',function(el){el.innerHTML='<div class="demo"><div class="row">'+['PNG','PDF','Word','HTML'].map(function(format){return '<button class="btn" data-format="'+format+'">'+format+'</button>';}).join('')+'<button class="btn pri" data-copy>'+esc(label('MarkdownExport',PROTO['md-export'].props[2].selected))+'</button></div><pre class="catalog-export-result" hidden></pre></div><div class="demo catalog-export-preview catalog-markdown-basic">'+window.CodeWFRenderMarkdownSample(resource('Content.MarkdownExport.Samples.Markdown'))+'</div>';el.querySelectorAll('[data-format]').forEach(function(button){button.onclick=function(){var result=el.querySelector('.catalog-export-result');result.hidden=false;result.textContent='ExportKind.'+button.dataset.format+' · '+value('md-export','typography-theme')+' · '+value('md-export','typography-size');};});el.querySelector('[data-copy]').onclick=function(){var result=el.querySelector('.catalog-export-result');result.hidden=false;result.textContent='CopyKind.'+PROTO['md-export'].props[2].selected+' · '+value('md-export','typography-theme');};typography('md-export');});
-
   // 工作流参数直接委托当前子页，避免另造一套只写日志的参数。
   var scenes={
-    'flow-write':[['Open','md-viewer'],['Edit','md-editor'],['Preview','md-live'],['Export','md-export'],['WriteBack','md-lite']],
     'flow-data':[['Import','datagrid'],['Columns','colde'],['SortFilter','datagrid'],['ExportData','propgrid']],
     'flow-docs':[['Dock','dock'],['Tabs','trapezoid'],['Panels','log'],['Status','status']]
   },steps={};
   PROTO.status.props=statusProps('status',false);replace('status',function(el){el.innerHTML='<div data-status-badges></div><div data-status-cards></div>';statusRender('status',true)(el.querySelector('[data-status-badges]'));statusRender('status',false)(el.querySelector('[data-status-cards]'));});
   Object.keys(scenes).forEach(function(id){steps[id]=0;Object.defineProperty(PROTO[id],'props',{get:function(){return PROTO[scenes[id][steps[id]][1]].props;}});replace(id,function(el){el.innerHTML='<div class="subtabs catalog-scene-steps">'+scenes[id].map(function(step,index){return '<button class="'+(steps[id]===index?'on':'')+'" data-step="'+index+'">'+esc(window.CodeWFPrototypeResources[LANG].Scene['Step.'+step[0]])+'</button>';}).join('')+'</div><div class="catalog-scene-body"></div>';el.querySelectorAll('[data-step]').forEach(function(button){button.onclick=function(){steps[id]=Number(button.dataset.step);renderInto(id,el);updateProperties();};});renderInto(scenes[id][steps[id]][1],el.querySelector('.catalog-scene-body'));});});
   var originalRender=renderInto;
-  renderInto=function(id,el){if(!el)return;el.dataset.control=id;originalRender(id,el);if(id==='md-viewer'){typography(id);markdownVirtualization();var viewer=el.querySelector('.catalog-markdown-basic');new MutationObserver(function(){typography(id);markdownVirtualization();}).observe(viewer,{childList:true});}if(id==='md-lite')typography(id);if(id==='md-live')liveEffect();};
+  renderInto=function(id,el){if(!el)return;el.dataset.control=id;originalRender(id,el);};
   // 暴露只读契约给审计；测试须另外操作真实 DOM 检验参数效果。
   window.CodeWFPrototypePropertyContract=function(id){return (PROTO[id].props||[]).map(function(p){return {id:p.id,label:p.label,type:p.type,readonly:!!p.readonly};});};
   if(ACTIVE_DOC)renderDoc(ACTIVE_DOC);

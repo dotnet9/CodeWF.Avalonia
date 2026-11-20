@@ -60,26 +60,6 @@
     return output.join('');
   }
   window.CodeWFRenderMarkdownSample = renderSample;
-  register('md-viewer', {props:typographyProperties('md-viewer',MD_THEMES),xaml:'<codewf:MarkdownViewer Markdown="{Binding AppliedMarkdown}"\n  TypographyTheme="{Binding Theme}" TypographySize="{Binding Size}" />', render:function(el) {
-    var source=samples().viewer;
-    el.classList.add('catalog-markdown-page');
-    el.innerHTML='<details class="catalog-markdown-input"><summary>'+esc(text('Input'))+'</summary><textarea class="catalog-input"></textarea><div class="row">'+['apply','append','reset'].map(function(action){return '<button class="btn" data-markdown-action="'+action+'">'+esc(samples()[action])+'</button>';}).join('')+'</div></details><div class="catalog-markdown-basic"></div>';
-    var input=el.querySelector('textarea'), viewer=el.querySelector('.catalog-markdown-basic'); input.value=source;
-    function paint(){
-      viewer.innerHTML=renderSample(source);
-      applyTypography('md-viewer');
-      viewer.querySelectorAll('[data-task-line]').forEach(function(task){task.onchange=function(){var lines=source.replace(/\r\n/g,'\n').split('\n');lines[task.dataset.taskLine]=lines[task.dataset.taskLine].replace(/\[[ xX]\]/,task.checked?'[x]':'[ ]');source=lines.join('\n');input.value=source;markDirty('md-viewer');};});
-    }
-    el.querySelectorAll('[data-markdown-action]').forEach(function(button){button.onclick=function(){var action=button.dataset.markdownAction;source=action==='reset'?samples().viewer:action==='append'?source+'\n\n'+text('LiveParagraph'):input.value;input.value=source;paint();};});
-    paint();
-  }});
-  register('md-lite', {props:typographyProperties('md-lite',['Basic','Simple','GeekBlack','WeChatFormat']),xaml:'<codewf:MarkdownViewer Markdown="{Binding SampleMarkdown}" />', render:function(el) {el.innerHTML='<div class="catalog-markdown-basic">'+renderSample(samples().lite)+'</div>';applyTypography('md-lite');}});
-  var originalEditorRender = PROTO['md-editor'].render;
-  PROTO['md-editor'].render = function(el) {
-    el.innerHTML = originalEditorRender(el);
-    var input = el.querySelector('#edTa');
-    if (input) { input.value = samples().editor; input.style.fontSize = '15px'; input.style.height = '300px'; }
-  };
   register('status-card',{xaml:'<codewf:StatusCard Width="180" Height="80" Kind="Info" TopText="INFO"\n  BottomText="{codewf:I18n Demo.Catalog.StatusSampleInfo}" />',render:function(el){
     var levels=['Debug','Info','Warn','Error','Fatal'];
     el.innerHTML='<div class="demo"><h4>StatusCard</h4><div class="row catalog-status-row">'+levels.map(function(level){return '<div class="catalog-status card" data-level="'+level+'"><strong>'+level.toUpperCase()+'</strong><span>'+esc(text('StatusSample'+level))+'</span></div>';}).join('')+'</div></div><div class="demo"><h4>Kind / IconWidth</h4><select>'+levels.map(function(l){return '<option'+(l==='Info'?' selected':'')+'>'+l+'</option>';}).join('')+'</select><div class="catalog-status card catalog-driven" data-level="Info"><strong>DRIVEN</strong><span>'+esc(text('StatusDriven'))+'</span></div></div>';
@@ -104,32 +84,5 @@
     el.querySelector('[data-toggle]').onclick=function(){expanded=!expanded;update();};
     el.querySelectorAll('input').forEach(function(input){input.oninput=update;});update();
   }});
-  register('md-live',{xaml:'<codewf:MarkdownLiveEditorView Markdown="{Binding Doc}" />',cs:'liveEditor.FocusBlock(0);\nawait liveEditor.ExecuteAsync(MarkdownEditorAction.Table);',render:function(el){
-    var blocks=samples().live.replace(/\r\n/g,'\n').split(/\n\n+/), active=-1;
-    el.innerHTML='<div class="demo"><p>'+esc(text('LiveHint'))+'</p><div class="row"><button class="btn" data-insert>'+esc(text('LiveInsert'))+'</button><button class="btn" data-focus>'+esc(text('LiveFocus'))+'</button><button class="btn" data-table>'+esc(text('LiveTable'))+'</button></div><div class="catalog-live mdr"></div></div>';
-    function renderBlock(s){
-      return renderSample(s);
-    }
-    function paint(focus){
-      el.querySelector('.catalog-live').innerHTML=blocks.map(function(s,i){return '<div class="catalog-block" tabindex="0" data-block="'+i+'">'+(i===active?'<textarea>'+esc(s)+'</textarea>':renderBlock(s))+'</div>';}).join('');
-      el.querySelectorAll('[data-block]').forEach(function(block){
-        var i=Number(block.dataset.block), input=block.querySelector('textarea');
-        if(input){input.oninput=function(){blocks[i]=input.value;markDirty('md-live');};input.onblur=function(){active=-1;paint();};if(focus)input.focus();}
-        else {block.onclick=function(){active=i;paint(true);};block.onkeydown=function(e){if(e.key==='Enter'){active=i;paint(true);}};}
-      });
-    }
-    el.querySelector('[data-focus]').onclick=function(){active=0;paint(true);};
-    el.querySelector('[data-insert]').onclick=function(){blocks.push(text('LiveParagraph'));active=blocks.length-1;paint(true);};
-    el.querySelector('[data-table]').onclick=function(){blocks.push('| Name | Value |\n| --- | --- |\n| CodeWF | 42 |');active=blocks.length-1;paint(true);};
-    paint();
-  }});
-  var originalPropertyGrid = renderPGrid;
-  renderPGrid = function(id) {
-    originalPropertyGrid(id);
-    if(id!=='md-viewer' && id!=='md-lite')return;
-    var panel=$('pGrid');
-    if($('pgCnt'))$('pgCnt').textContent='('+PROTO[id].props.length+')';
-    var note=document.createElement('p');note.className='hint';note.textContent=text('Preview');panel.appendChild(note);
-  };
   if(ACTIVE_DOC) renderDoc(ACTIVE_DOC);
 })();

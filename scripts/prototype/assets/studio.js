@@ -118,7 +118,7 @@
   var panels = toolkit ? [
     ["events","消息流","flow-runtime"], ["packet","协议字节","net-packet"], ["pipeline","文件流水线","flow-lab"]
   ] : [
-    ["markdown","实时 Markdown","flow-write"], ["table","自然排序","datagrid"], ["dock","Dock 布局","flow-docs"]
+    ["table","自然排序","datagrid"], ["dock","Dock 布局","flow-docs"]
   ];
   var capabilities = toolkit ? [
     ["bus","事件驱动","Pub/Sub、Command / Query、特性扫描注册。","EventBus · Prism · AspNetCore"],
@@ -128,7 +128,6 @@
     ["image-icon","图像工具链","缩放、水印、格式转换、ICO 与二维码。","Image"],
     ["log-core","运行期观测","文件轮转、UI 日志流、MEL 桥接与核心工具。","Logging · Microsoft · Core"]
   ] : [
-    ["flow-write","Markdown 工作区","从源码编辑、实时预览到多格式导出。","Markdown · Markdown.Lite"],
     ["flow-data","数据交互","三态自然排序、列配置与树形属性编辑。","DataGrid · TreeDataGrid"],
     ["flow-docs","多文档工作区","停靠、面板显隐与梯形文档页签。","Dock · Controls"],
     ["transfer","输入与选择","搜索列表、穿梭框与 If / Switch 标记扩展。","Controls"],
@@ -136,7 +135,6 @@
     ["log","日志与国际化","实时日志、桌面通知与强类型语言资源。","Log · Lang · Lang.Generator"]
   ];
   var selected = panels[0][0];
-  var markdown = "# 让界面更有表现力\n\n用 **CodeWF.Avalonia** 构建桌面体验。\n\n- 实时 Markdown 预览\n- 三态排序与属性编辑\n- `Dock` 多文档工作区";
   var tableRows = [ ["item10","Markdown","就绪"], ["item2","DataGrid","就绪"], ["item1","Dock","就绪"], ["item100","PropertyGrid","就绪"] ];
   var sortState = 0;
   var dockNav = true, dockLog = true;
@@ -153,10 +151,10 @@
       '<div class="studio-sigil" aria-hidden="true"><span>' + (toolkit ? '{ }' : '.NET') + '</span></div></div>' +
       '<div class="studio-meta"><span><b>' + (toolkit ? '11' : '9') + '</b> NUGET PACKAGES</span><span><b>' + allPageIds().length + '</b> ' + label('交互页面','DEMO PAGES') + '</span><span><b>.NET 10</b> / ' + (toolkit ? 'NO UI DEPENDENCY' : 'AVALONIA 12') + '</span><span>MIT LICENSE</span></div>' +
       '<section class="studio-stage" aria-label="' + label('能力体验','Capability preview') + '"><div class="studio-stage-head"><strong>' + label('动手试一试','Try it live') + '</strong><small>INTERACTIVE PREVIEW</small><div class="studio-tabs" role="tablist" aria-label="' + label('演示选择','Preview selection') + '">' +
-      panels.map(function (p,i) { var ens = toolkit ? ['Message flow','Protocol bytes','File pipeline'] : ['Live Markdown','Natural sort','Dock layout']; return '<button type="button" id="studio-tab-' + p[0] + '" role="tab" aria-controls="studio-sandbox" aria-selected="' + (p[0] === selected) + '" data-stage="' + p[0] + '">' + label(p[1],ens[i]) + '</button>'; }).join('') +
+      panels.map(function (p,i) { var ens = toolkit ? ['Message flow','Protocol bytes','File pipeline'] : ['Natural sort','Dock layout']; return '<button type="button" id="studio-tab-' + p[0] + '" role="tab" aria-controls="studio-sandbox" aria-selected="' + (p[0] === selected) + '" data-stage="' + p[0] + '">' + label(p[1],ens[i]) + '</button>'; }).join('') +
       '</div></div><div class="studio-sandbox" id="studio-sandbox" role="tabpanel" aria-labelledby="studio-tab-' + selected + '"></div><div class="studio-stage-foot"><span id="studio-stage-hint"></span><button type="button" class="studio-link" id="studio-open-full">' + label('打开完整演示','Open full demo') + ' ↗</button></div></section>' +
       '<div class="studio-section-label"><span>' + label('从能力出发','Explore the capabilities') + '</span><small>EXPLORE THE LIBRARIES ↙</small></div>' +
-      '<div class="studio-capabilities">' + capabilities.map(function (c,i) { var titles = toolkit ? ['Event-driven apps','Distributed messaging','Binary protocols','Files & data','Image toolchain','Runtime observability'] : ['Markdown workspace','Data interaction','Document workspace','Input & selection','Guides & status','Logging & localization']; return '<button type="button" class="studio-capability" data-open="' + c[0] + '"><span class="studio-icon">' + iconSvg(c[0],'s18') + '</span><span class="studio-arrow">↗</span><h3>' + label(c[1],titles[i]) + '</h3><p>' + label(c[2],c[3]) + '</p><small>' + c[3] + '</small></button>'; }).join('') + '</div>' +
+      '<div class="studio-capabilities">' + capabilities.map(function (c,i) { var titles = toolkit ? ['Event-driven apps','Distributed messaging','Binary protocols','Files & data','Image toolchain','Runtime observability'] : ['Data interaction','Document workspace','Input & selection','Guides & status','Logging & localization']; return '<button type="button" class="studio-capability" data-open="' + c[0] + '"><span class="studio-icon">' + iconSvg(c[0],'s18') + '</span><span class="studio-arrow">↗</span><h3>' + label(c[1],titles[i]) + '</h3><p>' + label(c[2],c[3]) + '</p><small>' + c[3] + '</small></button>'; }).join('') + '</div>' +
       '<div class="studio-install"><code id="studio-install-command">dotnet add package CodeWF.' + (toolkit ? 'Toolkit.EventBus' : 'Avalonia.Controls') + '</code><button type="button" class="studio-link" id="studio-copy">' + label('复制安装命令','Copy install command') + ' ⧉</button></div>' +
       '<p class="studio-note">' + label('浏览器交互示意 · 完整页面展示对应 .NET API；配色遵循高对比令牌规则（8 套）。','Browser interaction previews · Full demos show the .NET APIs. Colors follow the high-contrast token rules (8 palettes).') + '</p></div>';
   }
@@ -177,17 +175,7 @@
     document.querySelectorAll('[data-stage]').forEach(function (b) { b.setAttribute('aria-selected',String(b.dataset.stage === selected)); });
     box.setAttribute('aria-labelledby','studio-tab-' + selected);
     var hint = $('studio-stage-hint');
-    if (selected === 'markdown') {
-      box.innerHTML = '<div class="studio-split"><div><div class="studio-label">SOURCE <span>MarkdownEditorView</span></div><textarea aria-label="Markdown 源码" class="studio-editor" id="studio-md"></textarea></div><div><div class="studio-label">PREVIEW <span>MarkdownViewer</span></div><div class="studio-preview" id="studio-md-preview"></div></div></div>';
-      $('studio-md').value = markdown;
-      function preview() {
-        markdown = $('studio-md').value;
-        var lines = esc(markdown).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').split('\n');
-        $('studio-md-preview').innerHTML = lines.map(function (line) { if (line.startsWith('# ')) return '<h3>' + line.slice(2) + '</h3>'; if (line.startsWith('- ')) return '<div>• ' + line.slice(2) + '</div>'; return '<div>' + (line || '<br>') + '</div>'; }).join('');
-      }
-      $('studio-md').oninput = preview; preview();
-      hint.textContent = label('编辑左侧源码，右侧即时更新','Edit the source to update the preview');
-    } else if (selected === 'table') {
+    if (selected === 'table') {
       var rows = tableRows.slice();
       if (sortState) rows.sort(function (a,b) { return sortState === 1 ? a[0].localeCompare(b[0],undefined,{numeric:true}) : b[0].localeCompare(a[0],undefined,{numeric:true}); });
       box.innerHTML = '<div class="studio-label">DATAGRID <span>' + label('升序 → 降序 → 原始顺序','Ascending → descending → original order') + '</span></div><table class="studio-table"><thead><tr><th><button type="button" id="studio-sort">' + label('名称','Name') + ' ' + (sortState === 1 ? '↑' : sortState === 2 ? '↓' : '↕') + '</button></th><th>' + label('模块','Module') + '</th><th>' + label('状态','Status') + '</th></tr></thead><tbody>' + rows.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td><span class="studio-pill">' + label(r[2],'Ready') + '</span></td></tr>'; }).join('') + '</tbody></table>';

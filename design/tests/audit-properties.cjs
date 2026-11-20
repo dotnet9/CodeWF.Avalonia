@@ -8,9 +8,8 @@ const contracts = {
   codewfwindow:['number','number','number','bool'],titlebar:['text'],dock:['text:r'],trapezoid:['text:r'],
   wsp:['bool','number','number','number'],'diagonal-line':['number'],expansion:[],
   segmented:['number','bool','number'],
-  'md-viewer':['combo','combo','bool','number'],'md-lite':['combo','combo'],'md-editor':['number','bool','bool'],
-  'md-live':['combo','number'],'md-export':['combo','combo','radio'],if:['text:r'],switch:['text:r'],lang:[],
-  'flow-write':['combo','combo','bool','number'],'flow-data':['bool','number'],'flow-docs':['text:r'],appguide:['text:r']
+  if:['text:r'],switch:['text:r'],lang:[],
+  'flow-data':['bool','number'],'flow-docs':['text:r'],appguide:['text:r']
 };
 exports.verifyContract = async function (page, route) {
   assert.ok(Object.hasOwn(contracts,route), `Missing native property contract: ${route}`);
@@ -140,18 +139,6 @@ exports.verifyEffects = async function (page,culture) {
   await toggle('wsp.virtual');await edit('wsp.spacing',20);assert.equal(await page.locator('.catalog-wsp .blk').nth(1).evaluate(el=>el.offsetTop),64);
   await page.locator('#seg-wsp [data-clear]').click();assert.equal(await page.locator('.catalog-wsp .blk').count(),0);
   await page.locator('#seg-wsp [data-generate]').click();assert.ok(await page.locator('.catalog-wsp .blk').count()>0);
-  await open('md-viewer');await edit('md.threshold',1);assert.equal(await page.locator('#seg-md-viewer .catalog-markdown-basic').getAttribute('data-virtualizing'),'true');
-  await toggle('md.virtual');assert.equal(await page.locator('#seg-md-viewer .catalog-markdown-basic').getAttribute('data-virtualizing'),'false');
-  await toggle('md.virtual');await edit('md.threshold',40);
-  for(const route of ['md-viewer','md-lite']){await open(route);await choose('typography-size',1);assert.equal(await page.locator('#seg-'+route+' .catalog-markdown-basic').evaluate(el=>getComputedStyle(el).fontSize),'14px');await choose('typography-size',0);}
-  await open('md-editor');await edit('editor.font',22);assert.equal(await page.locator('#edTa').evaluate(el=>getComputedStyle(el).fontSize),'22px');
-  await toggle('editor.lines');assert.equal(await page.locator('.catalog-editor-lines').isVisible(),false);
-  await page.locator('#edTa').fill('');await page.locator('#edTa').press('[');assert.equal(await page.locator('#edTa').inputValue(),'[]');
-  await toggle('editor.pair');await page.locator('#edTa').fill('');await page.locator('#edTa').press('[');assert.equal(await page.locator('#edTa').inputValue(),'[');
-  await toggle('editor.pair');await toggle('editor.lines');await edit('editor.font',15);
-  await open('md-live');await choose('typography-theme',0);await edit('live.font',23);await page.locator('#seg-md-live [data-focus]').click();
-  assert.equal(await page.locator('#seg-md-live textarea').evaluate(el=>getComputedStyle(el).fontSize),'23px');
-  await open('md-export');await choose('export.destination',2);await page.locator('#seg-md-export [data-copy]').click();assert.match(await page.locator('.catalog-export-result').innerText(),/CopyKind.Juejin/);
-  const scenes={'flow-write':[4,3,2,3,2],'flow-data':[2,1,2,4],'flow-docs':[1,1,2,2]};
+  const scenes={'flow-data':[2,1,2,4],'flow-docs':[1,1,2,2]};
   for(const [route,counts]of Object.entries(scenes)){await open(route);for(let index=0;index<counts.length;index++){await page.locator('#seg-'+route+' [data-step="'+index+'"]').click();assert.equal(await page.locator('#pGrid .rw').count(),counts[index],`${route} step ${index}`);}await page.locator('#seg-'+route+' [data-step="0"]').click();}
 };

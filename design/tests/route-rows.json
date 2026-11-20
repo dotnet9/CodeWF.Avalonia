@@ -137,45 +137,6 @@
   "contract": [],
   "rows": 2
  },
- "md-viewer": {
-  "contract": [
-   "combo",
-   "combo",
-   "bool",
-   "number"
-  ],
-  "rows": 4
- },
- "md-lite": {
-  "contract": [
-   "combo",
-   "combo"
-  ],
-  "rows": 2
- },
- "md-editor": {
-  "contract": [
-   "number",
-   "bool",
-   "bool"
-  ],
-  "rows": 3
- },
- "md-live": {
-  "contract": [
-   "combo",
-   "number"
-  ],
-  "rows": 2
- },
- "md-export": {
-  "contract": [
-   "combo",
-   "combo",
-   "radio"
-  ],
-  "rows": 3
- },
  "if": {
   "contract": [
    "text:r"
@@ -191,15 +152,6 @@
  "lang": {
   "contract": [],
   "rows": 2
- },
- "flow-write": {
-  "contract": [
-   "combo",
-   "combo",
-   "bool",
-   "number"
-  ],
-  "rows": 4
  },
  "flow-data": {
   "contract": [
