@@ -1,4 +1,4 @@
-﻿﻿<Project>
+﻿<Project>
   <Import Project="build/ProjectDefaults.props" />
   <PropertyGroup>
     <!-- 包版本统一维护；Avalonia 依赖版本在 Directory.Packages.props 中独立维护。 -->
